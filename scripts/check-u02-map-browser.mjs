@@ -89,8 +89,10 @@ async function run(page,cdp){
  await page.waitForTimeout(600);
  const before=requests.length;
  check('방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음',(await areaButton.innerText()).includes('다시 검색')&&requests.length===before,{button:await areaButton.innerText()});
- let tabs=0;for(;tabs<200&&!(await areaButton.evaluate(e=>e===document.activeElement));tabs++)await page.keyboard.press('Tab');
- check('Tab으로 이 지역 검색 버튼에 도달',tabs<200,{tabs});
+ // The button sits just before the zoom controls in tab order. A long Tab walk from the
+ // map passed through redrawn markers and sometimes never arrived, so step back one stop.
+ await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Shift+Tab');
+ check('Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)',await areaButton.evaluate(e=>e===document.activeElement));
  await page.route(mapApi,route=>route.fulfill({status:500,contentType:'application/json',body:'{"error":"test"}'}));
  await page.keyboard.press('Enter');
  await coverage.getByRole('alert').waitFor({timeout:10000}).catch(()=>{});
@@ -142,7 +144,27 @@ async function run(page,cdp){
  check('Enter로 불러온 목록 위치로 돌아가면 기존 표시 수 안내로 돌아옴',(await text()).includes('검색 결과')&&(await text()).includes('중 지도에'),{text:await text()});
 }
 
+// Desktop: hovering a list card re-renders the page; the moved map must stay where it is.
+async function desktopHover(page){
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ const canvas=page.locator('.map-canvas');await canvas.waitFor();await page.waitForTimeout(500);
+ await canvas.focus();for(let i=0;i<3;i++)await page.keyboard.press('ArrowRight');await page.waitForTimeout(600);
+ const pane=()=>page.evaluate(()=>document.querySelector('.leaflet-map-pane')?.style.transform??'');
+ const moved=await pane();
+ await page.locator('.hotel-card').nth(2).hover();await page.waitForTimeout(600);
+ const after=await pane();
+ check('데스크톱에서 지도를 옮긴 뒤 목록 카드에 마우스를 올려도 지도가 그대로 있음',moved!==''&&after===moved,{moved,after});
+}
+
 const chromiumVersion=browser.version();
+{
+ width=1280;
+ const context=await browser.newContext({viewport:{width:1280,height:800},locale:'ko-KR',timezoneId:'Asia/Seoul'});
+ await context.route('**/*',route=>['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort());
+ const page=await context.newPage();
+ try{await desktopHover(page)}catch(error){check('검사 중단',false,{error:String(error).slice(0,500)})}
+ await context.close();
+}
 for(width of [360,390]){
  const context=await browser.newContext({viewport:{width,height:780},isMobile:true,hasTouch:true,deviceScaleFactor:2,locale:'ko-KR',timezoneId:'Asia/Seoul'});
  await context.route('**/*',route=>['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort());
@@ -153,7 +175,7 @@ for(width of [360,390]){
 await browser.close();
 const failed=results.filter(result=>!result.pass);
 if(evidence){
- writeFileSync(evidence,JSON.stringify({measuredAt:new Date().toISOString(),base,browser:'Chromium '+chromiumVersion,viewport:'360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2',externalRequests:'blocked',results,
+ writeFileSync(evidence,JSON.stringify({measuredAt:new Date().toISOString(),base,browser:'Chromium '+chromiumVersion,viewport:'360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover',externalRequests:'blocked',results,
   notCovered:['실제 모바일 기기·모바일 브라우저 주소창·안전 영역','스크린리더 읽기 순서','외부 지도 타일','운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)','구역 개수 응답은 검사에서 만든 응답으로 화면만 확인(실제 상한 초과는 Worker 검사)']},null,1)+'\n');
 }
 console.log(`checks=${results.length} failed=${failed.length} ${failed.length?'FAIL':'PASS'}`);

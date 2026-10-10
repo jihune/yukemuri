@@ -1,10 +1,19 @@
 {
- "measuredAt": "2026-10-10T17:38:34.006Z",
+ "measuredAt": "2026-10-10T17:53:03.338Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
- "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
  "externalRequests": "blocked",
  "results": [
+  {
+   "width": 1280,
+   "name": "데스크톱에서 지도를 옮긴 뒤 목록 카드에 마우스를 올려도 지도가 그대로 있음",
+   "pass": true,
+   "detail": {
+    "moved": "translate3d(-43px, -29px, 0px)",
+    "after": "translate3d(-43px, -29px, 0px)"
+   }
+  },
   {
    "width": 360,
    "name": "지도를 열기만 하면 이 지역 검색 버튼과 요청이 없음",
@@ -109,11 +118,9 @@
   },
   {
    "width": 360,
-   "name": "Tab으로 이 지역 검색 버튼에 도달",
+   "name": "Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)",
    "pass": true,
-   "detail": {
-    "tabs": 180
-   }
+   "detail": {}
   },
   {
    "width": 360,
@@ -136,7 +143,7 @@
    "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
    "pass": true,
    "detail": {
-    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "text": "이 지역 44곳 범위 밖 13곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
     "sentBefore": 4,
     "sentAfter": 5,
     "buttonText": "이 지역에서 다시 검색"
@@ -271,11 +278,9 @@
   },
   {
    "width": 390,
-   "name": "Tab으로 이 지역 검색 버튼에 도달",
+   "name": "Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)",
    "pass": true,
-   "detail": {
-    "tabs": 195
-   }
+   "detail": {}
   },
   {
    "width": 390,
@@ -298,7 +303,7 @@
    "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
    "pass": true,
    "detail": {
-    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "text": "이 지역 45곳 범위 밖 12곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
     "sentBefore": 4,
     "sentAfter": 5,
     "buttonText": "이 지역에서 다시 검색"
