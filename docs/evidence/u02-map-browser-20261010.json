@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-10T17:53:03.338Z",
+ "measuredAt": "2026-10-10T18:10:02.297Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
@@ -118,9 +118,12 @@
   },
   {
    "width": 360,
-   "name": "Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)",
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
    "pass": true,
-   "detail": {}
+   "detail": {
+    "tabs": 20,
+    "bodyFocus": 0
+   }
   },
   {
    "width": 360,
@@ -143,7 +146,7 @@
    "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
    "pass": true,
    "detail": {
-    "text": "이 지역 44곳 범위 밖 13곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "text": "이 지역 0곳 범위 밖 57곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
     "sentBefore": 4,
     "sentAfter": 5,
     "buttonText": "이 지역에서 다시 검색"
@@ -162,8 +165,8 @@
    "name": "구역 지점을 누르면 지도가 그 구역으로 이동(지점이 지도 가운데 근처로 옴)",
    "pass": true,
    "detail": {
-    "cellBefore": 192.3388936226888,
-    "cellAfter": 1.5
+    "cellBefore": 185.5,
+    "cellAfter": 2.5
    }
   },
   {
@@ -278,9 +281,12 @@
   },
   {
    "width": 390,
-   "name": "Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)",
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
    "pass": true,
-   "detail": {}
+   "detail": {
+    "tabs": 20,
+    "bodyFocus": 0
+   }
   },
   {
    "width": 390,
@@ -303,7 +309,7 @@
    "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
    "pass": true,
    "detail": {
-    "text": "이 지역 45곳 범위 밖 12곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "text": "이 지역 0곳 범위 밖 57곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
     "sentBefore": 4,
     "sentAfter": 5,
     "buttonText": "이 지역에서 다시 검색"
@@ -322,8 +328,8 @@
    "name": "구역 지점을 누르면 지도가 그 구역으로 이동(지점이 지도 가운데 근처로 옴)",
    "pass": true,
    "detail": {
-    "cellBefore": 197.07676169452347,
-    "cellAfter": 1.5
+    "cellBefore": 190.40811432289328,
+    "cellAfter": 2.5
    }
   },
   {
