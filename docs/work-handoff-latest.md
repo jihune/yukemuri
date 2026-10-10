@@ -8,7 +8,8 @@
 
 - 작업 환경: Claude Code 웹 클라우드. 작업 브랜치: `claude/d01-region-labels`.
 - 시작 기준: main `b624d67`(PR #3 병합).
-- 열린 PR: [PR #4](https://github.com/jihune/yukemuri/pull/4)(검토 기준·작은 PR 규칙)는 검토 중이다. 이 브랜치는 PR #4의 변경을 포함하지 않는다. PR #4의 파일(`AGENTS.md`, `docs/cloud-development.md`)은 이 브랜치에서 바꾸지 않았다.
+- 작업 PR: [PR #5](https://github.com/jihune/yukemuri/pull/5). 코드 커밋은 `1cb5827`이다.
+- [PR #4](https://github.com/jihune/yukemuri/pull/4)(검토 규칙·Codex 검토 절차)가 2026-10-10T14:08Z에 main에 병합됐다(`27bbac5`). 이 브랜치에 main을 merge했다. PR #4의 ‘후속 변경’ 절은 `history/work-handoff-U01-20261010.md`에 옮겼다.
 - 운영 D1·Secret·수집 예약·자동 백업·호스팅·공유 범위는 바꾸지 않았다. 이 환경에는 운영 접근 정보가 없다.
 
 ## 환경 확인
@@ -45,9 +46,9 @@
    - Windows 경로·PowerShell·winget 지침은 Linux 클라우드라 적용하지 않았다.
 3. 첫 PR 범위를 체크인 자료와 코드 오류로 제한했다. 운영 자료 대조와 수집기 주소 문제는 다음 작업으로 남겼다.
 
-## Codex 검토 경로
+## Codex 검토
 
-PR #4에서 `@codex review` 코멘트(2026-10-10T13:53:09Z)에 Codex GitHub 봇이 13:53:22Z에 ‘Running’ 요약 코멘트로 응답했다. 2026-10-10T14:03Z 현재 검토 결과는 아직 없다. 이 PR에서도 CI 통과 뒤 같은 방법으로 요청한다.
+`cloud-development.md`의 ‘Codex 클라우드 환경’ 절차를 따른다. CI 통과 뒤 PR 대화창에 `@codex review`를 남긴다. 리뷰 스레드 답글에는 `@codex`를 쓰지 않는다.
 
 ## Sites 전달
 

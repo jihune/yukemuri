@@ -64,3 +64,13 @@
 1. Codex 검토와 재검토를 마쳤다. [PR #2](https://github.com/jihune/yukemuri/pull/2)의 main 병합은 사용자가 결정한다.
 2. Sites 도구가 있는 세션에서 이 CSS 변경을 게시하고 `deployments.md`에 기록한다.
 3. 다음 독립 작업은 D01(지역 오류와 동일 숙소 연결)이다. 새 세션에서 시작한다.
+
+## 후속 변경: 검토 규칙과 Codex 자동 검토
+
+기록: 2026-10-10T14:06:17Z / 2026-10-10 23:06:17 KST. 기준: main `b624d67`. PR: [PR #4](https://github.com/jihune/yukemuri/pull/4).
+
+- [PR #3](https://github.com/jihune/yukemuri/pull/3)으로 PR #2 병합 사실을 기록했다. 기록 갱신 PR이라 검토 없이 병합했다(`b624d67`).
+- PR #4는 `AGENTS.md`에 세 가지를 더했다. 기록 갱신 PR의 무검토 병합 예외, 검토 세션의 브랜치·커밋·인수인계 면제, ‘Review guidelines’ 절이다. `START_HERE.md`·`docs/cloud-development.md`·`skills/yukemuri-maintenance/SKILL.md`의 적용 범위도 맞췄다.
+- Codex GitHub 리뷰는 PR 대화창의 `@codex review` 코멘트로 동작한다. 요청 뒤 약 2~3분 안에 리뷰가 달렸다. PR 구독으로 받아 검증하고 고친 뒤 다시 요청하는 순환을 네 번 돌렸다. 지적은 모두 P2였고 문서 사이 규칙 충돌이었다.
+- 문서만 바꿨으므로 앱 검사는 실행하지 않았다. 저장소 CI도 문서 경로는 건너뛴다.
+- D01은 별도 Claude Code 세션(`session_01MPJs3sxEWiACCEqFDcP1YJ`)에서 진행 중이다. 그 세션이 이 인수인계를 `docs/history/`로 옮기고 새로 쓴다.
