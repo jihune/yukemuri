@@ -3,7 +3,7 @@
 기록: 2026-10-10. 사용자 PC로 개발 환경을 이전하지 않는다.
 
 1. 이 파일과 `AGENTS.md`, `docs/work-handoff-latest.md`, `docs/roadmap.md`를 읽는다.
-2. Git 상태·브랜치·기준 커밋을 확인하고 작업 하나를 새 브랜치에서 진행한다.
+2. Git 상태·브랜치·기준 커밋을 확인하고 작업 하나를 새 브랜치에서 진행한다. 검토만 하는 세션은 브랜치를 만들거나 커밋하지 않고 `AGENTS.md`의 ‘Review guidelines’를 따른다.
 3. `bash scripts/cloud-setup.sh`로 고정된 의존성을 설치한다. 실패하면 잠금 파일을 바꾸지 말고 제한을 기록한다.
 4. 구현 후 `python3 scripts/cloud-check.py --full`과 변경에 필요한 추가 검사를 실행한다.
 5. 실제 화면 검증은 별도로 한다. U01의 360/390px Chromium 터치·키보드 검사는 2026-10-10에 통과했다. 실제 기기·스크린리더는 미확인이다.
