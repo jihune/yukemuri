@@ -55,6 +55,9 @@
 
 `cloud-development.md`의 ‘Codex 클라우드 환경’ 절차를 따른다. CI 통과 뒤 PR 대화창에 `@codex review`를 남긴다. 리뷰 스레드 답글에는 `@codex`를 쓰지 않는다. 한 PR에서 세 번까지만 요청한다.
 
+- CI(`checks`)가 `21f6cdf`에서 통과했다(2026-10-10T15:27:20Z, [실행 38063477225](https://github.com/jihune/yukemuri/actions/runs/38063477225)).
+- 15:27Z에 `@codex review`를 요청했다(1회차). Codex는 15:30:48Z에 `21f6cdf` 검토를 마치고 ‘큰 문제 없음(Didn't find any major issues)’으로 응답했다. 지적 사항은 없다.
+
 ## Sites 전달
 
 - 이 환경에는 Sites 도구가 없다. 게시하지 않았다.
@@ -63,7 +66,7 @@
 
 ## 다음 작업
 
-1. 이 PR의 CI·Codex 검토. main 병합은 사용자가 정한다.
+1. PR #10은 CI 통과·Codex 지적 없음 상태다. main 병합은 사용자가 정한다. Sites 게시는 별도다.
 2. U02 2차: 지도 범위 검색 1단계(`U02-20261010.md`의 ‘지도 범위 검색 설계’). 남은 결정 세 가지를 먼저 정한다. Worker API 변경과 Sites 게시가 필요하다.
 3. U02 후속: 360px 지도 화면의 ‘목록 보기’ 버튼 겹침, 추가 로딩 응답이 빌 때의 안내.
 4. D01 2차, Shinagawa Prince Hotel 상품 범위, Trip 주소 수집기 원인(이전 인수인계의 다음 작업).
