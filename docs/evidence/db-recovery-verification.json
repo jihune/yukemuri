@@ -1,0 +1,21 @@
+{
+  "restored": "fresh-cloud-container-sqlite",
+  "rows": {
+    "hotel_lifecycle_events": 5,
+    "hotel_names": 13849,
+    "crawl_jobs": 15417,
+    "visitor_favorites": 0,
+    "hotel_description_requests": 40,
+    "hotel_source_observations": 2,
+    "favorites": 2,
+    "hotel_name_localizations": 149,
+    "hotel_description_translations": 562,
+    "catalog_meta": 12,
+    "hotels": 12271,
+    "hotel_lifecycle": 1621,
+    "hotel_source_groups": 21
+  },
+  "integrity": "ok",
+  "productionChanged": false,
+  "consistency": "non_atomic"
+}

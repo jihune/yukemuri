@@ -1,0 +1,72 @@
+{
+  "source": "yukemuri.jihun7891.chatgpt.site",
+  "schema": "0012",
+  "tables": [
+    "hotel_source_groups",
+    "hotel_source_observations",
+    "hotel_lifecycle",
+    "hotel_lifecycle_events",
+    "hotels",
+    "hotel_names",
+    "catalog_meta",
+    "crawl_jobs",
+    "favorites",
+    "visitor_favorites",
+    "hotel_name_localizations",
+    "hotel_description_translations",
+    "hotel_description_requests"
+  ],
+  "excluded": [
+    "price_quotes",
+    "hotel_result_sessions"
+  ],
+  "counts": {
+    "hotel_source_observations": 2,
+    "hotel_source_groups": 21,
+    "hotel_lifecycle_events": 5,
+    "hotel_lifecycle": 1621,
+    "catalog_meta": 12,
+    "hotel_names": 13849,
+    "favorites": 2,
+    "visitor_favorites": 0,
+    "hotel_name_localizations": 149,
+    "crawl_jobs": 15417,
+    "hotel_description_requests": 40,
+    "hotel_description_translations": 562,
+    "hotels": 12271
+  },
+  "countsBefore": {
+    "hotel_source_groups": 21,
+    "hotel_source_observations": 2,
+    "hotel_lifecycle": 1621,
+    "hotel_lifecycle_events": 5,
+    "hotels": 12271,
+    "hotel_names": 13849,
+    "catalog_meta": 12,
+    "crawl_jobs": 15417,
+    "favorites": 2,
+    "visitor_favorites": 0,
+    "hotel_name_localizations": 149,
+    "hotel_description_translations": 562,
+    "hotel_description_requests": 40
+  },
+  "countsAfter": {
+    "hotel_source_groups": 21,
+    "hotel_source_observations": 2,
+    "hotel_lifecycle": 1621,
+    "hotel_lifecycle_events": 5,
+    "hotels": 12271,
+    "hotel_names": 13849,
+    "catalog_meta": 12,
+    "crawl_jobs": 15417,
+    "favorites": 2,
+    "visitor_favorites": 0,
+    "hotel_name_localizations": 149,
+    "hotel_description_translations": 562,
+    "hotel_description_requests": 40
+  },
+  "finishedAt": "2026-10-09T03:52:12.733798+00:00",
+  "consistency": "non_atomic",
+  "bytes": 5284626,
+  "archiveSha256": "974cc6db87ea5c6f191931b5f6727eeccab78bf90c17aa5d79da0b6b3fb01649"
+}

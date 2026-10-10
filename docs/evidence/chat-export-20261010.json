@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-10T08:39:04.645774+00:00",
+  "sourceZipSha256": "f27f8bcf48fffcd0a03f3ad2bad7e5425570f4084021c25222229f47a8ccb2d8",
+  "accountExportConversations": 118,
+  "projectConversations": [
+    {
+      "title": "개인용 OTA 설계 검토",
+      "id": "6abf8541-9410-83e8-9e25-c998f84351c9",
+      "nodes": 31
+    },
+    {
+      "title": "홋카이도 숙소 검색 구현",
+      "id": "6abf952a-fbc8-83e8-8e97-fac3fda65554",
+      "nodes": 1482
+    },
+    {
+      "title": "작업 내용과 아이디어 정리",
+      "id": "6ac78a9b-7bbc-83e8-9b43-a6fa72f0eaf8",
+      "nodes": 127
+    },
+    {
+      "title": "C01 진단 수정 완료",
+      "id": "6ac7bef2-968c-83ec-9865-86716b7fb808",
+      "nodes": 33
+    },
+    {
+      "title": "U01 수정 및 검사񎟙",
+      "id": "6ac7cb26-3354-83e8-b5d9-e0eeaaca8aaa",
+      "nodes": 23
+    },
+    {
+      "title": "프로젝트 이어가기 방법",
+      "id": "6ac851ae-628c-83ee-adee-78601d8c479d",
+      "nodes": 27
+    }
+  ],
+  "totalMappingNodes": 1723,
+  "assetsExported": 19,
+  "libraryFilesSelected": 19,
+  "recoveredLibraryFiles": 1,
+  "nativeSiteFiles": 109,
+  "nativeSourceVerification": {
+    "head": "608a38042df8d101d28ae480debfdddc5f3de7dc",
+    "commits": 51,
+    "fsck": "passed"
+  },
+  "nativeDbVerification": {
+    "tables": 16,
+    "integrity": "ok",
+    "productionChanged": false
+  },
+  "unresolvedOldGuideVersionReferences": 1,
+  "postExportRawSessionIncluded": false,
+  "rawConversationsCommittedToGit": false,
+  "operatingDatabaseCommittedToGit": false,
+  "providerOmittedGeneratedBuildArchives": 49
+}

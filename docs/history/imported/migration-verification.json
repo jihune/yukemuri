@@ -1,0 +1,134 @@
+{
+  "setup": {
+    "passed": true,
+    "mode": "portable",
+    "dependencyInstall": "frozen lockfile, Work-provided cache, no package downloads"
+  },
+  "chatImporter": {
+    "passed": true,
+    "checks": [
+      "explicit scope selection",
+      "all mapping branches preserved",
+      "asset bytes preserved",
+      "existing destination refused"
+    ],
+    "realUserExportImported": false
+  },
+  "dbRestore": {
+    "restored": "fresh-cloud-container-sqlite",
+    "rows": {
+      "hotel_lifecycle_events": 5,
+      "hotel_names": 13849,
+      "crawl_jobs": 15417,
+      "visitor_favorites": 0,
+      "hotel_description_requests": 40,
+      "hotel_source_observations": 2,
+      "favorites": 2,
+      "hotel_name_localizations": 149,
+      "hotel_description_translations": 562,
+      "catalog_meta": 12,
+      "hotels": 12271,
+      "hotel_lifecycle": 1621,
+      "hotel_source_groups": 21
+    },
+    "integrity": "ok",
+    "productionChanged": false,
+    "consistency": "non_atomic"
+  },
+  "secretPatterns": {
+    "findings": [],
+    "scope": "current exported files; heuristic check, plus current Sites token exact match scan"
+  },
+  "privateContent": {
+    "currentSecretMatches": [],
+    "sitesHistorySecretMatches": 0,
+    "checkedSitesObjects": 1120
+  },
+  "skillValidation": {
+    "canonical": true,
+    "codexEntry": true,
+    "claudeEntry": true,
+    "actualWebAccountsTested": false
+  },
+  "production": {
+    "latestVersion": 49,
+    "accessMode": "public",
+    "deploymentChanged": false,
+    "databaseRestorePerformed": false,
+    "runnerScheduleChanged": false
+  },
+  "cloudChecks": {
+    "passed": true,
+    "builtWorker": true,
+    "tests": [
+      "crawler parser",
+      "diagnostics",
+      "retry policy",
+      "release bootstrap",
+      "checkpoint recovery/refusal",
+      "TypeScript",
+      "listing URL and dates",
+      "API client",
+      "collector release Worker",
+      "crawl queue Worker",
+      "collection status Worker",
+      "comparison Worker"
+    ],
+    "actualWebAccountsTested": false
+  },
+  "runnerFullHistory": {
+    "commitsVerified": 204,
+    "treesVerified": 559,
+    "uniqueBlobs": 442,
+    "missingBlobs": 0,
+    "source": "read-only GitHub Git Data API",
+    "refs": [
+      {
+        "ref": "refs/heads/main",
+        "node_id": "REF_kwDOU9xDc69yZWZzL2hlYWRzL21haW4",
+        "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/refs/heads/main",
+        "object": {
+          "sha": "b2bcbba732a70ca68369c19856396317613e86ba",
+          "type": "commit",
+          "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/commits/b2bcbba732a70ca68369c19856396317613e86ba"
+        }
+      },
+      {
+        "ref": "refs/heads/migration/archive-20261009-0358",
+        "node_id": "REF_kwDOU9xDc9oAKnJlZnMvaGVhZHMvbWlncmF0aW9uL2FyY2hpdmUtMjAyNjEwMDktMDM1OA",
+        "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/refs/heads/migration/archive-20261009-0358",
+        "object": {
+          "sha": "98f3b004d56f1cfb96dd14b9ba7ca1159f370f27",
+          "type": "commit",
+          "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/commits/98f3b004d56f1cfb96dd14b9ba7ca1159f370f27"
+        }
+      },
+      {
+        "ref": "refs/heads/sites-collector-launcher-20261008",
+        "node_id": "REF_kwDOU9xDc9oALHJlZnMvaGVhZHMvc2l0ZXMtY29sbGVjdG9yLWxhdW5jaGVyLTIwMjYxMDA4",
+        "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/refs/heads/sites-collector-launcher-20261008",
+        "object": {
+          "sha": "273d9bc99c0898b5c739dce9a334652e53aadbc7",
+          "type": "commit",
+          "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/commits/273d9bc99c0898b5c739dce9a334652e53aadbc7"
+        }
+      },
+      {
+        "ref": "refs/pull/1/head",
+        "node_id": "REF_kwDOU9xDc7ByZWZzL3B1bGwvMS9oZWFk",
+        "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/refs/pull/1/head",
+        "object": {
+          "sha": "273d9bc99c0898b5c739dce9a334652e53aadbc7",
+          "type": "commit",
+          "url": "https://api.github.com/repos/jihune/yukemuri-script-runner/git/commits/273d9bc99c0898b5c739dce9a334652e53aadbc7"
+        }
+      }
+    ],
+    "integrity": "git fsck --full --strict passed"
+  },
+  "runnerHistorySecretCheck": {
+    "currentSecretMatches": [],
+    "sitesHistorySecretMatches": 0,
+    "checkedSitesObjects": 1205
+  }
+}

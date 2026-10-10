@@ -1,0 +1,30 @@
+{
+  "version": "onsen-first-20261005",
+  "primaryPrefectures": ["pref-fukuoka", "pref-saga", "pref-nagasaki", "pref-kumamoto", "pref-ooita", "pref-miyazaki", "pref-kagoshima", "pref-hokkaido", "pref-okinawa"],
+  "secondaryPrefectures": ["pref-oosaka", "pref-hyogo"],
+  "tertiaryPrefectures": ["pref-tokyo", "pref-kanagawa", "pref-chiba", "pref-saitama", "pref-yamanashi", "pref-shizuoka"],
+  "towns": [
+    {"name":"하코네", "query":"箱根", "prefecture":"pref-kanagawa", "priority":0, "terms":["箱根","強羅","仙石原","Hakone"], "listPrefix":"https://www.jalan.net/140000/LRG_141600/"},
+    {"name":"유후인", "query":"由布院", "prefecture":"pref-ooita", "priority":0, "terms":["由布院","湯布院","Yufuin"], "listPrefix":"https://www.jalan.net/440000/LRG_440600/"},
+    {"name":"구로카와", "query":"黒川", "prefecture":"pref-kumamoto", "priority":10, "terms":["黒川","杖立","わいた","Kurokawa"], "listPrefix":"https://www.jalan.net/430000/LRG_430400/"},
+    {"name":"벳푸", "query":"別府", "prefecture":"pref-ooita", "priority":10, "terms":["別府","鉄輪","Beppu"]},
+    {"name":"노보리베츠", "query":"登別", "prefecture":"pref-hokkaido", "priority":10, "terms":["登別","Noboribetsu"]},
+    {"name":"조잔케이", "query":"定山渓", "prefecture":"pref-hokkaido", "priority":10, "terms":["定山渓","Jozankei"]},
+    {"name":"도야호", "query":"洞爺", "prefecture":"pref-hokkaido", "priority":10, "terms":["洞爺","Toya"]},
+    {"name":"유노카와", "query":"湯の川", "prefecture":"pref-hokkaido", "priority":10, "terms":["湯の川","Yunokawa"]},
+    {"name":"아칸호", "query":"阿寒", "prefecture":"pref-hokkaido", "priority":10, "terms":["阿寒","Akan"]},
+    {"name":"소운쿄", "query":"層雲峡", "prefecture":"pref-hokkaido", "priority":10, "terms":["層雲峡","Sounkyo"]},
+    {"name":"우레시노", "query":"嬉野", "prefecture":"pref-saga", "priority":10, "terms":["嬉野","Ureshino"]},
+    {"name":"운젠", "query":"雲仙", "prefecture":"pref-nagasaki", "priority":10, "terms":["雲仙","Unzen"]},
+    {"name":"이부스키", "query":"指宿", "prefecture":"pref-kagoshima", "priority":10, "terms":["指宿","Ibusuki"]},
+    {"name":"기리시마", "query":"霧島", "prefecture":"pref-kagoshima", "priority":10, "terms":["霧島","Kirishima"]},
+    {"name":"아리마", "query":"有馬", "prefecture":"pref-hyogo", "priority":10, "terms":["有馬","Arima"]},
+    {"name":"기노사키", "query":"城崎", "prefecture":"pref-hyogo", "priority":10, "terms":["城崎","Kinosaki"]},
+    {"name":"구사쓰", "query":"草津", "prefecture":"pref-gunma", "priority":10, "terms":["草津","Kusatsu"]},
+    {"name":"긴잔", "query":"銀山", "prefecture":"pref-yamagata", "priority":10, "terms":["銀山","Ginzan"]},
+    {"name":"게로", "query":"下呂", "prefecture":"pref-gifu", "priority":10, "terms":["下呂","Gero"]},
+    {"name":"도고", "query":"道後", "prefecture":"pref-ehime", "priority":10, "terms":["道後","Dogo"]}
+  ],
+  "refreshDays": {"onsen":7,"primary":14,"secondary":21,"tertiary":30,"national":45},
+  "nationalReserveEvery":5
+}

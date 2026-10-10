@@ -1,0 +1,320 @@
+{
+  "format": 1,
+  "encoding": "gzip-base64-chunks",
+  "purpose": "Exact public source resources and Git history; no private chats, database or secrets",
+  "files": [
+    {
+      "path": "archives/git/app-pre-migration-20261009.bundle",
+      "bytes": 3223659,
+      "sha256": "08c89cfd787b1c5721f452ed4bfde718c73ab6ff70d2b76565e914480777dfdb",
+      "parts": [
+        "source-assets/000/000.b64",
+        "source-assets/000/001.b64",
+        "source-assets/000/002.b64",
+        "source-assets/000/003.b64",
+        "source-assets/000/004.b64",
+        "source-assets/000/005.b64",
+        "source-assets/000/006.b64",
+        "source-assets/000/007.b64",
+        "source-assets/000/008.b64",
+        "source-assets/000/009.b64",
+        "source-assets/000/010.b64",
+        "source-assets/000/011.b64",
+        "source-assets/000/012.b64",
+        "source-assets/000/013.b64",
+        "source-assets/000/014.b64",
+        "source-assets/000/015.b64",
+        "source-assets/000/016.b64",
+        "source-assets/000/017.b64",
+        "source-assets/000/018.b64",
+        "source-assets/000/019.b64",
+        "source-assets/000/020.b64",
+        "source-assets/000/021.b64",
+        "source-assets/000/022.b64",
+        "source-assets/000/023.b64",
+        "source-assets/000/024.b64",
+        "source-assets/000/025.b64",
+        "source-assets/000/026.b64",
+        "source-assets/000/027.b64",
+        "source-assets/000/028.b64",
+        "source-assets/000/029.b64",
+        "source-assets/000/030.b64",
+        "source-assets/000/031.b64",
+        "source-assets/000/032.b64",
+        "source-assets/000/033.b64",
+        "source-assets/000/034.b64",
+        "source-assets/000/035.b64",
+        "source-assets/000/036.b64",
+        "source-assets/000/037.b64",
+        "source-assets/000/038.b64",
+        "source-assets/000/039.b64",
+        "source-assets/000/040.b64",
+        "source-assets/000/041.b64",
+        "source-assets/000/042.b64",
+        "source-assets/000/043.b64",
+        "source-assets/000/044.b64",
+        "source-assets/000/045.b64",
+        "source-assets/000/046.b64",
+        "source-assets/000/047.b64",
+        "source-assets/000/048.b64",
+        "source-assets/000/049.b64",
+        "source-assets/000/050.b64",
+        "source-assets/000/051.b64",
+        "source-assets/000/052.b64",
+        "source-assets/000/053.b64",
+        "source-assets/000/054.b64",
+        "source-assets/000/055.b64",
+        "source-assets/000/056.b64",
+        "source-assets/000/057.b64",
+        "source-assets/000/058.b64",
+        "source-assets/000/059.b64",
+        "source-assets/000/060.b64",
+        "source-assets/000/061.b64",
+        "source-assets/000/062.b64",
+        "source-assets/000/063.b64",
+        "source-assets/000/064.b64",
+        "source-assets/000/065.b64",
+        "source-assets/000/066.b64",
+        "source-assets/000/067.b64",
+        "source-assets/000/068.b64",
+        "source-assets/000/069.b64",
+        "source-assets/000/070.b64",
+        "source-assets/000/071.b64"
+      ],
+      "storageIndex": 0
+    },
+    {
+      "path": "archives/git/runner-history-20261009.bundle",
+      "bytes": 2989356,
+      "sha256": "ada9d4bd62e4821919f7134b11795940afcc15f8f13f2e76706f6b1893f8133d",
+      "parts": [
+        "source-assets/001/000.b64",
+        "source-assets/001/001.b64",
+        "source-assets/001/002.b64",
+        "source-assets/001/003.b64",
+        "source-assets/001/004.b64",
+        "source-assets/001/005.b64",
+        "source-assets/001/006.b64",
+        "source-assets/001/007.b64",
+        "source-assets/001/008.b64",
+        "source-assets/001/009.b64",
+        "source-assets/001/010.b64",
+        "source-assets/001/011.b64",
+        "source-assets/001/012.b64",
+        "source-assets/001/013.b64",
+        "source-assets/001/014.b64",
+        "source-assets/001/015.b64",
+        "source-assets/001/016.b64",
+        "source-assets/001/017.b64",
+        "source-assets/001/018.b64",
+        "source-assets/001/019.b64",
+        "source-assets/001/020.b64",
+        "source-assets/001/021.b64",
+        "source-assets/001/022.b64",
+        "source-assets/001/023.b64",
+        "source-assets/001/024.b64",
+        "source-assets/001/025.b64",
+        "source-assets/001/026.b64",
+        "source-assets/001/027.b64",
+        "source-assets/001/028.b64",
+        "source-assets/001/029.b64",
+        "source-assets/001/030.b64",
+        "source-assets/001/031.b64",
+        "source-assets/001/032.b64",
+        "source-assets/001/033.b64",
+        "source-assets/001/034.b64",
+        "source-assets/001/035.b64",
+        "source-assets/001/036.b64",
+        "source-assets/001/037.b64",
+        "source-assets/001/038.b64",
+        "source-assets/001/039.b64",
+        "source-assets/001/040.b64",
+        "source-assets/001/041.b64",
+        "source-assets/001/042.b64",
+        "source-assets/001/043.b64",
+        "source-assets/001/044.b64",
+        "source-assets/001/045.b64",
+        "source-assets/001/046.b64",
+        "source-assets/001/047.b64",
+        "source-assets/001/048.b64",
+        "source-assets/001/049.b64",
+        "source-assets/001/050.b64",
+        "source-assets/001/051.b64",
+        "source-assets/001/052.b64",
+        "source-assets/001/053.b64",
+        "source-assets/001/054.b64",
+        "source-assets/001/055.b64",
+        "source-assets/001/056.b64",
+        "source-assets/001/057.b64",
+        "source-assets/001/058.b64",
+        "source-assets/001/059.b64",
+        "source-assets/001/060.b64",
+        "source-assets/001/061.b64",
+        "source-assets/001/062.b64",
+        "source-assets/001/063.b64",
+        "source-assets/001/064.b64",
+        "source-assets/001/065.b64",
+        "source-assets/001/066.b64"
+      ],
+      "storageIndex": 1
+    },
+    {
+      "path": "data/crawl-checkpoint.json",
+      "bytes": 4658299,
+      "sha256": "5eabb466de4ddc2f30401a139bfd3a833dd5a79affd39bb23d4c1f76005acfeb",
+      "parts": [
+        "source-assets/002/000.b64",
+        "source-assets/002/001.b64",
+        "source-assets/002/002.b64",
+        "source-assets/002/003.b64",
+        "source-assets/002/004.b64",
+        "source-assets/002/005.b64",
+        "source-assets/002/006.b64",
+        "source-assets/002/007.b64",
+        "source-assets/002/008.b64",
+        "source-assets/002/009.b64",
+        "source-assets/002/010.b64"
+      ],
+      "storageIndex": 2
+    },
+    {
+      "path": "data/crawl-jobs.json",
+      "bytes": 650951,
+      "sha256": "7ded5158df0926446f0bc547913956400521ca5bca5ddab1f3c89f49681ca7d1",
+      "parts": [
+        "source-assets/003/000.b64"
+      ],
+      "storageIndex": 3
+    },
+    {
+      "path": "docs/evidence/github-collector-migration-20261008.jpg",
+      "bytes": 121413,
+      "sha256": "32e0f279e8f1b53375c43c3e5dcb977db62105149a2ccce77d36d5a7013d9b45",
+      "parts": [
+        "source-assets/004/000.b64",
+        "source-assets/004/001.b64",
+        "source-assets/004/002.b64"
+      ],
+      "storageIndex": 4
+    },
+    {
+      "path": "lib/hotels.crawled.json",
+      "bytes": 5182477,
+      "sha256": "a7224ec31c090731b123fcaa4fe2dfeb0706bc65561d4060e9f86a8891d91ee3",
+      "parts": [
+        "source-assets/005/000.b64",
+        "source-assets/005/001.b64",
+        "source-assets/005/002.b64",
+        "source-assets/005/003.b64",
+        "source-assets/005/004.b64",
+        "source-assets/005/005.b64",
+        "source-assets/005/006.b64",
+        "source-assets/005/007.b64",
+        "source-assets/005/008.b64",
+        "source-assets/005/009.b64"
+      ],
+      "storageIndex": 5
+    },
+    {
+      "path": "public/images/city.jpg",
+      "bytes": 97499,
+      "sha256": "e3d3620531c2f647c01832490df8124d862e9980fe3724379c4525949372e2b9",
+      "parts": [
+        "source-assets/007/000.b64",
+        "source-assets/007/001.b64",
+        "source-assets/007/002.b64"
+      ],
+      "storageIndex": 7
+    },
+    {
+      "path": "public/images/credits.json",
+      "bytes": 556547,
+      "sha256": "0b289f7d3296b10597ec79088e7e653d53758d469ab56f562f7b890d869eeabe",
+      "parts": [
+        "source-assets/008/000.b64"
+      ],
+      "storageIndex": 8
+    },
+    {
+      "path": "public/images/forest.jpg",
+      "bytes": 141199,
+      "sha256": "dbb5088a3cbdd1e6df0c1eb68e79bbca909e44b18e987d3b78177745529d2437",
+      "parts": [
+        "source-assets/009/000.b64",
+        "source-assets/009/001.b64",
+        "source-assets/009/002.b64",
+        "source-assets/009/003.b64"
+      ],
+      "storageIndex": 9
+    },
+    {
+      "path": "public/images/lake.jpg",
+      "bytes": 185442,
+      "sha256": "a6a79cd1b49b22d56df136c5a00487fe2cfa1062a912753ce1d2c633f641af14",
+      "parts": [
+        "source-assets/010/000.b64",
+        "source-assets/010/001.b64",
+        "source-assets/010/002.b64",
+        "source-assets/010/003.b64",
+        "source-assets/010/004.b64"
+      ],
+      "storageIndex": 10
+    },
+    {
+      "path": "public/images/onsen.jpg",
+      "bytes": 174695,
+      "sha256": "1ec7e6d81ab8c4b7f07b586b25442da6256e425f792e0babb713d5db2702ada9",
+      "parts": [
+        "source-assets/011/000.b64",
+        "source-assets/011/001.b64",
+        "source-assets/011/002.b64",
+        "source-assets/011/003.b64"
+      ],
+      "storageIndex": 11
+    },
+    {
+      "path": "public/images/ryokan.jpg",
+      "bytes": 208984,
+      "sha256": "6995d7602996c165f544e4fab8fb2b17e385c958d19e98707645dd5815f5c275",
+      "parts": [
+        "source-assets/012/000.b64",
+        "source-assets/012/001.b64",
+        "source-assets/012/002.b64",
+        "source-assets/012/003.b64",
+        "source-assets/012/004.b64"
+      ],
+      "storageIndex": 12
+    },
+    {
+      "path": "public/images/snow.jpg",
+      "bytes": 196771,
+      "sha256": "bac540cc60dfecc1ee1df5d16252c93c61fd689da852c77bce4cb1dc5563c2a3",
+      "parts": [
+        "source-assets/013/000.b64",
+        "source-assets/013/001.b64",
+        "source-assets/013/002.b64",
+        "source-assets/013/003.b64",
+        "source-assets/013/004.b64"
+      ],
+      "storageIndex": 13
+    },
+    {
+      "path": "scripts/crawler/fixtures/jalan-price-10.html",
+      "bytes": 388732,
+      "sha256": "9e7d0e2f15791056ba7d8b08a96f2e86dbfe2994d6c26f2437b251d52abc9560",
+      "parts": [
+        "source-assets/014/000.b64"
+      ],
+      "storageIndex": 14
+    },
+    {
+      "path": "scripts/crawler/fixtures/jalan-price-multi.html",
+      "bytes": 276679,
+      "sha256": "2c07ff10e8901a6bc40dffe52b4b1d8c4b17e16a898917ef0661f7cce9ecec71",
+      "parts": [
+        "source-assets/015/000.b64"
+      ],
+      "storageIndex": 15
+    }
+  ]
+}

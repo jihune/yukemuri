@@ -1,0 +1,370 @@
+{
+  "task": "C01",
+  "sourceCommit": "98f511df954fcbfe4c1925f24a9b3b51dcb33653",
+  "publishedVersionAtStart": 44,
+  "initialMeasuredAt": "2026-10-08T16:06:34.863Z",
+  "initialQuality": {
+    "records": 12107,
+    "detailRecords": 1317,
+    "coordinates": 1268,
+    "bathKnownRecords": 753
+  },
+  "initialJalanFormatErrors": {
+    "detail": 8,
+    "list": 3
+  },
+  "historicalValueErrorCause": "unconfirmed; current responses parsed by the starting parser",
+  "readOnlyDiagnostics": [
+    {
+      "url": "https://www.jalan.net/yad302472/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:08:09+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 138466,
+      "bodySha256": "093b371c05b236a0a6772f8e5403da8d6b7caee4c1508965f46d5eacc072c6fa",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304110/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:08:43+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 124171,
+      "bodySha256": "7488fda60ec3fae36ba67768a27cbaefbaa4b89844dd4415b36734cae189cc42",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304122/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:09:03+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 147693,
+      "bodySha256": "ce02609b2c9e966fee8561b6174d24e0045c23114b01c0c789da257d17fe65c8",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304335/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:09:23+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 135596,
+      "bodySha256": "c531fef79edf6533d9450c7f89bacb1e40dec4170793b810ac8af3d0777d95f8",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304779/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:09:37+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 136660,
+      "bodySha256": "e273f5b9b75fb89dd751b8a63d06c3babe0e042932ca2aa1fd7e80e4bf5d8e6d",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304851/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:09:58+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 141268,
+      "bodySha256": "e697ad70c7a0720038f7bb64e82a1db7fbe83b1e0407d23ae198eff172f65aa5",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304872/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:10:18+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 117737,
+      "bodySha256": "2ed81d5f155a2badbbc87bf744fc56844a84bcb08ea980e3cdf7ae4dfa96a3bf",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/yad304890/",
+      "kind": "detail",
+      "measuredAt": "2026-10-08T16:10:38+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 136430,
+      "bodySha256": "8f9c2c3f87acda9e694adf6998ef74951cbc0e8e4b3afaeb7e445889f9081768",
+      "hotelDocuments": 1,
+      "observations": 1,
+      "links": 0,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/150000/LRG_151400/page2.html",
+      "kind": "list",
+      "measuredAt": "2026-10-08T16:10:57+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 615698,
+      "bodySha256": "6eee6ac02168fe90f219a07ea5778f7b16b0fa3f75830091458682c9a00b62a1",
+      "hotelDocuments": 30,
+      "observations": 30,
+      "links": 49,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/150000/LRG_151400/page4.html",
+      "kind": "list",
+      "measuredAt": "2026-10-08T16:11:18+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 453647,
+      "bodySha256": "c044ae08c0f73f26dcb5fe798d3a272c95a3994debafbd0d678b484b3318a5ec",
+      "hotelDocuments": 21,
+      "observations": 21,
+      "links": 41,
+      "empty": false
+    },
+    {
+      "url": "https://www.jalan.net/160000/LRG_160800/page2.html",
+      "kind": "list",
+      "measuredAt": "2026-10-08T16:11:40+00:00",
+      "queueChanged": false,
+      "httpStatus": 200,
+      "charset": "windows-31j",
+      "bodyBytes": 412518,
+      "bodySha256": "f3f5390f23e711e5bb079ae8e29d5700c8b74bc598e50038ccf0bc0d2b4aaa85",
+      "hotelDocuments": 14,
+      "observations": 14,
+      "links": 42,
+      "empty": false
+    }
+  ],
+  "collectorRelease": "52da755a48673c3c0902793760650334376d6a7431e60a5a32c68b2bc582c083",
+  "codeDeployment": {
+    "version": 45,
+    "commit": "069e79b0ee229c50d7ccde0aec2eac56e1096b07",
+    "status": "succeeded",
+    "deploymentId": "appgdep_6ac7c3065a9c81919225149bc78bdc4f",
+    "updatedAt": "2026-10-08T16:21:45.993578+00:00"
+  },
+  "retryResults": [
+    {
+      "index": 0,
+      "url": "https://www.jalan.net/yad302472/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-302472",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:15:47+00:00"
+    },
+    {
+      "index": 1,
+      "url": "https://www.jalan.net/yad304110/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304110",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:16:23+00:00"
+    },
+    {
+      "index": 2,
+      "url": "https://www.jalan.net/yad304122/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304122",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:17:12+00:00"
+    },
+    {
+      "index": 3,
+      "url": "https://www.jalan.net/yad304335/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304335",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:17:53+00:00"
+    },
+    {
+      "index": 4,
+      "url": "https://www.jalan.net/yad304779/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304779",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:19:28+00:00"
+    },
+    {
+      "index": 5,
+      "url": "https://www.jalan.net/yad304851/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304851",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:20:07+00:00"
+    },
+    {
+      "index": 6,
+      "url": "https://www.jalan.net/yad304872/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304872",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:20:47+00:00"
+    },
+    {
+      "index": 7,
+      "url": "https://www.jalan.net/yad304890/",
+      "status": "done",
+      "reason": null,
+      "accepted": 1,
+      "observed": 1,
+      "readbackId": "jalan-304890",
+      "records": 12107,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:21:25+00:00"
+    },
+    {
+      "index": 8,
+      "url": "https://www.jalan.net/150000/LRG_151400/page2.html",
+      "status": "done",
+      "reason": null,
+      "accepted": 30,
+      "observed": 30,
+      "readbackId": "jalan-312319",
+      "records": 12130,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:23:18+00:00"
+    },
+    {
+      "index": 9,
+      "url": "https://www.jalan.net/150000/LRG_151400/page4.html",
+      "status": "done",
+      "reason": null,
+      "accepted": 20,
+      "observed": 21,
+      "readbackId": "jalan-312657",
+      "records": 12146,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:23:53+00:00"
+    },
+    {
+      "index": 10,
+      "url": "https://www.jalan.net/160000/LRG_160800/page2.html",
+      "status": "done",
+      "reason": null,
+      "accepted": 14,
+      "observed": 14,
+      "readbackId": "jalan-393345",
+      "records": 12155,
+      "providerCooldownSeconds": 0,
+      "measuredAt": "2026-10-08T16:24:23+00:00"
+    }
+  ],
+  "retryBatches": {
+    "maxSeconds": 240,
+    "pages": [
+      4,
+      4,
+      3
+    ],
+    "elapsedSeconds": [
+      189.9,
+      177.5,
+      122.4
+    ],
+    "leasesReset": false
+  },
+  "publishedReleaseCheck": {
+    "collectorRelease": "52da755a48673c3c0902793760650334376d6a7431e60a5a32c68b2bc582c083",
+    "matchesLocal": true,
+    "files": 5,
+    "limits": {
+      "maxPages": 16,
+      "maxSeconds": 240,
+      "intervalSeconds": 8,
+      "jitterSeconds": 4
+    }
+  },
+  "finalHealth": {
+    "measuredAt": "2026-10-08T16:25:08.644Z",
+    "quality": {
+      "records": 12155,
+      "korean_name": 617,
+      "researched_korean_name": 145,
+      "detail_records": 1325,
+      "coordinates": 1276,
+      "bath_known": 761,
+      "current_translation": 526
+    },
+    "activeLeases": 0,
+    "jalanFormatErrors": 0,
+    "remainingFailures": [
+      {
+        "provider": "jalan",
+        "kind": "detail",
+        "status": "retry",
+        "error": "URLError",
+        "count": 1
+      },
+      {
+        "provider": "trip",
+        "kind": "list",
+        "status": "failed",
+        "error": "http_404",
+        "count": 1
+      }
+    ]
+  }
+}

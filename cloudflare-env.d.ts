@@ -1,0 +1,10 @@
+declare namespace Cloudflare {
+  interface Env {
+    DB?: D1Database;
+    BUCKET?: R2Bucket;
+    CRAWL_ACCESS_KEY?: string;
+    GOOGLE_PLACES_API_KEY?: string;
+    GOOGLE_PLACES_ENABLED?: string;
+    GOOGLE_PLACES_DAILY_REQUEST_LIMIT?: string;
+  }
+}

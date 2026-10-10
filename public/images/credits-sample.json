@@ -1,0 +1,80 @@
+[
+  {
+    "name": "ryokan-room",
+    "author": "Laura Tommasina",
+    "source": "https://unsplash.com/photos/room-with-tatami-mats-low-tables-and-window-view-uB3Ktebe1k0",
+    "image_url": "https://images.unsplash.com/photo-1764507887582-6e3f1fc100a6?auto=format&fit=crop&fm=jpg&q=78&w=1100",
+    "license": "Unsplash License",
+    "size": [
+      1100,
+      1650
+    ],
+    "bytes": 208984,
+    "site_file": "/images/ryokan.jpg"
+  },
+  {
+    "name": "outdoor-onsen",
+    "author": "Vivu Vietnam",
+    "source": "https://unsplash.com/photos/outdoor-hot-spring-pool-with-rocky-waterfall-and-pavilion-XInQQX8gTe0",
+    "image_url": "https://images.unsplash.com/photo-1766485108563-4fa16ba48140?auto=format&fit=crop&fm=jpg&q=78&w=1100",
+    "license": "Unsplash License",
+    "size": [
+      1100,
+      733
+    ],
+    "bytes": 174695,
+    "site_file": "/images/onsen.jpg"
+  },
+  {
+    "name": "snow-mountain-lodge",
+    "author": "Albert Sukhanov",
+    "source": "https://unsplash.com/photos/wooden-lodge-nestled-at-the-base-of-a-snowy-mountain-SbsNB9e3HqE",
+    "image_url": "https://images.unsplash.com/photo-1772266198057-299f077e8b48?auto=format&fit=crop&fm=jpg&q=78&w=1100",
+    "license": "Unsplash License",
+    "size": [
+      1100,
+      825
+    ],
+    "bytes": 196771,
+    "site_file": "/images/snow.jpg"
+  },
+  {
+    "name": "lake-hotel",
+    "author": "Ahmet Yüksek",
+    "source": "https://unsplash.com/photos/a-hotel-by-a-lake-with-mountains-in-the-background-27rVE5zK5yE",
+    "image_url": "https://images.unsplash.com/photo-1770524101486-6211ad7c8e39?auto=format&fit=crop&fm=jpg&q=78&w=1100",
+    "license": "Unsplash License",
+    "size": [
+      1100,
+      734
+    ],
+    "bytes": 185442,
+    "site_file": "/images/lake.jpg"
+  },
+  {
+    "name": "city-room",
+    "author": "Sung Jin Cho",
+    "source": "https://unsplash.com/photos/modern-hotel-room-with-city-view-through-window-pRAs34PRUuU",
+    "image_url": "https://images.unsplash.com/photo-1755613708939-d572099433ab?auto=format&fit=crop&fm=jpg&q=78&w=1100",
+    "license": "Unsplash License",
+    "size": [
+      1100,
+      732
+    ],
+    "bytes": 97499,
+    "site_file": "/images/city.jpg"
+  },
+  {
+    "name": "forest-onsen",
+    "author": "RickardA",
+    "source": "https://commons.wikimedia.org/wiki/File:Gonkoyu_Onsen.JPG",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Gonkoyu_Onsen.JPG",
+    "license": "CC0 1.0",
+    "size": [
+      640,
+      480
+    ],
+    "bytes": 141199,
+    "site_file": "/images/forest.jpg"
+  }
+]

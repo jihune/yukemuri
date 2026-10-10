@@ -1,0 +1,114 @@
+{
+  "checkedAt": "2026-10-08T15:20:15.454Z",
+  "github": {
+    "repository": "jihune/yukemuri-script-runner",
+    "baselineCommit": "7196fb7c2dd031eddae209f10e886bccea209daa",
+    "branchCommit": "273d9bc99c0898b5c739dce9a334652e53aadbc7",
+    "mergedCommit": "b2bcbba732a70ca68369c19856396317613e86ba",
+    "pullRequest": "https://github.com/jihune/yukemuri-script-runner/pull/1",
+    "ci": [
+      "https://github.com/jihune/yukemuri-script-runner/actions/runs/37797619728",
+      "https://github.com/jihune/yukemuri-script-runner/actions/runs/37797901639",
+      "https://github.com/jihune/yukemuri-script-runner/actions/runs/37798605098"
+    ],
+    "healthRun": "https://github.com/jihune/yukemuri-script-runner/actions/runs/37798762691",
+    "gentleRun": "https://github.com/jihune/yukemuri-script-runner/actions/runs/37799070634"
+  },
+  "preserved": {
+    "cron": "53 */3 * * *",
+    "enabled": "true",
+    "mode": "gentle",
+    "permissions": "contents: read",
+    "persistCredentials": false,
+    "concurrencyGroup": "yukemuri-catalog-updates",
+    "cancelInProgress": false,
+    "jobMinutes": 6,
+    "totalCollectorSeconds": 240,
+    "gentlePages": 16,
+    "intervalSeconds": 8,
+    "jitterSeconds": 4
+  },
+  "collectorRelease": "85f1605e213bb0cee3fe6ecba612c5bad9e2caf49a1ada76dccee4faa17fe44d",
+  "gentleResult": {
+    "processed": 16,
+    "readbackId": "jalan-302674",
+    "collectorDurationSeconds": 161,
+    "totalWorkflowSeconds": 177,
+    "newProviderCooldownSeconds": 0,
+    "records": 12107,
+    "coverageUpdatedAt": "2026-10-08T15:17:10.334Z",
+    "state": "finished"
+  },
+  "postRun": {
+    "quality": {
+      "records": 12107,
+      "korean_name": 617,
+      "researched_korean_name": 145,
+      "detail_records": 1317,
+      "coordinates": 1268,
+      "bath_known": 753,
+      "current_translation": 528
+    },
+    "failures": [
+      {
+        "provider": "trip",
+        "kind": "detail",
+        "status": "skipped",
+        "error": "Explicit non-Japanese source country",
+        "count": 640
+      },
+      {
+        "provider": "trip",
+        "kind": "list",
+        "status": "skipped",
+        "error": "Explicit non-Japanese source country",
+        "count": 70
+      },
+      {
+        "provider": "jalan",
+        "kind": "detail",
+        "status": "retry",
+        "error": "ValueError",
+        "count": 8
+      },
+      {
+        "provider": "jalan",
+        "kind": "list",
+        "status": "retry",
+        "error": "ValueError",
+        "count": 3
+      },
+      {
+        "provider": "jalan",
+        "kind": "detail",
+        "status": "retry",
+        "error": "URLError",
+        "count": 1
+      },
+      {
+        "provider": "trip",
+        "kind": "list",
+        "status": "failed",
+        "error": "http_404",
+        "count": 1
+      }
+    ],
+    "activeLeases": 0,
+    "inventoryComplete": false
+  },
+  "nextCron": {
+    "utc": "2026-10-08T15:53:00Z",
+    "kst": "2026-10-09T00:53:00+09:00",
+    "observed": false,
+    "exactStartGuaranteed": false
+  },
+  "checks": {
+    "runner": 9,
+    "releaseBoundaries": 8,
+    "branchCI": "passed",
+    "pullRequestCI": "passed",
+    "mainCI": "passed",
+    "githubHealth": "passed",
+    "githubGentle": "passed"
+  }
+}
