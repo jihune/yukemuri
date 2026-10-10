@@ -9,7 +9,7 @@ import {appendHotelPage} from '@/lib/paged-hotel-results';
 
 export function useHotelResults(initial:SearchResponse,filters:HotelFilters,sort:SortOrder,savedOnly:boolean,favoriteKey:string,retry:number){
  const [response,setResponse]=useState(initial),[loading,setLoading]=useState(false),[loadingMore,setLoadingMore]=useState(false);
- const [searchError,setSearchError]=useState(''),[moreError,setMoreError]=useState(''),[reopenSearch,setReopenSearch]=useState(false),[refreshRequired,setRefreshRequired]=useState(false);
+ const [searchError,setSearchError]=useState(''),[moreError,setMoreError]=useState(''),[shortened,setShortened]=useState<{total:number;loaded:number}|null>(null),[reopenSearch,setReopenSearch]=useState(false),[refreshRequired,setRefreshRequired]=useState(false);
  const params=hotelQueryParams(filters);params.set('sort',sort);params.set('saved',savedOnly?'1':'0');params.set('stable','1');
  const cacheKey=params.toString()+(savedOnly?'&favoriteIds='+encodeURIComponent(favoriteKey):'');
  const key=cacheKey+'&retry='+retry;
@@ -28,6 +28,7 @@ export function useHotelResults(initial:SearchResponse,filters:HotelFilters,sort
   controller.current?.abort();moreController.current?.abort();moreLock.current=false;
   const request=new AbortController();controller.current=request;
   const cached=cachedResults.current.get(cacheKey),forceRefresh=lastRetry.current!==retry;lastRetry.current=retry;
+  setShortened(null);
   if(!forceRefresh&&cached&&cached.expires>Date.now()){
    setResponse(cached.data);setLoading(false);setLoadingMore(false);setSearchError('');setMoreError('');setReopenSearch(false);setRefreshRequired(false);resetting.current=false;
    return()=>request.abort();
@@ -46,10 +47,11 @@ export function useHotelResults(initial:SearchResponse,filters:HotelFilters,sort
   const p=new URLSearchParams(requestParams.current);p.set('page',String(nextPage));if(state.response.snapshot)p.set('snapshot',state.response.snapshot.token);
   apiJson<SearchResponse>('/api/hotels?'+p,{signal:request.signal}).then(data=>{
    if(request.signal.aborted||generation.current!==epoch||current.current.key!==key)return;
-   if(data.page!==nextPage||!data.hotels.length){setResponse(old=>({...old,total:old.hotels.length}));return}
+   // The server sent no further page. Keep what loaded and say the total was cut to it.
+   if(data.page!==nextPage||!data.hotels.length){setShortened({total:current.current.response.total,loaded:current.current.response.hotels.length});setResponse(old=>({...old,total:old.hotels.length}));return}
    setResponse(old=>appendHotelPage(old,data));
   }).catch(e=>{if(!request.signal.aborted&&generation.current===epoch){setMoreError(e instanceof Error?e.message:'추가 숙소를 불러오지 못했습니다.');setRefreshRequired(e instanceof ApiError&&(e.status===410||e.status===409))}}).finally(()=>{if(!request.signal.aborted&&generation.current===epoch){moreLock.current=false;setLoadingMore(false)}});
  },[key]);
  useEffect(()=>()=>{controller.current?.abort();moreController.current?.abort()},[]);
- return{response,loading,loadingMore,searchError,moreError,reopenSearch,refreshRequired,loadMore,hasMore:response.page*response.pageSize<response.total,key};
+ return{response,loading,loadingMore,searchError,moreError,reopenSearch,refreshRequired,shortened,loadMore,hasMore:response.page*response.pageSize<response.total,key};
 }

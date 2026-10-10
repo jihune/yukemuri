@@ -132,3 +132,4 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .map-coverage button{min-height:44px;padding:0 14px;border:1px solid #c9dce0;border-radius:8px;background:#fff;color:#087e8b;font-size:13px}
 .map-more-state{color:#18363b}
 .map-coverage button[aria-disabled=true]{opacity:.7;cursor:wait}
+.list-shortened{flex-wrap:wrap}.list-shortened span{flex:1;min-width:200px}.list-shortened button{min-height:44px;padding:0 14px;border:1px solid #c9b77c;border-radius:8px;background:#fff;color:#5c4a17;font-size:13px}

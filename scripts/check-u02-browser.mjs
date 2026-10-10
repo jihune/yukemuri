@@ -78,11 +78,11 @@ async function run(page){
  const caption=await page.locator('.map-caption').innerText();
  check('지도 표시 수와 지도 캡션의 수가 같음',caption.replace(/\s+/g,' ').includes(`지도 표시 ${count(shown)}`),{caption});
  const more=coverage.getByRole('button');
- // The floating list button can sit over it before scrolling; a user scrolls it clear.
- // Centre it as a user would, then require the centre and four inner corners to reach it.
- const initiallyCovered=!(await fullyReachable(more));
+ // Opening the map puts its counts and button at the top, clear of the floating list button.
+ const initial={box:await box(more),reachable:await fullyReachable(more)};
+ check('지도를 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',inView(initial.box)&&initial.reachable,{initiallyCovered:!initial.reachable,button:initial.box});
  await more.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));
- check('지도 화면 가로 넘침 없음, 더 불러오기 버튼을 스크롤해 화면 가운데에 두면 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more),initiallyCovered});
+ check('지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 더 불러오기 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more)});
  await shot('map');
 
  // Touch: load the next page from the map, with a visible loading state.
@@ -113,6 +113,30 @@ async function run(page){
   text=await coverageText();
   check('Enter로 다시 불러오기 성공 후 오류 안내 제거',!text.includes('test')&&text.includes(`불러온 ${count(Math.min(all.total,loadedTwo+40))} 중`),{text});
  }else check('세 번째 페이지 없음: 키보드 실패 검사를 위한 결과가 부족함',false,{total:all.total});
+
+ // A later page that comes back empty: the total is cut to what loaded, and the page says so.
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ await page.route(hotelsApi,async route=>{
+  const url=new URL(route.request().url());
+  if(url.searchParams.get('page')==='1')return route.continue();
+  const real=await (await route.fetch()).json();
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...real,hotels:[]})});
+ });
+ await page.locator('.mobile-map-toggle').tap();
+ await coverage.waitFor();
+ await coverage.getByRole('button').tap();
+ const cut=page.locator('.list-shortened');
+ await cut.waitFor({timeout:15000}).catch(()=>{});
+ await page.unroute(hotelsApi);
+ const cutText=await cut.count()?(await cut.innerText()).replace(/\s+/g,' '):'';
+ const mapCut=(await coverageText());
+ check('빈 다음 쪽을 받으면 원래 결과 수와 줄어든 수를 목록과 지도에 안내',cutText.includes(`검색 결과는 ${count(all.total)}이었지만`)&&cutText.includes(`불러온 ${count(all.hotels.length)}까지만`)&&mapCut.includes(`결과 수를 불러온 ${count(all.hotels.length)}으로 줄였습니다(원래 ${count(all.total)})`),{cutText,mapCut});
+ await cut.getByRole('button').evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));
+ check('안내의 목록 새로고침 버튼이 가려지지 않고 높이 44px 이상',await fullyReachable(cut.getByRole('button'))&&(await box(cut.getByRole('button'))).height>=44,{button:await box(cut.getByRole('button'))});
+ await cut.getByRole('button').focus();await page.keyboard.press('Enter');
+ await cut.waitFor({state:'detached',timeout:15000}).catch(()=>{});
+ await page.waitForLoadState('networkidle');
+ check('Enter로 목록 새로고침 뒤 안내가 사라지고 원래 결과 수로 돌아옴',await cut.count()===0&&(await coverageText()).includes(`검색 결과 ${count(all.total)}`),{text:await coverageText()});
 }
 
 const chromiumVersion=browser.version();
