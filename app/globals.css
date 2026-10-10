@@ -132,3 +132,7 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .map-coverage button{min-height:44px;padding:0 14px;border:1px solid #c9dce0;border-radius:8px;background:#fff;color:#087e8b;font-size:13px}
 .map-more-state{color:#18363b}
 .map-coverage button[aria-disabled=true]{opacity:.7;cursor:wait}
+
+/* U02 map-bounds search. */
+.map-area-search{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:5;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1px solid #087e8b;border-radius:22px;background:#fff;color:#087e8b;font-size:13px;font-weight:650;white-space:nowrap;box-shadow:0 4px 14px #17455322}
+.map-area-search[aria-disabled=true]{opacity:.75;cursor:wait}

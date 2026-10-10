@@ -33,6 +33,8 @@ if args.full:
         ['node', 'scripts/check-crawl-queue-worker.mjs'],
         ['node', 'scripts/check-collection-status-worker.mjs'],
         ['node', 'scripts/check-comparison-worker.mjs'],
+        ['node', 'scripts/check-catalog-worker.mjs'],
+        ['node', 'scripts/check-map-area-worker.mjs'],
     ]
 for command in commands:
     if shutil.which(command[0]) is None:
