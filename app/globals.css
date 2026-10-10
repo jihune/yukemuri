@@ -76,6 +76,8 @@
 .comparison-dock{position:fixed;right:24px;bottom:24px;z-index:21;display:flex;align-items:center;border:1px solid #c4dde1;background:var(--background);border-radius:9px;box-shadow:0 5px 22px #15343f30}
 .comparison-dock button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 14px;font-size:.875rem;color:var(--primary)}
 .comparison-dock button:last-child{border-left:1px solid var(--border);padding:10px}
+/* Keep the footer links scrollable above the fixed dock: its offset, 46px height and a 16px gap. */
+body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .hotel-comparison{background:var(--background);display:flex;flex-direction:column;min-width:0}
 .comparison-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px;border-bottom:1px solid var(--border);flex-shrink:0}
 .comparison-header h2{display:flex;align-items:center;gap:8px;font-size:1.25rem;line-height:1.5}
@@ -107,7 +109,7 @@
 .comparison-note,.comparison-empty{font-size:.875rem;color:var(--muted-foreground);line-height:1.8;margin:18px 0}
 .comparison-empty button{margin-top:12px}
 .compare-open:focus-visible,.card-compare:focus-visible,.comparison-dock button:focus-visible,.comparison-toolbar button:focus-visible,.comparison-remove:focus-visible,.comparison-hotel-name:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
-@media(max-width:900px){.collection-quality{grid-template-columns:repeat(2,minmax(0,1fr))}.comparison-dock{right:16px;bottom:88px}.comparison-header{padding:16px}.comparison-scroll{padding:14px 12px}.comparison-table th,.comparison-table td{width:220px;min-width:220px;padding:12px}.comparison-table th:first-child{width:130px;min-width:130px;max-width:130px}}
+@media(max-width:900px){.collection-quality{grid-template-columns:repeat(2,minmax(0,1fr))}.comparison-dock{right:16px;bottom:88px}.comparison-header{padding:16px}.comparison-scroll{padding:14px 12px}.comparison-table th,.comparison-table td{width:220px;min-width:220px;padding:12px}.comparison-table th:first-child{width:130px;min-width:130px;max-width:130px}body:has(.comparison-dock) .site-footer{padding-bottom:150px}}
 @media(prefers-reduced-motion:reduce){.hotel-comparison{animation:none!important}}
 
 /* U01: focusable scroll regions and stable controls during refresh. */

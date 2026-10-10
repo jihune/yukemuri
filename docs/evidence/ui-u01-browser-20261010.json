@@ -1,0 +1,699 @@
+{
+ "measuredAt": "2026-10-10T13:20:50.127Z",
+ "base": "http://127.0.0.1:5173",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 360,
+   "name": "목록 끝의 버튼·링크를 비교 막대·지도 보기 버튼이 가리지 않음",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "listEnd": "4 / 4곳 불러옴 · 목록 끝",
+    "covered": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록 화면 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교 담기: 터치 2곳·Space·Enter로 4곳 선택",
+   "pass": true,
+   "detail": {
+    "pressed": [
+     "true",
+     "true",
+     "true",
+     "true"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "다섯 번째 후보는 안내 후 거절",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "비교 막대와 지도 보기 버튼이 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "dock": {
+     "left": 197.3125,
+     "top": 646,
+     "right": 344,
+     "bottom": 692,
+     "width": 146.6875,
+     "height": 46,
+     "vw": 360,
+     "vh": 780
+    },
+    "mapToggle": {
+     "left": 102.375,
+     "top": 711,
+     "right": 257.625,
+     "bottom": 756,
+     "width": 155.25,
+     "height": 45,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교 시트가 화면 안에 있고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "top": 0,
+     "right": 360,
+     "bottom": 780,
+     "width": 360,
+     "height": 780,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교를 열면 닫기 버튼에 포커스",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "닫기 버튼이 보이고 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "close": {
+     "left": 306,
+     "top": 16,
+     "right": 344,
+     "bottom": 54,
+     "width": 38,
+     "height": 38,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교 도구 버튼이 화면 안에 있음",
+   "pass": true,
+   "detail": {
+    "toolbar": [
+     {
+      "left": 240.109375,
+      "top": 132.59375,
+      "right": 348,
+      "bottom": 173.59375,
+      "width": 107.890625,
+      "height": 41,
+      "vw": 360,
+      "vh": 780
+     },
+     {
+      "left": 13,
+      "top": 183.59375,
+      "right": 112.890625,
+      "bottom": 224.59375,
+      "width": 99.890625,
+      "height": 41,
+      "vw": 360,
+      "vh": 780
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "바깥 영역 닫기: 시트가 화면 전체 너비라 바깥 영역 없음",
+   "pass": true,
+   "detail": {
+    "sheetWidth": 360
+   }
+  },
+  {
+   "width": 360,
+   "name": "Tab 포커스가 비교 시트 안에서 순환",
+   "pass": true,
+   "detail": {
+    "steps": 65,
+    "first": [
+     "다시 확인",
+     "모두 비우기",
+     "숙소별 평점과 온천 비교표. 좌우 방향키로 이동",
+     "긴린소 비교에서 빼기",
+     "긴린소",
+     "샬레 아이비 조잔케이 비교에서 빼기",
+     "샬레 아이비 조잔케이",
+     "더 레이크 스위트 고노스미카 비교에서 빼기",
+     "더 레이크 스위트 고노스미카",
+     "니세코 곤부온센 쓰루가 별장 모쿠노쇼 비교에서 빼기",
+     "니세코 곤부온센 쓰루가 별장 모쿠노쇼",
+     "평점 출처"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "닫기 버튼에서 Shift+Tab은 시트 마지막 요소로 이동",
+   "pass": true,
+   "detail": {
+    "focused": "근거 보기",
+    "expected": "근거 보기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교표 방향키 가로 이동",
+   "pass": true,
+   "detail": {
+    "start": 0,
+    "right": 220,
+    "back": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교표 터치 가로 스크롤",
+   "pass": true,
+   "detail": {
+    "start": 0,
+    "swiped": 370
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교표 첫 열 고정",
+   "pass": true,
+   "detail": {
+    "regionLeft": 13,
+    "headerBefore": 13,
+    "headerAfter": 13
+   }
+  },
+  {
+   "width": 360,
+   "name": "다시 확인을 Enter·Space로 실행",
+   "pass": true,
+   "detail": {
+    "requests": 2
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교→상세→닫기 버튼로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 355
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교→상세→Escape로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 468
+   }
+  },
+  {
+   "width": 360,
+   "name": "비교→상세→뒤로 가기로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 542
+   }
+  },
+  {
+   "width": 360,
+   "name": "후보 제거 후 다음 제거 버튼으로 포커스",
+   "pass": true,
+   "detail": {
+    "remaining": 3,
+    "focused": "샬레 아이비 조잔케이 비교에서 빼기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "모두 비우기 후 닫기 버튼 포커스와 빈 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "Escape로 닫으면 비교 열기 버튼으로 포커스 복귀",
+   "pass": true,
+   "detail": {
+    "focused": "숙소 비교 열기, 0곳 선택"
+   }
+  },
+  {
+   "width": 360,
+   "name": "마지막 후보 제거 후 닫기 버튼 포커스",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "수집 현황 로딩 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "수집 현황을 연 화면 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "수집 현황 표 방향키·터치 가로 이동",
+   "pass": true,
+   "detail": {
+    "statusStart": 0,
+    "statusArrow": 158,
+    "swiped": 158
+   }
+  },
+  {
+   "width": 360,
+   "name": "현황 새로고침 버튼이 화면 안에 보이고 가려지지 않으며 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "refresh": {
+     "left": 29,
+     "top": 367.78125,
+     "right": 155.890625,
+     "bottom": 411.78125,
+     "width": 126.890625,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "새로고침 실패 시 오류 안내와 마지막 결과 유지",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "Space로 재시도 성공 후 오류 안내 제거와 포커스 유지",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "Enter로 열고 첫 조회 실패 시 오류 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "빈 기록 안내와 오류 안내 제거",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "Space로 수집 현황 닫기",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "목록 끝의 버튼·링크를 비교 막대·지도 보기 버튼이 가리지 않음",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "listEnd": "4 / 4곳 불러옴 · 목록 끝",
+    "covered": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 화면 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교 담기: 터치 2곳·Space·Enter로 4곳 선택",
+   "pass": true,
+   "detail": {
+    "pressed": [
+     "true",
+     "true",
+     "true",
+     "true"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "다섯 번째 후보는 안내 후 거절",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "비교 막대와 지도 보기 버튼이 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "dock": {
+     "left": 227.3125,
+     "top": 646,
+     "right": 374,
+     "bottom": 692,
+     "width": 146.6875,
+     "height": 46,
+     "vw": 390,
+     "vh": 780
+    },
+    "mapToggle": {
+     "left": 117.375,
+     "top": 711,
+     "right": 272.625,
+     "bottom": 756,
+     "width": 155.25,
+     "height": 45,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교 시트가 화면 안에 있고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "top": 0,
+     "right": 390,
+     "bottom": 780,
+     "width": 390,
+     "height": 780,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교를 열면 닫기 버튼에 포커스",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "닫기 버튼이 보이고 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "close": {
+     "left": 336,
+     "top": 16,
+     "right": 374,
+     "bottom": 54,
+     "width": 38,
+     "height": 38,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교 도구 버튼이 화면 안에 있음",
+   "pass": true,
+   "detail": {
+    "toolbar": [
+     {
+      "left": 270.109375,
+      "top": 132.59375,
+      "right": 378,
+      "bottom": 173.59375,
+      "width": 107.890625,
+      "height": 41,
+      "vw": 390,
+      "vh": 780
+     },
+     {
+      "left": 13,
+      "top": 183.59375,
+      "right": 112.890625,
+      "bottom": 224.59375,
+      "width": 99.890625,
+      "height": 41,
+      "vw": 390,
+      "vh": 780
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "바깥 영역 닫기: 시트가 화면 전체 너비라 바깥 영역 없음",
+   "pass": true,
+   "detail": {
+    "sheetWidth": 390
+   }
+  },
+  {
+   "width": 390,
+   "name": "Tab 포커스가 비교 시트 안에서 순환",
+   "pass": true,
+   "detail": {
+    "steps": 65,
+    "first": [
+     "다시 확인",
+     "모두 비우기",
+     "숙소별 평점과 온천 비교표. 좌우 방향키로 이동",
+     "긴린소 비교에서 빼기",
+     "긴린소",
+     "샬레 아이비 조잔케이 비교에서 빼기",
+     "샬레 아이비 조잔케이",
+     "더 레이크 스위트 고노스미카 비교에서 빼기",
+     "더 레이크 스위트 고노스미카",
+     "니세코 곤부온센 쓰루가 별장 모쿠노쇼 비교에서 빼기",
+     "니세코 곤부온센 쓰루가 별장 모쿠노쇼",
+     "평점 출처"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "닫기 버튼에서 Shift+Tab은 시트 마지막 요소로 이동",
+   "pass": true,
+   "detail": {
+    "focused": "근거 보기",
+    "expected": "근거 보기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교표 방향키 가로 이동",
+   "pass": true,
+   "detail": {
+    "start": 0,
+    "right": 220,
+    "back": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교표 터치 가로 스크롤",
+   "pass": true,
+   "detail": {
+    "start": 0,
+    "swiped": 402
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교표 첫 열 고정",
+   "pass": true,
+   "detail": {
+    "regionLeft": 13,
+    "headerBefore": 13,
+    "headerAfter": 13
+   }
+  },
+  {
+   "width": 390,
+   "name": "다시 확인을 Enter·Space로 실행",
+   "pass": true,
+   "detail": {
+    "requests": 2
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교→상세→닫기 버튼로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 343
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교→상세→Escape로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 632
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교→상세→뒤로 가기로 비교 복귀",
+   "pass": true,
+   "detail": {
+    "detailCloseReachable": true,
+    "focused": "긴린소",
+    "expected": "긴린소",
+    "restoredMs": 657
+   }
+  },
+  {
+   "width": 390,
+   "name": "후보 제거 후 다음 제거 버튼으로 포커스",
+   "pass": true,
+   "detail": {
+    "remaining": 3,
+    "focused": "샬레 아이비 조잔케이 비교에서 빼기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "모두 비우기 후 닫기 버튼 포커스와 빈 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "Escape로 닫으면 비교 열기 버튼으로 포커스 복귀",
+   "pass": true,
+   "detail": {
+    "focused": "숙소 비교 열기, 0곳 선택"
+   }
+  },
+  {
+   "width": 390,
+   "name": "마지막 후보 제거 후 닫기 버튼 포커스",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "수집 현황 로딩 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "수집 현황을 연 화면 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "수집 현황 표 방향키·터치 가로 이동",
+   "pass": true,
+   "detail": {
+    "statusStart": 0,
+    "statusArrow": 128,
+    "swiped": 128
+   }
+  },
+  {
+   "width": 390,
+   "name": "현황 새로고침 버튼이 화면 안에 보이고 가려지지 않으며 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "refresh": {
+     "left": 29,
+     "top": 367.78125,
+     "right": 155.890625,
+     "bottom": 411.78125,
+     "width": 126.890625,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "새로고침 실패 시 오류 안내와 마지막 결과 유지",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "Space로 재시도 성공 후 오류 안내 제거와 포커스 유지",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "Enter로 열고 첫 조회 실패 시 오류 안내",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "빈 기록 안내와 오류 안내 제거",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "Space로 수집 현황 닫기",
+   "pass": true,
+   "detail": {}
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기·모바일 브라우저 주소창·안전 영역",
+  "스크린리더 읽기 순서",
+  "외부 사진·지도 타일",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}
