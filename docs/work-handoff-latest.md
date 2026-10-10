@@ -61,7 +61,7 @@
 
 ## 다음 작업
 
-1. 이 PR의 Codex 검토와 main 병합 결정(사용자).
+1. 완료: Codex 검토(지적 없음) 뒤 사용자 요청으로 PR #5를 main에 병합했다(`310448b`). Sites 게시는 별도다.
 2. D01 2차: 운영 체크포인트를 새 로컬 DB에 복원한 세션에서 지역 대조와 `audit-catalog.py` 연결 후보 판정.
 3. Shinagawa Prince Hotel의 Trip 상품 범위 확인.
 4. Trip 주소 중복·빈 주소의 수집기 원인 확인(별도 PR, Sites 게시 필요).
