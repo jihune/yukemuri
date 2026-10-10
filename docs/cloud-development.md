@@ -37,6 +37,11 @@ Sites 배포는 `sites-handoff.md`의 별도 절차다.
 - 기본 폴더가 저장소 밖이라 `yukemuri/AGENTS.md`가 자동으로 읽히지 않을 수 있다(미확인). 작업 요청에 이 저장소의 `AGENTS.md`와 인수인계를 읽으라고 적는다.
 - 설치 단계에서 `CODEX_HOME`(`/run/codex-environment/codex-home`)에 쓴 파일은 새 작업에 남지 않았다. 환경의 시작 스킬(`start_skill`)도 새 작업에 자동으로 적용되지 않았다. 개인 하네스는 작업마다 첫 메시지로 직접 적용한다.
 
+검토 요청은 두 가지다. 검토 기준은 `AGENTS.md`의 ‘Review guidelines’다.
+
+1. PR 리뷰: 작성 담당이 CI 통과 뒤 PR에 `@codex review` 코멘트를 남긴다. Codex 설정에서 이 저장소의 Code review가 켜져 있어야 한다. 리뷰는 PR에 남고 작성 세션이 PR 구독으로 받는다. 2026-10-10에 [PR #4](https://github.com/jihune/yukemuri/pull/4)에서 처음 시험한다.
+2. 깊은 검토(브라우저 검사 등): 사용자가 Codex 작업을 열어 하네스를 적용한 뒤 검토를 요청한다. 결과를 PR 코멘트로 남기라고 요청에 적는다.
+
 ## 공통 스킬
 
 | 대상 | 경로 |
