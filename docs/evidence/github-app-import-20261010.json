@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-10T09:38:05.543499+00:00",
+  "repository": "jihune/yukemuri",
+  "private": true,
+  "sourceSiteVersion": 49,
+  "sourceSiteCommit": "608a38042df8d101d28ae480debfdddc5f3de7dc",
+  "sourceTreeSha": "87f1dea9e6aa45aa2bfcea8beb55fa0e737c40ac",
+  "preparedTreeMatched": true,
+  "importCommit": "278b1a2cbb1f1d21ba8a57ec19929a3b069c4ce2",
+  "pullRequest": 1,
+  "mergeCommit": "f33db7465fe6b68358316a0c6b2fac5843d473af",
+  "ci": [
+    {
+      "runId": 38041633399,
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38041602946,
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38041854782,
+      "event": "push-main",
+      "conclusion": "success"
+    }
+  ],
+  "sourceResourcesRestored": 15,
+  "cleanCloneUnchanged": true,
+  "privateConversationAndDbFilesInGit": false,
+  "productionHostingChanged": false,
+  "productionDatabaseChanged": false,
+  "serviceSpecificFirstSessionsVerified": false,
+  "latestScheduledBackup": {
+    "repository": "jihune/yukemuri-script-runner",
+    "runId": 38003762428,
+    "conclusion": "success",
+    "artifactId": 11650770196,
+    "bytes": 5409965,
+    "expired": false
+  }
+}

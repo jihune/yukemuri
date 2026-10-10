@@ -1,7 +1,7 @@
 # 최근 작업 인수인계
 
 작업: 전체 앱 private GitHub 레포 이관과 ChatGPT 프로젝트 대화/자료 보존.
-기록: 2026-10-10T08:40:33.443059+00:00 UTC. 이전 준비 기록은 `history/work-handoff-migration-20261009.md`에 보존했다.
+기록: 2026-10-10T09:38:05.543499+00:00 UTC. 이전 준비 기록은 `history/work-handoff-migration-20261009.md`에 보존했다.
 
 ## 현재 기준
 
@@ -22,14 +22,15 @@
 
 ## 검사와 운영
 
-가져오기 도구의 shards/legacy 형식·모든 분기·공유 첨부 재사용·아이콘 제외·안전한 ZIP 파일명·잘못된 ID·덮어쓰기·추적 레포 출력 거절 검사를 통과했다. 최초 GitHub CI와 정확한 반영 커밋은 완료 후 추가한다. 기존 앱 빌드 입력은 바꾸지 않았다.
+가져오기 도구의 shards/legacy 형식·모든 분기·공유 첨부 재사용·아이콘 제외·안전한 ZIP 파일명·잘못된 ID·덮어쓰기·추적 레포 출력 거절 검사를 통과했다. 준비본과 GitHub의 tree 해시 `87f1dea9e6aa45aa2bfcea8beb55fa0e737c40ac`가 같았다. 별도 깨끗한 클론에서 공개 소스 자료 15개를 원래 바이트로 복원했고 추적 파일 변경이 없었다. pnpm lock은 직접 추적한다. 기존 앱 빌드 입력의 바이트는 바꾸지 않았다.
 
-자동 DB 백업의 첫 실제 예약 run [38003762428](https://github.com/jihune/yukemuri-script-runner/actions/runs/38003762428)은 성공했다. 매일 04:23 KST 예약은 지연될 수 있다. 일일 14일·주간 90일 보관이다. `db-backups.md`를 따른다.
+[가져오기 PR #1](https://github.com/jihune/yukemuri/pull/1)을 병합했다. 가져오기 커밋 `278b1a2cbb1f1d21ba8a57ec19929a3b069c4ce2`, 병합 커밋 `f33db7465fe6b68358316a0c6b2fac5843d473af`다. [PR 전체 CI 38041633399](https://github.com/jihune/yukemuri/actions/runs/38041633399)와 push 전체 CI 38041602946은 새 클라우드 환경에서 설치·복원·타입·기존 앱/Worker 회귀 검사를 통과했다. 병합 후 [main 전체 CI 38041854782](https://github.com/jihune/yukemuri/actions/runs/38041854782)도 성공했다. 이후 완료 기록 변경은 문서뿐이다. 개인 Codex/Claude 웹 계정의 첫 세션 검사와는 구분한다. 근거는 `evidence/github-app-import-20261010.json`에 있다.
+
+자동 DB 백업의 실제 예약 run [38003762428](https://github.com/jihune/yukemuri-script-runner/actions/runs/38003762428)은 성공했다. private artifact `11650770196`, 5,409,965바이트가 만료되지 않은 상태임을 확인했다. 매일 04:23 KST 예약은 지연될 수 있다. 일일 14일·주간 90일 보관이다. `db-backups.md`를 따른다.
 
 호스팅·사이트 공개 범위·운영 DB·Secret 값·기존 수집 주기/상한·Google API·LLM 예약은 변경하지 않는다.
 
 ## 다음 작업
 
-1. GitHub 가져오기와 최초 CI를 완료하고 결과를 기록한다.
-2. 사용하는 Codex/Claude 웹 서비스에서 이 레포 연결을 허용하고 Node 24·Python 3.10 이상에서 `scripts/cloud-setup.sh`와 `scripts/cloud-check.py --full`을 실제 실행한다. 해당 계정 연결·스킬 발견은 별도 확인이다.
-3. 다음 제품 작업은 U01 실제 360/390px 모바일·터치·키보드 검사다. 이후 D01 → D02 → U02 순서다. 호스팅 이전은 후속 결정이다.
+1. 사용하는 Codex/Claude 웹 서비스에서 이 레포 연결을 허용하고 Node 24·Python 3.10 이상에서 `scripts/cloud-setup.sh`와 `scripts/cloud-check.py --full`을 실제 실행한다. 해당 계정 연결·스킬 발견은 별도 확인이다. 이관을 다시 하거나 ZIP을 소스 대신 사용하지 않는다.
+2. 다음 제품 작업은 U01 실제 360/390px 모바일·터치·키보드 검사다. 이후 D01 → D02 → U02 순서다. 호스팅 이전은 후속 결정이다.

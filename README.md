@@ -2,7 +2,7 @@
 
 새 세션은 [START_HERE.md](START_HERE.md)부터 읽는다. 2026-10-09 사용자 요청에 따라 Codex 웹·Claude Code 웹 공통 개발 레포를 준비했다. 기존 Sites 호스팅·운영 D1·Python 예약은 유지한다.
 개발 기준은 private [jihune/yukemuri](https://github.com/jihune/yukemuri)다. 실제 Sites 게시 커밋과 GitHub 커밋을 별도로 기록한다. 원래 Git 그래프는 [이력 보존 안내](docs/legacy-history.md)에 따라 복원할 수 있다.
-환경 설정은 [클라우드 개발](docs/cloud-development.md), 배포 전달은 [Sites 인수인계](docs/sites-handoff.md), 보존 범위와 남은 일은 [이관 기록](docs/migration-20261009.md)을 따른다.
+환경 설정은 [클라우드 개발](docs/cloud-development.md), 배포 전달은 [Sites 인수인계](docs/sites-handoff.md), 최신 보존 범위는 [대화 인계](docs/conversation-handoff.md)를 따른다. [2026-10-09 이관 기록](docs/migration-20261009.md)은 이전 준비 시점의 기록이다.
 현재 순서는 [작업 우선순위](docs/roadmap.md), 최근 결과는 [인수인계](docs/work-handoff-latest.md)에 있다.
 
 최신 운영 점검: [2026-10-08 운영 체크포인트](docs/operations-checkpoint-20261008.md).
@@ -33,13 +33,15 @@ Google Places 조회 코드는 있지만 운영 연결은 꺼져 있다. 미확�
 Node.js 22.13 이상, pnpm 11.25.0, Python 3.10 이상을 사용한다. 버전은 `package.json`과 잠금 파일을 따른다.
 
 ```bash
-pnpm install --frozen-lockfile
+bash scripts/cloud-setup.sh
 pnpm dev
 pnpm exec tsc --noEmit
 pnpm build
 ```
 
 React·TypeScript와 vinext/Vite로 Cloudflare Worker를 만든다. 운영 DB는 D1이다. 로컬 실행은 별도 DB를 사용한다. 관리형 Sites 환경에서는 제공되는 빌드·게시 절차를 따른다.
+
+웹 클라우드에서는 Node 24를 선택한다. 초기 설정은 해시를 확인하며 공개 seed·이미지·fixture·Git 이력 보존본을 복원하고 잠금 파일대로 의존성을 설치한다. 공통 전체 검사는 `python3 scripts/cloud-check.py --full`이다. 원래 코드와 데이터 바이트를 바꾸지 않는다.
 
 주요 회귀 검사:
 
