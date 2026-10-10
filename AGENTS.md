@@ -5,13 +5,14 @@
 
 ## 작업 시작과 공동 작업
 
-- `START_HERE.md`, `docs/work-handoff-latest.md`, `docs/roadmap.md`를 읽는다. Git 상태·브랜치·기준 커밋을 확인한다. 사용자 변경을 덮어쓰지 않는다.
+- 세션을 시작하거나 재개하면 `START_HERE.md`, `docs/work-handoff-latest.md`, `docs/roadmap.md`를 읽는다. Git 상태·브랜치·기준 커밋과 열린 PR을 확인한다. 병합 전 PR의 인수인계가 main보다 최신일 수 있다. 그 밖에는 작업에 필요한 지침·스킬·자료만 읽는다. 사용자 변경을 덮어쓰지 않는다.
 - 전체 앱 개발 기준은 private `jihune/yukemuri`다. 시작 소스는 Sites v49다. 현재 GitHub 반영·검증과 실제 서비스 최초 연결은 인수인계에서 구분한다.
 - 전체 앱 레포 main을 개발 기준으로 사용한다. 운영은 기존 Sites와 D1이다. GitHub 커밋과 실제 Sites 게시 버전을 따로 기록한다.
 - 코드 수정·검사·검토·관련 브랜치/PR·인수인계는 사용자의 이관 요청 범위다. 통상적인 단계마다 허가를 다시 요청하지 않는다.
 - 호스팅 이전·공유 범위 변경·Secret 회전·수집 주기/상한 변경은 이번 범위에 포함되지 않는다.
-- `docs/cloud-development.md`를 따른다. 한 작업에 한 작성 담당·한 브랜치를 둔다. 다른 에이전트는 같은 기준 커밋이나 PR을 검토한다.
-- 세션 종료 전에 변경·검사·미확인 사항·다음 작업·기준 커밋을 UTC/KST로 기록한다. 서비스별 채팅 기억을 공통 작업 기준으로 삼지 않는다.
+- `docs/cloud-development.md`를 따른다. 한 작업에 한 작성 담당·한 브랜치를 둔다. 한 작업의 구현·검사·수정은 같은 세션에서 이어 간다. 다음 독립 작업은 새 세션에서 시작한다. 다른 에이전트는 같은 기준 커밋이나 PR을 검토한다.
+- 검사를 통과한 중간 변경은 작업 브랜치에 커밋·push한다. 세션 종료·장기 중단 전에는 변경·검사·미확인 사항·다음 작업·기준 커밋을 UTC/KST로 인수인계에 기록하고 커밋·push한다.
+- 대화 기억·임시 파일·실행 중 프로세스는 다음 세션에 남지 않을 수 있다. 서비스별 대화 기억을 공통 작업 기준으로 삼지 않는다.
 - GitHub 작업은 연결 도구·API·인증된 git을 사용한다. 404·권한 오류로 클라우드 브라우저에 자동 전환하지 않는다.
 
 ## 제품과 자료
@@ -50,5 +51,7 @@
 `docs/writing-guide.md`를 따른다. 한국어로 짧고 구체적으로 쓴다.
 날짜·버전·검사 범위·미확인 사항을 남긴다. 과거 수집 집계를 현재값으로 가정하지 않는다.
 과거 문서 날짜를 현재 날짜로 고치지 않는다. 중요한 중단 지점과 다음 행동을 기록한다.
+
+작업 기록은 이 체계 하나만 사용한다. `docs/work-handoff-latest.md`는 현재 작업 하나의 인수인계다. `docs/roadmap.md`는 작업 상태, 작업별 상세 문서는 `docs/<작업ID>-<날짜>.md`, 근거는 `docs/evidence/`에 둔다. 새 작업의 인수인계를 쓰기 전에 이전 내용을 `docs/history/work-handoff-<작업ID>-<날짜>.md`로 옮긴다. `agents_work/`·`STATE.md` 같은 별도 기록 폴더를 만들지 않는다.
 
 대용량 공개 seed·이미지·검사 fixture·원래 Git bundle은 `source-assets/`에 해시와 gzip/base64 조각으로 보존한다. `bash scripts/cloud-setup.sh`가 원래 경로와 바이트를 복원한다. 이것은 전송 중단 후 재개를 위한 소스 저장 형식이며 개인 대화·DB 백업이 아니다. 복원된 자료를 수정하면 `python3 scripts/materialize-source-assets.py --pack` 후 `source-assets/` 변경도 같은 PR에 포함한다. 원래 Git 이력만 필요하면 의존성 설치 없이 `python3 scripts/materialize-source-assets.py`를 실행한다.
