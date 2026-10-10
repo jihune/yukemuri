@@ -1,0 +1,200 @@
+[
+  {
+    "id": "jalan-327522",
+    "names": {
+      "ko": "소잔쿄",
+      "ja": "蘇る山と故郷　阿蘇内牧温泉　蘇山郷",
+      "en": "Sozankyo"
+    },
+    "kind": "ryokan",
+    "regionId": "pref-kumamoto",
+    "prefecture": "pref-kumamoto",
+    "location": {
+      "label": "구마모토 · 아소 · 우치노마키 온천",
+      "address": "熊本県阿蘇市内牧温泉145-1",
+      "latitude": 32.973719,
+      "longitude": 131.042185,
+      "isApproximate": false
+    },
+    "description": "구마모토현 아소시 우치노마키 온천의 소잔쿄(蘇山郷)입니다. 공식 안내에서 천연온천 대욕장, 노천탕, 전세탕과 일부 객실의 온천·노천탕을 확인했습니다. 객실 온천을 이용하려면 해당 객실 타입을 예약하세요.",
+    "image": {
+      "url": "https://ak-d.tripcdn.com/images/0583b12000tcbb7ocFA6E_R_960_660_R5_D.jpg",
+      "alt": "소잔쿄 숙소 사진",
+      "sourceId": "trip-1458363",
+      "isRepresentative": false,
+      "alternatives": [
+        "https://cdn.jalan.jp/jalan/images/pict4L/Y2/Y327522/Y327522683.jpg"
+      ]
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "sozankyo-official-bath",
+        "verifiedAt": "2026-10-04",
+        "scope": "property",
+        "note": "공식 안내: 天然温泉大浴場 · 源泉掛け流し / 完全放流方式"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "sozankyo-official-bath",
+        "verifiedAt": "2026-10-04",
+        "scope": "property",
+        "note": "공식 안내에서 천연온천 대욕장 확인"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "sozankyo-official-bath",
+        "verifiedAt": "2026-10-04",
+        "scope": "property",
+        "note": "공용 노천탕 및 전세 노천탕 확인. 남성 대욕장 노천탕은 겨울에 일부 가온"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "sozankyo-official-bath",
+        "verifiedAt": "2026-10-04",
+        "scope": "property",
+        "note": "緑彩の湯: 지붕 있는 전세 노천탕 / たる湯: 반노천 전세탕"
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "sozankyo-official-rooms",
+        "verifiedAt": "2026-10-04",
+        "scope": "someRooms",
+        "note": "온천 욕탕이 있는 객실 타입에 한함. 일반 객실 예약 시 제공되지 않음"
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "sozankyo-official-rooms",
+        "verifiedAt": "2026-10-04",
+        "scope": "someRooms",
+        "note": "露天風呂付洋室「草原」 등 일부 객실 타입에 한함"
+      },
+      "jalanHighClass": {
+        "value": true,
+        "sourceId": "jalan-327522",
+        "verifiedAt": "2026-10-04",
+        "scope": "property",
+        "note": "자란 숙소 페이지의 숙소명 아래 하이클래스 표시 확인. 평점이나 다른 OTA 등급으로 추정하지 않습니다."
+      },
+      "roomOutdoorOnsen": {
+        "value": true,
+        "sourceId": "sozankyo-official-rooms",
+        "verifiedAt": "2026-10-04",
+        "scope": "someRooms",
+        "note": "공식 객실 안내: 紅葉·草原·故里의 지붕 있는 노천탕에서 카케나가시 천연온천 이용. 해당 객실 타입에만 적용됩니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨·마그네슘·칼슘 황산염 온천"
+      ],
+      "waterNotes": "공식 안내: 원천 방류식, 비순환, 매일 전량 교체. 남성 대욕장 노천탕은 겨울철 일부 가온 안내가 있습니다.",
+      "useNotes": "객실 온천·객실 노천탕은 해당 객실 타입을 예약해야 이용할 수 있습니다."
+    },
+    "ratings": [
+      {
+        "sourceId": "jalan-327522",
+        "provider": "jalan",
+        "score": 4.5,
+        "scale": 5,
+        "reviewCount": 969,
+        "summary": "",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-04"
+      },
+      {
+        "sourceId": "trip-1458363",
+        "provider": "trip",
+        "score": 9.4,
+        "scale": 10,
+        "reviewCount": 121,
+        "summary": "",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-04"
+      }
+    ],
+    "links": [
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad327522/",
+        "kind": "property",
+        "label": "숙소 페이지"
+      },
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/",
+        "kind": "property",
+        "label": "숙소 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.sozankyo.com/",
+        "kind": "property",
+        "label": "소잔쿄 공식 홈페이지"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E7%86%8A%E6%9C%AC%E7%9C%8C%E9%98%BF%E8%98%87%E5%B8%82%E5%86%85%E7%89%A7%E6%B8%A9%E6%B3%89145-1",
+        "kind": "coordinates",
+        "label": "주소로 위치 확인"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "jalan-327522",
+        "sourceType": "web",
+        "label": "Jalan 숙소 상세",
+        "retrievedAt": "2026-10-04T01:25:27+00:00",
+        "verifiedAt": "2026-10-04",
+        "url": "https://www.jalan.net/yad327522/",
+        "isMock": false
+      },
+      {
+        "sourceId": "trip-1458363",
+        "sourceType": "web",
+        "label": "Trip.com 숙소 상세",
+        "retrievedAt": "2026-10-04T01:25:27+00:00",
+        "verifiedAt": "2026-10-04",
+        "url": "https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sozankyo-official-bath",
+        "sourceType": "web",
+        "label": "소잔쿄 공식 온천 안내",
+        "retrievedAt": "2026-10-04T01:25:27+00:00",
+        "verifiedAt": "2026-10-04",
+        "url": "https://www.sozankyo.com/bath/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sozankyo-official-rooms",
+        "sourceType": "web",
+        "label": "소잔쿄 공식 객실 안내",
+        "retrievedAt": "2026-10-04T01:25:27+00:00",
+        "verifiedAt": "2026-10-04",
+        "url": "https://www.sozankyo.com/room/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sozankyo-names-ko",
+        "sourceType": "web",
+        "label": "Trip.com 한국어 숙소명",
+        "retrievedAt": "2026-10-04T01:25:27+00:00",
+        "verifiedAt": "2026-10-04",
+        "url": "https://kr.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/",
+        "isMock": false
+      }
+    ],
+    "aliases": [
+      "소잔쿄(Sozankyo)",
+      "소잔쿄 료칸",
+      "蘇山郷",
+      "阿蘇内牧温泉 蘇山郷",
+      "蘇る山と故郷　阿蘇内牧温泉　蘇山郷",
+      "Sozankyo"
+    ]
+  }
+]

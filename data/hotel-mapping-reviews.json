@@ -1,0 +1,13 @@
+[
+  {
+    "ids": ["jalan-303587", "trip-5515405"],
+    "verifiedAt": "2026-10-05",
+    "decision": "requires_rebrand_and_inventory_review",
+    "notesKo": "공식 자료는 옛 도큐 하비스트클럽 하코네 묘진다이 시설을 리뉴얼해 2024년 5월 nol hakone myojindai로 개장했다고 설명합니다. 현재 39실 중 이스트윙 10실은 하비스트클럽용으로 리저브되어 있습니다. 물리적 시설 일치와 현재 예약 상품의 동일성을 구분하고, 공급자의 현행 표시명·재고 범위를 다시 확인해야 합니다. 이 기록은 두 숙소 항목을 병합하지 않습니다.",
+    "sources": [
+      "https://www.nolhotels.com/hakone-myojindai/en/access/",
+      "https://www.harvestclub.com/Un/blog/style/157734/",
+      "https://style.tokyu-resort.co.jp/hvc-reservehm_info2024-01"
+    ]
+  }
+]

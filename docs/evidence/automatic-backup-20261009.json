@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-10-09T04:49:31.949Z",
+  "repository": "jihune/yukemuri-script-runner",
+  "prUrl": "https://github.com/jihune/yukemuri-script-runner/pull/2",
+  "mainCommit": "868229c193b82b3c053c1bc522e3494f57ecfa8c",
+  "firstRun": {
+    "id": 37885403425,
+    "url": "https://github.com/jihune/yukemuri-script-runner/actions/runs/37885403425",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "report": {
+    "finishedAt": "2026-10-09T04:47:16.502101+00:00",
+    "tables": 13,
+    "archiveBytes": 5284614,
+    "integrity": "ok",
+    "countsStable": true,
+    "consistency": "non_atomic",
+    "productionChanged": false
+  },
+  "artifacts": [
+    {
+      "id": 11596495785,
+      "name": "yukemuri-db-daily-37885403425",
+      "sizeBytes": 5307092,
+      "expiresAt": "2026-10-23T04:47:18Z",
+      "expired": false,
+      "digest": "sha256:5835cab1dad4d6b7d16c240d4dfdae7027ecae4956505f3a1d6070236bda7256"
+    }
+  ],
+  "scheduleUTC": "23 19 * * *",
+  "scheduleKST": "매일 04:23",
+  "dailyRetentionDays": 14,
+  "weeklyRetentionDays": 90,
+  "permissions": {
+    "contents": "read"
+  },
+  "site": {
+    "id": "appgprj_6abf95be6ea0819181cc3e93535413ac",
+    "version": 49,
+    "url": "https://yukemuri.jihun7891.chatgpt.site",
+    "access": "public",
+    "status": "active"
+  },
+  "prChecks": [
+    {
+      "id": 37885132640,
+      "name": "Yukemuri site checks",
+      "conclusion": null
+    },
+    {
+      "id": 37885132691,
+      "name": "Yukemuri private database backups",
+      "conclusion": "success"
+    },
+    {
+      "id": 37885122708,
+      "name": "Yukemuri site checks",
+      "conclusion": "success"
+    }
+  ],
+  "hostMoved": false,
+  "collectorScheduleChanged": false,
+  "productionRestored": false
+}

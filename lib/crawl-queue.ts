@@ -1,0 +1,94 @@
+import {refreshIntervalSql,collectionPlan} from './collection-priorities';
+import {publicUrl} from './crawl-contract';
+import {z} from 'zod';
+import {favoritesDb} from './favorites-db';
+import {verifiedHotels} from './hotel-enrichment';
+import {BATH_FEATURE_MASK} from './hotel-bath-facts';
+
+export const crawlClaim=z.object({provider:z.enum(['jalan','trip']),phase:z.enum(['list','detail','names','baths','refresh']),kind:z.enum(['list','detail']).optional(),url:publicUrl.optional(),lane:z.enum(['priority','national']).default('priority'),token:z.string().uuid()}).strict().refine(v=>v.phase!=='names'||v.provider==='trip').refine(v=>v.phase!=='baths'||v.provider==='jalan');
+export type CrawlClaim=z.infer<typeof crawlClaim>;
+export const LEASE_SECONDS=180;
+export const legacyRedirectRepair=z.object({action:z.literal('isolate-legacy-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
+export const reviewedRedirectRepair=z.object({action:z.literal('release-reviewed-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
+// After a read-only source check succeeds, release one obsolete page hold.
+// Exact old timestamp and reason are required; access pauses and active work win.
+export async function releaseReviewedRedirect(input:z.infer<typeof reviewedRedirectRepair>){
+ const db=favoritesDb(),now=Date.now()/1000;
+ const result=await db.batch([
+  db.prepare(`UPDATE crawl_jobs SET next_at=0 WHERE url=? AND provider='jalan' AND kind='detail' AND status='retry' AND attempts=1 AND error='source_redirect_page_review' AND next_at=? AND next_at>? AND fetched_at IS NULL AND lease_until<=?
+   AND NOT EXISTS (SELECT 1 FROM crawl_jobs WHERE provider='jalan' AND lease_until>?)
+   AND NOT EXISTS (SELECT 1 FROM catalog_meta WHERE key='crawl-provider-ready:jalan' AND CAST(value AS REAL)>?)
+   AND NOT EXISTS (SELECT 1 FROM crawl_jobs WHERE provider='jalan' AND next_at>? AND (error IN ('http_403','http_429','robots_http_403','robots_http_429') OR error LIKE 'source_access_%' AND error<>'source_access_redirect_repeated'))`).bind(input.url,input.expectedNextAt,now,now,now,now,now),
+  db.prepare("INSERT INTO catalog_meta(key,value) SELECT 'crawl-reviewed-redirect-release:jalan',? WHERE EXISTS (SELECT 1 FROM crawl_jobs WHERE url=? AND provider='jalan' AND status='retry' AND attempts=1 AND error='source_redirect_page_review' AND next_at=0 AND fetched_at IS NULL) ON CONFLICT(key) DO NOTHING").bind(JSON.stringify({action:input.action,url:input.url,previousNextAt:input.expectedNextAt,repairedAt:new Date().toISOString()}),input.url),
+ ]);
+ return{repaired:result[0].meta.changes===1};
+}
+// Repair only the old one-page redirect policy. The page retains its original
+// retry time; a newer pause, active claim or another blocking failure wins.
+export async function isolateLegacyRedirect(input:z.infer<typeof legacyRedirectRepair>){
+ const db=favoritesDb(),now=Date.now()/1000,ready=String(now+8),key='crawl-provider-ready:jalan';
+ const job=await db.prepare('SELECT provider,status,error,attempts,next_at FROM crawl_jobs WHERE url=?').bind(input.url).first<{provider:string;status:string;error:string;attempts:number;next_at:number}>();
+ if(job?.provider==='jalan'&&job.error==='source_redirect_page_review'&&job.next_at===input.expectedNextAt)return{repaired:false,alreadyIsolated:true};
+ const result=await db.batch([
+  db.prepare(`UPDATE catalog_meta SET value=? WHERE key=? AND CAST(value AS REAL)=? AND CAST(value AS REAL)>?
+   AND EXISTS (SELECT 1 FROM crawl_jobs WHERE url=? AND provider='jalan' AND status='retry' AND attempts=1 AND error='source_redirect_requires_review' AND next_at=? AND lease_until<=?)
+   AND NOT EXISTS (SELECT 1 FROM crawl_jobs WHERE provider='jalan' AND lease_until>?)
+   AND NOT EXISTS (SELECT 1 FROM crawl_jobs WHERE provider='jalan' AND url<>? AND next_at>? AND (error LIKE 'robots_%' OR error LIKE 'source_access_%' OR error IN ('source_redirect_requires_review','source_data_requires_review','http_403','http_429','URLError','TimeoutError','OSError') OR error GLOB 'http_5[0-9][0-9]'))`).bind(ready,key,input.expectedNextAt,now,input.url,input.expectedNextAt,now,now,input.url,now),
+  db.prepare("UPDATE crawl_jobs SET error='source_redirect_page_review' WHERE url=? AND provider='jalan' AND error='source_redirect_requires_review' AND next_at=? AND EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND value=?)").bind(input.url,input.expectedNextAt,key,ready),
+  db.prepare("INSERT INTO catalog_meta(key,value) SELECT 'crawl-policy-repair:jalan',? WHERE EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND value=?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify({action:input.action,url:input.url,previousReadyAt:input.expectedNextAt,repairedAt:new Date().toISOString()}),key,ready),
+ ]);
+ return{repaired:result[0].meta.changes===1,pageRetained:true};
+}
+export function jobIdentity(url:string):string|null{
+ const u=new URL(url);
+ const id=u.hostname==='www.jalan.net'?u.pathname.match(/^\/yad(\d+)\/$/)?.[1]:u.pathname.match(/-hotel-detail-(\d+)\//)?.[1];
+ return id?(u.hostname==='www.jalan.net'?'jalan-':'trip-')+id:null;
+}
+// The selection and lease write share one SQL statement. A provider has at
+// most one active claim, across processes/isolates and enrichment phases.
+export async function claimCrawlJob(claim:CrawlClaim){
+ const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):['names','baths'].includes(claim.phase)?'detail':claim.phase;
+ const kindWhere=kind==='any'?"j.kind IN ('list','detail')":'j.kind=?';
+ const kinds=kind==='any'?[]:[kind];
+ const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
+ if(repeated.results.length)return repeated.results;
+ const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NULL AND h.id NOT IN (SELECT value FROM json_each(?)))":'';
+ const statuses=claim.phase==='refresh'?"('done','failed')":['names','baths'].includes(claim.phase)?"('done','pending','retry')":"('pending','retry')";
+ const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
+ // Complete the complementary source of verified properties first within a
+ // region: Trip for review/photo evidence, Jalan for property/room facts.
+ const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
+ // Due retries would otherwise stay behind the pending backlog indefinitely.
+ // Use the national lane for those pages; all readiness and lease guards below
+ // still apply. The priority lane continues normal discovery/enrichment.
+ const order=claim.lane==='national'?"CASE WHEN j.status='retry' THEN 0 ELSE 1 END,COALESCE(unixepoch(j.fetched_at),0),j.next_at,j.attempts,j.url":'j.priority,'+missingLinkedDetail+',COALESCE(unixepoch(j.fetched_at),0),j.attempts,j.url';
+ const result=await db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
+  WHERE url=(SELECT j.url FROM crawl_jobs j WHERE j.provider=? AND ${kindWhere} AND j.status IN ${statuses} AND j.next_at<=? AND j.lease_until<=? ${extra} ${refresh} ${claim.url?'AND j.url=?':''} ORDER BY ${order} LIMIT 1)
+  AND lease_until<=? AND COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)<=? AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)
+  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,claim.provider,...kinds,now,now,...(claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[]),...(claim.url?[claim.url]:[]),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now).all();
+ if(result.results.length)return result.results;
+ // Concurrent retries of the same POST may arrive before either SELECT sees
+// the other claim. Return that same claim after the guarded UPDATE.
+ return(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
+}
+
+export async function crawlHealth(){
+ const db=favoritesDb();
+ const phases=await db.prepare(`SELECT provider,kind,status,COUNT(*) AS count,SUM(CASE WHEN lease_until>? THEN 1 ELSE 0 END) AS active,strftime('%Y-%m-%dT%H:%M:%SZ',MAX(unixepoch(fetched_at)),'unixepoch') AS last_success FROM crawl_jobs GROUP BY provider,kind,status`).bind(Date.now()/1000).all();
+ const quality=await db.prepare(`SELECT COUNT(*) AS records,
+  SUM(CASE WHEN name GLOB '*[가-힣]*' THEN 1 ELSE 0 END) AS korean_name,
+  SUM(CASE WHEN n.payload IS NOT NULL THEN 1 ELSE 0 END) AS researched_korean_name,
+  SUM(CASE WHEN json_extract(h.payload,'$.sources[0].label') LIKE '%상세%' THEN 1 ELSE 0 END) AS detail_records,
+  SUM(CASE WHEN json_extract(h.payload,'$.location.latitude') IS NOT NULL AND json_extract(h.payload,'$.location.longitude') IS NOT NULL THEN 1 ELSE 0 END) AS coordinates,
+  SUM(CASE WHEN (bath_known & ${BATH_FEATURE_MASK})>0 THEN 1 ELSE 0 END) AS bath_known,
+  SUM(CASE WHEN t.source_text=json_extract(h.payload,'$.description') THEN 1 ELSE 0 END) AS current_translation
+  FROM hotels h LEFT JOIN hotel_name_localizations n ON n.hotel_id=h.id LEFT JOIN hotel_description_translations t ON t.hotel_id=h.id`).first();
+ const prefectures=await db.prepare(`SELECT prefecture,COUNT(*) AS records,SUM(CASE WHEN (bath_known & ${BATH_FEATURE_MASK})>0 THEN 1 ELSE 0 END) AS bath_known FROM hotels GROUP BY prefecture ORDER BY prefecture`).all();
+ const failures=await db.prepare("SELECT provider,kind,status,error,COUNT(*) AS count FROM crawl_jobs WHERE error IS NOT NULL GROUP BY provider,kind,status,error ORDER BY count DESC LIMIT 30").all();
+ // Bounded maintenance diagnostics only: no lease tokens or hotel/user payloads.
+ // Samples retain the original job and do not claim, retry or retire a page.
+ const failureExamples=await db.prepare("SELECT provider,kind,url,status,error,attempts,next_at,fetched_at FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status IN ('retry','failed') AND error IS NOT NULL ORDER BY provider,kind,error,url LIMIT 20").all();
+ const refreshDue=await db.prepare(`SELECT provider,kind,priority,COUNT(*) AS count FROM crawl_jobs j WHERE status='done' AND next_at<=? AND COALESCE(unixepoch(fetched_at),0)+(${refreshIntervalSql})<=? GROUP BY provider,kind,priority`).bind(Date.now()/1000,Date.now()/1000).all();
+ const lifecycle=await db.prepare('SELECT state,COUNT(*) AS records,SUM(CASE WHEN missing_count>0 THEN 1 ELSE 0 END) AS review_needed FROM hotel_lifecycle GROUP BY state').all();
+ return{collectionPlan,refreshDue:refreshDue.results,lifecycle:lifecycle.results,measuredAt:new Date().toISOString(),inventoryComplete:false,countMeaning:'provider records; cross-provider duplicates may remain',quality,phases:phases.results,prefectures:prefectures.results,failures:failures.results,failureExamples:failureExamples.results};
+}

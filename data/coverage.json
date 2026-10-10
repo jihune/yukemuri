@@ -1,0 +1,22 @@
+{
+  "updatedAt": "2026-10-03T14:09:52+00:00",
+  "records": 1654,
+  "crawledRecords": 1634,
+  "curatedRecords": 20,
+  "prefectures": 47,
+  "discoveredDetailUrls": 2957,
+  "completedDetailPages": 36,
+  "pending": 3365,
+  "failed": 0,
+  "inventoryComplete": false,
+  "providers": {
+    "jalan": {
+      "discovered": 2876,
+      "completed": 123
+    },
+    "trip": {
+      "discovered": 81,
+      "completed": 17
+    }
+  }
+}

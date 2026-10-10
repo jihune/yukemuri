@@ -1,0 +1,79 @@
+{
+  "setup": {
+    "passed": true,
+    "mode": "portable",
+    "dependencyInstall": "frozen lockfile, Work-provided cache, no package downloads"
+  },
+  "chatImporter": {
+    "passed": true,
+    "checks": [
+      "explicit scope selection",
+      "all mapping branches preserved",
+      "asset bytes preserved",
+      "existing destination refused"
+    ],
+    "realUserExportImported": false
+  },
+  "dbRestore": {
+    "restored": "fresh-cloud-container-sqlite",
+    "rows": {
+      "hotel_lifecycle_events": 5,
+      "hotel_names": 13849,
+      "crawl_jobs": 15417,
+      "visitor_favorites": 0,
+      "hotel_description_requests": 40,
+      "hotel_source_observations": 2,
+      "favorites": 2,
+      "hotel_name_localizations": 149,
+      "hotel_description_translations": 562,
+      "catalog_meta": 12,
+      "hotels": 12271,
+      "hotel_lifecycle": 1621,
+      "hotel_source_groups": 21
+    },
+    "integrity": "ok",
+    "productionChanged": false,
+    "consistency": "non_atomic"
+  },
+  "secretPatterns": {
+    "findings": [],
+    "scope": "current exported files; heuristic check, plus current Sites token exact match scan"
+  },
+  "privateContent": {
+    "currentSecretMatches": [],
+    "sitesHistorySecretMatches": 0,
+    "checkedSitesObjects": 1120
+  },
+  "skillValidation": {
+    "canonical": true,
+    "codexEntry": true,
+    "claudeEntry": true,
+    "actualWebAccountsTested": false
+  },
+  "production": {
+    "latestVersion": 49,
+    "accessMode": "public",
+    "deploymentChanged": false,
+    "databaseRestorePerformed": false,
+    "runnerScheduleChanged": false
+  },
+  "cloudChecks": {
+    "passed": true,
+    "builtWorker": true,
+    "tests": [
+      "crawler parser",
+      "diagnostics",
+      "retry policy",
+      "release bootstrap",
+      "checkpoint recovery/refusal",
+      "TypeScript",
+      "listing URL and dates",
+      "API client",
+      "collector release Worker",
+      "crawl queue Worker",
+      "collection status Worker",
+      "comparison Worker"
+    ],
+    "actualWebAccountsTested": false
+  }
+}

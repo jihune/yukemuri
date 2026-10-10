@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "recordedAt": "2026-10-10T08:40:33.443059+00:00",
+  "files": [
+    {
+      "path": "archives/git/runner-history-20261009.bundle",
+      "bytes": 2989356,
+      "sha256": "ada9d4bd62e4821919f7134b11795940afcc15f8f13f2e76706f6b1893f8133d"
+    },
+    {
+      "path": "archives/git/app-pre-migration-20261009.bundle",
+      "bytes": 3223659,
+      "sha256": "08c89cfd787b1c5721f452ed4bfde718c73ab6ff70d2b76565e914480777dfdb"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+name: Cloud app checks
+on:
+  push:
+    paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
+  pull_request:
+    paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: bash scripts/cloud-setup.sh
+      - run: python3 scripts/cloud-check.py --full

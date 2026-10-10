@@ -1,0 +1,66 @@
+{
+  "kind": "simulated-component-DOM",
+  "browserLayoutTested": false,
+  "results": [
+    {
+      "name": "card add/remove and four-candidate selection",
+      "passed": true
+    },
+    {
+      "name": "open focus and backward Tab wrap",
+      "passed": true
+    },
+    {
+      "name": "comparison -> detail -> comparison and exact opener focus",
+      "passed": true
+    },
+    {
+      "name": "detail close button and browser history return to comparison",
+      "passed": true
+    },
+    {
+      "name": "remove candidate retains focus on adjacent remove control",
+      "passed": true
+    },
+    {
+      "name": "comparison table responds to horizontal arrow keys",
+      "passed": true
+    },
+    {
+      "name": "clear focuses persistent close control and empty selection",
+      "passed": true
+    },
+    {
+      "name": "close restores persistent listing opener after dock disappears",
+      "passed": true
+    },
+    {
+      "name": "removing the last candidate focuses close and dock close falls back to listing opener",
+      "passed": true
+    },
+    {
+      "name": "collection loading state and duplicate request prevention",
+      "passed": true
+    },
+    {
+      "name": "refresh failure keeps previous result and alert",
+      "passed": true
+    },
+    {
+      "name": "retry success clears alert and retains refresh focus",
+      "passed": true
+    },
+    {
+      "name": "zero-record collection result explains empty state",
+      "passed": true
+    },
+    {
+      "name": "collection table is focusable and responds to horizontal keys",
+      "passed": true
+    },
+    {
+      "name": "initial collection failure and explicit retry recovery",
+      "passed": true
+    }
+  ]
+}

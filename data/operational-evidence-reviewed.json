@@ -1,0 +1,26 @@
+[
+  {
+    "id": "jalan-348699",
+    "state": "temporarily_closed",
+    "sourceUrl": "https://www.hakone-yumotohotel.com/news/リニューアル工事に伴う休館のご案内.html",
+    "sourceKind": "official_property",
+    "sourceLabel": "하코네 유모토 호텔 공식 휴관 안내",
+    "evidence": "공식 안내에 따라 리뉴얼 공사로 2026년 3월 1일부터 2027년 6월 30일까지 전관 휴관합니다. 폐업과 구분하며, 실제 영업 재개는 다시 확인합니다.",
+    "identityEvidence": "Jalan 348699의 箱根湯本ホテル（HAKONEYUMOTO HOTEL）와 공식 홈페이지의 숙소명 및 神奈川県足柄下郡箱根町湯本茶屋97 주소가 일치합니다. 이웃한 伊東園ホテル箱根湯本(95-1)과는 별도 숙소입니다.",
+    "checkedAt": "2026-10-05T06:23:58.269Z",
+    "effectiveDate": "2026-03-01",
+    "closedUntil": "2027-06-30"
+  },
+  {
+    "id": "jalan-389144",
+    "state": "operating",
+    "sourceUrl": "https://www.regina-resorts.com/yufuin/main/news/2580",
+    "sourceKind": "official_property",
+    "sourceLabel": "레지나 리조트 유후인 공식 개업 안내",
+    "evidence": "구누기노모리 숙소의 공식 개업일은 2025년 11월 16일입니다. 공식 홈페이지의 현재 안내와 숙소 상세를 대조했습니다. 같은 리조트의 圍-Kakoi- 구역 개업(2026년 7월 3일)은 별도 확장으로 구분합니다.",
+    "identityEvidence": "Jalan 389144의 レジーナリゾート由布院 및 大分県由布市湯布院町川上460‐6 주소가 공식 くぬぎの杜 460-6과 일치합니다. 圍-Kakoi- 주소 447-1과 본관을 구분했습니다.",
+    "checkedAt": "2026-10-05T06:23:58.269Z",
+    "effectiveDate": "2025-11-16",
+    "openedAt": "2025-11-16"
+  }
+]

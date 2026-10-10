@@ -1,0 +1,331 @@
+[
+  {
+    "id": "pref-hokkaido",
+    "slug": "hokkaido",
+    "name": "홋카이도",
+    "ja": "北海道",
+    "en": "Hokkaido"
+  },
+  {
+    "id": "pref-aomori",
+    "slug": "aomori",
+    "name": "아오모리",
+    "ja": "青森県",
+    "en": "Aomori"
+  },
+  {
+    "id": "pref-iwate",
+    "slug": "iwate",
+    "name": "이와테",
+    "ja": "岩手県",
+    "en": "Iwate"
+  },
+  {
+    "id": "pref-miyagi",
+    "slug": "miyagi",
+    "name": "미야기",
+    "ja": "宮城県",
+    "en": "Miyagi"
+  },
+  {
+    "id": "pref-akita",
+    "slug": "akita",
+    "name": "아키타",
+    "ja": "秋田県",
+    "en": "Akita"
+  },
+  {
+    "id": "pref-yamagata",
+    "slug": "yamagata",
+    "name": "야마가타",
+    "ja": "山形県",
+    "en": "Yamagata"
+  },
+  {
+    "id": "pref-fukushima",
+    "slug": "fukushima",
+    "name": "후쿠시마",
+    "ja": "福島県",
+    "en": "Fukushima"
+  },
+  {
+    "id": "pref-tochigi",
+    "slug": "tochigi",
+    "name": "도치기",
+    "ja": "栃木県",
+    "en": "Tochigi"
+  },
+  {
+    "id": "pref-gunma",
+    "slug": "gunma",
+    "name": "군마",
+    "ja": "群馬県",
+    "en": "Gunma"
+  },
+  {
+    "id": "pref-ibaraki",
+    "slug": "ibaraki",
+    "name": "이바라키",
+    "ja": "茨城県",
+    "en": "Ibaraki"
+  },
+  {
+    "id": "pref-saitama",
+    "slug": "saitama",
+    "name": "사이타마",
+    "ja": "埼玉県",
+    "en": "Saitama"
+  },
+  {
+    "id": "pref-chiba",
+    "slug": "chiba",
+    "name": "지바",
+    "ja": "千葉県",
+    "en": "Chiba"
+  },
+  {
+    "id": "pref-tokyo",
+    "slug": "tokyo",
+    "name": "도쿄",
+    "ja": "東京都",
+    "en": "Tokyo"
+  },
+  {
+    "id": "pref-kanagawa",
+    "slug": "kanagawa",
+    "name": "가나가와 · 하코네",
+    "ja": "神奈川県",
+    "en": "Kanagawa Hakone"
+  },
+  {
+    "id": "pref-yamanashi",
+    "slug": "yamanashi",
+    "name": "야마나시",
+    "ja": "山梨県",
+    "en": "Yamanashi"
+  },
+  {
+    "id": "pref-nagano",
+    "slug": "nagano",
+    "name": "나가노",
+    "ja": "長野県",
+    "en": "Nagano"
+  },
+  {
+    "id": "pref-niigata",
+    "slug": "niigata",
+    "name": "니가타",
+    "ja": "新潟県",
+    "en": "Niigata"
+  },
+  {
+    "id": "pref-toyama",
+    "slug": "toyama",
+    "name": "도야마",
+    "ja": "富山県",
+    "en": "Toyama"
+  },
+  {
+    "id": "pref-ishikawa",
+    "slug": "ishikawa",
+    "name": "이시카와",
+    "ja": "石川県",
+    "en": "Ishikawa"
+  },
+  {
+    "id": "pref-fukui",
+    "slug": "fukui",
+    "name": "후쿠이",
+    "ja": "福井県",
+    "en": "Fukui"
+  },
+  {
+    "id": "pref-shizuoka",
+    "slug": "shizuoka",
+    "name": "시즈오카 · 이즈",
+    "ja": "静岡県",
+    "en": "Shizuoka Izu Atami"
+  },
+  {
+    "id": "pref-gifu",
+    "slug": "gifu",
+    "name": "기후",
+    "ja": "岐阜県",
+    "en": "Gifu"
+  },
+  {
+    "id": "pref-aichi",
+    "slug": "aichi",
+    "name": "아이치 · 나고야",
+    "ja": "愛知県",
+    "en": "Aichi Nagoya"
+  },
+  {
+    "id": "pref-mie",
+    "slug": "mie",
+    "name": "미에",
+    "ja": "三重県",
+    "en": "Mie"
+  },
+  {
+    "id": "pref-shiga",
+    "slug": "shiga",
+    "name": "시가",
+    "ja": "滋賀県",
+    "en": "Shiga"
+  },
+  {
+    "id": "pref-kyoto",
+    "slug": "kyoto",
+    "name": "교토",
+    "ja": "京都府",
+    "en": "Kyoto"
+  },
+  {
+    "id": "pref-oosaka",
+    "slug": "oosaka",
+    "name": "오사카",
+    "ja": "大阪府",
+    "en": "Osaka"
+  },
+  {
+    "id": "pref-hyogo",
+    "slug": "hyogo",
+    "name": "효고 · 고베",
+    "ja": "兵庫県",
+    "en": "Hyogo Kobe"
+  },
+  {
+    "id": "pref-nara",
+    "slug": "nara",
+    "name": "나라",
+    "ja": "奈良県",
+    "en": "Nara"
+  },
+  {
+    "id": "pref-wakayama",
+    "slug": "wakayama",
+    "name": "와카야마",
+    "ja": "和歌山県",
+    "en": "Wakayama"
+  },
+  {
+    "id": "pref-tottori",
+    "slug": "tottori",
+    "name": "돗토리",
+    "ja": "鳥取県",
+    "en": "Tottori"
+  },
+  {
+    "id": "pref-shimane",
+    "slug": "shimane",
+    "name": "시마네",
+    "ja": "島根県",
+    "en": "Shimane"
+  },
+  {
+    "id": "pref-okayama",
+    "slug": "okayama",
+    "name": "오카야마",
+    "ja": "岡山県",
+    "en": "Okayama"
+  },
+  {
+    "id": "pref-hiroshima",
+    "slug": "hiroshima",
+    "name": "히로시마",
+    "ja": "広島県",
+    "en": "Hiroshima"
+  },
+  {
+    "id": "pref-yamaguchi",
+    "slug": "yamaguchi",
+    "name": "야마구치",
+    "ja": "山口県",
+    "en": "Yamaguchi"
+  },
+  {
+    "id": "pref-tokushima",
+    "slug": "tokushima",
+    "name": "도쿠시마",
+    "ja": "徳島県",
+    "en": "Tokushima"
+  },
+  {
+    "id": "pref-kagawa",
+    "slug": "kagawa",
+    "name": "가가와",
+    "ja": "香川県",
+    "en": "Kagawa"
+  },
+  {
+    "id": "pref-ehime",
+    "slug": "ehime",
+    "name": "에히메",
+    "ja": "愛媛県",
+    "en": "Ehime"
+  },
+  {
+    "id": "pref-kochi",
+    "slug": "kochi",
+    "name": "고치",
+    "ja": "高知県",
+    "en": "Kochi"
+  },
+  {
+    "id": "pref-fukuoka",
+    "slug": "fukuoka",
+    "name": "후쿠오카",
+    "ja": "福岡県",
+    "en": "Fukuoka"
+  },
+  {
+    "id": "pref-saga",
+    "slug": "saga",
+    "name": "사가",
+    "ja": "佐賀県",
+    "en": "Saga"
+  },
+  {
+    "id": "pref-nagasaki",
+    "slug": "nagasaki",
+    "name": "나가사키",
+    "ja": "長崎県",
+    "en": "Nagasaki"
+  },
+  {
+    "id": "pref-kumamoto",
+    "slug": "kumamoto",
+    "name": "구마모토",
+    "ja": "熊本県",
+    "en": "Kumamoto"
+  },
+  {
+    "id": "pref-ooita",
+    "slug": "ooita",
+    "name": "오이타 · 유후인",
+    "ja": "大分県",
+    "en": "Oita Yufuin Beppu"
+  },
+  {
+    "id": "pref-miyazaki",
+    "slug": "miyazaki",
+    "name": "미야자키",
+    "ja": "宮崎県",
+    "en": "Miyazaki"
+  },
+  {
+    "id": "pref-kagoshima",
+    "slug": "kagoshima",
+    "name": "가고시마",
+    "ja": "鹿児島県",
+    "en": "Kagoshima"
+  },
+  {
+    "id": "pref-okinawa",
+    "slug": "okinawa",
+    "name": "오키나와",
+    "ja": "沖縄県",
+    "en": "Okinawa"
+  }
+]

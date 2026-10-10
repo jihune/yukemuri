@@ -1,0 +1,138 @@
+[
+  {
+    "id": "jalan-340595",
+    "nameKo": "시나가와 프린스 호텔",
+    "matchedName": "品川プリンスホテル",
+    "verifiedAt": "2026-10-04T07:20:43.318371Z",
+    "sourceUrl": "https://www.gotokyo.org/kr/spot/821/index.html",
+    "sourceLabel": "GO TOKYO 공식 한국어 숙소명",
+    "identityEvidence": "품천/시나가와 프린스: 일본어 원명 品川プリンスホテル, 도쿄 미나토 다카나와 4-10-30 일치",
+    "aliases": []
+  },
+  {
+    "id": "jalan-397480",
+    "nameKo": "그랜드 닛코 도쿄 다이바",
+    "matchedName": "グランドニッコー東京 台場",
+    "verifiedAt": "2026-10-04T07:20:43.318386Z",
+    "sourceUrl": "https://www.gotokyo.org/kr/spot/791/index.html",
+    "sourceLabel": "GO TOKYO 공식 한국어 숙소명",
+    "identityEvidence": "일본어 원명 グランドニッコー東京 台場, 도쿄 미나토 다이바 2-6-1 일치",
+    "aliases": []
+  },
+  {
+    "id": "trip-737157",
+    "nameKo": "미야코 호텔 교토 하치조",
+    "matchedName": "Miyako Hotel Kyoto Hachijo",
+    "verifiedAt": "2026-10-04T07:20:43.318390Z",
+    "sourceUrl": "https://www.yeogi.com/overseas-accommodations/3188",
+    "sourceLabel": "여기어때 한국어 숙소명",
+    "identityEvidence": "영문 Miyako Hotel Kyoto Hachijo, 교토 미나미구 17 Nishikujo Inmachi 일치",
+    "aliases": []
+  },
+  {
+    "id": "jalan-302815",
+    "nameKo": "호텔 케이한 유니버설 타워",
+    "matchedName": "ホテル京阪 ユニバーサル・タワー",
+    "verifiedAt": "2026-10-04T07:20:43.318392Z",
+    "sourceUrl": "https://global.hotelkeihan.co.jp/ko/hotel/hotel-keihan-universal-tower/",
+    "sourceLabel": "호텔 케이한 공식 한국어 숙소명",
+    "identityEvidence": "ホテル京阪 ユニバーサル・タワー, 오사카 고노하나구 시마야 6-2-45 공식 한국어 페이지 주소 일치",
+    "aliases": [
+      "호텔 게이한 유니버설타워"
+    ]
+  },
+  {
+    "id": "jalan-322254",
+    "nameKo": "조잔케이 뷰 호텔",
+    "matchedName": "定山渓ビューホテル（グランベルホテルズ＆リゾーツ）",
+    "verifiedAt": "2026-10-04T07:20:43.318394Z",
+    "sourceUrl": "https://kr.trip.com/hotels/minami-ward-hotel-detail-2140193/jozankei-view-hotel/",
+    "sourceLabel": "Trip.com 한국어 숙소명",
+    "identityEvidence": "定山渓ビューホテル, 조잔케이 온천 히가시 2-111-3, Jalan 한국어 뷰호텔 페이지 교차 확인",
+    "aliases": [
+      "죠산케이 뷰호텔"
+    ]
+  },
+  {
+    "id": "jalan-319763",
+    "nameKo": "호텔 오쿠라 고베",
+    "matchedName": "ホテルオークラ神戸",
+    "verifiedAt": "2026-10-04T07:20:43.318395Z",
+    "sourceUrl": "https://okura.com/ko/japan/kobe/hotel-okura-kobe/",
+    "sourceLabel": "오쿠라 닛코 공식 한국어 숙소명",
+    "identityEvidence": "ホテルオークラ神戸, 고베 시 주오구 하토바초 2-1; 공식 호텔 목록 및 고베 관광재단 한국어 안내 일치",
+    "aliases": []
+  },
+  {
+    "id": "jalan-340565",
+    "nameKo": "삿포로 프린스 호텔",
+    "matchedName": "札幌プリンスホテル",
+    "verifiedAt": "2026-10-04T07:20:43.318397Z",
+    "sourceUrl": "https://www.princehotels.com/sapporo/ko/",
+    "sourceLabel": "프린스 호텔 공식 한국어 숙소명",
+    "identityEvidence": "札幌プリンスホテル, 삿포로 주오구 미나미2조 니시11초메 일치",
+    "aliases": []
+  },
+  {
+    "id": "jalan-332057",
+    "nameKo": "고베 포트피아 호텔",
+    "matchedName": "神戸ポートピアホテル",
+    "verifiedAt": "2026-10-04T07:20:43.318398Z",
+    "sourceUrl": "https://www.portopia.co.jp/ko/stay/",
+    "sourceLabel": "포트피아 호텔 공식 한국어 숙소명",
+    "identityEvidence": "神戸ポートピアホテル, 고베 주오구 미나토지마나카마치 6-10-1 일치",
+    "aliases": []
+  },
+  {
+    "id": "trip-42519346",
+    "nameKo": "오디시스 스위트 오사카 에어포트 호텔",
+    "matchedName": "Odysis Suites Osaka Airport Hotel",
+    "verifiedAt": "2026-10-04T07:20:43.318399Z",
+    "sourceUrl": "https://www.odysissuitesosaka.com/ko/company/",
+    "sourceLabel": "오디시스 공식 한국어 숙소명",
+    "identityEvidence": "영문 Odysis Suites Osaka Airport Hotel과 공식 페이지 병기 일치, 이즈미사노 린쿠 왕래 북쪽 1번지 SiS 린쿠 타워",
+    "aliases": []
+  },
+  {
+    "id": "trip-705045",
+    "nameKo": "토요코인 나리타공항 혼칸",
+    "matchedName": "Toyoko Inn Narita Airport Honkan",
+    "verifiedAt": "2026-10-04T07:20:43.318401Z",
+    "sourceUrl": "https://kr.trip.com/hotels/narita-hotel-detail-705045/toyoko-inn-narita-airport-honkan/",
+    "sourceLabel": "Trip.com 한국어 숙소명",
+    "identityEvidence": "Trip.com 원 숙소 ID 705045 일치, 영문 Toyoko Inn Narita Airport Honkan, 나리타 560 Tokko",
+    "aliases": []
+  },
+  {
+    "id": "trip-688186",
+    "nameKo": "간사이 공항 워싱턴 호텔",
+    "matchedName": "Kansai Airport Washington Hotel",
+    "verifiedAt": "2026-10-04T07:20:43.318402Z",
+    "sourceUrl": "https://www.yeogi.com/overseas-accommodations/171580",
+    "sourceLabel": "여기어때 한국어 숙소명",
+    "identityEvidence": "영문 Kansai Airport Washington Hotel 병기 일치, 오사카 이즈미사노 린쿠타운 공항호텔",
+    "aliases": []
+  },
+  {
+    "id": "trip-67309116",
+    "nameKo": "오키나와 히노데 호텔",
+    "matchedName": "Okinawa Hinode Resort and Hot Spring Hotel",
+    "verifiedAt": "2026-10-04T07:20:43.318403Z",
+    "sourceUrl": "https://hinode-h.com/okinawa/ko/home/",
+    "sourceLabel": "히노데 호텔 공식 한국어 숙소명",
+    "identityEvidence": "영문 Okinawa Hinode Resort and Hot Spring Hotel, 나하 마키시 3-18-33 동일 숙소",
+    "aliases": [
+      "오키나와 히노데 온천 리조트 호텔"
+    ]
+  },
+  {
+    "id": "trip-106526338",
+    "nameKo": "OMO 간사이 공항 by 호시노 리조트",
+    "matchedName": "OMO Kansai Airport by Hoshino Resorts",
+    "verifiedAt": "2026-10-04T07:20:43.318405Z",
+    "sourceUrl": "https://hoshinoresorts.com/ko/hotels/omokansaiairport/",
+    "sourceLabel": "호시노 리조트 공식 한국어 숙소명",
+    "identityEvidence": "영문 OMO Kansai Airport by Hoshino Resorts, 이즈미사노 1-833 Rinku Oraikita 일치",
+    "aliases": []
+  }
+]

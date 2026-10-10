@@ -1,0 +1,4 @@
+interface:
+  display_name: "유케무리 유지보수"
+  short_description: "유케무리 클라우드 개발·검사·Sites 인수인계 절차"
+  default_prompt: "Use $yukemuri-maintenance to continue the next Yukemuri task from the repository handoff."

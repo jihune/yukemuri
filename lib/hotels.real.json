@@ -1,0 +1,3613 @@
+[
+  {
+    "id": "daiichi-takimotokan",
+    "names": {
+      "ko": "다이이치 타키모토칸",
+      "ja": "第一滝本館",
+      "en": "Dai-ichi Takimotokan"
+    },
+    "kind": "hotel",
+    "regionId": "noboribetsu",
+    "location": {
+      "label": "노보리베츠 온천",
+      "address": "onsencho, ５５, Noboribetsu City, Hokkaido, 059-0551, Japan",
+      "latitude": 42.494749,
+      "longitude": 141.144514,
+      "isApproximate": false
+    },
+    "description": "지옥계곡 옆에 자리한 대형 온천 호텔. 여러 원천을 사용하는 대욕장과 노천탕을 갖추고 있습니다.",
+    "image": {
+      "url": "https://takimotokan.co.jp/wp-content/uploads/2024/06/spa-m-1.webp",
+      "alt": "다이이치 타키모토칸 · Indoor hot-spring bath with large windows overlooking greenery at Dai-ichi Takimotokan",
+      "sourceId": "daiichi-takimotokan:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "daiichi-takimotokan:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "daiichi-takimotokan:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "daiichi-takimotokan:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": false,
+        "sourceId": "daiichi-takimotokan:faq",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "공식 FAQ에서 전세탕을 제공하지 않는다고 안내합니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "daiichi-takimotokan:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "서관 프리미엄 노천온천 객실 등 일부 객실만 해당합니다. 일반 객실과 구분해 예약하세요."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "daiichi-takimotokan:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "서관 프리미엄 노천온천 객실 등 일부 객실만 해당합니다. 일반 객실과 구분해 예약하세요."
+      }
+    },
+    "spring": {
+      "types": [
+        "5종류의 원천"
+      ],
+      "waterNotes": "여러 원천의 서로 다른 온천을 한 대욕장에서 비교할 수 있습니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "daiichi-takimotokan:trip",
+        "provider": "trip",
+        "score": 9.3,
+        "scale": 10,
+        "reviewCount": 3255,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "뷔페 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "daiichi-takimotokan:jalan",
+        "provider": "jalan",
+        "score": 4.6,
+        "scale": 5,
+        "reviewCount": 7369,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad364904/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://takimotokan.co.jp/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "daiichi-takimotokan:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://takimotokan.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://takimotokan.co.jp/ko/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://takimotokan.co.jp/en/room/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:faq",
+        "sourceType": "manual",
+        "label": "공식 자주 묻는 질문",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://takimotokan.co.jp/en/faq/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:29.672015+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:31.960508+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad364904/",
+        "isMock": false
+      },
+      {
+        "sourceId": "daiichi-takimotokan:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://takimotokan.co.jp/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "takinoya",
+    "names": {
+      "ko": "노보리베츠 온천향 타키노야",
+      "ja": "登別温泉郷 滝乃家",
+      "en": "Noboribetsu Onsenkyo Takinoya"
+    },
+    "kind": "ryokan",
+    "regionId": "noboribetsu",
+    "location": {
+      "label": "노보리베츠 온천",
+      "address": "Noboribetsuonsencho, 162 162番地, Noboribetsu City, Hokkaido, 059-0551, Japan",
+      "latitude": 42.494138,
+      "longitude": 141.141707,
+      "isApproximate": false
+    },
+    "description": "정원과 숲에 둘러싸인 노보리베츠 료칸. 대욕장과 노천탕, 노천온천을 갖춘 일부 객실을 운영합니다.",
+    "image": {
+      "url": "https://noboribetsu-spa.jp/en/wp-content/uploads/sites/2/2021/02/hotel006-4.jpg",
+      "alt": "노보리베츠 온천향 타키노야 · A private hot-spring bath with a forest view at Takinoya",
+      "sourceId": "takinoya:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "takinoya:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "takinoya:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "takinoya:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": false,
+        "sourceId": "takinoya:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "일본온천협회 시설 정보에서 대절탕 수는 0개로 안내합니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "takinoya:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "객실 노천탕이 있는 객실 타입에 한해 이용할 수 있습니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "takinoya:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "객실 노천탕이 있는 객실 타입에 한해 이용할 수 있습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "유황천",
+        "염화물천",
+        "철 함유 온천"
+      ],
+      "waterNotes": "관광협회 안내에서 여러 종류의 온천과 숲을 바라보는 욕장을 소개합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "takinoya:trip",
+        "provider": "trip",
+        "score": 9.5,
+        "scale": 10,
+        "reviewCount": 304,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "넓은 객실"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "takinoya:jalan",
+        "provider": "jalan",
+        "score": 4.7,
+        "scale": 5,
+        "reviewCount": 759,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad320864/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.takinoya.co.jp/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BB%E5%88%A5%E6%B8%A9%E6%B3%89%E9%83%B7%20%E6%BB%9D%E4%B9%83%E5%AE%B6%20Noboribetsuonsencho%2C%20162%20162%E7%95%AA%E5%9C%B0%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "takinoya:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.takinoya.co.jp/",
+        "isMock": false
+      },
+      {
+        "sourceId": "takinoya:spa",
+        "sourceType": "manual",
+        "label": "노보리베츠 관광협회 · 숙소 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://noboribetsu-spa.jp/en/hotels/hotel006/",
+        "isMock": false
+      },
+      {
+        "sourceId": "takinoya:room",
+        "sourceType": "manual",
+        "label": "일본온천협회 · 시설 정보",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.spa.or.jp/search_f/detail_f/?F_ID=1765",
+        "isMock": false
+      },
+      {
+        "sourceId": "takinoya:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:30.069208+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/",
+        "isMock": false
+      },
+      {
+        "sourceId": "takinoya:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:31.745516+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad320864/",
+        "isMock": false
+      },
+      {
+        "sourceId": "takinoya:photo",
+        "sourceType": "asset",
+        "label": "관광협회 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://noboribetsu-spa.jp/en/hotels/hotel006/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "bourou-noboribetsu",
+    "names": {
+      "ko": "보로 노구치 노보리베츠",
+      "ja": "望楼NOGUCHI登別",
+      "en": "Bourou Noguchi Noboribetsu (Adult Only)"
+    },
+    "kind": "ryokan",
+    "regionId": "noboribetsu",
+    "location": {
+      "label": "노보리베츠 온천",
+      "address": "200-1 Noboribetsuonsencho, Noboribetsu City, Hokkaido, 059-0551, Japan",
+      "latitude": 42.500229,
+      "longitude": 141.140836,
+      "isApproximate": false
+    },
+    "description": "전 객실에 전망 온천탕을 갖춘 성인 대상 료칸. 공용 대욕장과 노천탕도 이용할 수 있습니다.",
+    "image": {
+      "url": "https://www.bourou.com/noguchi-cms-en/wp-content/uploads/2016/08/air_bath_img01.jpg",
+      "alt": "보로 노구치 노보리베츠 · Illuminated outdoor hot-spring bath at Bourou Noguchi Noboribetsu",
+      "sourceId": "bourou-noboribetsu:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "bourou-noboribetsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "bourou-noboribetsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "bourou-noboribetsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "bourou-noboribetsu:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "bourou-noboribetsu:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 객실에 전망 온천탕을 갖춥니다. 객실 전망탕을 노천탕과 구분하세요."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "bourou-noboribetsu:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "유황천"
+      ],
+      "waterNotes": "노보리베츠 특유의 유백색 유황 온천을 사용합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "bourou-noboribetsu:trip",
+        "provider": "trip",
+        "score": 8.9,
+        "scale": 10,
+        "reviewCount": 93,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "추천하는 숙소"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "bourou-noboribetsu:jalan",
+        "provider": "jalan",
+        "score": 4.5,
+        "scale": 5,
+        "reviewCount": 36,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1487991/bourou-noguchi-noboribetsu",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad311972/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.bourou.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%9B%E6%A5%BCNOGUCHI%E7%99%BB%E5%88%A5%20200-1%20Noboribetsuonsencho%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "bourou-noboribetsu:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-noboribetsu:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou.com/en/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-noboribetsu:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou.com/en/room/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-noboribetsu:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:29.791768+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1487991/bourou-noguchi-noboribetsu",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-noboribetsu:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:31.942678+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad311972/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-noboribetsu:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou.com/en/spa/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "noboribetsu-grand",
+    "names": {
+      "ko": "노보리베츠 그랜드 호텔",
+      "ja": "登別グランドホテル",
+      "en": "Noboribetsu Grand Hotel"
+    },
+    "kind": "hotel",
+    "regionId": "noboribetsu",
+    "location": {
+      "label": "노보리베츠 온천",
+      "address": "154 Noboribetsuonsencho, Noboribetsu City, Hokkaido, 059-0551, Japan",
+      "latitude": 42.491954,
+      "longitude": 141.141868,
+      "isApproximate": false
+    },
+    "description": "로마식 대욕장과 정원 노천탕이 특징인 온천 호텔. 객실 노천탕이 포함된 타입도 따로 운영합니다.",
+    "image": {
+      "url": "https://www.nobogura.co.jp/en/images/image08.jpg",
+      "alt": "노보리베츠 그랜드 호텔 · Covered wooden open-air hot-spring bath at Noboribetsu Grand Hotel",
+      "sourceId": "noboribetsu-grand:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "noboribetsu-grand:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "noboribetsu-grand:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "noboribetsu-grand:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "noboribetsu-grand:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": null,
+        "sourceId": "noboribetsu-grand:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "noboribetsu-grand:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "노천탕 포함 객실은 일부 타입만 해당합니다. 객실탕의 온천수 여부는 예약 전 확인하세요."
+      }
+    },
+    "spring": {
+      "types": [
+        "유황천",
+        "철 함유 온천",
+        "식염천"
+      ],
+      "waterNotes": "공식 안내에서 세 종류의 온천과 로마식 대욕장, 정원 노천탕을 소개합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "noboribetsu-grand:trip",
+        "provider": "trip",
+        "score": 8.9,
+        "scale": 10,
+        "reviewCount": 545,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "저녁 식사 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "noboribetsu-grand:jalan",
+        "provider": "jalan",
+        "score": 4.2,
+        "scale": 5,
+        "reviewCount": 6314,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-703466/noboribetsu-grand-hotel/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad331184/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.nobogura.co.jp/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BB%E5%88%A5%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E3%83%9B%E3%83%86%E3%83%AB%20154%20Noboribetsuonsencho%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "noboribetsu-grand:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.nobogura.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "noboribetsu-grand:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.nobogura.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "noboribetsu-grand:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.nobogura.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "noboribetsu-grand:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:29.948122+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/noboribetsu-hotel-detail-703466/noboribetsu-grand-hotel/",
+        "isMock": false
+      },
+      {
+        "sourceId": "noboribetsu-grand:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:31.907543+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad331184/",
+        "isMock": false
+      },
+      {
+        "sourceId": "noboribetsu-grand:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.nobogura.co.jp/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "nonokaze",
+    "names": {
+      "ko": "더 레이크뷰 도야 노노카제 리조트",
+      "ja": "ザ レイクビュー TOYA 乃の風リゾート",
+      "en": "The Lake View Toya Nonokaze Resort"
+    },
+    "kind": "hotel",
+    "regionId": "toya",
+    "location": {
+      "label": "도야호 온천",
+      "address": "29-1 Toyakoonsen, 049-5721 Toyako Town, Abuta District, Hokkaido, Japan",
+      "latitude": 42.565642,
+      "longitude": 140.822264,
+      "isApproximate": false
+    },
+    "description": "도야호를 내려다보는 전망 노천탕이 특징인 리조트. 전세탕과 온천 전망탕을 갖춘 일부 객실을 선택할 수 있습니다.",
+    "image": {
+      "url": "https://en.nonokaze-resort.com/common/new/image/main_1.jpg",
+      "alt": "더 레이크뷰 도야 노노카제 리조트 · A guest room with floor-to-ceiling windows overlooking Lake Toya at Nonokaze Resort",
+      "sourceId": "nonokaze:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "nonokaze:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "nonokaze:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "nonokaze:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "nonokaze:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "nonokaze:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "이그제큐티브 트윈·스위트 등 온천 전망탕이 명시된 일부 객실만 해당합니다. 일반 객실 욕조는 온천이 아닙니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "nonokaze:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "도야호 온천을 사용하는 공용탕과 호수를 바라보는 전망 노천탕을 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "nonokaze:trip",
+        "provider": "trip",
+        "score": 9.2,
+        "scale": 10,
+        "reviewCount": 1717,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "저녁 식사 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "nonokaze:jalan",
+        "provider": "jalan",
+        "score": 4.8,
+        "scale": 5,
+        "reviewCount": 378,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/toyako-hotel-detail-706072/the-lake-view-toya-nonokaze-resort/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad384352/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://en.nonokaze-resort.com/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B6%20%E3%83%AC%E3%82%A4%E3%82%AF%E3%83%93%E3%83%A5%E3%83%BC%20TOYA%20%E4%B9%83%E3%81%AE%E9%A2%A8%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88%2029-1%20Toyakoonsen%2C%20049-5721%20Toyako%20Town%2C%20Abuta%20District%2C%20Hokkaido%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "nonokaze:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://en.nonokaze-resort.com/",
+        "isMock": false
+      },
+      {
+        "sourceId": "nonokaze:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://nonokaze-resort.com/spa",
+        "isMock": false
+      },
+      {
+        "sourceId": "nonokaze:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://en.nonokaze-resort.com/room",
+        "isMock": false
+      },
+      {
+        "sourceId": "nonokaze:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:37.574557+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/toyako-hotel-detail-706072/the-lake-view-toya-nonokaze-resort/",
+        "isMock": false
+      },
+      {
+        "sourceId": "nonokaze:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:40.214916+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad384352/",
+        "isMock": false
+      },
+      {
+        "sourceId": "nonokaze:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://en.nonokaze-resort.com/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "toya-manseikaku",
+    "names": {
+      "ko": "도야코 만세이카쿠 호텔 레이크사이드 테라스",
+      "ja": "洞爺湖万世閣ホテルレイクサイドテラス",
+      "en": "토야코 만세이카쿠 호텔 레이크사이드 테라스(Toyako Manseikaku Hotel Lakeside Terrace)"
+    },
+    "kind": "hotel",
+    "regionId": "toya",
+    "location": {
+      "label": "도야호 온천",
+      "address": "21 Toyakoonsen, 049-5721 도야코, 아부타 군, 홋카이도, 일본",
+      "latitude": 42.565812,
+      "longitude": 140.824614,
+      "isApproximate": false
+    },
+    "description": "도야호 전망의 호시노유와 정원을 바라보는 쓰키노유를 갖춘 호텔. 온천은 공용 욕장에서 즐기는 숙소입니다.",
+    "image": {
+      "url": "https://www.toyamanseikaku.jp/en/images/spa1-1.jpg",
+      "alt": "도야코 만세이카쿠 호텔 레이크사이드 테라스 · Infinity-style outdoor hot-spring bath overlooking Lake Toya at Toyako Manseikaku",
+      "sourceId": "toya-manseikaku:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "toya-manseikaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "toya-manseikaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "toya-manseikaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "toya-manseikaku:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": false,
+        "sourceId": "toya-manseikaku:faq",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "공식 FAQ에 따르면 객실 욕조는 일반 온수이며 온천수가 아닙니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "toya-manseikaku:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "호시노유와 쓰키노유에 실내탕과 노천탕이 있습니다. 이용 시간과 남녀 교대는 공식 안내를 확인하세요.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "toya-manseikaku:trip",
+        "provider": "trip",
+        "score": 8.8,
+        "scale": 10,
+        "reviewCount": 1623,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "저녁 식사 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "toya-manseikaku:jalan",
+        "provider": "jalan",
+        "score": 4.3,
+        "scale": 5,
+        "reviewCount": 5132,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad324102/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E6%B4%9E%E7%88%BA%E6%B9%96%E4%B8%87%E4%B8%96%E9%96%A3%E3%83%9B%E3%83%86%E3%83%AB%E3%83%AC%E3%82%A4%E3%82%AF%E3%82%B5%E3%82%A4%E3%83%89%E3%83%86%E3%83%A9%E3%82%B9%2021%20Toyakoonsen%2C%20049-5721%20%EB%8F%84%EC%95%BC%EC%BD%94%2C%20%EC%95%84%EB%B6%80%ED%83%80%20%EA%B5%B0%2C%20%ED%99%8B%EC%B9%B4%EC%9D%B4%EB%8F%84%2C%20%EC%9D%BC%EB%B3%B8",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "toya-manseikaku:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:faq",
+        "sourceType": "manual",
+        "label": "공식 자주 묻는 질문",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:36.022267+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:40.096249+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad324102/",
+        "isMock": false
+      },
+      {
+        "sourceId": "toya-manseikaku:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.toyamanseikaku.jp/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "konosumika",
+    "names": {
+      "ko": "더 레이크 스위트 고노스미카",
+      "ja": "ザ・レイクスイート 湖の栖",
+      "en": "더 레이크 스위트 코 노 수미카(The Lake Suite Ko No Sumika)"
+    },
+    "kind": "hotel",
+    "regionId": "toya",
+    "location": {
+      "label": "도야호 온천 · 소베쓰",
+      "address": "7-1 Toyakoonsen, 049-5731 소베쓰 정, 우스 군, 홋카이도, 일본",
+      "latitude": 42.565524,
+      "longitude": 140.833172,
+      "isApproximate": false
+    },
+    "description": "전 객실에 도야호 전망의 온천 노천탕을 갖춘 리조트. 객실 테라스와 공용 전망탕에서 호수를 바라볼 수 있습니다.",
+    "image": {
+      "url": "https://konosumika.com/wp-content/uploads/2020/12/exterior_1484-1024x683.jpg",
+      "alt": "더 레이크 스위트 고노스미카 · The illuminated exterior of The Lake Suite Konosumika at dusk",
+      "sourceId": "konosumika:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "konosumika:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "konosumika:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "konosumika:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "konosumika:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "konosumika:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 객실에 도야호를 바라보는 온천 노천탕과 테라스가 있습니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "konosumika:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 객실에 도야호를 바라보는 온천 노천탕과 테라스가 있습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "공식 객실 안내에서 온천 노천탕을 명시합니다. 최상층 공용 전망탕도 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "konosumika:trip",
+        "provider": "trip",
+        "score": 9.6,
+        "scale": 10,
+        "reviewCount": 67,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "추천하는 숙소"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "konosumika:jalan",
+        "provider": "jalan",
+        "score": 4.5,
+        "scale": 5,
+        "reviewCount": 102,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://kr.trip.com/hotels/sobetsu-hotel-detail-30149326/the-lake-suite-ko-no-sumika/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad352222/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://konosumika.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B6%E3%83%BB%E3%83%AC%E3%82%A4%E3%82%AF%E3%82%B9%E3%82%A4%E3%83%BC%E3%83%88%20%E6%B9%96%E3%81%AE%E6%A0%96%207-1%20Toyakoonsen%2C%20049-5731%20%EC%86%8C%EB%B2%A0%EC%93%B0%20%EC%A0%95%2C%20%EC%9A%B0%EC%8A%A4%20%EA%B5%B0%2C%20%ED%99%8B%EC%B9%B4%EC%9D%B4%EB%8F%84%2C%20%EC%9D%BC%EB%B3%B8",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "konosumika:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://konosumika.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "konosumika:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://konosumika.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "konosumika:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://konosumika.com/ko/accommodation",
+        "isMock": false
+      },
+      {
+        "sourceId": "konosumika:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:36.001095+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://kr.trip.com/hotels/sobetsu-hotel-detail-30149326/the-lake-suite-ko-no-sumika/",
+        "isMock": false
+      },
+      {
+        "sourceId": "konosumika:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:40.014165+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad352222/",
+        "isMock": false
+      },
+      {
+        "sourceId": "konosumika:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://konosumika.com/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "suizantei",
+    "names": {
+      "ko": "조잔케이 다이이치 호텔 스이잔테이",
+      "ja": "定山渓第一寶亭留 翠山亭",
+      "en": "Jozankei Daiichi Hotel Suizantei"
+    },
+    "kind": "ryokan",
+    "regionId": "sapporo",
+    "location": {
+      "label": "삿포로 · 조잔케이 온천",
+      "address": "Jozankeionsennishi, 3 Chome−105 定山渓第一寶亭留翠山亭, Minami Ward, Sapporo City, Hokkaido, 061-2303, Japan",
+      "latitude": 42.96732,
+      "longitude": 141.161838,
+      "isApproximate": false
+    },
+    "description": "조잔케이의 숲을 바라보는 온천 료칸. 전 객실 온천탕과 공용 노천탕, 전세탕을 갖추고 있습니다.",
+    "image": {
+      "url": "https://jyozankei-daiichi.co.jp/jyozankei/img/spa-photo.jpg",
+      "alt": "조잔케이 다이이치 호텔 스이잔테이 · Wood-lined hot-spring bath overlooking trees at Jozankei Suizantei",
+      "sourceId": "suizantei:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "suizantei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "suizantei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "suizantei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "suizantei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "전세탕은 예약과 이용 조건을 공식 안내에서 확인하세요."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "suizantei:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "현재 공식 객실 안내는 전 객실에 온천탕이 있다고 명시합니다. 전망탕과 노천탕은 다릅니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "suizantei:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨 염화물천"
+      ],
+      "waterNotes": "여러 자가 원천을 혼합한 온천을 공용탕과 객실탕에 공급합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "suizantei:trip",
+        "provider": "trip",
+        "score": 9.1,
+        "scale": 10,
+        "reviewCount": 322,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "넓은 객실"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "suizantei:jalan",
+        "provider": "jalan",
+        "score": 4.5,
+        "scale": 5,
+        "reviewCount": 3325,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/sapporo-hotel-detail-705279/jozankei-daiichi-hotel-suizantei/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad319212/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://jyozankei-daiichi.co.jp/jyozankei/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9A%E5%B1%B1%E6%B8%93%E7%AC%AC%E4%B8%80%E5%AF%B6%E4%BA%AD%E7%95%99%20%E7%BF%A0%E5%B1%B1%E4%BA%AD%20Jozankeionsennishi%2C%203%20Chome%E2%88%92105%20%E5%AE%9A%E5%B1%B1%E6%B8%93%E7%AC%AC%E4%B8%80%E5%AF%B6%E4%BA%AD%E7%95%99%E7%BF%A0%E5%B1%B1%E4%BA%AD%2C%20Minami%20Ward%2C%20Sapporo%20City%2C%20Hokkaido%2C%20061-2303%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "suizantei:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://jyozankei-daiichi.co.jp/jyozankei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "suizantei:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://jyozankei-daiichi.co.jp/jyozankei/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "suizantei:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://jyozankei-daiichi.co.jp/jyozankei/room/",
+        "isMock": false
+      },
+      {
+        "sourceId": "suizantei:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:38.230311+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/sapporo-hotel-detail-705279/jozankei-daiichi-hotel-suizantei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "suizantei:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:40.139144+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad319212/",
+        "isMock": false
+      },
+      {
+        "sourceId": "suizantei:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://jyozankei-daiichi.co.jp/jyozankei/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "furukawa",
+    "names": {
+      "ko": "누쿠모리노야도 후루카와",
+      "ja": "ぬくもりの宿 ふる川",
+      "en": "누쿠모리 노 야도 후루카와(Nukumori No Yado Furukawa)"
+    },
+    "kind": "ryokan",
+    "regionId": "sapporo",
+    "location": {
+      "label": "삿포로 · 조잔케이 온천",
+      "address": "4-353, Jozankei-onsen, Nishi, 미나미 구, 061-2303 삿포로시, 홋카이도, 일본",
+      "latitude": 42.965734,
+      "longitude": 141.161254,
+      "isApproximate": false
+    },
+    "description": "따뜻한 목조 분위기와 여러 온천 욕장이 특징인 조잔케이 료칸. 가족이나 일행이 예약해 이용하는 전세탕이 있습니다.",
+    "image": {
+      "url": "https://www.yado-furu.com/cms-wp/wp-content/themes/jozan/img/top/onsen_img_01.jpg",
+      "alt": "누쿠모리노야도 후루카와 · Hot-spring bath beside a Japanese garden at Nukumori no Yado Furukawa",
+      "sourceId": "furukawa:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "furukawa:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "furukawa:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "furukawa:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "furukawa:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "전세탕은 사전 예약이 필요하며 요금과 이용 시간을 확인하세요."
+      },
+      "roomOnsen": {
+        "value": null,
+        "sourceId": "furukawa:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "furukawa:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "조잔케이 온천을 사용하는 여러 욕장과 전세탕을 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "furukawa:trip",
+        "provider": "trip",
+        "score": 9.3,
+        "scale": 10,
+        "reviewCount": 151,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "서비스 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "furukawa:jalan",
+        "provider": "jalan",
+        "score": 4.7,
+        "scale": 5,
+        "reviewCount": 4022,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://kr.trip.com/hotels/minami-ward-hotel-detail-1647178/nukumori-no-yado-furukawa/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad321633/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.yado-furu.com/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%AC%E3%81%8F%E3%82%82%E3%82%8A%E3%81%AE%E5%AE%BF%20%E3%81%B5%E3%82%8B%E5%B7%9D%204-353%2C%20Jozankei-onsen%2C%20Nishi%2C%20%EB%AF%B8%EB%82%98%EB%AF%B8%20%EA%B5%AC%2C%20061-2303%20%EC%82%BF%ED%8F%AC%EB%A1%9C%EC%8B%9C%2C%20%ED%99%8B%EC%B9%B4%EC%9D%B4%EB%8F%84%2C%20%EC%9D%BC%EB%B3%B8",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "furukawa:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.yado-furu.com/",
+        "isMock": false
+      },
+      {
+        "sourceId": "furukawa:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.yado-furu.com/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "furukawa:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.yado-furu.com/",
+        "isMock": false
+      },
+      {
+        "sourceId": "furukawa:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:46.016039+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://kr.trip.com/hotels/minami-ward-hotel-detail-1647178/nukumori-no-yado-furukawa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "furukawa:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:47.659131+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad321633/",
+        "isMock": false
+      },
+      {
+        "sourceId": "furukawa:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.yado-furu.com/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "hanamomiji",
+    "names": {
+      "ko": "하나모미지",
+      "ja": "花もみじ",
+      "en": "Hanamomiji"
+    },
+    "kind": "ryokan",
+    "regionId": "sapporo",
+    "location": {
+      "label": "삿포로 · 조잔케이 온천",
+      "address": "Jozankeionsen Nishi 3-32, Minami Ward, Sapporo City, Hokkaido, 061-2303, Japan",
+      "latitude": 42.966038,
+      "longitude": 141.161848,
+      "isApproximate": false
+    },
+    "description": "조잔케이 온천마을의 료칸. 공용 전망탕과 노천탕, 전세탕을 운영하며 일부 객실에 온천탕이 있습니다.",
+    "image": {
+      "url": "https://shikanoyu.co.jp/common/img/hana/jpg/spa/1.jpg",
+      "alt": "하나모미지 · Large indoor hot-spring bath with windows overlooking autumn foliage at Hana Momiji",
+      "sourceId": "hanamomiji:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "hanamomiji:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "hanamomiji:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "hanamomiji:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "hanamomiji:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "hanamomiji:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "URARA 등 온천탕이 명시된 일부 객실 타입만 해당합니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "hanamomiji:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "조잔케이 온천을 사용하는 공용 욕장과 전세탕을 안내합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "hanamomiji:trip",
+        "provider": "trip",
+        "score": 9.1,
+        "scale": 10,
+        "reviewCount": 269,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "조식 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "hanamomiji:jalan",
+        "provider": "jalan",
+        "score": 4.3,
+        "scale": 5,
+        "reviewCount": 3405,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/minami-ward-hotel-detail-704133/hanamomiji/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad315689/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://shikanoyu.co.jp/en/hanamomiji/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E8%8A%B1%E3%82%82%E3%81%BF%E3%81%98%20Jozankeionsen%20Nishi%203-32%2C%20Minami%20Ward%2C%20Sapporo%20City%2C%20Hokkaido%2C%20061-2303%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "hanamomiji:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shikanoyu.co.jp/en/hanamomiji/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hanamomiji:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shikanoyu.co.jp/en/hanamomiji/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hanamomiji:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shikanoyu.co.jp/en/hanamomiji/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hanamomiji:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:37.606257+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/minami-ward-hotel-detail-704133/hanamomiji/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hanamomiji:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:47.682441+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad315689/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hanamomiji:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shikanoyu.co.jp/en/hanamomiji/spa/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "chalet-ivy-jozankei",
+    "names": {
+      "ko": "샬레 아이비 조잔케이",
+      "ja": "シャレーアイビー定山渓",
+      "en": "Chalet Ivy Jozankei"
+    },
+    "kind": "ryokan",
+    "regionId": "sapporo",
+    "location": {
+      "label": "삿포로 · 조잔케이 온천",
+      "address": "3 Chome-231 Jozankeionsenhigashi, Minami Ward, Sapporo City, Hokkaido, 061-2302, Japan",
+      "latitude": 42.966419,
+      "longitude": 141.165443,
+      "isApproximate": false
+    },
+    "description": "전 스위트에 전망 온천탕을 갖춘 조잔케이 숙소. 객실에서 숲과 강 풍경을 바라보며 목욕할 수 있습니다.",
+    "image": {
+      "url": "https://jozankei.jp/en/wp-content/uploads/sites/2/2022/01/5e1ec2d6dcfad3daa3306379ca1b1bd7-800x534.jpg",
+      "alt": "샬레 아이비 조잔케이 · The exterior and entrance of Chalet Ivy Jozankei under a blue sky",
+      "sourceId": "chalet-ivy-jozankei:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "chalet-ivy-jozankei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "chalet-ivy-jozankei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "chalet-ivy-jozankei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "chalet-ivy-jozankei:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "chalet-ivy-jozankei:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 스위트 객실에 전망 온천탕이 있습니다. 실내 전망탕을 노천탕과 구분하세요."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "chalet-ivy-jozankei:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "객실 온천탕 외에도 공용 실내탕과 노천탕을 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "chalet-ivy-jozankei:trip",
+        "provider": "trip",
+        "score": 9.6,
+        "scale": 10,
+        "reviewCount": 202,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "저녁 식사 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/minami-ward-hotel-detail-41629389/chalet-ivy-jozankei/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad394824/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://chaletivy.com/jozankei/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B7%E3%83%A3%E3%83%AC%E3%83%BC%E3%82%A2%E3%82%A4%E3%83%93%E3%83%BC%E5%AE%9A%E5%B1%B1%E6%B8%93%203%20Chome-231%20Jozankeionsenhigashi%2C%20Minami%20Ward%2C%20Sapporo%20City%2C%20Hokkaido%2C%20061-2302%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "chalet-ivy-jozankei:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://chaletivy.com/jozankei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "chalet-ivy-jozankei:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://chaletivy.com/jozankei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "chalet-ivy-jozankei:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://chaletivy.com/jozankei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "chalet-ivy-jozankei:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:47.292811+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/minami-ward-hotel-detail-41629389/chalet-ivy-jozankei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "chalet-ivy-jozankei:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:47.818585+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad394824/",
+        "isMock": false
+      },
+      {
+        "sourceId": "chalet-ivy-jozankei:photo",
+        "sourceType": "asset",
+        "label": "관광협회 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://jozankei.jp/en/hotel/charet-ivy/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "yuen-sapporo",
+    "names": {
+      "ko": "온센 료칸 유엔 삿포로",
+      "ja": "ONSEN RYOKAN 由縁 札幌",
+      "en": "Onsen Ryokan Yuen Sapporo"
+    },
+    "kind": "ryokan",
+    "regionId": "sapporo",
+    "location": {
+      "label": "삿포로 도심",
+      "address": "Kita 1 Jonishi, 7 Chome−６, Chuo Ward, Sapporo City, Hokkaido, 060-0001, Japan",
+      "latitude": 43.062361,
+      "longitude": 141.345636,
+      "isApproximate": false
+    },
+    "description": "삿포로 도심에서 온천을 즐길 수 있는 료칸. 공용 노천탕에 노보리베츠 카루루스의 온천수를 운반해 사용합니다.",
+    "image": {
+      "url": "https://www.uds-hotels.com/wp/wp-content/uploads/2025/03/onsen_image_01-1.jpg",
+      "alt": "온센 료칸 유엔 삿포로 · A stone hot-spring bath in a softly illuminated wooden room at Yuen Sapporo",
+      "sourceId": "yuen-sapporo:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "yuen-sapporo:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "yuen-sapporo:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "yuen-sapporo:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "yuen-sapporo:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": false,
+        "sourceId": "yuen-sapporo:faq",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "공식 FAQ에서 객실에는 온천수를 공급하지 않는다고 안내합니다."
+      },
+      "roomOutdoor": {
+        "value": false,
+        "sourceId": "yuen-sapporo:faq",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "공식 FAQ에서 객실에는 온천수를 공급하지 않는다고 안내합니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "단순온천"
+      ],
+      "waterNotes": "노천탕은 노보리베츠 카루루스에서 운반한 온천수를 사용합니다. 숙소 현장에서 솟는 원천과는 구분됩니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "yuen-sapporo:trip",
+        "provider": "trip",
+        "score": 9.2,
+        "scale": 10,
+        "reviewCount": 305,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "서비스 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "yuen-sapporo:jalan",
+        "provider": "jalan",
+        "score": 4.6,
+        "scale": 5,
+        "reviewCount": 1177,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/sapporo-hotel-detail-57831126/onsen-ryokan-yuen-sapporo/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad396050/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=ONSEN%20RYOKAN%20%E7%94%B1%E7%B8%81%20%E6%9C%AD%E5%B9%8C%20Kita%201%20Jonishi%2C%207%20Chome%E2%88%92%EF%BC%96%2C%20Chuo%20Ward%2C%20Sapporo%20City%2C%20Hokkaido%2C%20060-0001%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "yuen-sapporo:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/onsen/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:faq",
+        "sourceType": "manual",
+        "label": "공식 자주 묻는 질문",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/qa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:47.669798+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/sapporo-hotel-detail-57831126/onsen-ryokan-yuen-sapporo/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:47.947815+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad396050/",
+        "isMock": false
+      },
+      {
+        "sourceId": "yuen-sapporo:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.uds-hotels.com/en/yuen/sapporo/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "bourou-hakodate",
+    "names": {
+      "ko": "보로 노구치 하코다테",
+      "ja": "望楼NOGUCHI函館",
+      "en": "Bourou NOGUCHI Hakodate"
+    },
+    "kind": "ryokan",
+    "regionId": "hakodate",
+    "location": {
+      "label": "하코다테 · 유노카와 온천",
+      "address": "Yunokawacho, 1 Chome−17−22 望楼ＮＯＧＵＣＨＩ函館, Hakodate City, Hokkaido, 042-0932, Japan",
+      "latitude": 41.778676,
+      "longitude": 140.784274,
+      "isApproximate": false
+    },
+    "description": "하코다테 유노카와의 온천 료칸. 공용 전망탕과 일부 객실의 온천 전망탕에서 도시 풍경을 즐길 수 있습니다.",
+    "image": {
+      "url": "https://www.bourou-hakodate.com/noguchi-cms-en/wp-content/uploads/2022/12/%E3%80%90%E6%9C%9B%E6%A5%BC%E5%87%BD%E9%A4%A8%E3%80%91%E6%B8%A9%E6%B3%891.jpg",
+      "alt": "보로 노구치 하코다테 · Rooftop outdoor hot-spring bath overlooking Hakodate at Bourou Noguchi Hakodate",
+      "sourceId": "bourou-hakodate:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "bourou-hakodate:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "bourou-hakodate:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "bourou-hakodate:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "bourou-hakodate:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "bourou-hakodate:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "SUITE와 WAMODERN 객실에 온천 전망탕이 있습니다. 모든 객실 타입에 적용되지 않습니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "bourou-hakodate:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "유노카와 온천을 사용하는 전망 대욕장과 노천탕을 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "bourou-hakodate:trip",
+        "provider": "trip",
+        "score": 8.5,
+        "scale": 10,
+        "reviewCount": 71,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "친절한 응대"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "bourou-hakodate:jalan",
+        "provider": "jalan",
+        "score": 4.5,
+        "scale": 5,
+        "reviewCount": 64,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1488022/bourou-noguchi-hakodate/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad393705/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.bourou-hakodate.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%9B%E6%A5%BCNOGUCHI%E5%87%BD%E9%A4%A8%20Yunokawacho%2C%201%20Chome%E2%88%9217%E2%88%9222%20%E6%9C%9B%E6%A5%BC%EF%BC%AE%EF%BC%AF%EF%BC%A7%EF%BC%B5%EF%BC%A3%EF%BC%A8%EF%BC%A9%E5%87%BD%E9%A4%A8%2C%20Hakodate%20City%2C%20Hokkaido%2C%20042-0932%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "bourou-hakodate:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou-hakodate.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-hakodate:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou-hakodate.com/en/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-hakodate:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou-hakodate.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-hakodate:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:48.001352+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1488022/bourou-noguchi-hakodate/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-hakodate:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:17:06.736725+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad393705/",
+        "isMock": false
+      },
+      {
+        "sourceId": "bourou-hakodate:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.bourou-hakodate.com/en/spa/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "wakamatsu",
+    "names": {
+      "ko": "갓포 료칸 와카마쓰",
+      "ja": "割烹旅館 若松",
+      "en": "Wakamatsu Hot Spring Resort"
+    },
+    "kind": "ryokan",
+    "regionId": "hakodate",
+    "location": {
+      "label": "하코다테 · 유노카와 온천",
+      "address": "1 Chome-2-27 Yunokawacho, Hakodate City, Hokkaido, 042-0932, Japan",
+      "latitude": 41.774379,
+      "longitude": 140.785059,
+      "isApproximate": false
+    },
+    "description": "바다 앞에 자리한 유노카와의 갓포 료칸. 온천 대욕장과 노천탕, 일행끼리 이용하는 전세 반노천탕이 있습니다.",
+    "image": {
+      "url": "https://www.wakamatsuryokan.com/hakodate/bath/img/bath01a.jpg",
+      "alt": "갓포 료칸 와카마쓰 · Wood-lined indoor hot-spring bath overlooking the sea at Wakamatsu Hakodate",
+      "sourceId": "wakamatsu:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "wakamatsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "wakamatsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "wakamatsu:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "wakamatsu:jalan",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "Jalan 공식 숙소 소개에 온천 전세 반노천탕 「蓮」이 안내되어 있습니다."
+      },
+      "roomOnsen": {
+        "value": null,
+        "sourceId": "wakamatsu:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "wakamatsu:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨·칼슘 염화물천"
+      ],
+      "waterNotes": "부지 내 원천을 사용하는 바다 전망 온천을 안내합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "wakamatsu:trip",
+        "provider": "trip",
+        "score": 8.9,
+        "scale": 10,
+        "reviewCount": 84,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "서비스 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "wakamatsu:jalan",
+        "provider": "jalan",
+        "score": 5.0,
+        "scale": 5,
+        "reviewCount": 52,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1485145/wakamatsu-hot-spring-resort/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad309472/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.wakamatsuryokan.com/hakodate/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E5%89%B2%E7%83%B9%E6%97%85%E9%A4%A8%20%E8%8B%A5%E6%9D%BE%201%20Chome-2-27%20Yunokawacho%2C%20Hakodate%20City%2C%20Hokkaido%2C%20042-0932%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "wakamatsu:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.wakamatsuryokan.com/hakodate/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "wakamatsu:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.wakamatsuryokan.com/hakodate/en/bath/",
+        "isMock": false
+      },
+      {
+        "sourceId": "wakamatsu:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.wakamatsuryokan.com/hakodate/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "wakamatsu:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:47.677222+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1485145/wakamatsu-hot-spring-resort/",
+        "isMock": false
+      },
+      {
+        "sourceId": "wakamatsu:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:55.728672+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad309472/",
+        "isMock": false
+      },
+      {
+        "sourceId": "wakamatsu:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.wakamatsuryokan.com/hakodate/bath/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "shiosaitei",
+    "names": {
+      "ko": "헤이세이칸 시오사이테이",
+      "ja": "平成館しおさい亭",
+      "en": "Heiseikan Shiosaitei"
+    },
+    "kind": "hotel",
+    "regionId": "hakodate",
+    "location": {
+      "label": "하코다테 · 유노카와 온천",
+      "address": "1 Chome-2-37 Yunokawacho, Hakodate City, Hokkaido, 042-0932, Japan",
+      "latitude": 41.774192,
+      "longitude": 140.786379,
+      "isApproximate": false
+    },
+    "description": "쓰가루 해협을 바라보는 유노카와 온천 호텔. 공용 온천과 노천탕을 갖춘 일부 객실을 운영합니다.",
+    "image": {
+      "url": "https://shiosai-tei.com/wp/wp-content/uploads/2026/03/shiosai_mv.jpg",
+      "alt": "헤이세이칸 시오사이테이 · Indoor hot-spring bath with panoramic sea views at Heiseikan Shiosaitei",
+      "sourceId": "shiosaitei:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "shiosaitei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "shiosaitei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "shiosaitei:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "shiosaitei:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": null,
+        "sourceId": "shiosaitei:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "shiosaitei:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "노천탕 포함 객실은 일부 타입만 해당합니다. 객실탕 온천수 여부와 본관·별관을 확인하세요."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨·칼슘 염화물천"
+      ],
+      "waterNotes": "공용 온천은 원천 방류식과 순환 방식을 병용한다고 안내합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "shiosaitei:trip",
+        "provider": "trip",
+        "score": 8.8,
+        "scale": 10,
+        "reviewCount": 227,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "바다 전망"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "shiosaitei:jalan",
+        "provider": "jalan",
+        "score": 4.2,
+        "scale": 5,
+        "reviewCount": 1509,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1488016/heiseikan-shiosaitei/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad342256/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://shiosai-tei.com/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E5%B9%B3%E6%88%90%E9%A4%A8%E3%81%97%E3%81%8A%E3%81%95%E3%81%84%E4%BA%AD%201%20Chome-2-37%20Yunokawacho%2C%20Hakodate%20City%2C%20Hokkaido%2C%20042-0932%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "shiosaitei:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shiosai-tei.com/",
+        "isMock": false
+      },
+      {
+        "sourceId": "shiosaitei:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shiosai-tei.com/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "shiosaitei:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://shiosai-tei.com/rooms/",
+        "isMock": false
+      },
+      {
+        "sourceId": "shiosaitei:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:54.731534+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/hakodate-hotel-detail-1488016/heiseikan-shiosaitei/",
+        "isMock": false
+      },
+      {
+        "sourceId": "shiosaitei:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:55.724075+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad342256/",
+        "isMock": false
+      },
+      {
+        "sourceId": "shiosaitei:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.shiosai-tei.com/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "ginrinsou",
+    "names": {
+      "ko": "긴린소",
+      "ja": "料亭湯宿 銀鱗荘",
+      "en": "Ginrinsou"
+    },
+    "kind": "ryokan",
+    "regionId": "otaru",
+    "location": {
+      "label": "오타루 · 히라이소 온천",
+      "address": "1 Chome-1-13 Sakura, Otaru City, Hokkaido, 0470156, Japan",
+      "latitude": 43.180666,
+      "longitude": 141.035009,
+      "isApproximate": false
+    },
+    "description": "오타루가 내려다보이는 역사적인 건물의 료칸. 공용 온천과 일부 객실의 전망 온천탕을 갖추고 있습니다.",
+    "image": {
+      "url": "https://www.ginrinsou.com/wp-content/themes/girinso/images/spa/s1-1.jpg",
+      "alt": "긴린소 · Rock-lined open-air hot-spring bath overlooking the sea at Ginrinsou",
+      "sourceId": "ginrinsou:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "ginrinsou:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "ginrinsou:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "ginrinsou:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "ginrinsou:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "ginrinsou:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "신관 객실과 본관 특별실 등 온천탕이 명시된 일부 객실에 해당합니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "ginrinsou:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨 황산염천"
+      ],
+      "waterNotes": "히라이소 온천을 사용하는 욕장과 오타루 전망 노천탕을 운영합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "ginrinsou:trip",
+        "provider": "trip",
+        "score": 9.7,
+        "scale": 10,
+        "reviewCount": 62,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "서비스 추천",
+          "온천 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/otaru-hotel-detail-1647487/ginrinso-ryokan-otaru/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad335042/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.ginrinsou.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E6%96%99%E4%BA%AD%E6%B9%AF%E5%AE%BF%20%E9%8A%80%E9%B1%97%E8%8D%98%201%20Chome-1-13%20Sakura%2C%20Otaru%20City%2C%20Hokkaido%2C%200470156%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "ginrinsou:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.ginrinsou.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "ginrinsou:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.ginrinsou.com/en/bath/",
+        "isMock": false
+      },
+      {
+        "sourceId": "ginrinsou:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.ginrinsou.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "ginrinsou:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:54.877561+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/otaru-hotel-detail-1647487/ginrinso-ryokan-otaru/",
+        "isMock": false
+      },
+      {
+        "sourceId": "ginrinsou:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:16:55.564841+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad335042/",
+        "isMock": false
+      },
+      {
+        "sourceId": "ginrinsou:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.ginrinsou.com/en/bath/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "moku-no-sho",
+    "names": {
+      "ko": "니세코 곤부온센 쓰루가 별장 모쿠노쇼",
+      "ja": "ニセコ昆布温泉鶴雅別荘 杢の抄",
+      "en": "Niseko Konbu Onsen Tsuruga Moku-No-Sho"
+    },
+    "kind": "ryokan",
+    "regionId": "niseko",
+    "location": {
+      "label": "니세코 · 곤부 온천",
+      "address": "Niseko 393, 048-1511 Niseko Town, Abuta District, Hokkaido, Japan",
+      "latitude": 42.839567,
+      "longitude": 140.622531,
+      "isApproximate": false
+    },
+    "description": "니세코 곤부 온천의 숲속 료칸. 공용 온천과 전세탕, 노천온천을 갖춘 일부 스위트를 운영합니다.",
+    "image": {
+      "url": "https://www.mokunosho.com/en/files/images/home/summer/img_hot1.jpg",
+      "alt": "니세코 곤부온센 쓰루가 별장 모쿠노쇼 · A hot-spring bath with wooden screens at Moku no Sho in Niseko",
+      "sourceId": "moku-no-sho:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "moku-no-sho:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "moku-no-sho:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": null,
+        "sourceId": "moku-no-sho:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "moku-no-sho:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property",
+        "note": "와센노유 전세탕은 예약·요금 조건을 확인하세요."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "moku-no-sho:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "노천온천 포함 스위트 등 일부 객실 타입만 해당합니다. 일반 객실과 구분해 예약하세요."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "moku-no-sho:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "노천온천 포함 스위트 등 일부 객실 타입만 해당합니다. 일반 객실과 구분해 예약하세요."
+      }
+    },
+    "spring": {
+      "types": [
+        "나트륨 염화물·탄산수소염천"
+      ],
+      "waterNotes": "곤부 온천을 사용하는 공용탕과 전세탕을 안내합니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "moku-no-sho:trip",
+        "provider": "trip",
+        "score": 9.6,
+        "scale": 10,
+        "reviewCount": 56,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "서비스 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "moku-no-sho:jalan",
+        "provider": "jalan",
+        "score": 4.6,
+        "scale": 5,
+        "reviewCount": 235,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/niseko-hotel-detail-1068795/niseko-konbu-onsen-tsuruga-moku-no-sho/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad368020/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.mokunosho.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%82%BB%E3%82%B3%E6%98%86%E5%B8%83%E6%B8%A9%E6%B3%89%E9%B6%B4%E9%9B%85%E5%88%A5%E8%8D%98%20%E6%9D%A2%E3%81%AE%E6%8A%84%20Niseko%20393%2C%20048-1511%20Niseko%20Town%2C%20Abuta%20District%2C%20Hokkaido%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "moku-no-sho:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.mokunosho.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "moku-no-sho:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.mokunosho.com/en/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "moku-no-sho:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.mokunosho.com/en/rooms/",
+        "isMock": false
+      },
+      {
+        "sourceId": "moku-no-sho:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:55.267371+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/niseko-hotel-detail-1068795/niseko-konbu-onsen-tsuruga-moku-no-sho/",
+        "isMock": false
+      },
+      {
+        "sourceId": "moku-no-sho:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:17:02.617769+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad368020/",
+        "isMock": false
+      },
+      {
+        "sourceId": "moku-no-sho:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.mokunosho.com/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "sounkaku",
+    "names": {
+      "ko": "소운카쿠 마운틴 리조트 1923",
+      "ja": "層雲閣 MOUNTAIN RESORT 1923",
+      "en": "Sounkaku"
+    },
+    "kind": "hotel",
+    "regionId": "sounkyo",
+    "location": {
+      "label": "소운쿄 온천",
+      "address": "Sounkyo, Onsen, 078-1792 Kamikawa Town, Kamikawa District, Hokkaido, Japan",
+      "latitude": 43.726958,
+      "longitude": 142.953211,
+      "isApproximate": false
+    },
+    "description": "다이세쓰산 소운쿄 온천마을의 호텔. 협곡 전망 노천탕과 공용 대욕장을 갖추고 있습니다.",
+    "image": {
+      "url": "https://sounkaku.co.jp/app/wp-content/themes/hello-theme-child-master/img/spa-car1-1.jpg",
+      "alt": "소운카쿠 마운틴 리조트 1923 · A covered rock-lined outdoor bath with autumn foliage at Sounkaku",
+      "sourceId": "sounkaku:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "sounkaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "sounkaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "sounkaku:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "sounkaku:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": null,
+        "sourceId": "sounkaku:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOutdoor": {
+        "value": null,
+        "sourceId": "sounkaku:room",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "단순온천"
+      ],
+      "waterNotes": "협곡을 바라보는 노천탕과 마루모 대욕장을 운영합니다. Jalan 온천 안내에는 원천 방류식·가수 사용이 기재되어 있습니다.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "sounkaku:trip",
+        "provider": "trip",
+        "score": 8.9,
+        "scale": 10,
+        "reviewCount": 87,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "객실 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "sounkaku:jalan",
+        "provider": "jalan",
+        "score": 4.1,
+        "scale": 5,
+        "reviewCount": 210,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/kamikawa-hotel-detail-705344/sounkaku-grand-hotel/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad328745/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://sounkaku.co.jp/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E5%B1%A4%E9%9B%B2%E9%96%A3%20MOUNTAIN%20RESORT%201923%20Sounkyo%2C%20Onsen%2C%20078-1792%20Kamikawa%20Town%2C%20Kamikawa%20District%2C%20Hokkaido%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "sounkaku:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://sounkaku.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sounkaku:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://sounkaku.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sounkaku:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://sounkaku.co.jp/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sounkaku:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:01:54.788393+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/kamikawa-hotel-detail-705344/sounkaku-grand-hotel/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sounkaku:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:17:02.817717+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad328745/",
+        "isMock": false
+      },
+      {
+        "sourceId": "sounkaku:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://sounkaku.co.jp/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "akan-tsuruga",
+    "names": {
+      "ko": "아칸 유쿠노사토 쓰루가",
+      "ja": "あかん遊久の里鶴雅",
+      "en": "Akan Yuku No Sato Tsuruga"
+    },
+    "kind": "hotel",
+    "regionId": "akan",
+    "location": {
+      "label": "아칸호 온천",
+      "address": "4 Chome-6-10 Akancho Akankoonsen, Kushiro City, Hokkaido, 085-0467, Japan",
+      "latitude": 43.434662,
+      "longitude": 144.090898,
+      "isApproximate": false
+    },
+    "description": "아칸호를 바라보는 여러 욕장이 있는 리조트. 공용 노천탕과 전세탕, 객실 노천온천을 갖춘 타입을 운영합니다.",
+    "image": {
+      "url": "https://www.tsuruga.com/en/../files/images/home/img_spa_ss1.webp",
+      "alt": "아칸 유쿠노사토 쓰루가 · Rooftop hot-spring bath overlooking Lake Akan and mountains at Akan Yuku no Sato Tsuruga",
+      "sourceId": "akan-tsuruga:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "akan-tsuruga:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "akan-tsuruga:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "akan-tsuruga:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": true,
+        "sourceId": "akan-tsuruga:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "akan-tsuruga:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "객실 노천온천은 해당 욕장이 명시된 일부 객실 타입만 해당합니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "akan-tsuruga:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "someRooms",
+        "note": "객실 노천온천은 해당 욕장이 명시된 일부 객실 타입만 해당합니다."
+      }
+    },
+    "spring": {
+      "types": [],
+      "waterNotes": "욕장에 따라 원천 방류식과 순환 방식을 사용합니다. 가온·소독 등 상세 조건은 공식 욕장 안내를 확인하세요.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "akan-tsuruga:trip",
+        "provider": "trip",
+        "score": 8.9,
+        "scale": 10,
+        "reviewCount": 359,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "온천 추천",
+          "저녁 식사 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "akan-tsuruga:jalan",
+        "provider": "jalan",
+        "score": 4.6,
+        "scale": 5,
+        "reviewCount": 3890,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/kushiro-hotel-detail-1098665/akan-yuku-no-sato-tsuruga/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad332582/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.tsuruga.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%82%E3%81%8B%E3%82%93%E9%81%8A%E4%B9%85%E3%81%AE%E9%87%8C%E9%B6%B4%E9%9B%85%204%20Chome-6-10%20Akancho%20Akankoonsen%2C%20Kushiro%20City%2C%20Hokkaido%2C%20085-0467%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "akan-tsuruga:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.tsuruga.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "akan-tsuruga:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.tsuruga.com/en/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "akan-tsuruga:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.tsuruga.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "akan-tsuruga:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:02:03.232080+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/kushiro-hotel-detail-1098665/akan-yuku-no-sato-tsuruga/",
+        "isMock": false
+      },
+      {
+        "sourceId": "akan-tsuruga:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:17:02.697542+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad332582/",
+        "isMock": false
+      },
+      {
+        "sourceId": "akan-tsuruga:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.tsuruga.com/en/",
+        "isMock": false
+      }
+    ]
+  },
+  {
+    "id": "hinanoza",
+    "names": {
+      "ko": "아칸 쓰루가 별장 히나노자",
+      "ja": "あかん鶴雅別荘 鄙の座",
+      "en": "Akan Tsuruga Besso Hinanoza"
+    },
+    "kind": "ryokan",
+    "regionId": "akan",
+    "location": {
+      "label": "아칸호 온천",
+      "address": "2 Chome-8-1 Akancho Akankoonsen, Kushiro City, Hokkaido, 085-0467, Japan",
+      "latitude": 43.433115,
+      "longitude": 144.097765,
+      "isApproximate": false
+    },
+    "description": "전 객실에 온천 노천탕을 갖춘 아칸호 료칸. 객실과 공용 전망탕에서 아칸호의 풍경을 즐길 수 있습니다.",
+    "image": {
+      "url": "https://www.hinanoza.com/en/images/home/summer/img_spa1.jpg",
+      "alt": "아칸 쓰루가 별장 히나노자 · Covered open-air hot-spring bath with a Lake Akan view at Hinanoza",
+      "sourceId": "hinanoza:photo",
+      "isRepresentative": false
+    },
+    "features": {
+      "natural": {
+        "value": true,
+        "sourceId": "hinanoza:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "largeBath": {
+        "value": true,
+        "sourceId": "hinanoza:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "outdoor": {
+        "value": true,
+        "sourceId": "hinanoza:spa",
+        "verifiedAt": "2026-10-03",
+        "scope": "property"
+      },
+      "privateBath": {
+        "value": null,
+        "sourceId": "hinanoza:spa",
+        "verifiedAt": null,
+        "scope": "property",
+        "note": "확인한 안내에서 제공 여부를 명확히 확인하지 못했습니다."
+      },
+      "roomOnsen": {
+        "value": true,
+        "sourceId": "hinanoza:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 객실에 전용 온천 노천탕을 갖춥니다."
+      },
+      "roomOutdoor": {
+        "value": true,
+        "sourceId": "hinanoza:room",
+        "verifiedAt": "2026-10-03",
+        "scope": "allRooms",
+        "note": "전 객실에 전용 온천 노천탕을 갖춥니다."
+      }
+    },
+    "spring": {
+      "types": [
+        "단순온천"
+      ],
+      "waterNotes": "객실 온천 외에도 6층과 7층 공용 욕장을 운영합니다. 남녀 교대 시간은 공식 안내를 확인하세요.",
+      "useNotes": "객실 온천·객실 노천탕은 표시된 객실 타입에만 적용됩니다. 전세탕의 예약·요금·이용 시간과 욕장 교대 시간은 예약 전에 확인하세요."
+    },
+    "ratings": [
+      {
+        "sourceId": "hinanoza:trip",
+        "provider": "trip",
+        "score": 9.4,
+        "scale": 10,
+        "reviewCount": 74,
+        "summary": "Trip.com 숙소 페이지에 표시된 후기 키워드를 한국어로 옮겼습니다.",
+        "highlights": [
+          "추천하는 숙소",
+          "서비스 추천"
+        ],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      },
+      {
+        "sourceId": "hinanoza:jalan",
+        "provider": "jalan",
+        "score": 4.2,
+        "scale": 5,
+        "reviewCount": 550,
+        "summary": "Jalan 숙소 페이지에 표시된 원래 평점입니다.",
+        "highlights": [],
+        "isMock": false,
+        "verifiedAt": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "provider": "trip",
+        "url": "https://www.trip.com/hotels/kushiro-hotel-detail-1098587/akan-tsuruga-besso-hinanoza/",
+        "kind": "property",
+        "label": "이 숙소의 가격·객실 확인"
+      },
+      {
+        "provider": "jalan",
+        "url": "https://www.jalan.net/yad334472/",
+        "kind": "property",
+        "label": "이 숙소의 일본어 예약 페이지"
+      },
+      {
+        "provider": "official",
+        "url": "https://www.hinanoza.com/en/",
+        "kind": "property",
+        "label": "공식 객실·온천·예약 안내"
+      },
+      {
+        "provider": "maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%82%E3%81%8B%E3%82%93%E9%B6%B4%E9%9B%85%E5%88%A5%E8%8D%98%20%E9%84%99%E3%81%AE%E5%BA%A7%202%20Chome-8-1%20Akancho%20Akankoonsen%2C%20Kushiro%20City%2C%20Hokkaido%2C%20085-0467%2C%20Japan",
+        "kind": "coordinates",
+        "label": "숙소 이름과 주소로 위치 보기"
+      }
+    ],
+    "sources": [
+      {
+        "sourceId": "hinanoza:official",
+        "sourceType": "manual",
+        "label": "공식 숙소 홈페이지",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.hinanoza.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hinanoza:spa",
+        "sourceType": "manual",
+        "label": "온천·목욕 시설 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.hinanoza.com/en/spa/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hinanoza:room",
+        "sourceType": "manual",
+        "label": "객실 안내",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.hinanoza.com/en/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hinanoza:trip",
+        "sourceType": "manual",
+        "label": "Trip.com · 평점·후기·주소·지도 위치",
+        "retrievedAt": "2026-10-03T10:02:03.386306+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.trip.com/hotels/kushiro-hotel-detail-1098587/akan-tsuruga-besso-hinanoza/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hinanoza:jalan",
+        "sourceType": "manual",
+        "label": "Jalan · 숙소·평점·후기",
+        "retrievedAt": "2026-10-03T10:17:09.909739+00:00",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.jalan.net/yad334472/",
+        "isMock": false
+      },
+      {
+        "sourceId": "hinanoza:photo",
+        "sourceType": "asset",
+        "label": "공식 숙소 사진",
+        "retrievedAt": "2026-10-03",
+        "verifiedAt": "2026-10-03",
+        "url": "https://www.hinanoza.com/en/",
+        "isMock": false
+      }
+    ]
+  }
+]

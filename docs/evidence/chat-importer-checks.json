@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "explicit scope selection",
+    "all mapping branches preserved",
+    "asset bytes preserved",
+    "existing destination refused"
+  ],
+  "realUserExportImported": false
+}

@@ -1,0 +1,27 @@
+{
+  "codeVersion": 48,
+  "codeCommit": "2109cff36aa0a0f3ea95a30c2f5ceffcd31adafd",
+  "deploymentId": "appgdep_6ac7cfb29448819195ad17332d682c7a",
+  "status": "succeeded",
+  "url": "https://yukemuri.jihun7891.chatgpt.site",
+  "publishedAtUTC": "2026-10-08T17:15:48.926639+00:00",
+  "publishedAtKST": "2026-10-09 02:15:48.926639 KST",
+  "checks": {
+    "componentDOM": 15,
+    "apiClient": true,
+    "typecheck": true,
+    "workerBuild": true,
+    "comparisonWorker": true,
+    "collectionStatusWorker": true,
+    "collectorReleaseWorker": true
+  },
+  "actualMobileBrowserQA": {
+    "completed": false,
+    "widths": [
+      360,
+      390
+    ],
+    "reason": "Page.navigate and Page.getFrameTree timed out"
+  },
+  "collectorRelease": "52da755a48673c3c0902793760650334376d6a7431e60a5a32c68b2bc582c083"
+}
