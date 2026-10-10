@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | 2026-10-09 | 이관 준비 전 | `608a38042df8d101d28ae480debfdddc5f3de7dc` | 49 | 소스 복구 확인. 이관 변경 미게시 |
 | 2026-10-10 | `dd6561071d18d244ad0f9992dbc5d0ed68d757bd` (`claude/pensive-bell-odhgp8`) | 없음 | 없음 | U01 CSS 수정 검사 완료. main 병합(`dc46087`)·Sites 미게시 |
+| 2026-10-10 | `87372d64cf79eb452d9d8326791ff62c600aeeb9` (`claude/u02-search-gaps`) | 없음 | 없음 | U02 1차 검사 완료. main 병합(`f1c6982`)·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
