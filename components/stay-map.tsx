@@ -8,9 +8,9 @@ import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/hotel-repository';
 type Props={hotels:Hotel[];activeId:string|null;onSelect:(id:string)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
- points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean};
+ points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean};
 type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string};
-export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=[],onSearchArea,areaBusy=false}:Props){
+export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=[],onSearchArea,areaBusy=false,areaFailed=false}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
  const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name,place:p.name})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label}));
  const props=useRef({spots,cells,activeId,onSelect});props.current={spots,cells,activeId,onSelect};
@@ -78,7 +78,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
  return <div className={`stay-map ${compact?'compact-map':''}`}>
   <div ref={container} className="map-canvas" aria-label="숙소 위치 지도"/>
   <div className="map-caption"><MapPin size={15}/><span>{compact?'숙소 위치':area?'이 지역':'지도 표시'} <b>{spots.length+cells.reduce((sum,c)=>sum+c.count,0)}곳</b></span></div>
-  {onSearchArea&&ready&&(moved||areaBusy)&&<button className="map-area-search" aria-disabled={areaBusy||undefined} onClick={searchArea}><Search size={15}/>{areaBusy?'이 지역 숙소를 찾는 중…':area?'이 지역에서 다시 검색':'이 지역에서 검색'}</button>}
+  {onSearchArea&&ready&&(moved||areaBusy||area||areaFailed)&&<button className="map-area-search" aria-disabled={areaBusy||undefined} onClick={searchArea}><Search size={15}/>{areaBusy?'이 지역 숙소를 찾는 중…':area?'이 지역에서 다시 검색':'이 지역에서 검색'}</button>}
   <div className="map-controls">
    <button aria-label="지도 확대" onClick={()=>mapRef.current?.zoomIn()}><Plus size={19}/></button>
    <button aria-label="지도 축소" onClick={()=>mapRef.current?.zoomOut()}><Minus size={19}/></button>
