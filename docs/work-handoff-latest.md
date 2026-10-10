@@ -50,11 +50,14 @@
 
 `cloud-development.md`의 ‘Codex 클라우드 환경’ 절차를 따른다. CI 통과 뒤 PR 대화창에 `@codex review`를 남긴다. 리뷰 스레드 답글에는 `@codex`를 쓰지 않는다.
 
+- CI(`checks`)가 `c61a783`에서 통과했다(2026-10-10T14:12:42Z, [실행 38058523572](https://github.com/jihune/yukemuri/actions/runs/38058523572)).
+- 14:13Z에 `@codex review`를 요청했다. Codex는 14:19:06Z에 `c61a783` 검토를 마치고 ‘큰 문제 없음(Didn't find any major issues)’으로 응답했다. 지적 사항은 없다.
+
 ## Sites 전달
 
 - 이 환경에는 Sites 도구가 없다. 게시하지 않았다.
 - 앱 변경은 `lib/japan-place-labels.ts` 하나다. 화면·검색의 지역명 문자열만 바뀐다. Worker API·DB 스키마·수집기는 바꾸지 않았다.
-- 검사한 커밋은 PR에 적는다. Sites 세션은 `sites-handoff.md`의 ‘전달 요청’에 이 PR과 커밋을 넣고, 운영 Sites의 현재 버전과 먼저 대조한다. U01 CSS 변경(PR #2)도 아직 게시되지 않았다.
+- 검사한 커밋은 `c61a7838f0ccd692194d6c0b8e2b705e4d9cc857`이다(PR #5 head, 이 기록 커밋 직전). 앱 코드는 `1cb5827` 이후 바뀌지 않았다. Sites 세션은 `sites-handoff.md`의 ‘전달 요청’에 이 PR과 커밋을 넣고, 운영 Sites의 현재 버전과 먼저 대조한다. U01 CSS 변경(PR #2)도 아직 게시되지 않았다.
 
 ## 다음 작업
 
