@@ -23,9 +23,19 @@ Claude Code 클라우드(Ubuntu 24.04)의 기본 Node는 22.22.0이었다(2026-1
 
 main의 기준 커밋을 확인하고 작업 브랜치를 만든다. 서비스의 브랜치 정책을 따른다.
 한 에이전트가 구현하고 다른 에이전트는 같은 PR/커밋을 검토한다.
+현재 분담은 Claude Code 웹이 구현, Codex 웹이 검토다(사용자 결정, 2026-10-10). 검토 담당은 PR 브랜치에 커밋하지 않는다.
 검사 실패·충돌을 해결하고 인수인계를 갱신한 뒤 main에 반영한다.
 Sites 배포는 `sites-handoff.md`의 별도 절차다.
 서비스별 대화는 자동 공유되지 않는다. 결정·검사·중단 지점을 레포에 기록한다.
+
+## Codex 클라우드 환경
+
+기록: 2026-10-10. 사용자가 전달한 Codex 출력과 화면을 기준으로 했다.
+
+- 환경 `yukemuri`에 세 저장소를 넣었다. 작업의 기본 폴더는 `/workspace`이고 저장소는 `/workspace/<저장소 이름>`에 있다.
+- 설치 스크립트는 `cd /workspace/yukemuri && bash scripts/cloud-setup.sh`다. Node 24.19.0·Python 3.12.14·pnpm 11.25.0에서 `cloud-check.py --full`이 통과했다.
+- 기본 폴더가 저장소 밖이라 `yukemuri/AGENTS.md`가 자동으로 읽히지 않을 수 있다(미확인). 작업 요청에 이 저장소의 `AGENTS.md`와 인수인계를 읽으라고 적는다.
+- 설치 단계에서 `CODEX_HOME`(`/run/codex-environment/codex-home`)에 쓴 파일은 새 작업에 남지 않았다. 환경의 시작 스킬(`start_skill`)도 새 작업에 자동으로 적용되지 않았다. 개인 하네스는 작업마다 첫 메시지로 직접 적용한다.
 
 ## 공통 스킬
 
