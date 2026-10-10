@@ -34,13 +34,14 @@
 - P2: 브라우저 검사의 ‘현황 새로고침 버튼’ 항목이 세로 위치를 보지 않아 화면 밖 버튼을 통과시켰다. 버튼을 화면으로 가져온 뒤 화면 안·가림 없음·높이를 확인하도록 고쳤다. 다시 실행해 64개가 통과했고 근거 파일을 바꿨다.
 - P3: 개발 DB 마이그레이션 반복문이 실패해도 종료 코드 0을 돌려줬다. 실패 코드를 마지막에 돌려주도록 고쳤고 잘못된 SQL 대조로 확인했다.
 - Codex 쪽에서도 `cloud-check.py --full` 16개, DOM 15개, 브라우저 64개가 통과했다. 하단 링크 대조는 360·390·900·901·1280px에서 겹치지 않았다.
+- 재검토(`274f487`): Codex가 P2·P3 수정을 확인했다. 새로고침 버튼을 화면 밖으로 옮긴 대조에서 검사는 두 폭 모두 실패(`failed=2`, 종료 코드 1)로 판정했다. 새로 발견한 문제는 없다.
 
 ## 미확인 사항
 
 - 실제 모바일 기기, 주소창·안전 영역, iOS Safari의 탭 포커스, 스크린리더 읽기 순서는 확인하지 않았다.
 - 외부 사진·지도 타일과 운영 자료량의 표 너비는 확인하지 않았다.
 - 1280px의 범위 밖 관찰 두 건은 고치지 않았다. 고정 필터 패널 체크박스와 Leaflet 저작권 링크가 가려진다.
-- Codex 환경에서 문서의 개발 서버(`pnpm dev`)가 두 번 모두 HTTP 500(`Network connection lost`)으로 실패했다. 원인은 미확인이다. Codex는 빌드 결과물을 로컬 Wrangler 서버로 열어 검사했다.
+- Codex 첫 검토에서는 문서의 개발 서버(`pnpm dev`)가 두 번 모두 HTTP 500(`Network connection lost`)으로 실패했다. 재검토에서는 HTTP 200으로 응답했다. 첫 실패의 원인은 미확인이다.
 - GitHub CI(Cloud app checks)는 통과했다. `dd65610` push 실행은 [38049729722](https://github.com/jihune/yukemuri/actions/runs/38049729722), [PR #2](https://github.com/jihune/yukemuri/pull/2)의 `778890d` 실행은 [38049840043](https://github.com/jihune/yukemuri/actions/runs/38049840043)이다. GitHub 러너의 검사는 브라우저 화면 검사를 포함하지 않는다.
 
 ## 이번 세션의 결정
@@ -60,6 +61,6 @@
 
 ## 다음 작업
 
-1. 다른 에이전트가 [PR #2](https://github.com/jihune/yukemuri/pull/2)를 검토한다. main 병합은 사용자가 결정한다.
+1. Codex 검토와 재검토를 마쳤다. [PR #2](https://github.com/jihune/yukemuri/pull/2)의 main 병합은 사용자가 결정한다.
 2. Sites 도구가 있는 세션에서 이 CSS 변경을 게시하고 `deployments.md`에 기록한다.
 3. 다음 독립 작업은 D01(지역 오류와 동일 숙소 연결)이다. 새 세션에서 시작한다.
