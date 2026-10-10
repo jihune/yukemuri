@@ -84,7 +84,9 @@ const onsens: Onsen[] = [
   ['kagoshima','이부스키 온천','',/指宿|ibusuki|이부스키/i],['kagoshima','기리시마 온천','',/霧島温泉|牧園町高千穂|kirishima\s*onsen|기리시마\s*온천/i],
 ];
 
-const preparedOnsens=onsens.map(([pref,label,city,pattern])=>({pref,label,city,pattern:new RegExp(pattern.source.split('|').map(part=>/[a-z]/i.test(part)?'\\b(?:'+part+')\\b':part).join('|'),pattern.flags)}));
+// Romanized parts need word boundaries, but provider addresses glue suffixes
+// on (Yunokawacho, Jozankeionsen). Regex escapes such as \s are not letters.
+const preparedOnsens=onsens.map(([pref,label,city,pattern])=>({pref,label,city,pattern:new RegExp(pattern.source.split('|').map(part=>/[a-z]/i.test(part.replace(/\\./g,''))?'\\b(?:'+part+')(?=onsen|ch[oō]|machi|\\b)':part).join('|'),pattern.flags)}));
 
 export type PlaceInput = { prefecture?: string | null; regionId: string; location: { label: string; address: string }; names?: { ja: string } };
 const unique = (parts: string[]) => [...new Set(parts.filter(Boolean))].join(' · ');

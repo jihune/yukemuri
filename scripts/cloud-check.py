@@ -24,6 +24,7 @@ commands = [
     ['node', 'node_modules/typescript/bin/tsc', '--noEmit'],
     ['node', 'scripts/check-listing-query.mjs'],
     ['node', 'scripts/check-api-client.mjs'],
+    ['node', 'scripts/check-local-search.mjs'],
 ]
 if args.full:
     commands += [

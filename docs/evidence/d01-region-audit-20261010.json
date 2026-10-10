@@ -1,0 +1,532 @@
+{
+ "generatedAt": "2026-10-10T14:03:05.228Z",
+ "files": [
+  "lib/hotels.real.json",
+  "lib/hotels.crawled.json",
+  "lib/hotels.verified.json"
+ ],
+ "hotels": 1655,
+ "counts": {
+  "prefecture-ok": 1646,
+  "onsen-from-label-or-name": 39,
+  "onsen-address-ok": 196,
+  "city-address-ok": 1411,
+  "prefecture-address-unknown": 9,
+  "city-not-in-address": 9
+ },
+ "candidates": [
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "daiichi-takimotokan",
+   "prefecture": "pref-hokkaido",
+   "display": "노보리베츠 온천 · 홋카이도",
+   "address": "onsencho, ５５, Noboribetsu City, Hokkaido, 059-0551, Japan",
+   "label": "노보리베츠 온천",
+   "name": "第一滝本館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "moku-no-sho",
+   "prefecture": "pref-hokkaido",
+   "display": "곤부 온천 · 니세코 · 홋카이도",
+   "address": "Niseko 393, 048-1511 Niseko Town, Abuta District, Hokkaido, Japan",
+   "label": "니세코 · 곤부 온천",
+   "name": "ニセコ昆布温泉鶴雅別荘 杢の抄"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-300500",
+   "prefecture": "pref-saga",
+   "display": "다케오 온천 · 사가",
+   "address": "佐賀県武雄市武雄町昭和１６－１２",
+   "label": "佐賀県",
+   "name": "セントラルホテル武雄温泉駅前"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-305895",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町菰野8625-3",
+   "label": "三重県",
+   "name": "湯の山温泉　三峯園　～川のせせらぎと古湯を楽しむ宿～"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-309201",
+   "prefecture": "pref-niigata",
+   "display": "쓰키오카 온천 · 시바타 · 니가타",
+   "address": "新潟県新発田市月岡６５４－１",
+   "label": "新潟県",
+   "name": "月岡温泉 摩周"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-311396",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町菰野８４９７",
+   "label": "三重県",
+   "name": "湯の山温泉 記念日の宿　彩向陽（いろどりこうよう）"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-311870",
+   "prefecture": "pref-yamagata",
+   "display": "덴도 온천 · 야마가타",
+   "address": "山形県天童市鎌田2丁目2-1",
+   "label": "山形県",
+   "name": "天童温泉 松伯亭 あづま荘"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-315668",
+   "prefecture": "pref-niigata",
+   "display": "쓰키오카 온천 · 시바타 · 니가타",
+   "address": "新潟県新発田市月岡５５２－２",
+   "label": "新潟県",
+   "name": "月岡温泉　したしみの宿　東栄館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-315769",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市舟津第５０号１番地１",
+   "label": "福井県",
+   "name": "あわら温泉　みのや泰平閣"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-316392",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市舟津４３―２６",
+   "label": "福井県",
+   "name": "あわら温泉　グランディア芳泉"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-316832",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市温泉4-510",
+   "label": "福井県",
+   "name": "あわら温泉　光風湯圃　べにや"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-320890",
+   "prefecture": "pref-iwate",
+   "display": "쓰나기 온천 · 모리오카 · 이와테",
+   "address": "岩手県盛岡市つなぎ字塗沢40-4",
+   "label": "岩手県",
+   "name": "盛岡つなぎ温泉　愛真館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-321024",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町千草7054-173",
+   "label": "三重県",
+   "name": "湯の山温泉　グリーンホテル"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-321989",
+   "prefecture": "pref-niigata",
+   "display": "쓰키오카 온천 · 시바타 · 니가타",
+   "address": "新潟県新発田市月岡５５２－４",
+   "label": "新潟県",
+   "name": "月岡温泉　湯あそび宿　曙"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-322452",
+   "prefecture": "pref-akita",
+   "display": "뉴토 온천 · 센보쿠 · 아키타",
+   "address": "秋田県仙北市田沢湖生保内駒ヶ岳２－１",
+   "label": "秋田県",
+   "name": "休暇村　乳頭温泉郷"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-323593",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市温泉3-803",
+   "label": "福井県",
+   "name": "北陸　福井　あわら温泉　清風荘"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-324554",
+   "prefecture": "pref-shimane",
+   "display": "다마쓰쿠리 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市玉湯町玉造１２１５―２",
+   "label": "島根県",
+   "name": "玉造温泉　源泉かけ流しの宿　湯陣　千代の湯"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-325563",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町菰野8585",
+   "label": "三重県",
+   "name": "湯の山温泉　旅館寿亭"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-327149",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市舟津２６―１０",
+   "label": "福井県",
+   "name": "北陸　福井　あわら温泉　美松"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-329598",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市西温泉１－１０２",
+   "label": "福井県",
+   "name": "あわら温泉　政竜閣"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-329978",
+   "prefecture": "pref-yamagata",
+   "display": "덴도 온천 · 야마가타",
+   "address": "山形県天童市鎌田本町2-2-54",
+   "label": "山形県",
+   "name": "天童温泉　湯の香松の湯"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-330870",
+   "prefecture": "pref-yamagata",
+   "display": "가미노야마 온천 · 야마가타",
+   "address": "山形県上山市葉山５－５０",
+   "label": "山形県",
+   "name": "かみのやま温泉　名月荘"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-331959",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市舟津３１―２４",
+   "label": "福井県",
+   "name": "あわら温泉　まつや千千"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-332971",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町大字菰野8497番地",
+   "label": "三重県",
+   "name": "湯の山温泉　ホテル湯の本　御在所ロープウェイまで徒歩1分！"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-334146",
+   "prefecture": "pref-niigata",
+   "display": "쓰키오카 온천 · 시바타 · 니가타",
+   "address": "新潟県新発田市月岡２７８－２",
+   "label": "新潟県",
+   "name": "月岡温泉　ホテル清風苑"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-337138",
+   "prefecture": "pref-shimane",
+   "display": "다마쓰쿠리 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市玉湯町玉造44-2",
+   "label": "島根県",
+   "name": "出雲・玉造温泉　白石家"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-337435",
+   "prefecture": "pref-fukui",
+   "display": "아와라 온천 · 후쿠이",
+   "address": "福井県あわら市温泉４－６０１",
+   "label": "福井県",
+   "name": "越前あわら温泉　つるや"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-345638",
+   "prefecture": "pref-shimane",
+   "display": "다마쓰쿠리 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市玉湯町玉造1215",
+   "label": "島根県",
+   "name": "玉造温泉　松乃湯"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-346304",
+   "prefecture": "pref-iwate",
+   "display": "쓰나기 온천 · 모리오카 · 이와테",
+   "address": "岩手県盛岡市繋湯ノ館７４－２",
+   "label": "岩手県",
+   "name": "盛岡つなぎ温泉　ホテル紫苑"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-352948",
+   "prefecture": "pref-shimane",
+   "display": "다마쓰쿠리 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市玉湯町玉造１２４７",
+   "label": "島根県",
+   "name": "玉造温泉　ＲＹＯＫＡＮ　ＯＱＯＱ（旧：玉井別館）"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-353913",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町菰野湯の山８５６３",
+   "label": "三重県",
+   "name": "オテル・ド・マロニエ　湯の山温泉"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-355716",
+   "prefecture": "pref-iwate",
+   "display": "쓰나기 온천 · 모리오카 · 이와테",
+   "address": "岩手県盛岡市繋字湯の館137",
+   "label": "岩手県",
+   "name": "盛岡つなぎ温泉　四季亭"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-366512",
+   "prefecture": "pref-shimane",
+   "display": "마쓰에 신지코 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市千鳥町３８",
+   "label": "島根県",
+   "name": "松江しんじ湖温泉 【 松平閣 】 旬菜を部屋食で愉しむ美食の宿"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-375048",
+   "prefecture": "pref-iwate",
+   "display": "쓰나기 온천 · 모리오카 · 이와테",
+   "address": "岩手県盛岡市繋字湯ノ舘３７－１",
+   "label": "岩手県",
+   "name": "盛岡つなぎ温泉 湯守ホテル大観【伊東園ホテルズ】"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-376092",
+   "prefecture": "pref-shimane",
+   "display": "마쓰에 신지코 온천 · 마쓰에 · 시마네",
+   "address": "島根県松江市末次本町４０",
+   "label": "島根県",
+   "name": "松江しんじ湖温泉　大橋館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-379052",
+   "prefecture": "pref-gunma",
+   "display": "사와타리 온천 · 나카노조 · 군마",
+   "address": "群馬県吾妻郡中之条町大字上沢渡２３１７－１",
+   "label": "群馬県",
+   "name": "沢渡温泉 若山牧水ゆかりの宿 龍鳴館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-389530",
+   "prefecture": "pref-mie",
+   "display": "유노야마 온천 · 고모노 · 미에",
+   "address": "三重県三重郡菰野町千草７０９３",
+   "label": "三重県",
+   "name": "湯の山温泉　希望荘"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-397533",
+   "prefecture": "pref-aomori",
+   "display": "스카유 온천 · 아오모리",
+   "address": "青森県青森市大字荒川字南荒川山国有林小字酸湯沢50番地",
+   "label": "青森県",
+   "name": "酸ケ湯温泉旅館"
+  },
+  {
+   "kind": "onsen-from-label-or-name",
+   "id": "jalan-397784",
+   "prefecture": "pref-iwate",
+   "display": "쓰나기 온천 · 모리오카 · 이와테",
+   "address": "岩手県盛岡市繋字湯の舘３３",
+   "label": "岩手県",
+   "name": "つなぎ温泉　清温荘"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-1061004",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Agora Place Tokyo Asakusa"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-1061004",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Agora Place Tokyo Asakusa"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-114045806",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Nestay inn Tokyo Ryogoku"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-114045806",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Nestay inn Tokyo Ryogoku"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-21145159",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "APA Hotel Ginza Shintomicho Ekimae"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-21145159",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "APA Hotel Ginza Shintomicho Ekimae"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-3095695",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Daiwa Roynet Hotel Ginza Premier (Renewal Opening on April, 2026)"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-3095695",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Daiwa Roynet Hotel Ginza Premier (Renewal Opening on April, 2026)"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-687323",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "HOTEL MYSTAYS Asakusa"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-687323",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "HOTEL MYSTAYS Asakusa"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-688168",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "HOTEL MYSTAYS Ochanomizu Conference Center"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-688168",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "HOTEL MYSTAYS Ochanomizu Conference Center"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-705045",
+   "prefecture": "pref-chiba",
+   "display": "지바",
+   "address": "",
+   "label": "지바",
+   "name": "Toyoko Inn Narita Airport Honkan"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-705045",
+   "prefecture": "pref-chiba",
+   "display": "지바",
+   "address": "",
+   "label": "지바",
+   "name": "Toyoko Inn Narita Airport Honkan"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-91275931",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Hotaku HOTEL Akihabara"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-91275931",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Hotaku HOTEL Akihabara"
+  },
+  {
+   "kind": "prefecture-address-unknown",
+   "id": "trip-994895",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Shinagawa Prince Hotel"
+  },
+  {
+   "kind": "city-not-in-address",
+   "id": "trip-994895",
+   "prefecture": "pref-tokyo",
+   "display": "도쿄",
+   "address": "",
+   "label": "도쿄",
+   "name": "Shinagawa Prince Hotel"
+  }
+ ]
+}

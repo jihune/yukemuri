@@ -22,6 +22,9 @@ try{
  assert.equal(entries.find(h=>h.id==='trip-67309116').location,'나하 · 오키나와');
  assert.equal(entries.find(h=>h.id==='jalan-327522').location,'우치노마키 온천 · 아소 · 구마모토');
  assert.equal(entries.find(h=>h.id==='takinoya').location,'노보리베츠 온천 · 홋카이도');
+ assert.equal(entries.find(h=>h.id==='daiichi-takimotokan').location,'노보리베츠 온천 · 홋카이도','Korean onsen labels with spaces must match');
+ assert.equal(entries.find(h=>h.id==='bourou-hakodate').location,'유노카와 온천 · 하코다테 · 홋카이도','Romanized address Yunokawacho must match');
+ assert.equal(entries.find(h=>h.id==='hanamomiji').location,'조잔케이 온천 · 삿포로 · 홋카이도','Romanized address Jozankeionsen must match');
  const place=(pref,address,label,name='도시 호텔')=>formatHotelLocation({prefecture:pref,regionId:pref,location:{address,label},names:{ja:name}});
  assert.equal(place('pref-shiga','滋賀県草津市西大路町1','Kusatsu'),'구사쓰 · 시가');
  assert.equal(place('pref-gunma','群馬県吾妻郡草津町草津1','Kusatsu'),'구사쓰 온천 · 군마');
@@ -30,6 +33,7 @@ try{
  assert.equal(place('pref-kanagawa','神奈川県横浜市西区みなとみらい','Yokohama'),'요코하마 · 가나가와');
  assert.equal(place('pref-ooita','大分県速見郡日出町平道1','Hiji','Beppuwan Resort'),'히지 · 오이타');
  assert.equal(place('pref-kanagawa','神奈川県小田原市城山1','Odawara','Hakone Entrance Hotel'),'오다와라 · 가나가와');
+ assert.equal(place('pref-hokkaido','1 Chome Yunokawara, Hakodate City, Hokkaido','Hakodate'),'하코다테 · 홋카이도','Romanized onsen names must not match inside longer words');
  const index=prepareSearchIndex(entries),suggest=(q,extra={})=>localHotelSuggestions(index,q,{...DEFAULT_FILTERS,...extra});
  for(const q of ['소잔쿄','SOZAN-KYO','Sozankoy','소잔코','蘇山鄕','호텔 소잔쿄','아소 소잔쿄','Sozankyo Aso'])assert.equal(suggest(q)[0].id,'jalan-327522',q);
  for(const q of ['타키노아','Noboribetsu Takinoya'])assert.equal(suggest(q)[0].id,'takinoya',q);
