@@ -7,8 +7,8 @@
 ## 기준과 상태
 
 - 작업 환경: Claude Code 웹 클라우드. 작업 브랜치: `claude/u02-search-gaps`.
-- 시작 기준: main `f43c8bf`(PR #7 병합). 작업 중 PR #8이 main에 병합되어(`5a62278`) 이 브랜치에 merge했다.
-- 작업 PR: 이 기록과 함께 연다. 앱 코드 커밋은 `c0f4808`이고 검사 수정 커밋은 `87372d6`이다.
+- 시작 기준: main `f43c8bf`(PR #7 병합). 작업 중 PR #8(`5a62278`)과 PR #9(`2774a8b`)가 main에 병합되어 이 브랜치에 merge했다. PR #9의 ‘후속 변경: Codex 코드 리뷰 설정 확인’ 절은 `history/work-handoff-D01-20261010.md`에 옮겼다. 자동 리뷰는 꺼져 있으므로 `@codex review`로 요청한다.
+- 작업 PR: [PR #10](https://github.com/jihune/yukemuri/pull/10). 앱 코드 커밋은 `c0f4808`이고 검사 수정 커밋은 `87372d6`이다.
 - 운영 D1·Secret·수집 예약·자동 백업·호스팅·공유 범위는 바꾸지 않았다. 이 환경에는 운영 접근 정보가 없다.
 
 ## 환경 확인
