@@ -80,7 +80,7 @@ async function run(page){
  const more=coverage.getByRole('button');
  // Opening the map puts its counts and button at the top, clear of the floating list button.
  const initial={box:await box(more),reachable:await fullyReachable(more)};
- check('지도를 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',inView(initial.box)&&initial.reachable,{initiallyCovered:!initial.reachable,button:initial.box});
+ check('‘지도 보기’ 버튼으로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',inView(initial.box)&&initial.reachable,{initiallyCovered:!initial.reachable,button:initial.box});
  await more.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));
  check('지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 더 불러오기 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more)});
  await shot('map');
@@ -137,6 +137,19 @@ async function run(page){
  await cut.waitFor({state:'detached',timeout:15000}).catch(()=>{});
  await page.waitForLoadState('networkidle');
  check('Enter로 목록 새로고침 뒤 안내가 사라지고 원래 결과 수로 돌아옴',await cut.count()===0&&(await coverageText()).includes(`검색 결과 ${count(all.total)}`),{text:await coverageText()});
+
+ // The other two ways into the phone map: an address with view=map, and a card's map button.
+ const firstView=async name=>{
+  await coverage.waitFor();await page.waitForTimeout(400);
+  const button=coverage.getByRole('button'),b=await box(button);
+  check(name,inView(b)&&await fullyReachable(button),{button:b});
+ };
+ await page.goto(base+'/?view=map',{waitUntil:'networkidle'});
+ await firstView('주소의 view=map으로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ // A card below the first screen: the page is already scrolled when the map opens.
+ await page.locator('.card-bottom button',{hasText:'지도에서 보기'}).nth(2).tap();
+ await firstView('카드의 ‘지도에서 보기’로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
 }
 
 const chromiumVersion=browser.version();
