@@ -4,6 +4,7 @@ import type {HotelFilters} from '@/lib/hotel-types';
 import type {MapAreaResponse,MapBounds} from '@/lib/hotel-repository';
 import {hotelQueryParams} from '@/lib/hotel-query';
 import {apiJson} from '@/lib/api-client';
+import {mapSearchBounds} from '@/lib/map-bounds';
 
 // One request per press of the area-search button. A newer press cancels the
 // pending one; an identical query within 30 seconds is answered from memory.
@@ -16,7 +17,7 @@ export function useMapArea(filters:HotelFilters,savedOnly:boolean,favoriteKey:st
  useEffect(()=>{controller.current?.abort();setArea(null);setBusy(false);setError('')},[scope]);
  useEffect(()=>()=>controller.current?.abort(),[]);
  const search=useCallback((raw:MapBounds)=>{
-  const bounds={west:Math.max(-180,raw.west),south:Math.max(-90,raw.south),east:Math.min(180,raw.east),north:Math.min(90,raw.north)};
+  const bounds=mapSearchBounds(raw);
   last.current=bounds;
   const bbox=[bounds.west,bounds.south,bounds.east,bounds.north].map(v=>v.toFixed(5)).join(',');
   const key=scope+'&bbox='+bbox;

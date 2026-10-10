@@ -20,7 +20,7 @@ try{
  await call('/api/hotels');
 
  // Bad input.
- for(const bbox of ['','130,33,131','130,34,131,33','131,33,130,34','130,-91,131,34','-181,33,131,34','130,33,131,x'])await call('/api/hotels/map?'+new URLSearchParams({bbox}),400);
+ for(const bbox of ['','130,33,131','130,34,131,33','131,33,130,34','130,-91,131,34','-181,33,131,34','130,33,131,x',',33,131,34',' ,33,131,34','0x82,33,131,34','1e2,33,131,34','130,33,131,34,'])await call('/api/hotels/map?'+new URLSearchParams({bbox}),400);
  await call('/api/hotels/map?'+new URLSearchParams({bbox:'130,33,131,34',features:'not-a-feature'}),400);
 
  const base=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),cols=Object.keys(base),basePayload=JSON.parse(base.payload);
@@ -71,5 +71,5 @@ try{
  }
  // The existing list answer keeps its shape: no map fields are added to it.
  const page=await call('/api/hotels?q=qagridzz');assert.equal(page.total,520);assert(!('points' in page)&&!('cells' in page));
- console.log(`Map area passed: bad bounds and conditions rejected, inclusive edges, non-numeric coordinates counted as missing, list conditions matched for ${3} catalogue queries, ${capped.points.length} points at the cap and ${over.cells.length} grid cells summing to ${over.inBounds} above it.`);
+ console.log(`Map area passed: bad bounds (including blank, hex and exponent fields) and conditions rejected, inclusive edges, non-numeric coordinates counted as missing, list conditions matched for ${3} catalogue queries, ${capped.points.length} points at the cap and ${over.cells.length} grid cells summing to ${over.inBounds} above it.`);
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

@@ -5,7 +5,8 @@ import {visitorFavoriteIds} from '@/lib/visitor-favorites';
 export async function GET(request:Request){
  const started=performance.now();
  const params=new URL(request.url).searchParams,query=parseHotelQuery(params);
- const box=(params.get('bbox')??'').split(',').map(Number);
+ // Plain decimal degrees only: Number() would read '' and ' ' as 0 and accept 0x82 or 1e2.
+ const parts=(params.get('bbox')??'').split(','),box=parts.every(p=>/^-?\d+(?:\.\d+)?$/.test(p))?parts.map(Number):[];
  const [west,south,east,north]=box;
  if(!query)return Response.json({error:'검색 조건을 확인하세요.'},{status:400});
  if(box.length!==4||!box.every(Number.isFinite)||south<-90||north>90||west<-180||east>180||south>=north||west>=east)return Response.json({error:'지도 범위를 확인하세요.'},{status:400});

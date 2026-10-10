@@ -49,6 +49,8 @@ async function run(page,cdp){
  await shot('moved');
 
  // Loading, then counts that match the API for the same bounds.
+ const pane=()=>page.evaluate(()=>document.querySelector('.leaflet-map-pane')?.style.transform??'');
+ const viewBefore=await pane();
  await page.route(mapApi,async route=>{await new Promise(r=>setTimeout(r,1200));await route.continue()});
  await areaButton.tap();
  await page.waitForTimeout(200);
@@ -62,6 +64,13 @@ async function run(page,cdp){
  check('이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 API 값과 같음',t.includes(`이 지역 ${count(expected.inBounds)}`)&&t.includes(`범위 밖 ${count(expected.outOfBounds)}`)&&t.includes(`위치 미확인 ${count(expected.withoutCoordinates)}`)&&t.includes(`조건에 맞는 전체 ${count(expected.total)}`)&&caption.includes(`이 지역 ${count(expected.points.length+expected.cells.reduce((a,c)=>a+c.count,0))}`),{text:t,caption,expected:{total:expected.total,inBounds:expected.inBounds,outOfBounds:expected.outOfBounds,withoutCoordinates:expected.withoutCoordinates}});
  const list=await page.evaluate(()=>fetch('/api/hotels?stable=1').then(r=>r.json()));
  check('지도 범위 결과는 목록을 바꾸지 않음',(await page.locator('.mobile-map-toggle').innerText()).includes(String(list.hotels.length))&&expected.total===list.total,{listTotal:list.total,mapTotal:expected.total});
+ // The area belongs to the view the user chose: searching keeps that view, and pressing
+ // again for the same view is answered from the 30-second memory without a request.
+ const viewAfter=await pane();
+ check('검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음',viewAfter===viewBefore,{viewBefore,viewAfter});
+ const sentBeforeAgain=requests.length;
+ await areaButton.tap();await page.waitForTimeout(500);
+ check('같은 범위에서 다시 누르면 요청 없이 같은 결과',requests.length===sentBeforeAgain&&(await text())===t&&await pane()===viewBefore,{sent:requests.length-sentBeforeAgain,text:await text()});
  await shot('area');
 
  // The reused preview: tap a single marker from the area result.

@@ -10,7 +10,10 @@ type Props={hotels:Hotel[];activeId:string|null;onSelect:(id:string)=>void;compa
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean};
 type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string};
-export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=[],onSearchArea,areaBusy=false,areaFailed=false}:Props){
+// One empty array for every render: a new [] each time would re-run the fitting effect
+// and throw away the view the user chose.
+const NO_CELLS:MapCell[]=[];
+export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=NO_CELLS,onSearchArea,areaBusy=false,areaFailed=false}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
  const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name,place:p.name})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label}));
  const props=useRef({spots,cells,activeId,onSelect});props.current={spots,cells,activeId,onSelect};
