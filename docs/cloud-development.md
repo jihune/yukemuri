@@ -15,7 +15,7 @@
 설치 스크립트는 Node 자동 설치나 잠금 파일 갱신을 하지 않는다.
 pnpm이 다른 버전이면 환경에서 11.25.0을 준비한 뒤 다시 실행한다.
 부족한 개발 도구는 Ubuntu 컨테이너 안에 설치한다. 잠금 파일과 제품 의존성은 바꾸지 않는다. 설치한 도구와 버전은 인수인계에 기록한다.
-Claude Code 클라우드(Ubuntu 24.04)의 기본 Node는 22.22.0이었다(2026-10-10 확인). `source /opt/nvm/nvm.sh && nvm install 24`로 Node 24를 설치하고 `/opt/nvm/versions/node/<버전>/bin`을 PATH 앞에 둔다.
+Claude Code 클라우드(Ubuntu 24.04)의 기본 Node는 22.22.0이었다(2026-10-10T11:21:18Z / 20:21:18 KST 기록). `source /opt/nvm/nvm.sh && nvm install 24`로 Node 24를 설치하고 `/opt/nvm/versions/node/<버전>/bin`을 PATH 앞에 둔다.
 서비스의 환경 캐시·작업 디렉터리는 첫 세션에서 확인한다.
 클라우드 환경 설정 화면은 서비스 변경에 따라 달라질 수 있다.
 
@@ -31,7 +31,7 @@ Sites 배포는 `sites-handoff.md`의 별도 절차다.
 
 ## Codex 클라우드 환경
 
-기록: 2026-10-10. 사용자가 전달한 Codex 출력과 화면을 기준으로 했다.
+기록: 2026-10-10T12:57:03Z / 2026-10-10 21:57:03 KST. 사용자가 전달한 Codex 출력과 화면을 기준으로 했다.
 
 - 환경 `yukemuri`에 세 저장소를 넣었다. 작업의 기본 폴더는 `/workspace`이고 저장소는 `/workspace/<저장소 이름>`에 있다.
 - 설치 스크립트는 `cd /workspace/yukemuri && bash scripts/cloud-setup.sh`다. Node 24.19.0·Python 3.12.14·pnpm 11.25.0에서 `cloud-check.py --full`이 통과했다.
@@ -41,6 +41,7 @@ Sites 배포는 `sites-handoff.md`의 별도 절차다.
 검토 요청은 두 가지다. 검토 기준은 `AGENTS.md`의 ‘Review guidelines’다.
 
 1. PR 리뷰: 검토가 필요한 PR에 작성 담당이 `@codex review` 코멘트를 남긴다. 기록 갱신 PR에는 남기지 않는다. CI가 실행되는 PR은 CI 통과 뒤에 남긴다. 문서만 바꿔 CI가 생략되는 PR은 PR을 연 직후 남긴다. 리뷰는 PR 리뷰 코멘트로 남고 작성 세션이 PR 구독으로 받는다. 지적이 없으면 Codex가 👍 반응만 남긴다.
+   재검토는 지적을 모두 반영하고 같은 규칙이 적힌 다른 문서까지 맞춘 뒤 한 번만 요청한다. Codex 리뷰는 사용자의 ChatGPT 구독 사용량을 쓰므로 한 PR에서 세 번까지만 요청한다. 세 번째 리뷰에도 지적이 남으면 더 요청하지 않는다. 남은 지적과 판단을 사용자에게 보고하고, 허락을 받은 뒤에만 다시 요청한다(사용자 결정, 2026-10-10).
    2026-10-10 [PR #4](https://github.com/jihune/yukemuri/pull/4)에서 확인했다. 요청 뒤 약 3분 만에 P2 지적 3건이 리뷰로 달렸다. 이 저장소의 Code review는 이미 켜져 있었다. 코멘트 없이 연 [PR #3](https://github.com/jihune/yukemuri/pull/3)에는 리뷰가 달리지 않았으므로 요청 코멘트를 남긴다. 리뷰 스레드 답글에 `@codex`를 쓰면 리뷰가 아니라 클라우드 작업 요청으로 처리되어 ‘환경을 만들라’는 안내가 달렸다. 답글에는 `@codex`를 쓰지 않는다.
 2. 깊은 검토(브라우저 검사 등): 사용자가 Codex 작업을 열어 하네스를 적용한 뒤 검토를 요청한다. 결과를 PR 코멘트로 남기라고 요청에 적는다.
 
@@ -69,7 +70,7 @@ Worker 검사는 임시 Miniflare DB를 만들고 정리한다.
 개발 화면은 체크인된 자료를 사용하며 운영 D1에 직접 연결하지 않는다.
 개인 자료와 운영 DB 백업을 에이전트 레포에 추가하지 않는다.
 
-새 클론의 로컬 D1(`.wrangler/state`, Git 제외)에는 테이블이 없다. 그대로 `pnpm dev`를 열면 `no such table: catalog_meta`로 실패한다. `cloud-check.py --full`의 빌드 뒤, 개발 서버를 멈춘 상태에서 마이그레이션을 한 번 적용한다(2026-10-10 확인). 다시 만들려면 `.wrangler/state`를 지운다.
+새 클론의 로컬 D1(`.wrangler/state`, Git 제외)에는 테이블이 없다. 그대로 `pnpm dev`를 열면 `no such table: catalog_meta`로 실패한다. `cloud-check.py --full`의 빌드 뒤, 개발 서버를 멈춘 상태에서 마이그레이션을 한 번 적용한다(2026-10-10T11:48:41Z / 20:48:41 KST 기록). 다시 만들려면 `.wrangler/state`를 지운다.
 
 ```bash
 rc=0; for f in drizzle/*.sql; do node node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --config dist/server/wrangler.json --file "$f" || { rc=$?; echo "실패: $f" >&2; break; }; done; [ "$rc" -eq 0 ]

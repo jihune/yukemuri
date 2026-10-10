@@ -65,3 +65,8 @@
 2. D01 2차: 운영 체크포인트를 새 로컬 DB에 복원한 세션에서 지역 대조와 `audit-catalog.py` 연결 후보 판정.
 3. Shinagawa Prince Hotel의 Trip 상품 범위 확인.
 4. Trip 주소 중복·빈 주소의 수집기 원인 확인(별도 PR, Sites 게시 필요).
+
+## 후속 변경: Codex 재검토 횟수
+
+기록: 2026-10-10T14:31:21Z / 2026-10-10 23:31:21 KST. 기준: main `c4ea7b6`.
+`docs/cloud-development.md`의 Codex 검토 절차에 재검토 규칙을 넣었다(사용자 결정). 재검토는 지적을 모두 반영한 뒤 한 번만 요청하고, 한 PR에서 세 번까지만 요청한다. 그 뒤에는 사용자 허락을 받는다. Codex GitHub 리뷰의 모델·effort·사용량은 공식 문서로 확인하지 못했다. 사용자가 ChatGPT에 확인을 요청했다.
