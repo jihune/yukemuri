@@ -33,7 +33,7 @@
 - 실제 모바일 기기, 주소창·안전 영역, iOS Safari의 탭 포커스, 스크린리더 읽기 순서는 확인하지 않았다.
 - 외부 사진·지도 타일과 운영 자료량의 표 너비는 확인하지 않았다.
 - 1280px의 범위 밖 관찰 두 건은 고치지 않았다. 고정 필터 패널 체크박스와 Leaflet 저작권 링크가 가려진다.
-- 이 브랜치 PR의 GitHub CI 결과는 PR을 연 뒤 확인한다.
+- GitHub CI(Cloud app checks)는 통과했다. `dd65610` push 실행은 [38049729722](https://github.com/jihune/yukemuri/actions/runs/38049729722), [PR #2](https://github.com/jihune/yukemuri/pull/2)의 `778890d` 실행은 [38049840043](https://github.com/jihune/yukemuri/actions/runs/38049840043)이다. GitHub 러너의 검사는 브라우저 화면 검사를 포함하지 않는다.
 
 ## 이번 세션의 결정
 
@@ -52,6 +52,6 @@
 
 ## 다음 작업
 
-1. 다른 에이전트가 이 PR을 검토한다. main 병합은 사용자가 결정한다.
+1. 다른 에이전트가 [PR #2](https://github.com/jihune/yukemuri/pull/2)를 검토한다. main 병합은 사용자가 결정한다.
 2. Sites 도구가 있는 세션에서 이 CSS 변경을 게시하고 `deployments.md`에 기록한다.
 3. 다음 독립 작업은 D01(지역 오류와 동일 숙소 연결)이다. 새 세션에서 시작한다.
