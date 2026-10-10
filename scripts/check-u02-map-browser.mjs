@@ -89,10 +89,13 @@ async function run(page,cdp){
  await page.waitForTimeout(600);
  const before=requests.length;
  check('방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음',(await areaButton.innerText()).includes('다시 검색')&&requests.length===before,{button:await areaButton.innerText()});
- // The button sits just before the zoom controls in tab order. A long Tab walk from the
- // map passed through redrawn markers and sometimes never arrived, so step back one stop.
- await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Shift+Tab');
- check('Tab 순서에서 이 지역 검색 버튼이 지도 확대 버튼 바로 앞에 있음(Shift+Tab 한 번으로 도달)',await areaButton.evaluate(e=>e===document.activeElement));
+ // Forward Tab from the map must reach the button, with markers off screen after zooming in:
+ // a focused off-screen marker must not pan the map, redraw it and drop focus to the page.
+ for(let i=0;i<2;i++){await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(400)}
+ await canvas.focus();
+ let tabs=0,bodyFocus=0;
+ for(;tabs<100&&!(await areaButton.evaluate(e=>e===document.activeElement));tabs++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement===document.body))bodyFocus++}
+ check('확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달',tabs<100&&bodyFocus===0,{tabs,bodyFocus});
  await page.route(mapApi,route=>route.fulfill({status:500,contentType:'application/json',body:'{"error":"test"}'}));
  await page.keyboard.press('Enter');
  await coverage.getByRole('alert').waitFor({timeout:10000}).catch(()=>{});

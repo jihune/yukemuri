@@ -32,6 +32,8 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    mapRef.current=map;layer.current=L.layerGroup().addTo(map);
    const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'}).addTo(map);
    tiles.on('tileerror',()=>setTileError(true));
+   // Markers keep autoPanOnFocus off: panning to a focused off-screen marker fires moveend,
+   // the redraw removes that marker, focus falls to the page and Tab never leaves the map.
    draw.current=()=>{
     if(!layer.current)return;
     layer.current.clearLayers();
@@ -45,7 +47,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
      const hs=group.spots,first=hs[0];
      const lat=hs.reduce((a,h)=>a+h.lat,0)/hs.length,lng=hs.reduce((a,h)=>a+h.lng,0)/hs.length;
      const active=hs.some(h=>h.id===props.current.activeId);
-     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title}).addTo(layer.current);
+     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title}).addTo(layer.current);
      marker.on('click',()=>{
       if(hs.length>1){map.fitBounds(L.latLngBounds(hs.map(h=>[h.lat,h.lng] as [number,number])),{padding:[50,50],maxZoom:17});}
       else props.current.onSelect(first.id);
@@ -53,7 +55,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
     }
     // Grid counts from a map-bounds search with more points than one response holds.
     for(const cell of props.current.cells){
-     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster">${cell.count}곳</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`}).addTo(layer.current);
+     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster">${cell.count}곳</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`}).addTo(layer.current);
      marker.on('click',()=>map.fitBounds(L.latLngBounds([[cell.south,cell.west],[cell.north,cell.east]])));
     }
    };
