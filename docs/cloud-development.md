@@ -39,7 +39,8 @@ Sites 배포는 `sites-handoff.md`의 별도 절차다.
 
 검토 요청은 두 가지다. 검토 기준은 `AGENTS.md`의 ‘Review guidelines’다.
 
-1. PR 리뷰: 작성 담당이 CI 통과 뒤 PR에 `@codex review` 코멘트를 남긴다. Codex 설정에서 이 저장소의 Code review가 켜져 있어야 한다. 리뷰는 PR에 남고 작성 세션이 PR 구독으로 받는다. 2026-10-10에 [PR #4](https://github.com/jihune/yukemuri/pull/4)에서 처음 시험한다.
+1. PR 리뷰: 작성 담당이 PR에 `@codex review` 코멘트를 남긴다. CI가 실행되는 PR은 CI 통과 뒤에 남긴다. 문서만 바꿔 CI가 생략되는 PR은 PR을 연 직후 남긴다. 리뷰는 PR 리뷰 코멘트로 남고 작성 세션이 PR 구독으로 받는다. 지적이 없으면 Codex가 👍 반응만 남긴다.
+   2026-10-10 [PR #4](https://github.com/jihune/yukemuri/pull/4)에서 확인했다. 요청 뒤 약 3분 만에 P2 지적 3건이 리뷰로 달렸다. 이 저장소의 Code review는 이미 켜져 있었다. 코멘트 없이 연 [PR #3](https://github.com/jihune/yukemuri/pull/3)에는 리뷰가 달리지 않았으므로 요청 코멘트를 남긴다.
 2. 깊은 검토(브라우저 검사 등): 사용자가 Codex 작업을 열어 하네스를 적용한 뒤 검토를 요청한다. 결과를 PR 코멘트로 남기라고 요청에 적는다.
 
 ## 공통 스킬
