@@ -151,8 +151,10 @@ async function run(page,cdp){
  await statusRegion.evaluate(e=>{e.scrollLeft=0});await swipe(statusRegion,150);await page.waitForTimeout(500);
  check('수집 현황 표 방향키·터치 가로 이동',statusArrow>statusStart&&await scrollLeft(statusRegion)>0,{statusStart,statusArrow,swiped:await scrollLeft(statusRegion)});
  const refresh=panel.getByRole('button',{name:'출처별 수집 현황 새로고침'});
+ // The table swipe can leave the button above the viewport; bring it in before measuring.
+ await refresh.scrollIntoViewIfNeeded();
  const refreshBox=await box(refresh);
- check('현황 새로고침 버튼이 화면 안에 있고 높이 44px 이상',refreshBox.right<=refreshBox.vw+0.5&&refreshBox.height>=44,{refresh:refreshBox});
+ check('현황 새로고침 버튼이 화면 안에 보이고 가려지지 않으며 높이 44px 이상',inView(refreshBox)&&await reachable(refresh)&&refreshBox.height>=44,{refresh:refreshBox});
  await shot('status');
  await page.route('**/api/collection-status',route=>route.fulfill({status:503,contentType:'application/json',body:'{"error":"test"}'}));
  await refresh.focus();await page.keyboard.press('Enter');

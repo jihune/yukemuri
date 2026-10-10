@@ -65,7 +65,7 @@ Worker 검사는 임시 Miniflare DB를 만들고 정리한다.
 새 클론의 로컬 D1(`.wrangler/state`, Git 제외)에는 테이블이 없다. 그대로 `pnpm dev`를 열면 `no such table: catalog_meta`로 실패한다. `cloud-check.py --full`의 빌드 뒤, 개발 서버를 멈춘 상태에서 마이그레이션을 한 번 적용한다(2026-10-10 확인). 다시 만들려면 `.wrangler/state`를 지운다.
 
 ```bash
-for f in drizzle/*.sql; do node node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --config dist/server/wrangler.json --file "$f" || break; done
+rc=0; for f in drizzle/*.sql; do node node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --config dist/server/wrangler.json --file "$f" || { rc=$?; echo "실패: $f" >&2; break; }; done; [ "$rc" -eq 0 ]
 ```
 
 U01 DOM 검사(기존 검증 버전 유지):
