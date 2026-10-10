@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-10T18:10:02.297Z",
+ "measuredAt": "2026-10-10T18:22:56.584Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
@@ -114,6 +114,15 @@
    "pass": true,
    "detail": {
     "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 360,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 0px, 0px)",
+    "panAfter": "translate3d(-140px, 0px, 0px)"
    }
   },
   {
@@ -277,6 +286,15 @@
    "pass": true,
    "detail": {
     "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 390,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 0px, 0px)",
+    "panAfter": "translate3d(-140px, 0px, 0px)"
    }
   },
   {

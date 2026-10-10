@@ -92,6 +92,13 @@ async function run(page,cdp){
  // Forward Tab from the map must reach the button, with markers off screen after zooming in:
  // a focused off-screen marker must not pan the map, redraw it and drop focus to the page.
  for(let i=0;i<2;i++){await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(400)}
+ // The cause itself: focusing a marker outside the map's visible box must not pan the map.
+ const outside=await page.evaluate(()=>{const c=document.querySelector('.map-canvas').getBoundingClientRect();return [...document.querySelectorAll('.leaflet-marker-icon')].findIndex(m=>{const r=m.getBoundingClientRect();return r.right<c.left||r.left>c.right||r.bottom<c.top||r.top>c.bottom})});
+ if(outside>=0){
+  const marker=page.locator('.leaflet-marker-icon').nth(outside),panBefore=await pane();
+  await marker.focus();await page.waitForTimeout(600);
+  check('화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음',await pane()===panBefore&&await marker.evaluate(e=>e===document.activeElement),{panBefore,panAfter:await pane()});
+ }else check('화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음',false,{reason:'확대 뒤 화면 밖 지점 없음'});
  await canvas.focus();
  let tabs=0,bodyFocus=0;
  for(;tabs<100&&!(await areaButton.evaluate(e=>e===document.activeElement));tabs++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement===document.body))bodyFocus++}
