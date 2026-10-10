@@ -1,36 +1,57 @@
 # 최근 작업 인수인계
 
-작업: 전체 앱 private GitHub 레포 이관과 ChatGPT 프로젝트 대화/자료 보존.
-기록: 2026-10-10T09:38:05.543499+00:00 UTC. 이전 준비 기록은 `history/work-handoff-migration-20261009.md`에 보존했다.
+작업: U01 — 비교·수집 현황의 실제 360/390px 브라우저 검사와 발견 결함 수정. 클라우드 세션 운영 규칙 정리.
+기록: 2026-10-10T11:49:33Z / 2026-10-10 20:49:33 KST.
+이전 인수인계(이관 완료)는 `history/work-handoff-migration-20261010.md`에 보존했다.
 
-## 현재 기준
+## 기준과 상태
 
-- 앱 레포: https://github.com/jihune/yukemuri (private). 사용자가 생성·접근을 허용했다.
-- 시작 소스: Sites v49 `608a38042df8d101d28ae480debfdddc5f3de7dc`. 이관 준비 이력의 마지막은 `700b43fe26dc2bfbf87f826c2876bd9fb894a83f`다.
-- 운영: 기존 Sites ID `appgprj_6abf95be6ea0819181cc3e93535413ac`, https://yukemuri.jihun7891.chatgpt.site . v49·public을 재확인했다. 이 GitHub 이관본을 Sites에 게시하지 않는다.
-- 실행기: 기존 private `jihune/yukemuri-script-runner`. 기존 수집과 추가 DB 백업을 유지한다.
+- 작업 환경: Claude Code 웹 클라우드. 작업 브랜치: `claude/pensive-bell-odhgp8`.
+- 시작 기준: main `ba8a381f6d6748f9c472b9d937c1090d5d48368a`.
+- 커밋: `31023f1`은 세션 규칙·기록 위치, `dd65610`은 U01 수정·브라우저 검사다. 이 문서는 그 뒤의 문서 커밋이다.
+- main에는 병합하지 않았다. Sites에는 게시하지 않았다.
+- 운영 D1·Secret·수집 예약·자동 백업·호스팅·공유 범위는 변경하지 않았다. 운영 D1에 연결하지 않았다.
 
-## 보존과 변경
+## 환경 확인
 
-계정 내보내기를 실제 받았다. 118개 대화에서 프로젝트 6개·1,723 mapping 노드·모든 분기의 JSON·읽기 보조본·첨부 19개·프로젝트 Library 자료와 Sites export 파일 109개를 비공개 보존했다. ZIP에서 빠진 과거 실행기 ZIP은 Library 원본에서 추가 확보했다. 이전 가이드의 옛 첨부 버전 1개는 실제 바이트가 없으며 현재 버전과 원래 참조를 보존했다.
+- Ubuntu 24.04.5의 기본 Node는 22.22.0이었다. `nvm install 24`로 Node 24.21.0을 설치해 사용했다. pnpm 11.25.0, Python 3.13.16이다.
+- `bash scripts/cloud-setup.sh`는 exit 0이었다. 잠금 파일은 바뀌지 않았다.
+- `python3 scripts/cloud-check.py --full`은 16개 명령을 두 번 통과했다. 기준 커밋에서 11:18:51Z–11:21:02Z, CSS 수정 뒤 11:43:33Z–11:45:43Z에 실행했다.
+- 새 클론의 개발 서버는 로컬 D1에 테이블이 없어 실패했다. 마이그레이션 적용 절차를 `cloud-development.md`에 추가했다.
 
-원래 Sites bundle 51커밋을 검증했다. 계정 내보내기의 D1 SQL 16개 테이블을 새 임시 SQLite에 복원하고 integrity_check=ok를 확인했다. Secret 값은 내보내기 서비스가 가렸다. 운영 DB는 변경하지 않았다.
+## U01 결과
 
-분할 대화 파일·native file ID·Library 참조·공유 첨부를 지원하도록 가져오기 도구를 보완했고 정상/거절 경로를 검사했다. 계정 ZIP·대화 원본·운영 DB는 Git에 넣지 않는다. 개발 공통 지침·원래 Git 이력 bundle·첨부 지침·대화에서 확정한 결정과 작업 기록을 이 레포에 넣는다. 자세한 범위와 한계는 `conversation-handoff.md`·`legacy-history.md`·`evidence/chat-export-20261010.json`에 있다.
+- 실제 Chromium 141에서 360/390px 터치·키보드 검사 64개가 통과했다. 같은 결과를 세 번 확인했다. 근거는 `evidence/ui-u01-browser-20261010.json`이다.
+- 발견: 비교 후보가 있으면 목록 끝의 ‘사진 출처’ 링크가 비교 막대에 가려졌다. 360·390·1280px에서 확인했다.
+- 수정: 비교 막대가 있을 때만 푸터 아래 여백을 늘렸다. `app/globals.css` 규칙 두 개다. 수정 전 여백을 주입한 대조에서는 링크가 가려졌다.
+- CSS 수정 뒤 기존 DOM 회귀 검사 15개도 통과했다.
+- 상세를 닫은 뒤 포커스는 약 0.3~0.6초 뒤 숙소명 버튼으로 돌아온다. 결함으로 보지 않았다.
+- 검사 항목·대조·재실행 방법은 `ui-u01-20261010.md`에 있다.
 
-내보내기 요청 시점 이후의 이 이관 세션 원본은 계정 ZIP에 없다. 이후 지시와 완료 근거를 별도 작업 기록으로 보존한다. 원본에 없는 Work 도구 실행 전체를 재구성했다고 주장하지 않는다.
+## 미확인 사항
 
-## 검사와 운영
+- 실제 모바일 기기, 주소창·안전 영역, iOS Safari의 탭 포커스, 스크린리더 읽기 순서는 확인하지 않았다.
+- 외부 사진·지도 타일과 운영 자료량의 표 너비는 확인하지 않았다.
+- 1280px의 범위 밖 관찰 두 건은 고치지 않았다. 고정 필터 패널 체크박스와 Leaflet 저작권 링크가 가려진다.
+- 이 브랜치 PR의 GitHub CI 결과는 PR을 연 뒤 확인한다.
 
-가져오기 도구의 shards/legacy 형식·모든 분기·공유 첨부 재사용·아이콘 제외·안전한 ZIP 파일명·잘못된 ID·덮어쓰기·추적 레포 출력 거절 검사를 통과했다. 준비본과 GitHub의 tree 해시 `87f1dea9e6aa45aa2bfcea8beb55fa0e737c40ac`가 같았다. 별도 깨끗한 클론에서 공개 소스 자료 15개를 원래 바이트로 복원했고 추적 파일 변경이 없었다. pnpm lock은 직접 추적한다. 기존 앱 빌드 입력의 바이트는 바꾸지 않았다.
+## 이번 세션의 결정
 
-[가져오기 PR #1](https://github.com/jihune/yukemuri/pull/1)을 병합했다. 가져오기 커밋 `278b1a2cbb1f1d21ba8a57ec19929a3b069c4ce2`, 병합 커밋 `f33db7465fe6b68358316a0c6b2fac5843d473af`다. [PR 전체 CI 38041633399](https://github.com/jihune/yukemuri/actions/runs/38041633399)와 push 전체 CI 38041602946은 새 클라우드 환경에서 설치·복원·타입·기존 앱/Worker 회귀 검사를 통과했다. 병합 후 [main 전체 CI 38041854782](https://github.com/jihune/yukemuri/actions/runs/38041854782)도 성공했다. 이후 완료 기록 변경은 문서뿐이다. 개인 Codex/Claude 웹 계정의 첫 세션 검사와는 구분한다. 근거는 `evidence/github-app-import-20261010.json`에 있다.
+1. 기록 체계는 기존 `docs/` 체계를 유지했다. `agents_work/`는 만들지 않았다. Codex와 Claude가 같은 문서를 읽고, 기록 체계가 둘이면 한쪽이 낡기 때문이다. 관리 규칙을 `AGENTS.md`의 ‘기록’에 적었다.
+2. 사용자의 문장 교정은 `writing-guide.md`의 ‘사용자 교정’ 표에 남긴다. 두 에이전트가 기록 전에 읽는 문서이기 때문이다. 개인 하네스 레포는 수정하지 않았다. 스킬 사본을 레포에 두면 원본과 어긋날 수 있다.
+3. 클라우드 컨테이너는 세션 뒤 사라진다. 그래서 검사를 통과한 중간 변경도 작업 브랜치에 커밋·push한다. PR 생성까지 사용자가 허용했다. main 병합은 하지 않는다.
+4. 부족한 개발 도구는 Ubuntu 컨테이너 안에 설치한다. 이번에는 Node 24와 무시 경로의 Playwright 1.56.1·jsdom 26.1.0을 설치했다.
+5. 세션 운영 원칙 여섯 가지를 검토해 `AGENTS.md`에 반영했다. 새 세션은 main에서 시작하므로 열린 PR의 인수인계도 확인하도록 추가했다.
 
-자동 DB 백업의 실제 예약 run [38003762428](https://github.com/jihune/yukemuri-script-runner/actions/runs/38003762428)은 성공했다. private artifact `11650770196`, 5,409,965바이트가 만료되지 않은 상태임을 확인했다. 매일 04:23 KST 예약은 지연될 수 있다. 일일 14일·주간 90일 보관이다. `db-backups.md`를 따른다.
+## Sites 전달
 
-호스팅·사이트 공개 범위·운영 DB·Secret 값·기존 수집 주기/상한·Google API·LLM 예약은 변경하지 않는다.
+- 이 환경에는 Sites 도구가 없다. 검사한 커밋은 `dd6561071d18d244ad0f9992dbc5d0ed68d757bd`다.
+- 앱 화면 변경은 `app/globals.css` 하나다. 수집기·Worker API·DB 스키마는 바꾸지 않았다.
+- 수집기 배포 자료 해시는 `52da755a48673c3c0902793760650334376d6a7431e60a5a32c68b2bc582c083`으로 이전 기록과 같다.
+- Sites 세션은 `sites-handoff.md`의 ‘전달 요청’에 이 PR과 커밋을 넣어 사용한다. 운영 Sites의 현재 버전과 먼저 대조한다.
 
 ## 다음 작업
 
-1. 사용하는 Codex/Claude 웹 서비스에서 이 레포 연결을 허용하고 Node 24·Python 3.10 이상에서 `scripts/cloud-setup.sh`와 `scripts/cloud-check.py --full`을 실제 실행한다. 해당 계정 연결·스킬 발견은 별도 확인이다. 이관을 다시 하거나 ZIP을 소스 대신 사용하지 않는다.
-2. 다음 제품 작업은 U01 실제 360/390px 모바일·터치·키보드 검사다. 이후 D01 → D02 → U02 순서다. 호스팅 이전은 후속 결정이다.
+1. 다른 에이전트가 이 PR을 검토한다. main 병합은 사용자가 결정한다.
+2. Sites 도구가 있는 세션에서 이 CSS 변경을 게시하고 `deployments.md`에 기록한다.
+3. 다음 독립 작업은 D01(지역 오류와 동일 숙소 연결)이다. 새 세션에서 시작한다.
