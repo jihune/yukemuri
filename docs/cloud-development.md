@@ -52,6 +52,12 @@ Worker 검사는 임시 Miniflare DB를 만들고 정리한다.
 개발 화면은 체크인된 자료를 사용하며 운영 D1에 직접 연결하지 않는다.
 개인 자료와 운영 DB 백업을 에이전트 레포에 추가하지 않는다.
 
+새 클론의 로컬 D1(`.wrangler/state`, Git 제외)에는 테이블이 없다. 그대로 `pnpm dev`를 열면 `no such table: catalog_meta`로 실패한다. `cloud-check.py --full`의 빌드 뒤, 개발 서버를 멈춘 상태에서 마이그레이션을 한 번 적용한다(2026-10-10 확인). 다시 만들려면 `.wrangler/state`를 지운다.
+
+```bash
+for f in drizzle/*.sql; do node node_modules/wrangler/bin/wrangler.js d1 execute DB --local --persist-to .wrangler/state --config dist/server/wrangler.json --file "$f" || break; done
+```
+
 U01 DOM 검사(기존 검증 버전 유지):
 
 ```bash
@@ -59,7 +65,7 @@ npm install --prefix .sites-runtime/u01-dom --no-save --package-lock=false jsdom
 node scripts/check-u01-dom.cjs
 ```
 
-이는 상태·포커스 회귀 검사다. 실제 360/390px·터치·키보드는 별도 검사다.
+이는 상태·포커스 회귀 검사다. 실제 360/390px·터치·키보드는 `scripts/check-u01-browser.mjs`로 검사한다. 준비와 판정은 `docs/ui-u01-20261010.md`에 있다.
 수정 범위에 따라 `scripts/check-*.mjs`와 `docs/ui-u01-20261008.md`의 검사를 추가한다.
 
 ## 지속적인 코드·기록·백업 관리
