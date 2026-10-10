@@ -123,3 +123,12 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .collection-toolbar button[aria-disabled=true],.comparison-toolbar button[aria-disabled=true]{opacity:.6;cursor:wait}
 .comparison-header>.icon-button{flex-shrink:0}
 .comparison-empty button{min-height:44px}
+
+/* U02: say what the list and the map leave out. */
+.unknown-excluded{display:flex;align-items:flex-start;gap:8px;margin:0 0 14px;padding:10px 12px;border:1px solid #e3d6ad;border-radius:8px;background:#fdf8ea;color:#5c4a17;font-size:13px;line-height:1.6}
+.unknown-excluded svg{flex:none;margin-top:3px}
+.map-coverage{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:0 0 10px;font-size:12px;line-height:1.6;color:#4b6d76}
+.map-coverage b{color:#087e8b}
+.map-coverage button{min-height:44px;padding:0 14px;border:1px solid #c9dce0;border-radius:8px;background:#fff;color:#087e8b;font-size:13px}
+.map-more-state{color:#18363b}
+.map-coverage button[aria-disabled=true]{opacity:.7;cursor:wait}

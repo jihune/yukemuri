@@ -33,7 +33,7 @@ export function useHotelResults(initial:SearchResponse,filters:HotelFilters,sort
    return()=>request.abort();
   }
   setLoading(true);setLoadingMore(false);setSearchError('');setMoreError('');setReopenSearch(false);setRefreshRequired(false);
-  setResponse(old=>({...old,hotels:[],total:0,page:1,alternatives:[],similarHotelIds:[],similarCount:0,snapshot:undefined}));
+  setResponse(old=>({...old,hotels:[],total:0,unknownExcluded:0,page:1,alternatives:[],similarHotelIds:[],similarCount:0,snapshot:undefined}));
   const p=new URLSearchParams(requestParams.current);p.set('page','1');if(forceRefresh)p.set('fresh','1');
   apiJson<SearchResponse>('/api/hotels?'+p,{signal:request.signal}).then(data=>{if(!request.signal.aborted&&generation.current===epoch){remember(cacheKey,data);setResponse(data)}}).catch(e=>{if(!request.signal.aborted&&generation.current===epoch){setSearchError(e instanceof Error?e.message:'숙소 검색에 실패했습니다.');setReopenSearch(e instanceof ApiError&&e.reopen)}}).finally(()=>{if(!request.signal.aborted&&generation.current===epoch){resetting.current=false;setLoading(false)}});
   return()=>{request.abort();moreController.current?.abort()};

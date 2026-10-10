@@ -239,7 +239,7 @@ async function backfillBathFacts(){
 }
 async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
 export type HotelAlternative={hotel:Hotel;unmetConditions:string[];queryMatched:boolean};
-export type SearchResponse={hotels:Hotel[];total:number;page:number;pageSize:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;coverage:typeof catalogCoverage;similarCount?:number;similarHotelIds?:string[];alternatives?:HotelAlternative[];snapshot?:{token:string;createdAt:string;expiresAt:string}};
+export type SearchResponse={hotels:Hotel[];total:number;unknownExcluded?:number;page:number;pageSize:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;coverage:typeof catalogCoverage;similarCount?:number;similarHotelIds?:string[];alternatives?:HotelAlternative[];snapshot?:{token:string;createdAt:string;expiresAt:string}};
 async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
   await ensureCatalog();const db=favoritesDb();
   const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
@@ -256,11 +256,19 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
   const scopeArgs=[...args],facilityClauses:string[]=[],facilityArgs:(string|number)[]=[];
   addConstraints({...filters,region:'all'},facilityClauses,facilityArgs,false,true);
   const eligible=facilityClauses.length?facilityClauses.join(' AND '):'1';
+  const rating=filters.ratingProvider==='jalan'?'jalan':'trip';
+  // Candidates that fail no selected condition, only lack the fact for one.
+  // They stay excluded and are counted so the list can say so.
+  const unknownClauses:string[]=[],unknownArgs:(string|number)[]=[];
+  if(filters.ryokanOnly)unknownClauses.push("kind='ryokan'");
+  for(const key of filters.features){const bit=1<<FEATURE_KEYS.indexOf(key);unknownClauses.push(`((bath_features & ${bit}) != 0 OR (COALESCE(bath_known,0) & ${bit}) = 0)`)}
+  if(filters.minRating){unknownClauses.push(`(${rating}_score>=? OR ${rating}_score IS NULL)`);unknownArgs.push(filters.minRating)}
+  if(filters.minReviews){unknownClauses.push(`(${rating}_reviews>=? OR ${rating}_reviews IS NULL)`);unknownArgs.push(filters.minReviews)}
+  const unknownOnly=unknownClauses.length?unknownClauses.join(' AND '):'0';
   const coveragePromise=readCoverage(true);
-  const facetsPromise=db.prepare(`SELECT ${Object.entries(featureColumns).map(([k,c])=>`SUM(CASE WHEN ${c}=1 THEN 1 ELSE 0 END) AS ${k}`).join(',')},SUM(CASE WHEN kind='ryokan' THEN 1 ELSE 0 END) AS ryokan,COUNT(CASE WHEN ${eligible} THEN 1 END) AS count,COALESCE(SUM(CASE WHEN (${eligible}) AND id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END),0) AS similar FROM hotels ${scope}`).bind(...facilityArgs,...facilityArgs,similarJson,...scopeArgs).first<Record<string,number>>();
+  const facetsPromise=db.prepare(`SELECT ${Object.entries(featureColumns).map(([k,c])=>`SUM(CASE WHEN ${c}=1 THEN 1 ELSE 0 END) AS ${k}`).join(',')},SUM(CASE WHEN kind='ryokan' THEN 1 ELSE 0 END) AS ryokan,COUNT(CASE WHEN ${eligible} THEN 1 END) AS count,COALESCE(SUM(CASE WHEN (${eligible}) AND id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END),0) AS similar,COALESCE(SUM(CASE WHEN COALESCE((${eligible}),0)=0 AND (${unknownOnly}) THEN 1 ELSE 0 END),0) AS unknown FROM hotels ${scope}`).bind(...facilityArgs,...facilityArgs,similarJson,...facilityArgs,...unknownArgs,...scopeArgs).first<Record<string,number>>();
   if(filters.ryokanOnly)clauses.push("kind='ryokan'");
   for(const key of filters.features)clauses.push(featureColumns[key]+'=1');
-  const rating=filters.ratingProvider==='jalan'?'jalan':'trip';
   if(filters.minRating){clauses.push(rating+'_score>=?');args.push(filters.minRating)}
   if(filters.minReviews){clauses.push(rating+'_reviews>=?');args.push(filters.minReviews)}
   const where=clauses.length?'WHERE '+clauses.join(' AND '):'';
@@ -282,14 +290,14 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
    const candidates=rankHotelAlternatives((await catalogueSearchIndex()).prepared,filters,saved);
    if(candidates.length){const picked=await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(candidates.map(c=>c.id))).all<{id:string;payload:string}>();const byId=new Map(picked.results.map(row=>[row.id,enrichHotel(JSON.parse(row.payload) as Hotel)]));alternatives=candidates.flatMap(c=>{const hotel=byId.get(c.id);return hotel?[{hotel,unmetConditions:c.unmetConditions,queryMatched:c.queryMatched}]:[]})}
   }
-  const result:SearchResponse={hotels:rows.results.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),total,page:actualPage,pageSize,featureCounts:Object.fromEntries(Object.keys(featureColumns).map(k=>[k,facets?.[k]??0])) as Record<FeatureKey,number>,ryokanCount:facets?.ryokan??0,coverage,similarCount:facets?.similar??0,similarHotelIds:rows.results.filter(r=>r.similar_match).map(r=>r.id),alternatives};
+  const result:SearchResponse={hotels:rows.results.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),total,unknownExcluded:facets?.unknown??0,page:actualPage,pageSize,featureCounts:Object.fromEntries(Object.keys(featureColumns).map(k=>[k,facets?.[k]??0])) as Record<FeatureKey,number>,ryokanCount:facets?.ryokan??0,coverage,similarCount:facets?.similar??0,similarHotelIds:rows.results.filter(r=>r.similar_match).map(r=>r.id),alternatives};
   if(ordered){
    const ids=ordered.results.map(r=>r.id),idSet=new Set(ids),allSimilar=(JSON.parse(similarJson) as string[]).filter(id=>idSet.has(id));
    result.total=ids.length;result.page=Math.max(1,Math.min(page,Math.max(1,Math.ceil(ids.length/pageSize))));
    const pageIds=ids.slice((result.page-1)*pageSize,result.page*pageSize);
    result.hotels=await hotelsInOrder(pageIds);result.similarHotelIds=allSimilar.filter(id=>pageIds.includes(id));result.similarCount=allSimilar.length;
    if(ids.length>pageSize){
-    result.snapshot=await createResultSession(queryKey,ids,{total:result.total,pageSize,featureCounts:result.featureCounts,ryokanCount:result.ryokanCount,coverage,similarCount:result.similarCount,similarHotelIds:allSimilar,alternatives});
+    result.snapshot=await createResultSession(queryKey,ids,{total:result.total,unknownExcluded:result.unknownExcluded,pageSize,featureCounts:result.featureCounts,ryokanCount:result.ryokanCount,coverage,similarCount:result.similarCount,similarHotelIds:allSimilar,alternatives});
    }
   }
   result.hotels=await attachLifecycle(await attachSourceGroups(result.hotels));

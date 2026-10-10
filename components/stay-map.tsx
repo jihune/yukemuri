@@ -59,7 +59,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
  function reset(){const located=hotels.filter(hasCoordinates);if(mapRef.current&&api.current&&located.length)mapRef.current.fitBounds(api.current.latLngBounds(located.map(h=>[h.location.latitude,h.location.longitude])),{padding:[40,55],maxZoom:12})}
  return <div className={`stay-map ${compact?'compact-map':''}`}>
   <div ref={container} className="map-canvas" aria-label="숙소 위치 지도"/>
-  <div className="map-caption"><MapPin size={15}/><span>{compact?'숙소 위치':'불러온 숙소'} <b>{hotels.filter(hasCoordinates).length}곳</b></span></div>
+  <div className="map-caption"><MapPin size={15}/><span>{compact?'숙소 위치':'지도 표시'} <b>{hotels.filter(hasCoordinates).length}곳</b></span></div>
   <div className="map-controls">
    <button aria-label="지도 확대" onClick={()=>mapRef.current?.zoomIn()}><Plus size={19}/></button>
    <button aria-label="지도 축소" onClick={()=>mapRef.current?.zoomOut()}><Minus size={19}/></button>

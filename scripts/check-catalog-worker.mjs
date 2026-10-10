@@ -50,6 +50,21 @@ try{
  }
  const indoor=await api('/api/hotels?features=roomIndoorOnsen');assert(indoor.hotels.some(h=>h.id==='bourou-noboribetsu'));
  const impossible=await api('/api/hotels?'+new URLSearchParams({q:'소잔쿄',rating:'10',reviews:'100000',features:'natural,roomOutdoorOnsen'}));assert.equal(impossible.total,0);assert.equal(impossible.hotels.length,0);assert.equal(impossible.alternatives[0].hotel.id,'jalan-327522');assert(impossible.alternatives[0].unmetConditions.some(t=>t.includes('평점')));assert(impossible.alternatives[0].unmetConditions.some(t=>t.includes('리뷰')));
+ // U02: a candidate that fails no selected condition but lacks a fact for one
+ // stays excluded and is counted. A known failure is never counted.
+ const naturalBit=1<<Object.keys(JSON.parse(readFileSync('lib/hotels.real.json','utf8'))[0].features).indexOf('natural');
+ const gapFixtures=[['a',1,1,9.5,100],['b',0,0,9.5,100],['c',0,1,9.5,100],['d',1,1,null,null],['e',1,1,8,100],['f',0,0,8,100],['g',1,1,9.5,null]];
+ for(const [suffix,natural,known,score,reviews] of gapFixtures){
+  const id='qa-gap-'+suffix,payload={...fixturePayload,id,names:{ko:'미확인 대조 '+suffix,ja:'QA '+suffix,en:'QA '+suffix}};
+  await db.prepare(`INSERT INTO hotels (${fixtureColumns.join(',')}) VALUES (${fixtureColumns.map(()=>'?').join(',')})`).bind(...fixtureColumns.map(k=>({...fixtureRow,id,name:payload.names.ko,search_text:'qaunknownzz',trip_score:score,trip_reviews:reviews,bath_features:natural?naturalBit:0,bath_known:known?naturalBit:0,payload:JSON.stringify(payload)})[k])).run();
+ }
+ const gaps=async extra=>{const r=await api('/api/hotels?'+new URLSearchParams({q:'qaunknownzz',...extra}));return [r.hotels.map(h=>h.id.slice(-1)).sort().join(''),r.unknownExcluded]};
+ assert.deepEqual(await gaps({}),['abcdefg',0]);
+ assert.deepEqual(await gaps({features:'natural'}),['adeg',2],'unknown natural: b,f');
+ assert.deepEqual(await gaps({features:'natural',rating:'9'}),['ag',2],'b lacks natural, d lacks a score; f has a known low score');
+ assert.deepEqual(await gaps({rating:'9',reviews:'50'}),['abc',2],'d and g lack review counts');
+ const gapPage=await api('/api/hotels?rating=8&stable=1');assert(gapPage.snapshot,'Needs more than one page to cover the result session');assert(gapPage.unknownExcluded>0);
+ assert.equal((await api('/api/hotels?'+new URLSearchParams({rating:'8',stable:'1',page:'2',snapshot:gapPage.snapshot.token}))).unknownExcluded,gapPage.unknownExcluded,'Later pages keep the count');
  const noName=await search('xzqvjkzz');assert.equal(noName.total,0);assert(noName.alternatives.length>0);assert(noName.alternatives.every(h=>h.unmetConditions.includes('검색어 일치 없음')));
  const noSaved=await api('/api/hotels?saved=1&q=xzqvjkzz');assert.equal(noSaved.total,0);assert.equal(noSaved.alternatives.length,0);
  assert.equal(compact.hotels.find(h=>h.id==='trip-67309116').location,'나하 · 오키나와');
@@ -100,5 +115,5 @@ try{
  assert(!nameJobs.jobs.some(j=>protectedUrls.has(j.url)),'Already verified properties must not be re-enriched');
  const put={method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:hotel.id,saved:true})};await api('/api/favorites',put);assert((await api('/api/favorites')).ids.includes(hotel.id));assert.equal((await api('/api/hotels?saved=1')).total,1);
  assert.equal((await suggest(hotel.names.ko,{saved:'1'})).suggestions[0].id,hotel.id);
- console.log(`Production Worker/D1 passed: ${first.total} records, advanced bath/High Class filters, unchanged legacy payload after bath backfill, separate alternatives with unmet conditions, multilingual relevance/autocomplete, favorites, nonoverlapping pages and original 20 properties.`);
+ console.log(`Production Worker/D1 passed: ${first.total} records, advanced bath/High Class filters, unchanged legacy payload after bath backfill, separate alternatives with unmet conditions, unknown-only exclusion counts, multilingual relevance/autocomplete, favorites, nonoverlapping pages and original 20 properties.`);
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
