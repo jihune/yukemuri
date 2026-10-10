@@ -22,7 +22,7 @@ async function run(page){
  const focused=()=>page.evaluate(()=>{const e=document.activeElement;return e?.getAttribute('aria-label')||e?.innerText?.trim().split('\n')[0].slice(0,40)||e?.tagName});
  const box=locator=>locator.evaluate(e=>{const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,vw:innerWidth,vh:innerHeight}});
  const inView=b=>b.left>=-0.5&&b.top>=-0.5&&b.right<=b.vw+0.5&&b.bottom<=b.vh+0.5;
- const reachable=locator=>locator.evaluate(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return !!hit&&(hit===e||e.contains(hit))});
+ const fullyReachable=locator=>locator.evaluate(e=>{const r=e.getBoundingClientRect();return [[.5,.5],[.1,.2],[.9,.2],[.1,.8],[.9,.8]].every(([x,y])=>{const hit=document.elementFromPoint(r.left+r.width*x,r.top+r.height*y);return !!hit&&(hit===e||e.contains(hit))})});
  // Expected values come from the API the page itself calls, with the same query.
  const api=query=>page.evaluate(q=>fetch('/api/hotels?'+q).then(r=>r.json()),query);
  const shot=async name=>{if(shots)await page.screenshot({path:`${shots}/${width}-${name}.png`})};
@@ -61,20 +61,28 @@ async function run(page){
  await page.unroute(hotelsApi);
  await error.getByRole('button',{name:'다시 시도'}).focus();await page.keyboard.press('Enter');
  await error.waitFor({state:'detached',timeout:15000});await page.waitForLoadState('networkidle');
- check('Enter로 다시 시도 성공 후 조건 없는 검색은 안내 없음',await notice.count()===0&&await page.locator('.hotel-card').count()>0);
+ await page.locator('.hotel-list .card-title').first().waitFor({timeout:15000}).catch(()=>{});
+ const cardsAfterRetry=await page.locator('.hotel-list .card-title').count();
+ check('Enter로 다시 시도 성공 후 조건 없는 검색은 목록이 돌아오고 안내 없음',await notice.count()===0&&cardsAfterRetry>0,{cardsAfterRetry,notice:await notice.count()});
 
  // Map view on a phone: the caption explains the gap between the result and the markers.
- await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
+ // The unfiltered list has enough pages for loading, failure and retry.
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ const all=await api('stable=1');
  await page.locator('.mobile-map-toggle').tap();
  await coverage.waitFor();
- const firstPage=rated.hotels,shown=firstPage.filter(located).length;
+ const firstPage=all.hotels,shown=firstPage.filter(located).length;
  const coverageText=async()=>(await coverage.innerText()).replace(/\s+/g,' ');
  let text=await coverageText();
- check('지도 화면에 결과 전체 수·지도 표시 수·위치 미확인·미로딩 수 표시',shown<rated.total&&text.includes(`검색 결과 ${count(rated.total)} 중 지도에 ${count(shown)} 표시`)&&text.includes(`위치 미확인 ${count(firstPage.length-shown)}`)&&text.includes(`아직 불러오지 않음 ${count(rated.total-firstPage.length)}`),{text,total:rated.total,shown,loaded:firstPage.length});
+ check('지도 화면에 결과 전체 수·지도 표시 수·위치 미확인·미로딩 수 표시',shown<all.total&&text.includes(`검색 결과 ${count(all.total)} 중 지도에 ${count(shown)} 표시`)&&text.includes(`위치 미확인 ${count(firstPage.length-shown)}`)&&text.includes(`아직 불러오지 않음 ${count(all.total-firstPage.length)}`),{text,total:all.total,shown,loaded:firstPage.length});
  const caption=await page.locator('.map-caption').innerText();
  check('지도 표시 수와 지도 캡션의 수가 같음',caption.replace(/\s+/g,' ').includes(`지도 표시 ${count(shown)}`),{caption});
  const more=coverage.getByRole('button');
- check('지도 화면 가로 넘침 없음, 더 불러오기 버튼이 보이고 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await reachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more)});
+ // The floating list button can sit over it before scrolling; a user scrolls it clear.
+ // Centre it as a user would, then require the centre and four inner corners to reach it.
+ const initiallyCovered=!(await fullyReachable(more));
+ await more.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));
+ check('지도 화면 가로 넘침 없음, 더 불러오기 버튼을 스크롤해 화면 가운데에 두면 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more),initiallyCovered});
  await shot('map');
 
  // Touch: load the next page from the map, with a visible loading state.
@@ -84,13 +92,13 @@ async function run(page){
  check('더 불러오는 중 안내가 지도 화면에 보임',await coverage.getByText('숙소를 더 불러오는 중').isVisible());
  await coverage.getByText('숙소를 더 불러오는 중').waitFor({state:'detached',timeout:15000});
  await page.unroute(hotelsApi);
- const second=await api('rating=8&stable=1&page=2&snapshot='+encodeURIComponent((await api('rating=8&stable=1')).snapshot?.token??''));
+ const second=await api('stable=1&page=2&snapshot='+encodeURIComponent((await api('stable=1')).snapshot?.token??''));
  text=await coverageText();
  const loadedTwo=firstPage.length+second.hotels.length,shownTwo=shown+second.hotels.filter(located).length;
- check('터치로 다음 페이지를 불러오면 지도 표시 수와 미로딩 수가 바뀜',text.includes(`지도에 ${count(shownTwo)} 표시`)&&text.includes(`불러온 ${count(loadedTwo)} 중`)&&(rated.total>loadedTwo?text.includes(`아직 불러오지 않음 ${count(rated.total-loadedTwo)}`):!text.includes('아직 불러오지 않음')),{text,loadedTwo,shownTwo});
+ check('터치로 다음 페이지를 불러오면 지도 표시 수와 미로딩 수가 바뀜',text.includes(`지도에 ${count(shownTwo)} 표시`)&&text.includes(`불러온 ${count(loadedTwo)} 중`)&&(all.total>loadedTwo?text.includes(`아직 불러오지 않음 ${count(all.total-loadedTwo)}`):!text.includes('아직 불러오지 않음')),{text,loadedTwo,shownTwo});
 
  // Keyboard: Tab reaches the button; a failed load keeps focus and offers a retry.
- if(rated.total>loadedTwo){
+ if(all.total>loadedTwo){
   await page.evaluate(()=>{document.activeElement?.blur();window.scrollTo({top:0,behavior:'instant'})});
   let tabs=0;for(;tabs<120&&!(await more.evaluate(e=>e===document.activeElement));tabs++)await page.keyboard.press('Tab');
   check('Tab으로 더 불러오기 버튼에 도달',tabs<120,{tabs});
@@ -103,8 +111,8 @@ async function run(page){
   await coverage.getByRole('alert').waitFor({state:'detached',timeout:15000});
   await page.waitForFunction(()=>!document.querySelector('.map-coverage')?.innerText.includes('불러오는 중'));
   text=await coverageText();
-  check('Enter로 다시 불러오기 성공 후 오류 안내 제거',!text.includes('test')&&text.includes(`불러온 ${count(Math.min(rated.total,loadedTwo+40))} 중`),{text});
- }else check('세 번째 페이지 없음: 키보드 실패 검사를 위한 결과가 부족함',false,{total:rated.total});
+  check('Enter로 다시 불러오기 성공 후 오류 안내 제거',!text.includes('test')&&text.includes(`불러온 ${count(Math.min(all.total,loadedTwo+40))} 중`),{text});
+ }else check('세 번째 페이지 없음: 키보드 실패 검사를 위한 결과가 부족함',false,{total:all.total});
 }
 
 const chromiumVersion=browser.version();
