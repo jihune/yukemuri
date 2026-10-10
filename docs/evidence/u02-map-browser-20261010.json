@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-10T16:44:05.918Z",
+ "measuredAt": "2026-10-10T17:38:34.006Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -74,6 +74,24 @@
   },
   {
    "width": 360,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
    "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
    "pass": true,
    "detail": {
@@ -94,7 +112,7 @@
    "name": "Tab으로 이 지역 검색 버튼에 도달",
    "pass": true,
    "detail": {
-    "tabs": 8
+    "tabs": 180
    }
   },
   {
@@ -218,6 +236,24 @@
   },
   {
    "width": 390,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
    "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
    "pass": true,
    "detail": {
@@ -238,7 +274,7 @@
    "name": "Tab으로 이 지역 검색 버튼에 도달",
    "pass": true,
    "detail": {
-    "tabs": 8
+    "tabs": 195
    }
   },
   {
