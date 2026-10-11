@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T20:28:45.831Z",
+ "measuredAt": "2026-10-11T20:55:40.578Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -47,31 +47,36 @@
   },
   {
    "width": 360,
-   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳",
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음",
    "pass": true,
    "detail": {
     "bareCards": 40,
-    "bareVisible": "visible"
+    "bareVisible": "visible",
+    "barePending": false
    }
   },
   {
    "width": 360,
-   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김",
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "2b213dc46b17e44a",
-    "mark": true
+    "first": "ab5cf775250959c3",
+    "mark": true,
+    "cardsVisible": false,
+    "pending": true,
+    "mapCount": false
    }
   },
   {
    "width": 360,
-   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시",
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움",
    "pass": true,
    "detail": {
     "visibility": "visible",
     "first": null,
-    "mark": false
+    "mark": false,
+    "pending": 0
    }
   },
   {
@@ -292,31 +297,36 @@
   },
   {
    "width": 390,
-   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳",
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음",
    "pass": true,
    "detail": {
     "bareCards": 40,
-    "bareVisible": "visible"
+    "bareVisible": "visible",
+    "barePending": false
    }
   },
   {
    "width": 390,
-   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김",
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "2b213dc46b17e44a",
-    "mark": true
+    "first": "ab5cf775250959c3",
+    "mark": true,
+    "cardsVisible": false,
+    "pending": true,
+    "mapCount": false
    }
   },
   {
    "width": 390,
-   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시",
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움",
    "pass": true,
    "detail": {
     "visibility": "visible",
     "first": null,
-    "mark": false
+    "mark": false,
+    "pending": 0
    }
   },
   {

@@ -1,5 +1,5 @@
 {
- "comparedAt": "2026-10-11T17:37:55.581Z",
+ "comparedAt": "2026-10-11T20:53:44.065Z",
  "oldDist": "/tmp/claude-0/-home-user-yukemuri/ee221c06-eaa5-5e49-9637-f4f172eafa64/scratchpad/main-dist",
  "tables": {
   "hotels": 12271,
@@ -7,11 +7,11 @@
   "hotel_lifecycle": 1753,
   "visitor_favorites": 40
  },
- "compared": 295,
+ "compared": 309,
  "different": 0,
- "nonEmpty": 215,
+ "nonEmpty": 219,
  "mapGrids": 5,
- "emptyLists": 49,
+ "emptyLists": 55,
  "results": [
   {
    "path": "/api/hotels?stable=1&page=1&sort=recommended",
@@ -1579,6 +1579,94 @@
   },
   {
    "path": "/api/hotels/map?bbox=122,24,146,46&q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=%' OR 1=1 --",
+   "status": 200,
+   "count": 224,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=%' OR 1=1 --&sort=rating&page=2",
+   "status": 200,
+   "count": 224,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=%' OR 1=1 --&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=%' OR 1=1 --&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=%' OR 1=1 --",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=%' OR 1=1 --&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=%' OR 1=1 --",
+   "status": 200,
+   "count": 224,
+   "cells": 0,
+   "points": 36,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
    "status": 200,
    "count": 0,
    "cells": 0,

@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T19:50:34.172Z",
+ "measuredAt": "2026-10-11T20:58:56.991Z",
  "browser": "Chromium 141.0.7390.37",
  "base": "http://127.0.0.1:8787",
  "build": "P03 static snapshot",
@@ -7,15 +7,15 @@
  "runs": 3,
  "summary": {
   "/": {
-   "firstCardMs": 1720,
-   "snapshotListMs": 2860,
-   "nameSearchAfterTypingMs": 4772,
+   "firstCardMs": 1558,
+   "snapshotListMs": 2757,
+   "nameSearchAfterTypingMs": 3815,
    "transferredKiB": 610
   },
   "/?rating=8": {
-   "firstCardMs": 5901,
-   "snapshotListMs": 6042,
-   "nameSearchAfterTypingMs": 2076,
+   "firstCardMs": 5083,
+   "snapshotListMs": 5191,
+   "nameSearchAfterTypingMs": 1926,
    "transferredKiB": 610
   }
  },
@@ -24,68 +24,68 @@
    "view": "조건 없는 주소",
    "path": "/",
    "run": 0,
-   "firstCardMs": 1720,
-   "snapshotListMs": 2988,
-   "nameSearchAfterTypingMs": 4772,
-   "transferredBytes": 625010
+   "firstCardMs": 1643,
+   "snapshotListMs": 2685,
+   "nameSearchAfterTypingMs": 3815,
+   "transferredBytes": 625116
   },
   {
    "view": "조건 없는 주소",
    "path": "/",
    "run": 1,
-   "firstCardMs": 1505,
-   "snapshotListMs": 2815,
-   "nameSearchAfterTypingMs": 4859,
-   "transferredBytes": 625010
+   "firstCardMs": 1558,
+   "snapshotListMs": 2851,
+   "nameSearchAfterTypingMs": 3658,
+   "transferredBytes": 625116
   },
   {
    "view": "조건 없는 주소",
    "path": "/",
    "run": 2,
-   "firstCardMs": 2115,
-   "snapshotListMs": 2860,
-   "nameSearchAfterTypingMs": 4512,
-   "transferredBytes": 625010
+   "firstCardMs": 1549,
+   "snapshotListMs": 2757,
+   "nameSearchAfterTypingMs": 3850,
+   "transferredBytes": 625116
   },
   {
    "view": "조건 있는 주소(Trip.com 8점 이상)",
    "path": "/?rating=8",
    "run": 0,
-   "firstCardMs": 5332,
-   "snapshotListMs": 5468,
-   "nameSearchAfterTypingMs": 2062,
-   "transferredBytes": 625010
+   "firstCardMs": 5083,
+   "snapshotListMs": 5191,
+   "nameSearchAfterTypingMs": 1898,
+   "transferredBytes": 625116
   },
   {
    "view": "조건 있는 주소(Trip.com 8점 이상)",
    "path": "/?rating=8",
    "run": 1,
-   "firstCardMs": 6016,
-   "snapshotListMs": 6192,
-   "nameSearchAfterTypingMs": 2076,
-   "transferredBytes": 625010
+   "firstCardMs": 4877,
+   "snapshotListMs": 5019,
+   "nameSearchAfterTypingMs": 1977,
+   "transferredBytes": 625116
   },
   {
    "view": "조건 있는 주소(Trip.com 8점 이상)",
    "path": "/?rating=8",
    "run": 2,
-   "firstCardMs": 5901,
-   "snapshotListMs": 6042,
-   "nameSearchAfterTypingMs": 2269,
-   "transferredBytes": 625010
+   "firstCardMs": 5168,
+   "snapshotListMs": 5311,
+   "nameSearchAfterTypingMs": 1926,
+   "transferredBytes": 625116
   }
  ],
  "gzipBytes": {
-  "/": 24414,
-  "/_next/static/chunks/index-0HbA2RCH.js": 56555,
+  "/": 24460,
   "/_next/static/chunks/rolldown-runtime-C60lm6uB.js": 694,
-  "/_next/static/chunks/layout-segment-context-DMMoatHd.js": 494,
+  "/_next/static/chunks/index-Di_Vs-R3.js": 56558,
+  "/_next/static/chunks/layout-segment-context-C5wnpIdL.js": 494,
   "/_next/static/chunks/framework-D_rUT4EX.js": 59092,
-  "/_next/static/chunks/hotel-explorer-Bm3yBgyn.js": 89355,
-  "/snapshot/v/66cb48aa4ef08530/core.json": 42433,
-  "/snapshot/v/66cb48aa4ef08530/cards.json": 129948,
+  "/_next/static/chunks/hotel-explorer-DEQhqZut.js": 89382,
+  "/snapshot/v/ab5cf775250959c3/core.json": 42433,
+  "/snapshot/v/ab5cf775250959c3/cards.json": 129948,
   "/_next/static/chunks/leaflet-src-CYYQKXmC.js": 43071,
-  "/snapshot/v/66cb48aa4ef08530/text.json": 141154
+  "/snapshot/v/ab5cf775250959c3/text.json": 141154
  },
  "note": "Times in ms from navigation start (name search: from tapping the search box). The local catalogue is the checked-in one; production-size files take longer in proportion to their size (P03-20261012.md)."
 }

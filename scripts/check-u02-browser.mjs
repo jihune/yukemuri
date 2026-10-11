@@ -63,18 +63,20 @@ async function run(page){
  // address without conditions; with conditions it stays hidden.
  const still=await browser.newContext({javaScriptEnabled:false,viewport:page.viewportSize()}),bare=await still.newPage();
  // The head script cannot run either; the mark it sets is checked with scripts on below.
- await bare.goto(base+'/');const bareCards=await bare.locator('.hotel-list .card-title').count(),bareVisible=await bare.locator('main.workspace').evaluate(e=>getComputedStyle(e).visibility);
+ await bare.goto(base+'/');const bareCards=await bare.locator('.hotel-list .card-title').count(),bareVisible=await bare.locator('main.workspace').evaluate(e=>getComputedStyle(e).visibility),barePending=await bare.locator('.conditions-pending').isVisible();
  await still.close();
- check('스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳',bareCards===40&&bareVisible==='visible',{bareCards,bareVisible});
+ check('스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음',bareCards===40&&bareVisible==='visible'&&!barePending,{bareCards,bareVisible,barePending});
  const appScripts=url=>url.pathname.startsWith('/_next/')&&url.pathname.endsWith('.js');
  await page.route(appScripts,route=>route.abort());
  await page.goto(base+'/?rating=8',{waitUntil:'load'});
- const hidden=await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')}));
- check('조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김',hidden.visibility==='hidden'&&!!hidden.first&&hidden.mark,hidden);
+ const hidden={...await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')})),cardsVisible:await page.locator('.hotel-list .card-title').first().isVisible(),pending:await page.locator('.conditions-pending').isVisible(),mapCount:await page.locator('.mobile-map-toggle span').isVisible()};
+ await shot('conditions-pending');
+ check('조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임',hidden.visibility==='hidden'&&!!hidden.first&&hidden.mark&&!hidden.cardsVisible&&hidden.pending&&!hidden.mapCount,hidden);
  await page.unroute(appScripts);
  await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
  const shownAfter=await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')}));
- check('앱이 주소를 읽은 뒤에는 조건의 결과를 표시',shownAfter.visibility==='visible'&&shownAfter.first===null&&!shownAfter.mark,shownAfter);
+ shownAfter.pending=await page.locator('.conditions-pending').count();
+ check('앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움',shownAfter.visibility==='visible'&&shownAfter.first===null&&!shownAfter.mark&&shownAfter.pending===0,shownAfter);
 
  // Loading: until the snapshot arrives only the loading notice shows; no old count.
  await page.route(snapshotFiles,async route=>{await new Promise(r=>setTimeout(r,1500));await route.continue()});
