@@ -1,9 +1,13 @@
 name: Cloud app checks
 on:
   push:
+    branches: [main]
     paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
   pull_request:
     paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
