@@ -46,7 +46,17 @@ export async function sqliteSource(file){
 }
 // The D1 query endpoint (POST /accounts/{account}/d1/database/{id}/query,
 // cloudflare/api-schemas d1_batch-query: params are strings).
-export function remoteSource({token,account,database,fetchImpl=fetch,base='https://api.cloudflare.com/client/v4'}){
+// The wait before retry n (0-based): Retry-After (seconds or an HTTP date) when
+// the API sends one, never less than the 2/4/8 s backoff. A wait longer than
+// MAX_RETRY_WAIT fails the build at once instead of retrying too early.
+export const MAX_RETRY_WAIT=300000;
+export function retryWait(response,attempt,now=Date.now()){
+ const backoff=2000*2**attempt,header=response?.headers.get('Retry-After')?.trim();
+ if(!header)return backoff;
+ const asked=/^\d+$/.test(header)?Number(header)*1000:Date.parse(header)-now;
+ return Number.isFinite(asked)?Math.max(backoff,asked):backoff;
+}
+export function remoteSource({token,account,database,fetchImpl=fetch,base='https://api.cloudflare.com/client/v4',sleep=ms=>new Promise(r=>setTimeout(r,ms))}){
  if(!token||!account||!/^[0-9a-f-]{36}$/.test(database??''))throw new Error('Remote snapshot needs CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and a D1 databaseId');
  const url=`${base}/accounts/${encodeURIComponent(account)}/d1/database/${database}/query`;
  const query=async(sql,args)=>{
@@ -54,8 +64,12 @@ export function remoteSource({token,account,database,fetchImpl=fetch,base='https
   for(let attempt=0;;attempt++){
    let response;
    try{response=await fetchImpl(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({sql,params:args.map(String)}),signal:AbortSignal.timeout(60000)})}
-   catch(error){if(attempt<3){await new Promise(r=>setTimeout(r,2000*2**attempt));continue}throw new Error('D1 query request failed: '+error.name)}
-   if((response.status===429||response.status>=500)&&attempt<3){await new Promise(r=>setTimeout(r,2000*2**attempt));continue}
+   catch(error){if(attempt<3){await sleep(retryWait(null,attempt));continue}throw new Error('D1 query request failed: '+error.name)}
+   if((response.status===429||response.status>=500)&&attempt<3){
+    const wait=retryWait(response,attempt);
+    if(wait>MAX_RETRY_WAIT)throw new Error(`D1 query HTTP ${response.status}: the API asks to wait ${Math.round(wait/1000)}s`);
+    await sleep(wait);continue;
+   }
    let body;try{body=await response.json()}catch{throw new Error('D1 query returned HTTP '+response.status+' without JSON')}
    // Error messages only: the token and account never appear in them.
    if(!response.ok||!body.success||!Array.isArray(body.result)||!body.result[0]?.success)throw new Error('D1 query failed: HTTP '+response.status+' '+JSON.stringify(body.errors??[]).slice(0,300));
