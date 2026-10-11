@@ -57,7 +57,7 @@ H01 2–4단계와 P01·P02 측정에서 Cloudflare 무료 한도 세 가지가 
   - 수집 실행이 끝날 때마다 GitHub Actions(public 앱 레포, 사용 시간 무제한)가 D1에서 카탈로그를 읽어 검색용 스냅숏 조각을 만들고 Worker 정적 자산으로 배포한다. cron 목표는 지금 수집 주기(3시간)와 같다. 실제 갱신 간격은 GitHub 예약 실행의 지연·누락 때문에 더 길 수 있다. 기존 실행기 예약은 3시간 cron이었는데, 실제로는 4.4–9.4시간 간격, 하루 약 3회 실행됐다(`roadmap.md` C02 행, 2026-10-11 대조).
   - 브라우저가 스냅숏을 받아 필터·정렬·쪽 나누기·지도·이름 부분일치·오타 색인을 계산한다. 서버의 검색 코드를 옮겨 재사용한다.
   - Worker에는 요청당 읽기가 작은 API만 남긴다: 상세·비교·즐겨찾기·수집 API(선점·PUT·보고). 공개 집계처럼 표 전체를 읽는 읽기 API(`/api/collection-status`의 `crawl_jobs`·`hotels` 집계, `/api/photo-credits` 등)는 스냅숏에 넣거나, 수집 끝에 한 번 계산해 저장한 값을 돌려주게 바꾼다(Codex 검토, 2026-10-11). 속도 제한은 남은 API에 걸린다.
-  - 수집 예약은 public 레포에서 60일 동안 레포 활동이 없으면 GitHub가 자동으로 끈다(GitHub `schedule` 문서). 꺼진 workflow는 스스로 다시 켤 수 없고, UI·REST API·CLI 같은 바깥 경로로만 켤 수 있다(GitHub 문서). 그래서 6단계 PR에서 독립된 예약 주체를 둔다. private 실행기 레포는 이 규칙의 대상이 아니므로, 그 레포의 예약 작업이 둘 중 하나를 한다: 앱 레포 수집 workflow를 `workflow_dispatch`로 부르거나, 그 workflow가 켜져 있는지 확인하고 꺼졌으면 다시 켠다. 어느 쪽이든 사용자가 발급한 토큰이 필요하다(앱 레포 Actions 쓰기 권한만). 확인 작업은 문제가 있으면 실패로 끝나 사용자에게 알림이 가게 한다. 7단계 관찰과 이후 정기 점검 항목: ‘수집 예약이 켜져 있음’과 ‘마지막 성공 수집이 12시간 안’. 12시간은 위의 실제 지연(최대 약 9.4시간)을 감안한 허용 지연이다. 스냅숏 갱신도 같은 기준으로 본다(Codex 검토, 2026-10-11).
+  - 수집 예약은 public 레포에서 60일 동안 레포 활동이 없으면 GitHub가 자동으로 끈다(GitHub `schedule` 문서). 꺼진 workflow는 스스로 다시 켤 수 없고 UI·REST API·CLI 같은 바깥 경로로만 켤 수 있다. 그래서 예약 주체를 private 실행기 레포에 둔다(이 규칙의 대상이 아님). 정한 방식(Codex·Claude 검토, 2026-10-11): 앱 레포 수집 workflow에는 cron을 두지 않고 `workflow_dispatch`만 둔다. 실행기 레포의 예약 작업이 지금과 같은 cron으로 그 workflow를 `workflow_dispatch`로 부른다. 같은 작업이 마지막 성공 수집이 12시간 안인지 확인하고, 아니면 실패로 끝나 사용자에게 알림이 간다. 일부러 멈출 때는 실행기 변수 `YUKEMURI_ENABLED`를 `false`로 바꾼다. 앱 레포 workflow를 끄거나 켜는 방식은 쓰지 않는다. 부르기에는 사용자가 발급한 토큰이 필요하다(3.3절 4번). 이 방식이 3.2절 6·7단계, 롤백 표, 3.3절, 3.4절의 해당 문장보다 우선한다. 각 문장도 아래처럼 고쳤다. 7단계 관찰과 이후 정기 점검 항목은 두 가지다. ‘실행기 예약이 켜져 있음(`YUKEMURI_ENABLED`가 `true`)’과 ‘마지막 성공 수집이 12시간 안’이다. 12시간은 위의 실제 지연(최대 약 9.4시간)을 감안한 허용 지연이다. 스냅숏 갱신도 같은 기준으로 본다.
   - D1에는 수집 상태·숙소 원본·즐겨찾기를 그대로 둔다. 4단계 적재는 계획대로 계속한다.
 - 영향:
   - P02 PR B(#38, 검색 스냅숏 표·trigger·결과 캐시)는 병합하지 않고 보류한다. 측정과 검색 코드는 P03의 입력이다.
@@ -284,14 +284,15 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
 5. 6번 PR 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
 6. 수집 예약을 앱 레포로 옮기는 PR 두 개(결정 반영, Codex 검토 2026-10-11):
-   - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. cron·작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. 동시 실행 제어도 같게 둔다. `concurrency` 그룹 `yukemuri-catalog-updates`, `cancel-in-progress: false`다. 예약 실행 중 수동 실행을 시작해도 앞 실행이 끝난 뒤 돈다. 그래서 호스트별 순차 요청 규칙이 깨지지 않는다(Codex 검토, 2026-10-11). 예약은 이 PR에서 아직 켜지 않는다(수동 실행만). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
-   - 실행기 PR: 수집 workflow와 그 예약을 지운다. 백업 workflow만 새 주소와 Secret `YUKEMURI_CLOUDFLARE_JSON`으로 바꾼다. `run-backup.py` 허용 호스트와 `catalog-checkpoint.py` 검사·헤더를 바꾼다. 수집 전용 파일(`bootstrap.py`, `run-updates.py`)은 지우거나 쓰지 않는다고 표시한다.
+   - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. 작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. cron은 두지 않고 `workflow_dispatch`만 둔다(‘2차 검토’ 결정 절). 동시 실행 제어도 같게 둔다. `concurrency` 그룹 `yukemuri-catalog-updates`, `cancel-in-progress: false`다. 예약 실행 중 수동 실행을 시작해도 앞 실행이 끝난 뒤 돈다. 그래서 호스트별 순차 요청 규칙이 깨지지 않는다(Codex 검토, 2026-10-11). 예약은 이 PR에서 아직 켜지 않는다(수동 실행만). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
+   - 실행기 PR: 수집 workflow를 지우고, 그 자리에 같은 cron으로 앱 레포 수집 workflow를 `workflow_dispatch`로 부르는 예약 작업을 둔다. 이 작업은 `YUKEMURI_ENABLED`가 `true`일 때만 부르고, 마지막 성공 수집이 12시간을 넘으면 실패로 끝난다. 토큰은 3.3절 4번의 Secret을 쓴다. 백업 workflow만 새 주소와 Secret `YUKEMURI_CLOUDFLARE_JSON`으로 바꾼다. `run-backup.py` 허용 호스트와 `catalog-checkpoint.py` 검사·헤더를 바꾼다. 수집 전용 파일(`bootstrap.py`, `run-updates.py`)은 지우거나 쓰지 않는다고 표시한다.
    - 앱 레포 수집 workflow를 수동으로 `check-access` → `gentle` 1회 실행하고 저장 후 조회를 확인한다. `gentle` 실행 중에 수동 실행을 하나 더 넣어 대기 상태로 기다렸다가 뒤이어 도는지 확인한다.
-7. 앱 레포 수집 예약을 켜고 실행기 백업 예약을 재개한다. 실행기 쪽 수집 예약은 다시 켜지 않는다. 두 수집 예약이 동시에 돌지 않음을 Actions 실행 목록으로 확인한다. Sites는 그대로 두되 수집 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
+7. 실행기의 `YUKEMURI_ENABLED`를 `true`로 되돌려 수집 부르기 예약과 백업 예약을 재개한다. 앱 레포 수집 workflow에는 cron이 없으므로 수집은 실행기 예약으로만 시작된다. Actions 실행 목록에서 하루 수집 횟수가 cron 횟수를 넘지 않는지(두 겹 예약이 없는지) 확인한다. Sites는 그대로 두되 수집 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
 
 **7단계. 관찰(에이전트, 첫 1주)**
 - 실제 cron 실행의 `collectorRelease`, 저장 수, 1102 오류, D1 일일 사용량을 매일 기록한다.
 - 일일 백업이 새 주소에서 성공하는지 확인한다.
+- 실행기 예약이 켜져 있고(`YUKEMURI_ENABLED`가 `true`) 마지막 성공 수집이 12시간 안인지 매일 확인한다. 하루 수집 횟수가 cron 횟수를 넘지 않는지도 본다.
 
 **8단계. Sites 정리(사용자 결정)**
 - 2주 이상 안정되면 Sites를 유지할지 삭제할지 사용자가 정한다. 삭제는 ChatGPT의 Sites에서만 할 수 있다.
@@ -304,7 +305,7 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 | 6단계 전 | 아무것도 하지 않음. Sites·수집·백업 무변경 | 없음 |
 | 전환 직후 앱 결함 | `wrangler rollback`(이전 Worker 버전) 또는 이전 커밋 재배포 | 없음 |
 | DB 손상 | `wrangler d1 time-travel restore yukemuri --bookmark <배포 때 기록한 값>`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
-| 새 호스팅 포기 | 앱 레포 수집 예약을 끄고, 실행기 PR을 되돌려 Sites Secret·주소의 수집·백업으로 복귀 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
+| 새 호스팅 포기 | 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈추고, 앱 레포의 진행 중 수집 실행이 끝난 뒤 실행기 PR을 되돌려 Sites Secret·주소의 수집·백업으로 복귀 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
 
 ### 3.3 사용자만 할 수 있는 일
 
@@ -322,6 +323,7 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
      - `YUKEMURI_CRAWL_ACCESS_KEY`: 비밀번호 관리자 등에서 만든 새 임의값, 예: 64자리 16진수. 기존 Sites 키와 다른 값을 권장한다.
    - `jihune/yukemuri-script-runner`:
      - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`: 4·6단계 적재용. 끝나면 지워도 된다.
+     - 앱 레포 수집 부르기 토큰(이름은 6단계 PR에서 확정, 예: `YUKEMURI_APP_DISPATCH_TOKEN`): GitHub fine-grained personal access token. 대상 레포는 `jihune/yukemuri` 하나, 권한은 Actions: Read and write만 준다. 만료일은 사용자가 정한다. 만료되면 실행기의 부르기 작업이 실패해 알림이 가고, 사용자가 새 토큰으로 바꾼다.
      - `YUKEMURI_CLOUDFLARE_JSON`: 백업용. 새 주소와 크롤 키를 담은 JSON. 기존 `YUKEMURI_ACCESS_JSON`과 같은 `{"url","token"}` 형식이다. 6단계 PR에서 확정한다. 수집은 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 쓴다.
    - 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
 5. **Access 설정**: 필요 없다(결정 반영).
@@ -337,7 +339,7 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
 
 - 2단계 앱 레포 PR(배포 설정, 배포 workflow, 수집기 주소·헤더, D1 한도 대응, 측정 검사, 문서)과 검토·병합.
 - D1 생성·마이그레이션·적재·차이 반영 workflow 작성과 수동 실행. 행 수 대조 기록.
-- 앱 레포 수집 workflow PR과 실행기 레포 PR(수집 예약 삭제, 백업 대상·허용 호스트·헤더·Secret 이름 변경, 예약 일시 정지·재개).
+- 앱 레포 수집 workflow PR(`workflow_dispatch`만)과 실행기 레포 PR(수집 workflow를 앱 레포 수집 부르기 예약으로 바꿈, 백업 대상·허용 호스트·헤더·Secret 이름 변경). 일시 정지·재개는 실행기 `YUKEMURI_ENABLED`로 한다.
 - 배포 뒤 점검: Actions 요약, Workers Logs·D1 사용량(Analytics 권한이 있을 때), 브라우저 검사.
 - 롤백 실행(`wrangler rollback`, Time Travel 복구 workflow, 실행기 되돌리기 PR)과 기록.
 - `deployments.md`·인수인계·로드맵에 커밋·Worker 버전 ID·시각(UTC/KST)·검사·미확인 사항 기록.
