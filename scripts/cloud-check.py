@@ -24,6 +24,7 @@ commands = [
     [sys.executable, 'scripts/check-chat-export.py'],
     ['node', 'node_modules/typescript/bin/tsc', '--noEmit'],
     ['node', 'scripts/check-listing-query.mjs'],
+    ['node', 'scripts/check-booking-links.mjs'],
     ['node', 'scripts/check-api-client.mjs'],
     ['node', 'scripts/check-local-search.mjs'],
     ['node', 'scripts/check-map-bounds.mjs'],
