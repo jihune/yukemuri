@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T20:54:52.184Z",
+ "measuredAt": "2026-10-11T22:08:03.634Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -193,7 +193,7 @@
    "pass": true,
    "detail": {
     "start": 0,
-    "swiped": 249
+    "swiped": 257
    }
   },
   {
@@ -222,7 +222,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 349
+    "restoredMs": 347
    }
   },
   {
@@ -233,7 +233,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 403
+    "restoredMs": 423
    }
   },
   {
@@ -244,7 +244,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 553
+    "restoredMs": 450
    }
   },
   {
@@ -535,7 +535,7 @@
    "pass": true,
    "detail": {
     "start": 0,
-    "swiped": 222
+    "swiped": 247
    }
   },
   {
@@ -564,7 +564,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 358
+    "restoredMs": 352
    }
   },
   {
@@ -575,7 +575,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 415
+    "restoredMs": 423
    }
   },
   {
@@ -586,7 +586,7 @@
     "detailCloseReachable": true,
     "focused": "긴린소",
     "expected": "긴린소",
-    "restoredMs": 468
+    "restoredMs": 436
    }
   },
   {

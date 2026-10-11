@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T20:55:40.578Z",
+ "measuredAt": "2026-10-11T22:06:24.127Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -57,11 +57,22 @@
   },
   {
    "width": 360,
+   "name": "기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "mark": false,
+    "pending": false,
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+   }
+  },
+  {
+   "width": 360,
    "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "ab5cf775250959c3",
+    "first": "6e2fe933291f6e71",
     "mark": true,
     "cardsVisible": false,
     "pending": true,
@@ -307,11 +318,22 @@
   },
   {
    "width": 390,
+   "name": "기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "mark": false,
+    "pending": false,
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+   }
+  },
+  {
+   "width": 390,
    "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "ab5cf775250959c3",
+    "first": "6e2fe933291f6e71",
     "mark": true,
     "cardsVisible": false,
     "pending": true,
