@@ -1,8 +1,9 @@
 'use client';
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
-import {ArrowLeftRight,RotateCcw,X} from 'lucide-react';
+import {ArrowLeftRight,Diff,RotateCcw,X} from 'lucide-react';
 import {FEATURE_LABELS,FEATURE_GROUPS,type FeatureKey,type Hotel} from '@/lib/hotel-types';
 import {comparisonFeatureLabel,type HotelComparisonResult} from '@/lib/hotel-comparison';
+import {comparisonRowState,featureComparisonValue,type ComparisonValue} from '@/lib/comparison-differences';
 import {hotelFeature} from '@/lib/hotel-bath-facts';
 import {hotelFacilityUrl} from '@/lib/hotel-facility-link';
 import {providerRating,meetsVerifiedCriteria} from '@/lib/hotel-ratings';
@@ -28,6 +29,8 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
  const removeButtons=useRef(new Map<string,HTMLButtonElement>()),focusAfterRemoval=useRef<string|null>(null);
  const [revision,setRevision]=useState(0),[loading,setLoading]=useState(false),[error,setError]=useState('');
  const [result,setResult]=useState<{key:string;data:HotelComparisonResult}|null>(null);
+ // The choice outlives closing the sheet; it applies only while two or more candidates are compared.
+ const [diffOnlyChosen,setDiffOnlyChosen]=useState(false),[diffAnnouncement,setDiffAnnouncement]=useState('');
  // Removing columns keeps the remaining evidence and controls while refreshing.
  // Newly added IDs still wait for their own response.
  const data=result&&ids.every(id=>result.key.split(',').includes(id))?result.data:null;
@@ -44,6 +47,21 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
  },[open,key,revision]);
  const byId=new Map(data?.hotels.map(hotel=>[hotel.id,hotel])??[]);
  const cells=(render:(hotel:Hotel)=>ReactNode)=>ids.map(id=><TableCell key={id}>{byId.has(id)?render(byId.get(id)!):<span className="comparison-unknown">기록 없음</span>}</TableCell>);
+// Rows in table order. value is the compared value; rows without one are reference rows.
+ const rows:{key:string;head:ReactNode;render:(hotel:Hotel)=>ReactNode;value?:(hotel:Hotel)=>ComparisonValue}[]=[
+  {key:'trip',head:'Trip.com · 10점',render:hotel=><Rating hotel={hotel} provider="trip"/>,value:hotel=>{const r=providerRating(hotel,'trip');return r?[r.score.toFixed(1)]:null}},
+  {key:'maps',head:'Google Maps · 5점',render:hotel=>hotel.links.some(link=>link.provider==='maps'&&link.url)?<GooglePlaceRating hotel={hotel} data={null}/>:<span className="comparison-unknown">지도 연결 확인 필요</span>},
+  {key:'jalan',head:'자란넷 · 5점',render:hotel=><Rating hotel={hotel} provider="jalan"/>,value:hotel=>{const r=providerRating(hotel,'jalan');return r?[r.score.toFixed(1)]:null}},
+  {key:'criteria',head:<>내 검증 기준<small>Trip.com 9.0+ · 리뷰 50개+</small></>,render:hotel=><span>{providerRating(hotel,'trip')?meetsVerifiedCriteria(hotel)?'충족':'미충족':'Trip.com 평점 확인 필요'}</span>,value:hotel=>providerRating(hotel,'trip')?[meetsVerifiedCriteria(hotel)?'충족':'미충족']:null},
+  ...[...FEATURE_GROUPS.flatMap(group=>group.keys),'jalanHighClass' as const].map(feature=>({key:feature,head:FEATURE_LABELS[feature],render:(hotel:Hotel)=><Feature hotel={hotel} feature={feature}/>,value:(hotel:Hotel)=>featureComparisonValue(feature,hotelFeature(hotel,feature))})),
+  {key:'address',head:'주소',render:hotel=><span>{hotel.location.address||'확인 필요'}</span>},
+  {key:'water',head:'온천수 안내',render:hotel=><span>{hotel.spring.waterNotes||'세부 안내 확인 필요'}</span>},
+ ];
+ // A missing record is an unknown value. Fewer than two candidates leave every row unjudged.
+ const states=new Map(rows.flatMap(row=>{const value=row.value;if(!value)return [];const state=comparisonRowState(ids.map(id=>byId.has(id)?value(byId.get(id)!):null));return state?[[row.key,state] as const]:[]}));
+ const differing=[...states.values()].filter(state=>state.kind==='differs').length,undecided=[...states.values()].filter(state=>state.kind==='undecided').length;
+ const diffOnly=diffOnlyChosen&&states.size>0;
+ function toggleDiffOnly(){const next=!diffOnlyChosen;setDiffOnlyChosen(next);setDiffAnnouncement(next?`다른 항목 ${differing}개만 표시 중`:'모든 항목 표시 중')}
  function remove(id:string){const index=ids.indexOf(id);focusAfterRemoval.current=ids[index+1]??ids[index-1]??'';onRemove(id)}
  function clear(){closeButton.current?.focus({preventScroll:true});onClear()}
  return <Sheet open={open} onOpenChange={value=>{if(!value)onClose()}}><SheetContent showCloseButton={false} onOpenAutoFocus={event=>{event.preventDefault();closeButton.current?.focus({preventScroll:true})}} onCloseAutoFocus={event=>{event.preventDefault();onRestoreFocus()}} className="hotel-comparison !w-full sm:!max-w-[min(96vw,1200px)] !gap-0">
@@ -55,19 +73,15 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
     {loading&&!data&&<p role="status">숙소 정보를 불러오는 중…</p>}
     {data&&<>
      {data.missingIds.some(id=>ids.includes(id))&&<p role="status">일부 기록을 찾을 수 없습니다. 해당 후보를 지우고 목록에서 다시 선택하세요.</p>}
+     {states.size>0&&<div className="comparison-diff-bar"><p>값이 다른 항목 {differing}개 · 미확인으로 판단 보류 {undecided}개</p><button aria-pressed={diffOnly} onClick={toggleDiffOnly}><Diff size={16} aria-hidden="true"/>다른 항목만 보기</button><span className="sr-only" aria-live="polite">{diffAnnouncement}</span></div>}
      <p className="table-scroll-hint">표는 좌우로 이동할 수 있습니다. 키보드는 표에 포커스를 두고 좌우 방향키를 누르세요.</p>
      <TableScrollRegion className="comparison-table-region" label="숙소별 평점과 온천 비교표. 좌우 방향키로 이동">
       <Table className="comparison-table"><caption className="sr-only">선택한 숙소의 원래 평점 척도, 리뷰 수, 온천·객실 시설과 확인 근거</caption><TableHeader><TableRow><TableHead scope="col">비교 항목</TableHead>{ids.map(id=>{const hotel=byId.get(id);return <TableHead key={id} scope="col"><button ref={element=>{if(element)removeButtons.current.set(id,element);else removeButtons.current.delete(id)}} className="comparison-remove" onClick={()=>remove(id)} aria-label={(hotel?.names.ko??id)+' 비교에서 빼기'}><X size={18}/></button>{hotel?<><div className="comparison-image"><HotelPhoto hotel={hotel} loading="lazy"/></div><button className="comparison-hotel-name" onClick={()=>onDetail(id)}>{hotel.names.ko}</button>{hotel.names.ja!==hotel.names.ko&&<span lang="ja">{hotel.names.ja}</span>}<small>{hotel.location.label}</small><HotelLifecycleNote hotel={hotel} compact/></>:<><b>{id}</b><span>기록을 찾을 수 없습니다.</span></>}</TableHead>})}</TableRow></TableHeader><TableBody>
-       <TableRow><TableHead scope="row">Trip.com · 10점</TableHead>{cells(hotel=><Rating hotel={hotel} provider="trip"/>)}</TableRow>
-       <TableRow><TableHead scope="row">Google Maps · 5점</TableHead>{cells(hotel=>hotel.links.some(link=>link.provider==='maps'&&link.url)?<GooglePlaceRating hotel={hotel} data={null}/>:<span className="comparison-unknown">지도 연결 확인 필요</span>)}</TableRow>
-       <TableRow><TableHead scope="row">자란넷 · 5점</TableHead>{cells(hotel=><Rating hotel={hotel} provider="jalan"/>)}</TableRow>
-       <TableRow><TableHead scope="row">내 검증 기준<small>Trip.com 9.0+ · 리뷰 50개+</small></TableHead>{cells(hotel=><span>{providerRating(hotel,'trip')?meetsVerifiedCriteria(hotel)?'충족':'미충족':'Trip.com 평점 확인 필요'}</span>)}</TableRow>
-       {FEATURE_GROUPS.flatMap(group=>group.keys.map(feature=><TableRow key={feature}><TableHead scope="row">{FEATURE_LABELS[feature]}</TableHead>{cells(hotel=><Feature hotel={hotel} feature={feature}/>)}</TableRow>))}
-       <TableRow><TableHead scope="row">자란 하이클래스</TableHead>{cells(hotel=><Feature hotel={hotel} feature="jalanHighClass"/>)}</TableRow>
-       <TableRow><TableHead scope="row">주소</TableHead>{cells(hotel=><span>{hotel.location.address||'확인 필요'}</span>)}</TableRow>
-       <TableRow><TableHead scope="row">온천수 안내</TableHead>{cells(hotel=><span>{hotel.spring.waterNotes||'세부 안내 확인 필요'}</span>)}</TableRow>
+       {rows.filter(row=>!diffOnly||states.get(row.key)?.kind==='differs').map(row=>{const state=states.get(row.key);return <TableRow key={row.key} className={state?.kind==='differs'?'comparison-row-diff':undefined}><TableHead scope="row">{row.head}{state?.kind==='differs'?<span className="comparison-diff-tag"><Diff size={14} aria-hidden="true"/>다름</span>:state?.kind==='undecided'?<span className="comparison-undecided">판단 보류{state.unknown>0&&` · 미확인 ${state.unknown}곳`}</span>:null}</TableHead>{cells(row.render)}</TableRow>})}
+       {diffOnly&&!differing&&<TableRow><TableCell colSpan={ids.length+1} className="comparison-diff-none">확인된 값이 다른 항목이 없습니다. 미확인 항목은 같거나 다르다고 판단하지 않았습니다.</TableCell></TableRow>}
       </TableBody></Table>
      </TableScrollRegion>
+     {diffOnly&&<p className="comparison-diff-hidden">같거나 판단 보류인 항목 {states.size-differing}개와 참고 항목 {rows.length-states.size}개(Google Maps·주소·온천수 안내)를 숨겼습니다.</p>}
      <p className="comparison-note">같은 숙소가 출처별 기록으로 남아 있을 수 있습니다. ‘확인 필요’는 ‘없음’과 다릅니다. Google 평점과 사진은 연결된 지도에서 확인하세요. 객실탕은 예약할 객실 타입의 안내를 다시 확인하세요.</p>
     </>}
    </>}

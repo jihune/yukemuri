@@ -26,6 +26,7 @@ commands = [
     ['node', 'scripts/check-api-client.mjs'],
     ['node', 'scripts/check-local-search.mjs'],
     ['node', 'scripts/check-map-bounds.mjs'],
+    ['node', 'scripts/check-comparison-differences.mjs'],
 ]
 if args.full:
     commands += [
