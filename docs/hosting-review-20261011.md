@@ -126,7 +126,7 @@ Sites는 OpenAI 쪽 Cloudflare 계정에서 돈다. 그래서 사용자 무료 �
 - `workers.dev`, 버전 URL, 미리보기 URL은 기본 공개다. Access로 Worker 하나의 운영·미리보기를 함께 보호할 수 있다(대상 유형 `worker`). 대시보드에서만 끄고 wrangler 설정에 `workers_dev`를 적지 않으면 다음 배포 때 다시 켜진다.
 - 서비스 토큰: Access 정책 동작을 Service Auth로 둬야 한다. 헤더 `CF-Access-Client-Id`, `CF-Access-Client-Secret`. 한 헤더(`Authorization`)로 받는 설정도 있다.
 - 마이그레이션: `migrations_dir`·`migrations_table`을 D1 바인딩에 지정할 수 있다. `wrangler d1 migrations apply <DB> --remote`.
-- 가져오기·내보내기: `wrangler d1 execute <DB> --remote --file`(5GB까지), `wrangler d1 export`. 내보내는 동안 다른 요청이 막힌다. 문장 하나는 100KB 이하, 바인딩 인자 100개 이하.
+- 가져오기·내보내기: `wrangler d1 execute <DB> --remote --file`(5GB까지), `wrangler d1 export <DB> --remote --output <파일>`. 내보내는 동안 다른 요청이 막힌다. 문장 하나는 100KB 이하, 바인딩 인자 100개 이하.
 - R2 무료: 10GB-월, Class A 100만/월, Class B 1천만/월. 처음 쓸 때 결제수단을 요구한다는 제3자 보고가 있다(미확인). 이번 계획은 R2가 필요 없다.
 - API 토큰: GitHub Actions 문서는 `Edit Cloudflare Workers` 템플릿과 Secret `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`를 안내한다. D1 권한은 따로 `D1 Edit`를 추가한다(권한 목록 문서).
 - `cloudflare/wrangler-action`은 v4(4.1.3, 2026-09-24)다. 입력은 `apiToken`, `accountId`, `command`, `wranglerVersion`, `secrets`, `preCommands`, `packageManager` 등이다(저장소 원본 확인).
@@ -194,7 +194,7 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
   1. 최신 성공 일일 백업 artifact를 내려받는다(`actions: read`). `sha256sum -c`로 확인한다.
   2. 기존 `catalog-checkpoint.py restore`로 임시 SQLite를 만든다.
   3. 테이블별로 데이터만 담은 INSERT SQL을 문장당 100KB 이하로 만든다. 이력 테이블과 제외 테이블(`price_quotes`, `hotel_result_sessions`)은 넣지 않는다.
-  4. `wrangler d1 execute yukemuri --remote --file`로 적재한다. 하루 쓰기 한도를 넘지 않게 테이블 순서·날짜를 나눈다. 예: 1일차 `hotels`, 2일차 `crawl_jobs`, 3일차 나머지와 `catalog_meta`. `catalog_meta`는 첫 공개 접속 전에 꼭 넣는다.
+  4. `wrangler d1 execute yukemuri --remote --file <SQL> --config <D1 바인딩 설정>`으로 적재한다. 실행기 레포에는 앱의 wrangler 설정이 없다. 그래서 3단계에서 커밋한 `database_id`로 D1 바인딩만 담은 임시 설정 파일을 만들어 준다. 하루 쓰기 한도를 넘지 않게 테이블 순서·날짜를 나눈다. 예: 1일차 `hotels`, 2일차 `crawl_jobs`, 3일차 나머지와 `catalog_meta`. `catalog_meta`는 첫 공개 접속 전에 꼭 넣는다.
   5. 백업 manifest의 행 수와 새 D1의 `COUNT(*)`를 비교한다. 로그에는 개수만 남긴다.
 - SQL·SQLite는 runner 임시 폴더에서 지운다. artifact로 올리지 않는다.
 - 계정 내보내기의 `d1-database-0001.sql`(2026-10-08)은 오래됐다. 백업을 쓸 수 없을 때의 마지막 수단으로만 둔다. Git에 넣지 않는다.
