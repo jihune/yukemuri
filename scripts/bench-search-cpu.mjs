@@ -4,6 +4,10 @@
 // separately and subtracted, since in production it is spent in D1, not in
 // the Worker. Not Worker CPU: V8 versions, JIT state and isolate limits differ.
 // Usage: node scripts/bench-search-cpu.mjs [--old <git commit>] [--runs 15] [--out evidence.json]
+// Modes: cold (new module instance, a result stored in D1 by an earlier run),
+// coldMiss and warmMiss (one chunk version moved first, as by a write: no
+// stored result for the new generation), warm (same instance).
+// BENCH_SCENARIOS, BENCH_MODES: comma lists. BENCH_WALL=1: thread time.
 import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,writeFileSync,cpSync,mkdirSync,existsSync,symlinkSync} from 'node:fs';
 import {resolve,join} from 'node:path';
@@ -42,9 +46,12 @@ if(process.env.BENCH_CHILD){
  const load=()=>{for(const k of Object.keys(req.cache))if(k.startsWith(libDir))delete req.cache[k];return req(join(libDir,'lib/hotel-repository.js'))};
  const samples=[];
  let repo=load();await repo.hotelRepository.ready();
- if(mode==='warm')await scenarios[scenario](repo);
+ if(mode.startsWith('warm'))await scenarios[scenario](repo);
  for(let i=0;i<Number(count);i++){
-  if(mode==='cold'){repo=load();await repo.hotelRepository.ready()}
+  if(mode.startsWith('cold')){repo=load();await repo.hotelRepository.ready()}
+  // *Miss: a new generation, as after a write to one hotel (one chunk changed):
+  // no stored result for it yet.
+  if(mode.endsWith('Miss'))try{sqlite.exec(`UPDATE hotel_search_chunks SET version=version+1 WHERE chunk=${i%64}`)}catch{}
   sqliteMs=0;const c=process.cpuUsage(),w=performance.now();await scenarios[scenario](repo);const wall=performance.now()-w,d=process.cpuUsage(c);
   // cpu: whole process (includes GC and compiler threads); wall: this thread's elapsed time; both minus SQLite.
   samples.push(process.env.BENCH_WALL?+(wall-sqliteMs).toFixed(2):+((d.user+d.system)/1000-sqliteMs).toFixed(2));
@@ -87,7 +94,7 @@ try{
  }
  const stat=a=>{const s=[...a].sort((x,y)=>x-y);return{median:s[Math.floor(s.length/2)],p95:s[Math.min(s.length-1,Math.ceil(s.length*0.95)-1)],max:s.at(-1)}};
  const report={measuredAt:new Date().toISOString(),runs,environment:`Node ${process.version} (V8 ${process.versions.v8}), node:sqlite on a copy of a grown temporary D1. JavaScript CPU = process CPU minus time inside SQLite. Not Worker CPU.`,results:[]};
- for(const [version,libDir] of Object.entries(versions))for(const scenario of (process.env.BENCH_SCENARIOS?.split(',')??['list','listJalan','listFilters','listPage2','nameJa','nameKo','map','mapName','visit',...(version==='current'?['snapshotCore','snapshotText']:[])]))for(const mode of ['cold','warm']){
+ for(const [version,libDir] of Object.entries(versions))for(const scenario of (process.env.BENCH_SCENARIOS?.split(',')??['list','listJalan','listFilters','listPage2','nameJa','nameKo','map','mapName','visit',...(version==='current'?['snapshotCore','snapshotText']:[])]))for(const mode of (process.env.BENCH_MODES?.split(',')??['cold','coldMiss','warm','warmMiss'])){
   const r=spawnSync(process.execPath,[resolve('scripts/bench-search-cpu.mjs')],{encoding:'utf8',env:{...process.env,BENCH_CHILD:[libDir,dbFile,scenario,mode,runs].join('|')},maxBuffer:1<<24});
   const line=r.stdout.trim().split('\n').at(-1);let samples;try{samples=JSON.parse(line)}catch{throw new Error(r.stdout+r.stderr)}
   const row={version,scenario,mode,...stat(samples)};report.results.push(row);console.log(JSON.stringify(row));

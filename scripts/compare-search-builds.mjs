@@ -4,6 +4,7 @@
 // Usage: node scripts/compare-search-builds.mjs <old build dir> <new build dir> [--out evidence.json]
 // The requests run twice: on the seeded copies, and again after the same writes
 // (SQL on every search table, a collector PUT and a lifecycle patch) on both.
+// The new build answers each request twice (computed, then reused).
 // COMPARE_DUMP=<path prefix> writes the first three differing responses.
 // Build the old commit with `node scripts/run-framework.mjs build` and copy dist/ first.
 import {createRequire} from 'node:module';
@@ -70,9 +71,11 @@ try{
  const results=[];let different=0;
  const compareAll=async round=>{for(const p of paths){
   // After the writes, coverage.updatedAt is each copy's own PUT time.
-  const [a,b]=await Promise.all([A,B].map(async m=>{const r=await m.dispatchFetch('http://localhost'+p,{headers:{'X-Yukemuri-Visitor':'e'.repeat(64)}}),body=clean(await r.json());if(round===2&&body.coverage)delete body.coverage.updatedAt;return{status:r.status,body}}));
-  const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex').slice(0,16),same=hash(a)===hash(b);
-  if(!same){different++;console.log(`DIFF round ${round} ${p}`);if(process.env.COMPARE_DUMP&&different<=3)writeFileSync(`${process.env.COMPARE_DUMP}-${different}.json`,JSON.stringify({p,a,b},null,1))}
+  const get=async m=>{const r=await m.dispatchFetch('http://localhost'+p,{headers:{'X-Yukemuri-Visitor':'e'.repeat(64)}}),body=clean(await r.json());if(round===2&&body.coverage)delete body.coverage.updatedAt;return{status:r.status,body}};
+  // The new build answers twice: the second time from the result it stored.
+  const [a,b]=await Promise.all([get(A),get(B)]),again=await get(B);
+  const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex').slice(0,16),same=hash(a)===hash(b)&&hash(a)===hash(again);
+  if(!same){different++;console.log(`DIFF round ${round} ${p}`);if(process.env.COMPARE_DUMP&&different<=3)writeFileSync(`${process.env.COMPARE_DUMP}-${different}.json`,JSON.stringify({p,a,b,again},null,1))}
   results.push({round,path:decodeURIComponent(p),status:a.status,count:a.body.total??a.body.inBounds??a.body.suggestions?.length??a.body.hotels?.length??null,cells:a.body.cells?.length,same,hash:hash(a)});
  }};
  await compareAll(1);

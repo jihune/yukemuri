@@ -80,6 +80,28 @@ try{
  await api(A,'/api/hotel-source-groups?hotelId='+encodeURIComponent(group),{method:'DELETE'});
  await invariant('source group removed');
 
+ // Stored results (hotel_search_results): a repeated search or map request is
+ // answered from the row stored for the current generation, by any isolate; a
+ // write to a search table moves the generation, so the row is not reused.
+ // (A stores, B reads: an isolate also keeps the bodies it stored.)
+ const marked=async()=>{
+  await db.prepare("UPDATE hotel_search_results SET body=json_set(body,CASE WHEN json_type(body,'$.ids') IS NULL THEN '$.total' ELSE '$.ryokanCount' END,-7)").run();
+  const list=await api(B,'/api/hotels?fresh=1&stable=1&sort=reviews'),map=await api(B,'/api/hotels/map?bbox=122,24,146,46&features=natural');
+  return[list.ryokanCount,map.total];
+ };
+ await api(A,'/api/hotels?fresh=1&stable=1&sort=reviews');await api(A,'/api/hotels/map?bbox=122,24,146,46&features=natural');
+ assert.deepEqual(await marked(),[-7,-7],'repeated requests reuse the stored results, also in another isolate');
+ await db.prepare("UPDATE hotels SET trip_reviews=COALESCE(trip_reviews,0)+1 WHERE id=(SELECT id FROM hotels ORDER BY id LIMIT 1)").run();
+ const [ryokan,mapTotal]=await (async()=>{const l=await api(A,'/api/hotels?fresh=1&stable=1&sort=reviews'),m=await api(A,'/api/hotels/map?bbox=122,24,146,46&features=natural');return[l.ryokanCount,m.total]})();
+ assert.ok(ryokan>=0&&mapTotal>=0,'a write to a search table ends the reuse');
+ assert.deepEqual(await marked(),[-7,-7],'results stored for the new generation are reused');
+ await api(A,'/api/hotel-lifecycle',{method:'PUT',body:JSON.stringify({id:target,state:'operating',sourceUrl:'https://example.com/open',sourceKind:'official_property',sourceLabel:'스냅숏 검사',evidence:'스냅숏 검사용 영업 근거 문장',identityEvidence:'스냅숏 검사용 숙소 확인 문장',checkedAt:new Date().toISOString(),effectiveDate:'2026-10-02'})});
+ assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hotel_search_results').first()).n,0,'a lifecycle patch clears the stored results');
+ await db.prepare("INSERT INTO hotel_search_results(key,generation,body,created_at) SELECT 'old-'||value,'old','{}',value FROM json_each(?)").bind(JSON.stringify(Array.from({length:70},(_,i)=>i))).run();
+ await api(A,'/api/hotels?fresh=1&stable=1&sort=name');
+ assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hotel_search_results').first()).n,64,'at most 64 stored results, the oldest removed');
+ await db.prepare("DELETE FROM hotel_search_results").run();
+
  // Random sequences of writes on the three search tables (seeded, replayable).
  let seed=Number(process.env.SNAPSHOT_SEED??11);
  const random=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296};
@@ -128,5 +150,5 @@ try{
  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hotel_search_chunks').first()).n,0);
  await api(A,'/api/hotels?fresh=1');
  await invariant('rebuild after load');
- console.log('Search snapshot checks passed: first build, collector PUT, 11 direct SQL writes, lifecycle patch, source link removal, 120 random writes on hotels/hotel_names/hotel_lifecycle, partial table, concurrent rebuilds and an empty table; chunks equal a fresh build after each, and another isolate reads the current snapshot.');
+ console.log('Search snapshot checks passed: first build, collector PUT, 11 direct SQL writes, lifecycle patch, source link removal, stored result reuse and invalidation, 120 random writes on hotels/hotel_names/hotel_lifecycle, partial table, concurrent rebuilds and an empty table; chunks equal a fresh build after each, and another isolate reads the current snapshot.');
 }finally{for(const r of runtimes)await r.dispose();rmSync(temp,{recursive:true,force:true})}

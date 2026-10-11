@@ -18,31 +18,32 @@ import localizedNames from '../data/korean-hotel-names.json';
 import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
 import {createResultSession,readResultSession,resultQueryKey,hotelsInOrder,type SearchOptions} from './hotel-result-session';
-import {searchSnapshot,compareText,textOrder,type SnapshotCore,type SnapshotRow} from './hotel-search-snapshot';
+import {searchSnapshot,snapshotVersions,compareText,textOrder,type SnapshotCore,type SnapshotRow} from './hotel-search-snapshot';
 import {validComparisonIds} from './hotel-comparison';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
-let searchIndex:{expires:number;promise:Promise<{hotels:SearchIndexHotel[];prepared:PreparedSearchIndex}>}|null=null;
+let searchIndex:{expires:number;promise:Promise<{hotels:SearchIndexHotel[];prepared:PreparedSearchIndex;key:string}>}|null=null;
 async function catalogueSearchIndex(){
  if(!searchIndex||searchIndex.expires<Date.now()){
   const promise=(async()=>{
    const hotels:SearchIndexHotel[]=[];
-   const byId=(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.id,b.id,a.plain&&b.plain);
-   for(const {id,core,text} of (await searchSnapshot(true)).rows.slice().sort(byId)){
+   const byId=(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.id,b.id,a.plain&&b.plain),snapshot=await searchSnapshot(true);
+   for(const {id,core,text} of snapshot.rows.slice().sort(byId)){
     if(core[13]!==null&&CLOSED.has(core[13]))continue;
     const [,names,location,aliases]=text!,place={prefecture:core[1],regionId:core[0],location,names};
     // Aliases in name-key order, as the former (hotel_id, name_key) read.
     const aliasNames=(aliases??[]).slice().sort((a,b)=>compareText(a[0],b[0])).map(a=>a[1]);
     hotels.push({id,names:[...new Set([names.ko,names.ja,names.en,...aliasNames].filter(Boolean))],location:formatHotelLocation(place),context:hotelPlaceSearchText(place),region:core[0],prefecture:core[1],kind:core[3],features:Number(core[9]??0),knownFeatures:Number(core[10]??0),tripScore:core[4],tripReviews:core[5],jalanScore:core[6],jalanReviews:core[7]});
    }
-   return{hotels,prepared:prepareSearchIndex(hotels)};
+   return{hotels,prepared:prepareSearchIndex(hotels),key:snapshot.key};
   })();
   searchIndex={expires:Date.now()+120000,promise};promise.catch(()=>{if(searchIndex?.promise===promise)searchIndex=null});
  }
  return searchIndex.promise;
 }
 async function nameMatches(query:string,region:string){
- return searchIndexMatches((await catalogueSearchIndex()).prepared,query,region).map(({id,score,similar})=>({id,score,similar}));
+ const index=await catalogueSearchIndex();
+ return{key:index.key,matches:searchIndexMatches(index.prepared,query,region).map(({id,score,similar})=>({id,score,similar}))};
 }
 const CLOSED=new Set(['closed','temporarily_closed']);
 const FEATURE_BITS=Object.fromEntries(FEATURE_KEYS.map((key,i)=>[key,1<<i])) as Record<FeatureKey,number>;
@@ -68,7 +69,8 @@ function unknownOnly(core:SnapshotCore,filters:HotelFilters){
  if(filters.minReviews&&!(reviews===null||reviews>=filters.minReviews))return false;
  return true;
 }
-type SearchScope={q:string;region:string;savedOnly:boolean;saved:Set<string>;matches:{id:string;score:number;similar:boolean}[];found:Set<string>|null};
+// indexKey: the snapshot generation of the name index, when it was used.
+type SearchScope={q:string;region:string;savedOnly:boolean;saved:Set<string>;matches:{id:string;score:number;similar:boolean}[];found:Set<string>|null;indexKey?:string};
 // Lifecycle (unless saved), region, saved and query scope.
 function inScope(row:SnapshotRow,scope:SearchScope){
  if(!scope.savedOnly&&row.core[13]!==null&&CLOSED.has(row.core[13]))return false;
@@ -93,24 +95,41 @@ function substringMatches(q:string,snapshot:Awaited<ReturnType<typeof searchSnap
 }
 async function searchScope(filters:HotelFilters,savedOnly:boolean,savedIds:string[],snapshot:Awaited<ReturnType<typeof searchSnapshot>>):Promise<SearchScope>{
  const q=normalizeSearch(filters.query),scope:SearchScope={q,region:filters.region,savedOnly,saved:new Set(savedIds),matches:[],found:null};
- if(q){scope.matches=await nameMatches(filters.query,filters.region);scope.found=new Set([...substringMatches(q,snapshot),...scope.matches.map(m=>m.id)])}
+ if(q){const named=await nameMatches(filters.query,filters.region);scope.matches=named.matches;scope.indexKey=named.key;scope.found=new Set([...substringMatches(q,snapshot),...scope.matches.map(m=>m.id)])}
  return scope;
 }
-// SQLite ORDER BY: NULL is the smallest value, so DESC puts it last.
-const desc=(a:number|null,b:number|null)=>a===b?0:a===null?1:b===null?-1:b-a;
-let orders:{generation:number;lists:Map<string,SnapshotRow[]>}|null=null;
+let orders:{generation:number;idRank:Int32Array|null;lists:Map<string,SnapshotRow[]>}|null=null;
+// The former ORDER BY of each sort, on positions in snapshot.rows: numeric keys
+// in typed arrays (NULL as -Infinity, so DESC puts it last) and the id order
+// as a rank, computed once per generation.
 function sortedRows(snapshot:Awaited<ReturnType<typeof searchSnapshot>>,sort:SortOrder,provider:HotelFilters['ratingProvider']){
- if(orders?.generation!==snapshot.generation)orders={generation:snapshot.generation,lists:new Map()};
+ if(orders?.generation!==snapshot.generation)orders={generation:snapshot.generation,idRank:null,lists:new Map()};
  const key=sort+':'+provider,cached=orders.lists.get(key);if(cached)return cached;
- const [score,reviews]=provider==='jalan'?[6,7]:[4,5];
- const id=(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.id,b.id,a.plain&&b.plain);
- const rating=(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[score] as number|null,b.core[score] as number|null)||desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||id(a,b);
- const top=(r:SnapshotRow)=>r.core[4]!==null&&r.core[4]>=9&&r.core[5]!==null&&r.core[5]>=50?1:0;
- const compare=sort==='name'?(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.core[2],b.core[2],a.plain&&b.plain)||id(a,b)
-  :sort==='reviews'?(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||desc(a.core[score] as number|null,b.core[score] as number|null)||id(a,b)
-  :sort==='rating'?rating
-  :(a:SnapshotRow,b:SnapshotRow)=>(b.core[8]===1?1:0)-(a.core[8]===1?1:0)||top(b)-top(a)||rating(a,b);
- const list=snapshot.rows.slice().sort(compare);orders.lists.set(key,list);return list;
+ const rows=snapshot.rows,n=rows.length;
+ if(!orders.idRank){
+  // Native string order is SQLite's when no id holds a surrogate pair.
+  const ids=rows.map(r=>r.id),rank=new Map<string,number>(),idRank=new Int32Array(n);
+  if(rows.every(r=>r.plain))ids.sort();else ids.sort(compareText);
+  for(let i=0;i<n;i++)rank.set(ids[i],i);
+  for(let i=0;i<n;i++)idRank[i]=rank.get(rows[i].id)!;
+  orders.idRank=idRank;
+ }
+ const idRank=orders.idRank,numbers=(k:number)=>{const a=new Float64Array(n);for(let i=0;i<n;i++){const v=rows[i].core[k] as number|null;a[i]=v===null?-Infinity:v}return a};
+ const desc=(k:Float64Array,a:number,b:number)=>k[a]===k[b]?0:k[b]-k[a];
+ const [score,reviews]=provider==='jalan'?[numbers(6),numbers(7)]:[numbers(4),numbers(5)];
+ const rating=(a:number,b:number)=>desc(score,a,b)||desc(reviews,a,b)||idRank[a]-idRank[b];
+ let compare:(a:number,b:number)=>number;
+ if(sort==='name')compare=(a,b)=>textOrder(rows[a].core[2],rows[b].core[2],rows[a].plain&&rows[b].plain)||idRank[a]-idRank[b];
+ else if(sort==='reviews')compare=(a,b)=>desc(reviews,a,b)||desc(score,a,b)||idRank[a]-idRank[b];
+ else if(sort==='rating')compare=rating;
+ else{
+  // natural = 1 first, then trip score >= 9 with >= 50 reviews, then rating.
+  const first=new Uint8Array(n);
+  for(let i=0;i<n;i++){const c=rows[i].core;first[i]=(c[8]===1?2:0)+(c[4]!==null&&c[4]>=9&&c[5]!==null&&c[5]>=50?1:0)}
+  compare=(a,b)=>first[b]-first[a]||rating(a,b);
+ }
+ const order=Array.from({length:n},(_,i)=>i).sort(compare),list=order.map(i=>rows[i]);
+ orders.lists.set(key,list);return list;
 }
 async function hotelPayloads(ids:string[]){
  const rows=await favoritesDb().prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(ids)).all<{id:string;payload:string}>();
@@ -365,7 +384,15 @@ function sqliteAverage(values:number[]){
 // Coordinates count only when both are JSON numbers (hasCoordinates on the client).
 async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,savedIds:string[]):Promise<MapAreaResponse>{
   await ensureCatalog();
-  const snapshot=await searchSnapshot(!!normalizeSearch(filters.query)),scope=await searchScope(filters,savedOnly,savedIds,snapshot);
+  const {versions,generation}=await snapshotVersions(),key=savedOnly?null:await resultKey(['map',{...filters,features:[...new Set(filters.features)].sort()},bounds]);
+  const stored=key?await storedResult<MapAreaResponse>(key,generation):null;if(stored)return stored;
+  const result=await computeMapArea(filters,bounds,savedOnly,savedIds,versions);
+  if(key&&result.key)await storeResult(key,result.key,result.response);
+  return result.response;
+}
+async function computeMapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,savedIds:string[],versions:Versions){
+  const snapshot=await searchSnapshot(!!normalizeSearch(filters.query),versions),scope=await searchScope(filters,savedOnly,savedIds,snapshot);
+  const key=reusable(snapshot.key,scope);
   let total=0,withoutCoordinates=0;const inside:SnapshotRow[]=[];
   for(const row of snapshot.rows){
    if(!inScope(row,scope)||!eligible(row.core,filters))continue;
@@ -377,10 +404,10 @@ async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,s
   inside.sort((a,b)=>textOrder(a.id,b.id,a.plain&&b.plain));
   const inBounds=inside.length,score=filters.ratingProvider==='jalan'?6:4;
   const result:MapAreaResponse={total,inBounds,outOfBounds:total-withoutCoordinates-inBounds,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
-  if(!inBounds)return result;
+  if(!inBounds)return{key,response:result};
   if(inBounds<=MAP_POINT_LIMIT){
    result.points=inside.map(r=>({id:r.id,name:r.core[2],score:r.core[score] as number|null,lat:r.core[11]!,lng:r.core[12]!}));
-   return result;
+   return{key,response:result};
   }
   // Too many points for one response: counts on a 16 x 16 grid over the bounds.
   const latStep=(bounds.north-bounds.south)/16||1e-9,lngStep=(bounds.east-bounds.west)/16||1e-9;
@@ -390,18 +417,47 @@ async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,s
    const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[]};cell.lats.push(lat);cell.lngs.push(lng);cells.set(row*16+col,cell);
   }
   result.cells=[...cells.values()].sort((a,b)=>a.row-b.row||a.col-b.col).map(c=>({lat:sqliteAverage(c.lats),lng:sqliteAverage(c.lngs),count:c.lats.length,south:bounds.south+c.row*latStep,north:bounds.south+(c.row+1)*latStep,west:bounds.west+c.col*lngStep,east:bounds.west+(c.col+1)*lngStep}));
-  return result;
+  return{key,response:result};
 }
-// Scope, facets, order and page from the search snapshot. Only the page's
-// payloads and the result session touch the catalogue tables.
-async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
-  await ensureCatalog();const db=favoritesDb();
-  const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
-  if(options.snapshot)return readResultSession(options.snapshot,queryKey,page);
-  const coveragePromise=readCachedCoverage();
-  const snapshot=await searchSnapshot(!!normalizeSearch(filters.query)),scope=await searchScope(filters,savedOnly,savedIds,snapshot);
+// Search results of one snapshot generation, without the page: order, scope
+// counts, name-match ids and alternative candidates. Bump RESULT_LOGIC when the
+// code that makes them changes, so results of the former code are not reused.
+const RESULT_LOGIC='p02-results-1',MAX_STORED_RESULTS=64,STORED_RESULT_SECONDS=86400;
+type Versions=Awaited<ReturnType<typeof snapshotVersions>>['versions'];
+type StoredSearch={ids:string[];total:number;unknownExcluded:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;similarCount:number;similar:string[];alternatives:{id:string;unmetConditions:string[];queryMatched:boolean}[]};
+async function resultKey(parts:unknown[]){
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([RESULT_LOGIC,catalogVersion,...parts])));
+ return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+}
+// The generation a result may be stored under: the snapshot's, unless the name
+// index it used was built from another one (it is rebuilt on a timer).
+const reusable=(key:string,scope:SearchScope)=>scope.indexKey===undefined||scope.indexKey===key?key:null;
+// The isolate also keeps the last stored results it read or wrote, so a warm
+// isolate does not parse the same body again. Callers never modify a body.
+const remembered=new Map<string,{generation:string;body:unknown;createdAt:number}>();
+function remember(key:string,generation:string,body:unknown,createdAt:number){
+ remembered.delete(key);remembered.set(key,{generation,body,createdAt});
+ while(remembered.size>32)remembered.delete(remembered.keys().next().value!);
+}
+async function storedResult<T>(key:string,generation:string){
+ const since=Math.floor(Date.now()/1000)-STORED_RESULT_SECONDS,known=remembered.get(key);
+ if(known&&known.generation===generation&&known.createdAt>since)return known.body as T;
+ const row=await favoritesDb().prepare('SELECT body,created_at FROM hotel_search_results WHERE key=? AND generation=? AND created_at>?').bind(key,generation,since).first<{body:string;created_at:number}>();
+ if(!row)return null;
+ const body=JSON.parse(row.body) as T;remember(key,generation,body,row.created_at);return body;
+}
+async function storeResult(key:string,generation:string,body:unknown){
+ const db=favoritesDb(),now=Math.floor(Date.now()/1000);remember(key,generation,body,now);
+ await db.batch([
+  db.prepare('INSERT INTO hotel_search_results(key,generation,body,created_at) VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET generation=excluded.generation,body=excluded.body,created_at=excluded.created_at').bind(key,generation,JSON.stringify(body),now),
+  db.prepare('DELETE FROM hotel_search_results WHERE key IN (SELECT key FROM hotel_search_results ORDER BY created_at DESC,rowid DESC LIMIT -1 OFFSET ?)').bind(MAX_STORED_RESULTS),
+ ]);
+}
+// Scope, facets and order from the search snapshot.
+async function computeSearch(filters:HotelFilters,sort:SortOrder,savedOnly:boolean,savedIds:string[],versions:Versions):Promise<{key:string|null;stored:StoredSearch}>{
+  const snapshot=await searchSnapshot(!!normalizeSearch(filters.query),versions),scope=await searchScope(filters,savedOnly,savedIds,snapshot);
   const similar=scope.matches.filter(m=>m.similar).map(m=>m.id),similarSet=new Set(similar);
-  const bitCounts=new Array<number>(32).fill(0),matched=new Set<SnapshotRow>();
+  const bitCounts=new Array<number>(32).fill(0),matched=new Set<SnapshotRow>(),matchedIds=new Set<string>();
   let ryokanCount=0,similarCount=0,unknownExcluded=0;
   for(const row of snapshot.rows){
    if(!inScope(row,scope))continue;
@@ -409,36 +465,51 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
    for(let v=row.core[9]??0;v;v&=v-1)bitCounts[31-Math.clz32(v&-v)]++;
    if(row.core[3]==='ryokan')ryokanCount++;
    // Unknown: excluded only for lacking a fact, counted so the list can say so.
-   if(eligible(row.core,filters)){matched.add(row);if(similarSet.has(row.id))similarCount++}
+   if(eligible(row.core,filters)){matched.add(row);matchedIds.add(row.id);if(similarSet.has(row.id))similarCount++}
    else if(unknownOnly(row.core,filters))unknownExcluded++;
   }
   const featureCounts=Object.fromEntries(FEATURE_KEYS.map(key=>[key,bitCounts[Math.log2(FEATURE_BITS[key])]])) as Record<FeatureKey,number>;
-  const total=matched.size;
-  const coverage=await coveragePromise;
-  const pageSize=40,actualPage=Math.max(1,Math.min(page,Math.max(1,Math.ceil(total/pageSize))));
   let list=sortedRows(snapshot,sort,filters.ratingProvider).filter(row=>matched.has(row));
   // Broad legacy full-text hits can join separate name words. Keep them below
   // the shared name/place relevance so both result and prediction order agree.
   if(sort==='recommended'&&scope.q){const score=new Map(scope.matches.map(m=>[m.id,m.score]));list=list.map(row=>({row,score:score.get(row.id)??20})).sort((a,b)=>b.score-a.score).map(r=>r.row)}
-  const ordered=options.stable?list.slice(0,50001):null;
-  const pageRows=ordered?[]:list.slice((actualPage-1)*pageSize,actualPage*pageSize);
-  let alternatives:HotelAlternative[]=[];
-  if((ordered?ordered.length:total)===0&&(scope.q||filters.region!=='all'||filters.features.length||filters.ryokanOnly||filters.minRating||filters.minReviews)){
-   const saved=savedOnly?new Set(savedIds):undefined;
-   const candidates=rankHotelAlternatives((await catalogueSearchIndex()).prepared,filters,saved);
-   if(candidates.length){const picked=await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(candidates.map(c=>c.id))).all<{id:string;payload:string}>();const byId=new Map(picked.results.map(row=>[row.id,enrichHotel(JSON.parse(row.payload) as Hotel)]));alternatives=candidates.flatMap(c=>{const hotel=byId.get(c.id);return hotel?[{hotel,unmetConditions:c.unmetConditions,queryMatched:c.queryMatched}]:[]})}
+  let alternatives:StoredSearch['alternatives']=[],key=reusable(snapshot.key,scope);
+  if(matched.size===0&&(scope.q||filters.region!=='all'||filters.features.length||filters.ryokanOnly||filters.minRating||filters.minReviews)){
+   const index=await catalogueSearchIndex();if(index.key!==snapshot.key)key=null;
+   alternatives=rankHotelAlternatives(index.prepared,filters,savedOnly?new Set(savedIds):undefined).map(c=>({id:c.id,unmetConditions:c.unmetConditions,queryMatched:c.queryMatched}));
   }
-  const result:SearchResponse={hotels:await hotelPayloads(pageRows.map(r=>r.id)),total,unknownExcluded,page:actualPage,pageSize,featureCounts,ryokanCount,coverage,similarCount,similarHotelIds:pageRows.filter(r=>similarSet.has(r.id)).map(r=>r.id),alternatives};
+  return{key,stored:{ids:list.map(r=>r.id),total:matched.size,unknownExcluded,featureCounts,ryokanCount,similarCount,similar:similar.filter(id=>matchedIds.has(id)),alternatives}};
+}
+// The page of a search: from a result stored for the current snapshot
+// generation if there is one, else computed and stored. Only the page's
+// payloads and the result session touch the catalogue tables.
+async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
+  await ensureCatalog();const db=favoritesDb();
+  const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
+  if(options.snapshot)return readResultSession(options.snapshot,queryKey,page);
+  const coveragePromise=readCachedCoverage();
+  const {versions,generation}=await snapshotVersions(),key=savedOnly?null:await resultKey(['search',queryKey]);
+  let stored=key?await storedResult<StoredSearch>(key,generation):null;
+  if(!stored){const computed=await computeSearch(filters,sort,savedOnly,savedIds,versions);stored=computed.stored;if(key&&computed.key)await storeResult(key,computed.key,stored)}
+  const {ids,total,unknownExcluded,featureCounts,ryokanCount,similarCount}=stored,similarSet=new Set(stored.similar);
+  const coverage=await coveragePromise;
+  const pageSize=40,actualPage=Math.max(1,Math.min(page,Math.max(1,Math.ceil(total/pageSize))));
+  const ordered=options.stable?ids.slice(0,50001):null;
+  const pageIds=ordered?[]:ids.slice((actualPage-1)*pageSize,actualPage*pageSize);
+  let alternatives:HotelAlternative[]=[];
+  if(stored.alternatives.length){const picked=await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(stored.alternatives.map(c=>c.id))).all<{id:string;payload:string}>();const byId=new Map(picked.results.map(row=>[row.id,enrichHotel(JSON.parse(row.payload) as Hotel)]));alternatives=stored.alternatives.flatMap(c=>{const hotel=byId.get(c.id);return hotel?[{hotel,unmetConditions:c.unmetConditions,queryMatched:c.queryMatched}]:[]})}
+  const result:SearchResponse={hotels:await hotelPayloads(pageIds),total,unknownExcluded,page:actualPage,pageSize,featureCounts,ryokanCount,coverage,similarCount,similarHotelIds:pageIds.filter(id=>similarSet.has(id)),alternatives};
   if(ordered){
-   const ids=ordered.map(r=>r.id),idSet=new Set(ids),allSimilar=similar.filter(id=>idSet.has(id));
-   result.total=ids.length;result.page=Math.max(1,Math.min(page,Math.max(1,Math.ceil(ids.length/pageSize))));
-   const pageIds=ids.slice((result.page-1)*pageSize,result.page*pageSize);
-   result.hotels=await hotelsInOrder(pageIds);result.similarHotelIds=allSimilar.filter(id=>pageIds.includes(id));result.similarCount=allSimilar.length;
-   if(ids.length>pageSize){
-    result.snapshot=await createResultSession(queryKey,ids,{total:result.total,unknownExcluded:result.unknownExcluded,pageSize,featureCounts:result.featureCounts,ryokanCount:result.ryokanCount,coverage,similarCount:result.similarCount,similarHotelIds:allSimilar,alternatives});
+   const idSet=ordered.length<ids.length?new Set(ordered):null,allSimilar=idSet?stored.similar.filter(id=>idSet.has(id)):stored.similar;
+   result.total=ordered.length;result.page=Math.max(1,Math.min(page,Math.max(1,Math.ceil(ordered.length/pageSize))));
+   const stablePage=ordered.slice((result.page-1)*pageSize,result.page*pageSize);
+   result.hotels=await hotelsInOrder(stablePage);result.similarHotelIds=allSimilar.filter(id=>stablePage.includes(id));result.similarCount=allSimilar.length;
+   if(ordered.length>pageSize){
+    result.snapshot=await createResultSession(queryKey,ordered,{total:result.total,unknownExcluded:result.unknownExcluded,pageSize,featureCounts:result.featureCounts,ryokanCount:result.ryokanCount,coverage,similarCount:result.similarCount,similarHotelIds:allSimilar,alternatives});
    }
   }
-  result.hotels=await attachLifecycle(await attachSourceGroups(result.hotels));
+  // hotelsInOrder already attached the stable page's groups and lifecycle.
+  if(!ordered)result.hotels=await attachLifecycle(await attachSourceGroups(result.hotels));
   if(result.alternatives?.length){const attached=await attachLifecycle(await attachSourceGroups(result.alternatives.map(a=>a.hotel)));result.alternatives=result.alternatives.map((a,i)=>({...a,hotel:attached[i]}))}
   return result;
 }

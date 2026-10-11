@@ -44,7 +44,7 @@ export async function saveLifecyclePatch(patch:LifecyclePatch){
  ON CONFLICT(hotel_id) DO UPDATE SET state=excluded.state,checked_at=excluded.checked_at,evidence=excluded.evidence
  WHERE hotel_lifecycle.checked_at IS NULL OR julianday(excluded.checked_at)>julianday(hotel_lifecycle.checked_at)`).bind(patch.id,firstSeen,firstSeen,patch.state,patch.checkedAt,payload),
  db.prepare(`INSERT INTO hotel_lifecycle_events(id,hotel_id,checked_at,payload) SELECT ?,?,?,? WHERE EXISTS (SELECT 1 FROM hotel_lifecycle WHERE hotel_id=? AND evidence=?) ON CONFLICT(id) DO NOTHING`).bind(id,patch.id,patch.checkedAt,payload,patch.id,payload),
- db.prepare('DELETE FROM hotel_result_sessions'),
+ db.prepare('DELETE FROM hotel_result_sessions'),db.prepare('DELETE FROM hotel_search_results'),
  ]);
  return updates[0].meta.changes?'saved':'stale';
 }

@@ -79,3 +79,9 @@ export const hotelSourceObservations=sqliteTable('hotel_source_observations',{
 export const hotelSearchChunks=sqliteTable('hotel_search_chunks',{
  chunk:integer('chunk').primaryKey(),version:integer('version').notNull(),core:text('core').notNull(),text:text('text').notNull(),
 });
+// Search and map results of one snapshot generation (the 64 chunk versions),
+// so an isolate that has not loaded the snapshot can answer a repeated query.
+// A cache: never exported, rebuilt on demand.
+export const hotelSearchResults=sqliteTable('hotel_search_results',{
+ key:text('key').primaryKey(),generation:text('generation').notNull(),body:text('body').notNull(),createdAt:integer('created_at').notNull(),
+},table=>[index('idx_search_results_created').on(table.createdAt)]);
