@@ -93,24 +93,28 @@ async function run(page){
  await page.waitForTimeout(300);
  check('조건을 바꿔도 목록 요청이 Worker로 가지 않음',workerLists.length===before&&await page.locator('.catalog-loading').count()===0,{requests:workerLists.slice(before)});
 
- // Failure: the snapshot cannot be read; a keyboard retry restores the list.
- await page.route(manifestFile,route=>route.fulfill({status:500,contentType:'application/json',body:'{"error":"test"}'}));
+ // Failure: the snapshot files cannot be read (the page carries its manifest, so
+ // the first load asks for the files only); a keyboard retry restores the list.
+ const failing=url=>snapshotFiles(url)||manifestFile(url);
+ await page.route(failing,route=>route.fulfill({status:500,contentType:'application/json',body:'{"error":"test"}'}));
  await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
  const error=page.locator('.error-banner');await error.waitFor();
  check('목록을 받지 못하면 오류 안내와 다시 시도 버튼, 미확인 안내 숨김',await error.getByRole('button',{name:'다시 시도'}).isVisible()&&await notice.count()===0);
- await page.unroute(manifestFile);
+ await page.unroute(failing);
  await error.getByRole('button',{name:'다시 시도'}).focus();await page.keyboard.press('Enter');
  await error.waitFor({state:'detached',timeout:15000});await page.waitForLoadState('networkidle');
  await page.locator('.hotel-list .card-title').first().waitFor({timeout:15000}).catch(()=>{});
  const cardsAfterRetry=await page.locator('.hotel-list .card-title').count();
  check('Enter로 다시 시도하면 목록과 그 조건의 안내가 돌아옴',cardsAfterRetry>0&&(await notice.innerText().catch(()=>'')).includes(count((await api('rating=8')).unknownExcluded)),{cardsAfterRetry});
 
- // A page older than the deployed snapshot format asks to be opened again.
+ // A page older than the deployed snapshot format asks to be opened again: the
+ // page's version is gone (404), and the deployed manifest has a newer format.
  await page.route(manifestFile,async route=>{const r=await route.fetch();await route.fulfill({response:r,json:{...await r.json(),format:999}})});
+ await page.route(snapshotFiles,route=>route.fulfill({status:404,contentType:'text/plain',body:'gone'}));
  await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
  await error.waitFor();
  check('스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼',(await error.innerText()).includes('새 버전')&&await error.getByRole('button',{name:'페이지 다시 열기'}).isVisible()&&await page.locator('.hotel-list .card-title').count()===0,{text:await error.innerText()});
- await page.unroute(manifestFile);
+ await page.unroute(manifestFile);await page.unroute(snapshotFiles);
 
  // A deploy replaced the version the page knows: its files answer 404 once, the
  // page reads the manifest again and shows the list from it.

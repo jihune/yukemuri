@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T19:15:30.698Z",
+ "measuredAt": "2026-10-11T20:28:45.831Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -47,6 +47,35 @@
   },
   {
    "width": 360,
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳",
+   "pass": true,
+   "detail": {
+    "bareCards": 40,
+    "bareVisible": "visible"
+   }
+  },
+  {
+   "width": 360,
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김",
+   "pass": true,
+   "detail": {
+    "visibility": "hidden",
+    "first": "2b213dc46b17e44a",
+    "mark": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "first": null,
+    "mark": false
+   }
+  },
+  {
+   "width": 360,
    "name": "목록을 받는 중에는 로딩 안내만 보이고 미확인 안내는 숨김",
    "pass": true,
    "detail": {}
@@ -88,6 +117,15 @@
    "pass": true,
    "detail": {
     "text": "사이트가 새 버전으로 바뀌었습니다. 페이지를 다시 열어 주세요.\n다시 시도\n페이지 다시 열기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "옛 버전 파일이 404면 manifest를 다시 받아 목록을 보임",
+   "pass": true,
+   "detail": {
+    "gone404": 2,
+    "manifestReads": 1
    }
   },
   {
@@ -254,6 +292,35 @@
   },
   {
    "width": 390,
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳",
+   "pass": true,
+   "detail": {
+    "bareCards": 40,
+    "bareVisible": "visible"
+   }
+  },
+  {
+   "width": 390,
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김",
+   "pass": true,
+   "detail": {
+    "visibility": "hidden",
+    "first": "2b213dc46b17e44a",
+    "mark": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "first": null,
+    "mark": false
+   }
+  },
+  {
+   "width": 390,
    "name": "목록을 받는 중에는 로딩 안내만 보이고 미확인 안내는 숨김",
    "pass": true,
    "detail": {}
@@ -295,6 +362,15 @@
    "pass": true,
    "detail": {
     "text": "사이트가 새 버전으로 바뀌었습니다. 페이지를 다시 열어 주세요.\n다시 시도\n페이지 다시 열기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "옛 버전 파일이 404면 manifest를 다시 받아 목록을 보임",
+   "pass": true,
+   "detail": {
+    "gone404": 2,
+    "manifestReads": 1
    }
   },
   {
