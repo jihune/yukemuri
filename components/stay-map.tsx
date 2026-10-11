@@ -6,7 +6,7 @@ import { displayRating } from '@/lib/hotel-ratings';
 import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/hotel-repository';
-type Props={hotels:Hotel[];activeId:string|null;onSelect:(id:string)=>void;compact?:boolean;focusId?:string|null;
+type Props={hotels:Hotel[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean};
 type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string};
@@ -34,8 +34,22 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    tiles.on('tileerror',()=>setTileError(true));
    // Markers keep autoPanOnFocus off: panning to a focused off-screen marker fires moveend,
    // the redraw removes that marker, focus falls to the page and Tab never leaves the map.
+   // Only markers wholly inside the map are Tab stops, so a focused marker is always seen.
+   const tabStops=()=>layer.current?.eachLayer(m=>{
+    const el=(m as Leaflet.Marker).getElement();if(!el)return;
+    const p=map.latLngToContainerPoint((m as Leaflet.Marker).getLatLng()),size=map.getSize();
+    el.tabIndex=p.x>=26&&p.x<=size.x-26&&p.y>=18&&p.y<=size.y-18?0:-1;
+   });
+   // Enter and Space do what a click does; Leaflet 1.9.4 only handles Enter for popups.
+   const add=(marker:Leaflet.Marker,data:Record<string,string>,open:(keyboard:boolean)=>void)=>{
+    marker.addTo(layer.current!);marker.on('click',()=>open(false));
+    const el=marker.getElement()!;Object.assign(el.dataset,data);
+    el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();open(true)}});
+   };
    draw.current=()=>{
     if(!layer.current)return;
+    // A redraw replaces every marker; keep focus on the marker holding the same hotel or cell.
+    const was=document.activeElement instanceof HTMLElement&&document.activeElement.classList.contains('leaflet-marker-icon')&&map.getContainer().contains(document.activeElement)?document.activeElement.dataset:null;
     layer.current.clearLayers();
     const groups:{spots:Spot[];point:Leaflet.Point}[]=[];
     for(const h of props.current.spots){
@@ -47,19 +61,27 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
      const hs=group.spots,first=hs[0];
      const lat=hs.reduce((a,h)=>a+h.lat,0)/hs.length,lng=hs.reduce((a,h)=>a+h.lng,0)/hs.length;
      const active=hs.some(h=>h.id===props.current.activeId);
-     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title}).addTo(layer.current);
-     marker.on('click',()=>{
+     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
+     add(marker,{stayIds:hs.map(h=>h.id).join(' ')},keyboard=>{
       if(hs.length>1){map.fitBounds(L.latLngBounds(hs.map(h=>[h.lat,h.lng] as [number,number])),{padding:[50,50],maxZoom:17});}
-      else props.current.onSelect(first.id);
+      else props.current.onSelect(first.id,keyboard);
      });
     }
     // Grid counts from a map-bounds search with more points than one response holds.
     for(const cell of props.current.cells){
-     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster">${cell.count}곳</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`}).addTo(layer.current);
-     marker.on('click',()=>map.fitBounds(L.latLngBounds([[cell.south,cell.west],[cell.north,cell.east]])));
+     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster">${cell.count}곳</span>`,iconSize:[52,36],iconAnchor:[26,18]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`});
+     add(marker,{cell:`${cell.south},${cell.west}`},()=>map.fitBounds(L.latLngBounds([[cell.south,cell.west],[cell.north,cell.east]])));
+    }
+    tabStops();
+    if(was){
+     const id=was.stayIds?.split(' ')[0];
+     const next=[...map.getContainer().querySelectorAll<HTMLElement>('.leaflet-marker-icon')].find(el=>id?el.dataset.stayIds?.split(' ').includes(id):el.dataset.cell===was.cell);
+     // A marker that is now off the map would hide the focus ring; the map itself takes it.
+     (next&&next.tabIndex===0?next:map.getContainer()).focus({preventScroll:true});
     }
    };
    map.on('moveend',()=>{draw.current();if(!programmatic.current)setMoved(true)});
+   map.on('resize',tabStops);
    const observer=new ResizeObserver(()=>map.invalidateSize());observer.observe(container.current);
    (map as Leaflet.Map & {_stayObserver?:ResizeObserver})._stayObserver=observer;
    setReady(true);
