@@ -103,7 +103,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 - `scripts/build-collector-release.mjs`의 `siteOrigin`은 빌드 변수 `YUKEMURI_SITE_ORIGIN`으로 정한다. 기본값은 Sites 주소 `https://yukemuri.jihun7891.chatgpt.site`다. Sites 두 주소와 `https://yukemuri.<서브도메인>.workers.dev`만 받는다.
 - `scripts/crawler/source_safety.py`의 `site_api()`가 수집기 스크립트 다섯 개(`update-site.py`, `update-names.py`, `update-descriptions.py`, `update-lifecycle.py`, `update-source-groups.py`)의 주소 허용 목록이다. Sites 두 주소에는 지금처럼 `OAI-Sites-Authorization`과 `X-Yukemuri-Crawl-Key`를 보낸다. workers.dev 주소에는 `X-Yukemuri-Crawl-Key`만 보낸다.
-- 실행기의 `bootstrap.py`는 Sites 주소만 받는다. 6단계에서 수집 예약은 앱 레포 workflow로 옮기고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 쓴다(`hosting-review-20261011.md` 3.2절 6단계, PR #32). 그때 수집기는 위 허용 목록의 workers.dev 주소로 바로 실행한다. 백업만 실행기 레포에 남는다.
+- 실행기의 `bootstrap.py`는 Sites 주소만 받는다. 6단계에서 수집 실행은 앱 레포 workflow(`workflow_dispatch`만)로 옮기고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 쓴다. 그때 수집기는 위 허용 목록의 workers.dev 주소로 바로 실행한다. 예약은 실행기 레포에 남아 그 workflow를 부른다. 백업도 실행기 레포에 남는다(`hosting-review-20261011.md`의 ‘2차 검토’ 절과 3.2절 6단계, PR #32·#39).
 
 ## 롤백
 
