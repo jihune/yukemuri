@@ -6,11 +6,21 @@
 
 ## 0. 결론 요약
 
-- 추천: **Cloudflare Workers Free + D1 Free + Cloudflare Access(Zero Trust Free) + `workers.dev` 주소**. 배포는 GitHub Actions의 `cloudflare/wrangler-action@v4`로 main 병합 때 실행한다.
+- 추천: **Cloudflare Workers Free + D1 Free + `workers.dev` 주소**. 사이트는 public으로 둔다. 배포는 GitHub Actions의 `cloudflare/wrangler-action@v4`로 main 병합 때 실행한다.
 - 이유: 지금 앱은 이미 Cloudflare Worker + D1용으로 빌드된다. Sites도 내부적으로 Cloudflare Worker와 D1을 쓴다. 런타임·DB API·SQL을 바꾸지 않아도 된다. 바꿀 것은 배포 설정, 접근 경로, 실행기의 주소·헤더다.
 - 조건: 무료 한도 세 가지를 실제로 넘지 않는지 병행 운영에서 확인해야 한다. 요청당 CPU 10ms, D1 읽기 하루 500만 행, D1 쓰기 하루 10만 행이다. 지금 Sites에서는 이 한도가 드러나지 않았다. 코드로 추정하면 수집기만으로 하루 약 380만 행을 읽는다(아래 1.9).
 - 대안: 한도를 넘으면 같은 구성에서 Workers Paid(월 5달러)로 바꾸는 것이 가장 작은 변경이다. 코드 변경이 없다. Vercel Hobby + Turso는 DB 한도가 더 넉넉하다. 대신 빌드 방식·DB 접근 코드·로그인 기능을 새로 만들어야 한다. 차선으로 둔다.
 - 느린 접속이 개선된다는 보장은 없다. 한국 통신사에서 Cloudflare 무료 플랜 트래픽이 LAX·싱가포르로 간다는 커뮤니티 보고가 있다(미확인). 병행 운영 중 실제 지연을 재고 결정한다.
+
+## 결정 반영
+
+기록: 2026-10-11T08:25Z / 17:25 KST. 이 절이 아래 계획보다 우선한다.
+
+- 사용자는 이전 여부를 에이전트 판단에 맡겼다(2026-10-11T08:25Z). 에이전트는 Cloudflare 무료 플랜으로 옮기기로 판단했다. 이유는 세 가지다. Sites 게시는 ChatGPT 안의 도구로만 할 수 있어 병합한 변경이 운영에 쌓인다. 사용자 계정이면 main 병합 때 자동으로 배포할 수 있다. 앱이 이미 Worker와 D1용으로 빌드된다.
+- 무료로만 쓴다. Workers Paid와 유료 도메인은 쓰지 않는다. 계정은 사용자가 무료로 만든다(사용자 결정, 2026-10-11T08:25Z).
+- 사이트는 public으로 둔다. 이용자는 지금 사용자뿐이다. 그래서 Cloudflare Access(Zero Trust)는 쓰지 않는다(사용자 결정, 2026-10-11T08:25Z).
+- DDoS와 악성 봇은 막는다(사용자 결정, 2026-10-11T08:25Z). 방법은 3.2절 2단계의 ‘공개 사이트 보호’다.
+- 전환 때 기존 Sites에 쓰기 차단 기능을 게시하지 않는다. 사용자는 최종 체크포인트부터 전환이 끝날 때까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다. 다른 방문자·오래된 탭의 쓰기가 유실될 수 있다는 위험을 사용자가 받아들였다(사용자 결정, 2026-10-11T08:25Z).
 
 ## 1. 현재 구조
 
@@ -75,10 +85,10 @@
 | 빌드 중 `.openai/hosting.json`·`drizzle/`을 `dist/.openai`로 복사하고 Sites가 게시 때 마이그레이션 적용 | `build/sites-vite-plugin.ts` `closeBundle` | `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json` 단계를 배포 workflow에 둠. 복사 동작은 무해 |
 | D1 `database_id` 자리표시자를 Sites가 실제 값으로 바꿈 | `vite.config.ts` `SITE_CREATOR_PLACEHOLDER_DATABASE_ID` | 실제 ID(비밀 아님)를 설정에 넣음. Worker 이름도 `site-creator-vinext-starter` 대신 명시 |
 | 마이그레이션 이력 테이블 `__appgarden_migrations` | 내보낸 D1 SQL | 새 D1은 wrangler 기본 `d1_migrations`로 스키마를 만들고 데이터만 옮김 |
-| Sites 접근 게이트와 `OAI-Sites-Authorization` 헤더 | 실행기 `bootstrap.py`, 앱 `scripts/crawler/*.py`, `scripts/catalog-checkpoint.py`, 실행기 `catalog-checkpoint.py` | Cloudflare Access + 서비스 토큰 헤더(`CF-Access-Client-Id`·`CF-Access-Client-Secret`)로 대체 |
+| Sites 접근 게이트와 `OAI-Sites-Authorization` 헤더 | 실행기 `bootstrap.py`, 앱 `scripts/crawler/*.py`, `scripts/catalog-checkpoint.py`, 실행기 `catalog-checkpoint.py` | 새 주소는 public이라 Sites 접근 게이트 헤더가 필요 없다. 앱용 크롤 키 헤더만 보낸다(결정 반영) |
 | 고정 주소 `*.chatgpt.site` 검사 | 실행기 `bootstrap.py` 19행, `run-updates.py` 30행, `run-backup.py` 10행, `catalog-checkpoint.py` 29행. 앱 `scripts/build-collector-release.mjs` 10행(`siteOrigin`), `scripts/crawler/update-site.py` 51행, `update-names.py`·`update-descriptions.py`·`update-lifecycle.py`·`update-source-groups.py`, `source_safety.py` 7행(User-Agent의 주소) | 새 주소로 바꾸거나 허용 목록에 추가. 배포 자료의 `siteOrigin`과 실행기의 고정 주소를 같이 바꿔야 함 |
 | Sites가 관리하는 Secret `CRAWL_ACCESS_KEY` | Sites 환경 | Worker secret으로 새로 설정. 값은 에이전트가 볼 수 없으므로 사용자가 GitHub Secret에 넣음 |
-| 로그인 만료 감지(`/signin-with-chatgpt` 리다이렉트) | `lib/api-client.ts` 22행 | Access 세션 만료는 다른 주소로 리다이렉트된다. fetch가 교차 출처 오류로 실패할 수 있어 안내 문구 확인 필요 |
+| 로그인 만료 감지(`/signin-with-chatgpt` 리다이렉트) | `lib/api-client.ts` 22행 | 새 주소에는 로그인이 없다. 이 안내는 쓰이지 않는다(결정 반영) |
 | 주소(origin) | 브라우저 localStorage | 주소가 바뀌면 방문자 토큰이 새로 생긴다. DB의 즐겨찾기 행을 옮겨도 새 주소에서는 보이지 않는다. 토큰 값을 수동으로 옮기거나 기능을 추가해야 함 |
 
 `chatgpt-auth.ts`, 커넥터 바인딩, 로컬 모의 로그인은 운영 동작에 쓰이지 않으므로 깨지지 않는다.
@@ -135,11 +145,11 @@ Sites는 OpenAI 쪽 Cloudflare 계정에서 돈다. 그래서 사용자 무료 �
 
 ### 3.1 추천안
 
-Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이름>.<계정 서브도메인>.workers.dev`로 한다.
+Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 서브도메인>.workers.dev`로 한다. 사이트는 public이다(결정 반영).
 
 - 코드 변경이 가장 작다. 빌드 산출물이 이미 Worker 형식이다. D1 바인딩·SQL·Miniflare 검사·백업 형식을 그대로 쓴다.
 - 에이전트가 GitHub만으로 운영할 수 있다. 병합 → Actions가 빌드·마이그레이션·배포·점검을 한다. 롤백은 `wrangler rollback`과 D1 Time Travel(7일)로 한다.
-- 소유자 전용 접근이 무료다. 앱 코드에 로그인 기능을 만들 필요가 없다.
+- DDoS 방어가 모든 플랜에 무료로 들어 있다. 무료 플랜은 한도를 넘으면 요청을 거절할 뿐 요금이 나오지 않는다.
 - 사용자 도메인 비용이 없다. 커스텀 도메인은 도메인을 이미 가진 경우에만 나중에 붙인다.
 - 백업은 지금 방식(Actions artifact)을 유지하고 D1 Time Travel 7일이 더해진다.
 
@@ -154,35 +164,38 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 각 단계는 별도 PR·별도 세션으로 진행한다. 검토 규칙은 `AGENTS.md`를 따른다. 지금 `AGENTS.md`·`docs/cloud-development.md`는 호스팅 이전과 Secret 회전을 위임 범위 밖으로 둔다. 사용자가 이 계획을 승인한다는 결정을 먼저 기록해야 한다.
 
 **0단계. 결정 기록(에이전트, 문서 PR)**
-- 승인 범위를 인수인계와 로드맵에 기록한다. 이전 작업 ID(예: H01), 공유 범위(소유자 전용), 새 Secret 이름, 전환·롤백 조건이다.
+- 승인 범위를 인수인계와 로드맵에 기록한다. 이전 작업 ID(예: H01), 공유 범위(public 유지), 새 Secret 이름, 전환·롤백 조건이다.
 
 **1단계. 계정 준비(사용자, 3.3절)**
-- Cloudflare 가입, Zero Trust Free, API 토큰, GitHub Secret을 만든다.
+- Cloudflare 가입, API 토큰, GitHub Secret을 만든다. Zero Trust는 필요 없다(결정 반영).
 
 **2단계. 배포 설정과 한도 대응(에이전트, 앱 레포 PR)**
 - `vite.config.ts`:
   - Worker 이름 `yukemuri`를 명시한다.
   - 실제 D1 ID는 환경 변수가 없으면 지금 자리표시자를 쓴다. 이렇게 해서 CI 검사와 로컬 개발을 그대로 둔다.
-  - `migrations_dir: "drizzle"`, `workers_dev: true`, 미리보기 URL 설정(Access로 보호하거나 끔), `placement`, `observability`를 둔다.
+  - `migrations_dir: "drizzle"`, `workers_dev: true`, 미리보기 URL 끔, `placement`, `observability`를 둔다.
 - 새 workflow `deploy.yml`:
   - 자동 배포는 4단계 적재(`catalog_meta` 포함)가 끝난 뒤에 켠다. 그 전 main 병합에서는 workflow가 Time Travel 조회·마이그레이션·배포·점검을 모두 건너뛴다. 실제 `database_id`가 없거나 설정의 자동 배포 표시가 꺼져 있으면 건너뛴다. 첫 배포는 적재 완료를 기록하는 PR이 이 표시를 켜면서 일어난다(Codex 검토, 2026-10-11).
   - main push 때 checks와 같은 설치·빌드를 한다.
   - `wrangler d1 time-travel info yukemuri --config dist/server/wrangler.json`으로 복구 지점(bookmark)을 기록한다. 데이터베이스 이름은 필수 인자다(Codex 검토, 2026-10-11).
   - `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`(새 마이그레이션이 있을 때만) → `wrangler deploy --config dist/server/wrangler.json` 순서다.
   - 비밀 `CRAWL_ACCESS_KEY`는 wrangler-action `secrets` 입력으로 올린다.
-  - 서비스 토큰으로 `/api/hotels`·`/api/crawl?report=1`을 점검한다. 이 점검은 적재가 끝난 뒤에만 실행된다. `/api/hotels`는 `hotelRepository.ready()`를 거쳐 빈 DB에 `importSnapshot()`·`reindexNames()`로 쓰기 때문이다. 적재 전 상태 확인은 DB를 바꾸지 않는 `wrangler d1 execute ... --command "SELECT COUNT(*) ..."`로만 한다(Codex 검토, 2026-10-11).
+  - 공개 `/api/hotels`와 크롤 키를 쓰는 `/api/crawl?report=1`을 점검한다. 이 점검은 적재가 끝난 뒤에만 실행된다. `/api/hotels`는 `hotelRepository.ready()`를 거쳐 빈 DB에 `importSnapshot()`·`reindexNames()`로 쓰기 때문이다. 적재 전 상태 확인은 DB를 바꾸지 않는 `wrangler d1 execute ... --command "SELECT COUNT(*) ..."`로만 한다(Codex 검토, 2026-10-11).
   - 배포 버전 ID를 요약에 남긴다. 권한은 `contents: read`로 둔다.
 - 수집기·배포 자료:
   - `build-collector-release.mjs`의 `siteOrigin`을 빌드 변수로 정한다.
   - `scripts/crawler/*.py`의 `.chatgpt.site` 검사를 허용 목록 방식으로 바꾼다.
-  - 접근 JSON에 Access 서비스 토큰 필드를 추가하고 `CF-Access-Client-*` 헤더를 보낸다. 토큰은 지금처럼 표준입력으로만 받는다.
+  - 새 주소에는 Sites 전용 `OAI-Sites-Authorization` 헤더를 보내지 않는다. 앱용 `X-Yukemuri-Crawl-Key`만 보낸다. 키는 지금처럼 표준입력으로만 받는다.
 - D1 무료 한도 대응:
   - 수집 PUT·GET의 `coverage`를 가볍게 하거나 요청할 때만 계산한다(`update-site.py` 182·189행이 쓰는 값만).
   - 로컬 Miniflare에서 대표 요청의 `meta.rows_read`·`rows_written`을 재는 검사를 추가한다. Miniflare가 이 값을 운영과 같게 세는지는 미확인이다.
-- 기존 Sites용 쓰기 차단 스위치(Codex 검토, 2026-10-11):
-  - 보호된 유지보수 API(크롤 키)로 켜고 끄는 읽기 전용 표시를 둔다. 스키마를 바꾸지 않는 방법(기존 메타 행 등)을 쓴다.
-  - 켜지면 서버가 즐겨찾기 PUT과 수집 저장을 거절하고 화면에 이전 안내를 보인다.
-  - 이 코드는 전환 전에 S01(ChatGPT Work의 Sites 게시)로 기존 Sites에 먼저 올린다.
+- 공개 사이트 보호(결정 반영):
+  - Cloudflare는 L3·L4·L7 DDoS 방어를 모든 플랜에 자동으로, 사용량 제한 없이 적용한다(DDoS 문서).
+  - Worker의 Rate Limiting 바인딩으로 `/api/*` 요청을 접속 IP별로 제한한다. 제한은 Cloudflare 위치마다 따로 세고 근사값이다. 넘으면 429와 화면 안내를 보인다. 무료 플랜에서 쓸 수 있는지는 이 PR에서 실제 배포로 확인한다.
+  - 같은 검색 요청의 응답은 짧게 캐시해 D1 읽기를 줄인다.
+  - `robots.txt`로 `/api/`와 알려진 AI 수집 봇을 막는다. 규칙을 지키는 봇에만 효과가 있다.
+  - Bot Fight Mode·WAF 사용자 규칙·속도 제한 규칙은 도메인(zone) 단위 기능이다. `workers.dev`에는 쓸 수 없다. 도메인은 유료라서 쓰지 않는다.
+  - 무료 플랜은 하루 요청 10만 건을 넘으면 1027 오류로 거절한다. 공격을 받으면 09:00 KST까지 사이트가 멈출 수 있다. 요금은 나오지 않는다.
 - 문서: `sites-handoff.md`를 새 배포 절차 문서로 바꾸고 `deployments.md` 형식을 고친다. “GitHub merge ≠ 게시”를 “main 병합 = 자동 배포, 배포 결과는 Actions 기록으로 확인”으로 바꾼다.
 
 **3단계. D1 생성과 스키마(에이전트, 수동 실행 workflow)**
@@ -208,21 +221,21 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
   - Workers Logs에서 `exceededCpu`가 없고 CPU 시간이 기록된다.
   - D1 일일 읽기·쓰기가 한도의 70% 미만이다.
   - 사용자가 집·휴대폰 통신사에서 `/cdn-cgi/trace`의 `colo` 값과 체감 속도를 Sites와 비교한다.
-  - Access 로그인, 세션 만료 뒤 화면 안내를 확인한다.
+  - 속도 제한(429) 응답과 화면 안내를 확인한다.
 - 수집 부하는 이 단계에서 나오지 않는다. 그래서 2단계의 로컬 측정과 7단계의 첫 24–48시간 관찰로 확인한다.
 
 **6단계. 전환(에이전트 PR + 사용자 확인)**
 1. 실행기 예약을 잠시 멈춘다. 예약을 끄는 PR을 병합하거나, 사용자가 `YUKEMURI_ENABLED`를 `false`로 바꾼다. 실행 중인 작업이 끝났는지 본다.
-2. 기존 Sites의 쓰기를 서버에서 막는다. 수집기·백업 밖에서 기존 Sites에 쓰는 것은 즐겨찾기(`PUT /api/favorites`)다. Sites는 public이라 방문자 토큰만 있으면 누구나 쓸 수 있다. 그래서 2단계의 쓰기 차단 스위치를 켜고 즐겨찾기 PUT이 거절되는지 확인한다. 스위치는 전환 뒤에도 켜 둔다. 스위치를 Sites에 게시할 수 없으면 전환을 멈추고, 오래된 탭·다른 방문자의 쓰기가 유실될 수 있다는 위험을 사용자에게 알려 결정을 받는다(Codex 검토, 2026-10-11).
+2. 기존 Sites에는 쓰기 차단 기능을 게시하지 않는다(결정 반영). 사용자는 3번부터 7번까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다. 다른 방문자·오래된 탭의 쓰기 유실 위험은 사용자가 받아들였다. 5번 재백업 대조로 확인한다.
 3. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
 4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
-5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인해 스위치가 동작했는지 본다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
+5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
 6. 실행기 PR:
-   - 수집 workflow를 새 Secret `YUKEMURI_CF_ACCESS_JSON`과 새 주소로 바꾼다.
+   - 수집 workflow를 새 Secret `YUKEMURI_CLOUDFLARE_JSON`과 새 주소로 바꾼다.
    - `bootstrap.py`의 `SITE_ORIGIN`, `run-updates.py` 허용 호스트, `run-backup.py` 허용 호스트, `catalog-checkpoint.py` 검사와 헤더를 바꾼다.
    - 백업 workflow도 새 주소로 바꾼다.
    - 수동 `check-access` → `gentle` 1회를 실행하고 저장 후 조회를 확인한다.
-7. 예약을 다시 켠다. Sites는 그대로 두되 수집기 대상에서 뺀다.
+7. 예약을 다시 켠다. Sites는 그대로 두되 수집기 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
 
 **7단계. 관찰(에이전트, 첫 1주)**
 - 실제 cron 실행의 `collectorRelease`, 저장 수, 1102 오류, D1 일일 사용량을 매일 기록한다.
@@ -246,29 +259,24 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Secret 입력란에만 넣는다.
 
 1. **Cloudflare 가입**: https://dash.cloudflare.com/sign-up 에서 본인 이메일로 가입하고 이메일을 인증한다. Workers & Pages에 처음 들어갈 때 `workers.dev` 계정 서브도메인을 정한다.
-2. **Zero Trust Free 활성화**: 대시보드 Zero Trust에서 팀 이름을 정하고 Free 플랜을 고른다. 결제수단 입력을 요구할 수 있다(검색 요약 기준, 과금 없음). 로그인 방법은 “One-time PIN”(이메일 코드)을 켠다.
+2. **Zero Trust**: 필요 없다. 사이트를 public으로 두기로 했다(결정 반영).
 3. **API 토큰 생성**: 대시보드 → Account API tokens → Create Token → 템플릿 “Edit Cloudflare Workers”로 시작한다.
    - 권한을 추가·확인한다: Account `Workers Scripts: Edit`, Account `D1: Edit`, Account `Account Settings: Read`. 선택: Account `Account Analytics: Read`(에이전트가 CPU·D1 사용량을 읽을 때).
-   - Account Resources는 본인 계정 하나만 고른다. Zone Resources는 커스텀 도메인을 쓰지 않으면 비운다. Access 편집 권한은 주지 않는다.
+   - Account Resources는 본인 계정 하나만 고른다. Zone Resources는 커스텀 도메인을 쓰지 않으면 비운다.
    - 만료일을 정하고 Account ID를 함께 메모한다.
 4. **GitHub Secret 등록**(Settings → Secrets and variables → Actions → New repository secret). 이름은 제안이며 2단계 PR에서 확정한다.
    - `jihune/yukemuri`:
      - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
      - `YUKEMURI_CRAWL_ACCESS_KEY`: 비밀번호 관리자 등에서 만든 새 임의값, 예: 64자리 16진수. 기존 Sites 키와 다른 값을 권장한다.
-     - 배포 뒤 점검용 `YUKEMURI_CF_ACCESS_CLIENT_ID`, `YUKEMURI_CF_ACCESS_CLIENT_SECRET`.
    - `jihune/yukemuri-script-runner`:
      - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`: 4·6단계 적재용. 끝나면 지워도 된다.
-     - `YUKEMURI_CF_ACCESS_JSON`: 새 주소, 같은 크롤 키, 서비스 토큰 ID·Secret을 담은 JSON. 형식은 6단계 PR이 정한다.
+     - `YUKEMURI_CLOUDFLARE_JSON`: 새 주소와 크롤 키를 담은 JSON. 기존 `YUKEMURI_ACCESS_JSON`과 같은 `{"url","token"}` 형식이다. 6단계 PR에서 확정한다.
    - 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
-5. **Access 설정**(첫 배포 뒤 한 번):
-   - Workers & Pages → `yukemuri` → Settings → Domains & Routes → `workers.dev`의 “Enable Cloudflare Access”를 누른다. 운영과 미리보기를 모두 보호한다.
-   - 정책은 Allow, Include Emails = 본인 이메일로 둔다. 세션 시간은 예를 들어 1–4주로 둔다.
-   - Zero Trust → Access → Service credentials → Service Tokens에서 `yukemuri-runner`를 만든다. 같은 Access 앱에 정책(동작 Service Auth, Include Service Token = `yukemuri-runner`)을 추가한다.
-   - Client ID·Secret은 생성 화면에서 한 번만 보인다. 바로 4번의 Secret에 넣는다.
+5. **Access 설정**: 필요 없다(결정 반영).
 6. **확인**:
    - 새 주소에서 이메일 코드로 로그인해 화면을 확인한다.
    - 집·휴대폰에서 `https://<새 주소>/cdn-cgi/trace`의 `colo`를 알려준다. 같은 방법으로 Sites 주소도 확인하면 비교할 수 있다.
-7. **전환 전 Sites 게시**: ChatGPT Work에서 쓰기 차단 스위치가 들어간 main을 기존 Sites에 한 번 게시한다(6단계 2번의 전제, 로드맵 S01).
+7. **전환 전 Sites 게시**: 하지 않는다(결정 반영). 전환하는 동안 기존 Sites에서 즐겨찾기를 바꾸지 않는다.
 8. **선택**:
    - 즐겨찾기·비교 목록을 이어 쓰려면 기존 주소의 localStorage `yukemuri-visitor-v1` 값을 새 주소에 옮긴다. 개발자 도구에서 하며, 에이전트가 안내문을 준비한다.
    - 한도 초과 시 Workers Paid 결제 여부를 정한다. Sites 삭제 여부와 시점을 정한다.
@@ -292,12 +300,12 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
 3. **D1 쓰기 10만 행/일**: 초기 적재 약 20만 행(추정)이라 여러 날로 나눠야 한다. 일상 수집 쓰기량은 미측정이다.
 4. **요청당 D1 쿼리 50개**: seed 버전(`data/coverage.json`)을 바꾸는 미래 PR은 첫 요청에서 일괄 적재를 시도해 한도를 넘을 수 있다. 그런 변경은 배포 workflow의 별도 준비 단계로 나눠야 한다. Workers 한도 문서에는 “내부 서비스 하위 요청 1,000(무료)”이라는 다른 수치도 있다. 보수적으로 50을 기준으로 둔다.
 5. **한국 지연**: 무료 플랜의 한국 경로가 ICN이 아닐 수 있다(커뮤니티 보고, 미확인). Worker와 D1이 멀면 순차 쿼리마다 왕복이 늘어난다. `placement`와 `--location apac`로 줄일 수 있으나 측정이 필요하다. 지금 Sites가 느린 원인(로그인 게이트, 경로, DB 위치, 첫 요청 색인 생성)도 확인하지 못했다.
-6. **접근 정책 불일치**: 내보내기와 `START_HERE.md`는 Sites가 public이라고 한다. 소유자 전용으로 바꾸는 것은 공유 범위 변경이므로 사용자 결정으로 기록한다.
-7. **Access와 앱의 상호작용**: 세션 만료 시 API fetch가 Access 로그인 페이지로 리다이렉트돼 교차 출처 오류가 날 수 있다. `api-client.ts`의 안내가 맞게 뜨는지 확인한다.
+6. **접근 정책**: 사이트는 public으로 둔다(결정 반영). 내보내기와 `START_HERE.md`도 Sites를 public으로 기록한다.
+7. **악성 봇·과도한 요청**: `workers.dev`에서는 Bot Fight Mode와 WAF 규칙을 쓸 수 없다. Worker 안의 속도 제한과 캐시로 줄인다. 무료 한도를 넘기면 그날 09:00 KST까지 1027 오류가 나지만 요금은 없다. Rate Limiting 바인딩의 무료 플랜 사용 가능 여부는 2단계에서 확인한다.
 8. **즐겨찾기 토큰**: 주소가 바뀌면 localStorage가 비어 보인다. DB의 행은 남는다.
 9. **비원자적 백업**: 최종 체크포인트도 단일 시점 스냅샷이 아니다. 전환 중 예약을 멈추는 이유다.
 10. **GitHub Actions 사용량**: 사용자 GitHub 플랜은 미확인이다. Free 개인 계정이면 private 레포 합계 2,000분/월, artifact 500MB다(검색 요약). 지금 수집(하루 8회 × 약 3분), 백업, PR 검사에 배포가 더해진다. 백업 artifact 크기도 미확인이다.
-11. **Zero Trust 결제수단**: 무료 플랜이라도 온보딩에서 결제수단을 요구한다는 공식 문서 검색 요약이 있다. 원문은 열지 못했다.
+11. **Zero Trust 결제수단**: Access를 쓰지 않으므로 해당 없다(결정 반영).
 12. **vinext 베타**: `1.0.0-beta.5`다. Cloudflare 경로는 Sites에서 이미 운영 중이라 위험이 낮다. 다른 플랫폼(Nitro 경유)은 검증되지 않았다.
 13. **Secret 정책**: 새 크롤 키 생성은 사실상 Secret 회전이다. `AGENTS.md`상 사용자 승인이 필요하다.
 
@@ -317,6 +325,9 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
 ## 5. 출처
 
 공식 문서 원본(2026-10-11 확인, `github.com/cloudflare/cloudflare-docs` 커밋 `0d35c2c`, 2026-10-10 23:55 UTC):
+- https://developers.cloudflare.com/ddos-protection/about/ (2026-10-11T08:2xZ 원본 확인: 모든 플랜에 L3·L4·L7 DDoS 방어를 사용량 제한 없이 제공)
+- https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/ (같은 시각 원본 확인: 위치별·근사 카운터)
+- https://developers.cloudflare.com/bots/get-started/bot-fight-mode/ (같은 시각 원본 확인: 도메인 단위 설정)
 - https://developers.cloudflare.com/workers/platform/limits/
 - https://developers.cloudflare.com/workers/platform/pricing/
 - https://developers.cloudflare.com/d1/platform/limits/
