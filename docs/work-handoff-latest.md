@@ -14,7 +14,7 @@
 - 실제 Cloudflare 계정·운영 Sites·운영 D1에 접속하지 않았다. 실행기 레포·DB 스키마·수집 상한은 바꾸지 않았다.
 - 검사: 시작 기준 `cloud-check.py --full` 22개 통과(09:34Z–09:37Z). 변경 뒤 25개 통과(10:05Z–10:08Z). `wrangler deploy --dry-run` rc=0(업로드 5,968.40KiB, gzip 886.73KiB). 로컬 `d1 migrations apply yukemuri` 13개 적용. actionlint 통과. 새 검사 3개(`check-edge-guard-worker.mjs`, `check-deploy-config.mjs`, `crawler/check_site_access.py`)는 변형 13종(Worker 5, 설정·workflow 6, 수집기 2)에서 실패하는 것을 확인했다. main merge 뒤에도 25개 통과(10:10:30Z–10:14:03Z), dry-run rc=0.
 - 미확인: 무료 플랜의 Rate Limiting 바인딩, workers.dev의 Cache API 저장, `wrangler-action`의 실제 실행, 429 화면의 실제 브라우저 확인. 첫 실제 배포와 5단계에서 확인한다.
-- 다음 작업: Codex 검토와 상위 세션 병합 → 사용자의 계정 서브도메인·API 토큰·Secret 세 개 → 상위 세션이 맡기면 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다.
+- 다음 작업: Codex 검토와 상위 세션 병합 → (Secret은 사용자 등록 완료, 값 미확인, 2026-10-11T09:55Z 상위 세션 전달) → 이 PR 병합 뒤 상위 세션이 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다.
 - 검토: 결과는 아래 H01 검토 줄에 적는다.
 
 ## 기준과 상태

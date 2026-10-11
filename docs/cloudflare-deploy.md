@@ -26,6 +26,8 @@
 
 `hosting-review-20261011.md` 3.3절과 같다. Secret 값은 채팅·PR·로그에 붙여 넣지 않고 GitHub Secret 입력란에만 넣는다.
 
+상태(상위 세션 전달, 2026-10-11T09:55Z): 사용자가 앱 레포에 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`·`YUKEMURI_CRAWL_ACCESS_KEY`를, 실행기 레포에 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`를 등록했다. 값은 확인하지 않았다. 토큰은 ‘Edit Cloudflare Workers’ 템플릿에 Account `D1: Edit`를 더한 것이다. `workers.dev` 서브도메인은 아직 없을 수 있다. 없으면 3단계에서 상위 세션이 등록한다.
+
 1. Cloudflare 가입과 Workers & Pages 첫 화면에서 `workers.dev` 계정 서브도메인을 정한다. 서브도메인을 에이전트에게 알려 준다. 비밀이 아니다. `publicOrigin`에 들어간다.
 2. API 토큰: 대시보드 → Account API tokens → Create Token → 템플릿 ‘Edit Cloudflare Workers’. 권한은 Account `Workers Scripts: Edit`, Account `D1: Edit`, Account `Account Settings: Read`다. 선택 권한은 Account `Account Analytics: Read`(CPU·D1 사용량 조회)다. Account Resources는 본인 계정 하나, Zone Resources는 비운다. 만료일을 정한다.
 3. `jihune/yukemuri`의 Settings → Secrets and variables → Actions → New repository secret:
@@ -52,7 +54,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 ## 자동 배포(deploy.yml)
 
-- 시작: main push와 수동 실행. `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 두 이벤트에서만 쓴다. 토큰 권한은 `contents: read`다. D1 setup과 같은 동시 실행 그룹이라 둘이 겹치지 않는다.
+- 시작: main push와 수동 실행. `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 두 이벤트에서만 쓴다. 토큰 권한은 `contents: read`다. D1 setup과 같은 동시 실행 그룹(`cloudflare-account`)이라 둘이 겹치지 않는다. 6단계에 들어올 앱 레포 수집 workflow는 별도 그룹(`yukemuri-catalog-updates`)을 쓰므로 배포와 서로 막지 않는다.
 - 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다.
 - 켜졌을 때 순서:
   1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다.
