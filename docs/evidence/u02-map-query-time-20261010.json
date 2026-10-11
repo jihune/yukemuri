@@ -1,0 +1,67 @@
+{
+ "measuredAt": "2026-10-10T16:47:37.303Z",
+ "environment": "Miniflare local SQLite in the Claude Code cloud container (not production D1)",
+ "seedRecords": 1655,
+ "records": 12155,
+ "located": 1276,
+ "runsPerScenario": 7,
+ "results": [
+  {
+   "name": "일본 전체, 조건 없음",
+   "path": "/api/hotels/map?bbox=122,24,146,46",
+   "runs": 7,
+   "medianMs": 147,
+   "maxMs": 204.3,
+   "serverMedianMs": 141,
+   "total": 12155,
+   "inBounds": 1276,
+   "points": 0,
+   "cells": 132
+  },
+  {
+   "name": "홋카이도 범위, 조건 없음",
+   "path": "/api/hotels/map?bbox=139,41,146,46",
+   "runs": 7,
+   "medianMs": 152.4,
+   "maxMs": 195.9,
+   "serverMedianMs": 146,
+   "total": 12155,
+   "inBounds": 158,
+   "points": 158,
+   "cells": 0
+  },
+  {
+   "name": "규슈 범위, 천연온천",
+   "path": "/api/hotels/map?bbox=129,31,132.5,34.5&features=natural",
+   "runs": 7,
+   "medianMs": 49.6,
+   "maxMs": 54.1,
+   "serverMedianMs": 43,
+   "total": 191,
+   "inBounds": 4,
+   "points": 4,
+   "cells": 0
+  },
+  {
+   "name": "일본 전체, Trip.com 9.0+",
+   "path": "/api/hotels/map?bbox=122,24,146,46&rating=9",
+   "runs": 7,
+   "medianMs": 31.5,
+   "maxMs": 67.7,
+   "serverMedianMs": 27,
+   "total": 187,
+   "inBounds": 38,
+   "points": 38,
+   "cells": 0
+  },
+  {
+   "name": "비교: 목록 첫 쪽(fresh)",
+   "path": "/api/hotels?stable=1&fresh=1",
+   "runs": 7,
+   "medianMs": 127.9,
+   "maxMs": 160.6,
+   "serverMedianMs": 114,
+   "total": 12155
+  }
+ ]
+}

@@ -25,6 +25,7 @@ commands = [
     ['node', 'scripts/check-listing-query.mjs'],
     ['node', 'scripts/check-api-client.mjs'],
     ['node', 'scripts/check-local-search.mjs'],
+    ['node', 'scripts/check-map-bounds.mjs'],
 ]
 if args.full:
     commands += [
@@ -33,6 +34,8 @@ if args.full:
         ['node', 'scripts/check-crawl-queue-worker.mjs'],
         ['node', 'scripts/check-collection-status-worker.mjs'],
         ['node', 'scripts/check-comparison-worker.mjs'],
+        ['node', 'scripts/check-catalog-worker.mjs'],
+        ['node', 'scripts/check-map-area-worker.mjs'],
     ]
 for command in commands:
     if shutil.which(command[0]) is None:

@@ -1,0 +1,419 @@
+{
+ "measuredAt": "2026-10-11T02:25:20.855Z",
+ "base": "http://127.0.0.1:5173",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 1280,
+   "name": "데스크톱에서 지도를 옮긴 뒤 목록 카드에 마우스를 올려도 지도가 그대로 있음",
+   "pass": true,
+   "detail": {
+    "moved": "translate3d(-43px, -29px, 0px)",
+    "after": "translate3d(-43px, -29px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도를 열기만 하면 이 지역 검색 버튼과 요청이 없음",
+   "pass": true,
+   "detail": {
+    "buttons": 0,
+    "requests": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치로 지도를 움직이면 이 지역에서 검색 버튼이 보이고 요청은 아직 없음",
+   "pass": true,
+   "detail": {
+    "requests": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않고 높이 44px 이상, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 103.3828125,
+     "top": 188.34375,
+     "right": 256.6171875,
+     "bottom": 232.34375,
+     "width": 153.234375,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "누르면 요청 1회와 찾는 중 안내",
+   "pass": true,
+   "detail": {
+    "requests": 1,
+    "button": "이 지역 숙소를 찾는 중…"
+   }
+  },
+  {
+   "width": 360,
+   "name": "이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 API 값과 같음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "caption": "이 지역 57곳",
+    "expected": {
+     "total": 1655,
+     "inBounds": 57,
+     "outOfBounds": 0,
+     "withoutCoordinates": 1598
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 범위 결과는 목록을 바꾸지 않음",
+   "pass": true,
+   "detail": {
+    "listTotal": 1655,
+    "mapTotal": 1655
+   }
+  },
+  {
+   "width": 360,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
+   "pass": true,
+   "detail": {
+    "title": "Hotel Towadaso",
+    "preview": "도와다 · 아오모리\nHotel Towadaso\n8.4 · Trip.com /10 · 리뷰 170개"
+   }
+  },
+  {
+   "width": 360,
+   "name": "방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음",
+   "pass": true,
+   "detail": {
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 360,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 0px, 0px)",
+    "panAfter": "translate3d(-140px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 20,
+    "bodyFocus": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "검색 실패 시 오류 안내·다시 검색 버튼, 포커스는 이 지역 검색 버튼에 남음",
+   "pass": true,
+   "detail": {
+    "text": "test 다시 검색 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Space로 다시 검색 성공 후 오류 안내가 사라지고 이 지역 수 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 0곳 범위 밖 57곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "sentBefore": 4,
+    "sentAfter": 5,
+    "buttonText": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 360,
+   "name": "상한 초과 응답은 구역 개수 지점과 안내로 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 600곳 범위 밖 0곳 위치 미확인 400곳 조건에 맞는 전체 1,000곳 숙소가 500곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다. 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "구역 지점을 누르면 지도가 그 구역으로 이동(지점이 지도 가운데 근처로 옴)",
+   "pass": true,
+   "detail": {
+    "cellBefore": 185.5,
+    "cellAfter": 2.5
+   }
+  },
+  {
+   "width": 360,
+   "name": "Enter로 불러온 목록 위치로 돌아가면 기존 표시 수 안내로 돌아옴",
+   "pass": true,
+   "detail": {
+    "text": "검색 결과 1,655곳 중 지도에 35곳 표시 불러온 40곳 중 위치 미확인 5곳 아직 불러오지 않음 1,615곳 40곳 더 불러와 지도에 표시"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 103.3828125,
+     "top": 208.34375,
+     "right": 256.6171875,
+     "bottom": 252.34375,
+     "width": 153.234375,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "줄어든 결과 수 안내와 범위 검색 결과가 지도 표시 줄에 함께 보이고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 53곳 범위 밖 4곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기 다음 쪽을 받지 못해 결과 수를 불러온 40곳으로 줄였습니다(원래 1,655곳)."
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도를 열기만 하면 이 지역 검색 버튼과 요청이 없음",
+   "pass": true,
+   "detail": {
+    "buttons": 0,
+    "requests": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치로 지도를 움직이면 이 지역에서 검색 버튼이 보이고 요청은 아직 없음",
+   "pass": true,
+   "detail": {
+    "requests": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않고 높이 44px 이상, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 118.3828125,
+     "top": 165.15625,
+     "right": 271.6171875,
+     "bottom": 209.15625,
+     "width": 153.234375,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "누르면 요청 1회와 찾는 중 안내",
+   "pass": true,
+   "detail": {
+    "requests": 1,
+    "button": "이 지역 숙소를 찾는 중…"
+   }
+  },
+  {
+   "width": 390,
+   "name": "이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 API 값과 같음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "caption": "이 지역 57곳",
+    "expected": {
+     "total": 1655,
+     "inBounds": 57,
+     "outOfBounds": 0,
+     "withoutCoordinates": 1598
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 범위 결과는 목록을 바꾸지 않음",
+   "pass": true,
+   "detail": {
+    "listTotal": 1655,
+    "mapTotal": 1655
+   }
+  },
+  {
+   "width": 390,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
+   "pass": true,
+   "detail": {
+    "title": "Hotel Towadaso",
+    "preview": "도와다 · 아오모리\nHotel Towadaso\n8.4 · Trip.com /10 · 리뷰 170개"
+   }
+  },
+  {
+   "width": 390,
+   "name": "방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음",
+   "pass": true,
+   "detail": {
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 390,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 0px, 0px)",
+    "panAfter": "translate3d(-140px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 20,
+    "bodyFocus": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "검색 실패 시 오류 안내·다시 검색 버튼, 포커스는 이 지역 검색 버튼에 남음",
+   "pass": true,
+   "detail": {
+    "text": "test 다시 검색 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Space로 다시 검색 성공 후 오류 안내가 사라지고 이 지역 수 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치로 안내 줄의 다시 검색 성공(버튼 높이 44px 이상)",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 0곳 범위 밖 57곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기",
+    "sentBefore": 4,
+    "sentAfter": 5,
+    "buttonText": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 390,
+   "name": "상한 초과 응답은 구역 개수 지점과 안내로 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 600곳 범위 밖 0곳 위치 미확인 400곳 조건에 맞는 전체 1,000곳 숙소가 500곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다. 불러온 목록 위치로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "구역 지점을 누르면 지도가 그 구역으로 이동(지점이 지도 가운데 근처로 옴)",
+   "pass": true,
+   "detail": {
+    "cellBefore": 190.40811432289328,
+    "cellAfter": 2.5
+   }
+  },
+  {
+   "width": 390,
+   "name": "Enter로 불러온 목록 위치로 돌아가면 기존 표시 수 안내로 돌아옴",
+   "pass": true,
+   "detail": {
+    "text": "검색 결과 1,655곳 중 지도에 35곳 표시 불러온 40곳 중 위치 미확인 5곳 아직 불러오지 않음 1,615곳 40곳 더 불러와 지도에 표시"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 118.3828125,
+     "top": 185.15625,
+     "right": 271.6171875,
+     "bottom": 229.15625,
+     "width": 153.234375,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "줄어든 결과 수 안내와 범위 검색 결과가 지도 표시 줄에 함께 보이고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 57곳 범위 밖 0곳 위치 미확인 1,598곳 조건에 맞는 전체 1,655곳 불러온 목록 위치로 돌아가기 다음 쪽을 받지 못해 결과 수를 불러온 40곳으로 줄였습니다(원래 1,655곳)."
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기·모바일 브라우저 주소창·안전 영역",
+  "스크린리더 읽기 순서",
+  "외부 지도 타일",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)",
+  "구역 개수 응답은 검사에서 만든 응답으로 화면만 확인(실제 상한 초과는 Worker 검사)"
+ ]
+}
