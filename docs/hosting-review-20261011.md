@@ -231,13 +231,12 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 2. 기존 Sites에는 쓰기 차단 기능을 게시하지 않는다(결정 반영). 사용자는 3번부터 7번까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다. 다른 방문자·오래된 탭의 쓰기 유실 위험은 사용자가 받아들였다. 5번 재백업 대조로 확인한다.
 3. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
 4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
-5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
-6. 실행기 PR:
-   - 수집 workflow를 새 Secret `YUKEMURI_CLOUDFLARE_JSON`과 새 주소로 바꾼다.
-   - `bootstrap.py`의 `SITE_ORIGIN`, `run-updates.py` 허용 호스트, `run-backup.py` 허용 호스트, `catalog-checkpoint.py` 검사와 헤더를 바꾼다.
-   - 백업 workflow도 새 주소로 바꾼다.
-   - 수동 `check-access` → `gentle` 1회를 실행하고 저장 후 조회를 확인한다.
-7. 예약을 다시 켠다. Sites는 그대로 두되 수집기 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
+5. 6번 PR 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
+6. 수집 예약을 앱 레포로 옮기는 PR 두 개(결정 반영, Codex 검토 2026-10-11):
+   - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. cron·작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. 예약은 이 PR에서 아직 켜지 않는다(수동 실행만). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
+   - 실행기 PR: 수집 workflow와 그 예약을 지운다. 백업 workflow만 새 주소와 Secret `YUKEMURI_CLOUDFLARE_JSON`으로 바꾼다. `run-backup.py` 허용 호스트와 `catalog-checkpoint.py` 검사·헤더를 바꾼다. 수집 전용 파일(`bootstrap.py`, `run-updates.py`)은 지우거나 쓰지 않는다고 표시한다.
+   - 앱 레포 수집 workflow를 수동으로 `check-access` → `gentle` 1회 실행하고 저장 후 조회를 확인한다.
+7. 앱 레포 수집 예약을 켜고 실행기 백업 예약을 재개한다. 실행기 쪽 수집 예약은 다시 켜지 않는다. 두 수집 예약이 동시에 돌지 않음을 Actions 실행 목록으로 확인한다. Sites는 그대로 두되 수집 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
 
 **7단계. 관찰(에이전트, 첫 1주)**
 - 실제 cron 실행의 `collectorRelease`, 저장 수, 1102 오류, D1 일일 사용량을 매일 기록한다.
@@ -254,7 +253,7 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 | 6단계 전 | 아무것도 하지 않음. Sites·수집·백업 무변경 | 없음 |
 | 전환 직후 앱 결함 | `wrangler rollback`(이전 Worker 버전) 또는 이전 커밋 재배포 | 없음 |
 | DB 손상 | `wrangler d1 time-travel restore yukemuri --bookmark <배포 때 기록한 값>`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
-| 새 호스팅 포기 | 실행기 PR을 되돌려 Sites Secret·주소로 복귀 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
+| 새 호스팅 포기 | 앱 레포 수집 예약을 끄고, 실행기 PR을 되돌려 Sites Secret·주소의 수집·백업으로 복귀 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
 
 ### 3.3 사용자만 할 수 있는 일
 
@@ -272,7 +271,7 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
      - `YUKEMURI_CRAWL_ACCESS_KEY`: 비밀번호 관리자 등에서 만든 새 임의값, 예: 64자리 16진수. 기존 Sites 키와 다른 값을 권장한다.
    - `jihune/yukemuri-script-runner`:
      - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`: 4·6단계 적재용. 끝나면 지워도 된다.
-     - `YUKEMURI_CLOUDFLARE_JSON`: 새 주소와 크롤 키를 담은 JSON. 기존 `YUKEMURI_ACCESS_JSON`과 같은 `{"url","token"}` 형식이다. 6단계 PR에서 확정한다.
+     - `YUKEMURI_CLOUDFLARE_JSON`: 백업용. 새 주소와 크롤 키를 담은 JSON. 기존 `YUKEMURI_ACCESS_JSON`과 같은 `{"url","token"}` 형식이다. 6단계 PR에서 확정한다. 수집은 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 쓴다.
    - 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
 5. **Access 설정**: 필요 없다(결정 반영).
 6. **확인**:
@@ -287,7 +286,7 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
 
 - 2단계 앱 레포 PR(배포 설정, 배포 workflow, 수집기 주소·헤더, D1 한도 대응, 측정 검사, 문서)과 검토·병합.
 - D1 생성·마이그레이션·적재·차이 반영 workflow 작성과 수동 실행. 행 수 대조 기록.
-- 실행기 레포 PR: 주소·허용 호스트·헤더·Secret 이름 변경, 예약 일시 정지·재개, 백업 대상 변경.
+- 앱 레포 수집 workflow PR과 실행기 레포 PR(수집 예약 삭제, 백업 대상·허용 호스트·헤더·Secret 이름 변경, 예약 일시 정지·재개).
 - 배포 뒤 점검: Actions 요약, Workers Logs·D1 사용량(Analytics 권한이 있을 때), 브라우저 검사.
 - 롤백 실행(`wrangler rollback`, Time Travel 복구 workflow, 실행기 되돌리기 PR)과 기록.
 - `deployments.md`·인수인계·로드맵에 커밋·Worker 버전 ID·시각(UTC/KST)·검사·미확인 사항 기록.
