@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Read pending descriptions in any language or save Korean translations via hidden stdin.
-Input: {url,token,patches?}; translation is performed by the collection automation.
+Input: {url,token,patches?}. The caller supplies the translations in patches.
+Nothing runs this on a schedule: the scheduled collector does not translate, and
+the earlier agent schedule that did is stopped (docs/checkpoint-20261007.md).
 """
 import json,sys,urllib.parse,urllib.request
 if sys.stdin.isatty():

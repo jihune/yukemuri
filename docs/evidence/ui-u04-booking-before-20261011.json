@@ -1,0 +1,44 @@
+{
+ "measuredAt": "2026-10-11T09:47:55.806Z",
+ "base": "http://127.0.0.1:5173",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop mouse",
+ "dates": {
+  "checkIn": "2026-11-10",
+  "checkOut": "2026-11-12",
+  "outOfRange": "2026-11-19"
+ },
+ "externalRequests": "blocked; Jalan and Trip.com documents get a local stub page",
+ "results": [
+  {
+   "width": 360,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-detail').locator('.booking-link-fields') to be visible\u001b[22m\n"
+   }
+  },
+  {
+   "width": 390,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-detail').locator('.booking-link-fields') to be visible\u001b[22m\n"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-detail').locator('.booking-link-fields') to be visible\u001b[22m\n"
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기와 기기의 날짜 선택기(터치 폭의 체크인은 칸을 누른 뒤 값을 넣음)",
+  "Jalan·Trip.com 실제 페이지가 날짜를 받아 들이는지(외부 요청 차단)",
+  "스크린리더 읽기 순서",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}

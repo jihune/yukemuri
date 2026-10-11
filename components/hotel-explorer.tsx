@@ -15,6 +15,7 @@ import { hasCoordinates } from '@/lib/hotel-location';
 import RetryImage from './retry-image';
 import collectionPlan from '@/data/collection-priorities.json';
 import {parseHotelQuery,listingUrl,type HotelQuery} from '@/lib/hotel-query';
+import {DEFAULT_BOOKING,parseBookingQuery,type BookingQuery} from '@/lib/booking-query';
 import { apiJson } from '@/lib/api-client';
 import HotelAutocomplete from './hotel-autocomplete';
 import HotelCard from './hotel-card';
@@ -26,6 +27,7 @@ import {useMapArea} from './use-map-area';
 import {openStayHistory,closeStayHistory,restoreListingPosition,type ListingPosition} from '@/lib/stay-detail-navigation';
 import { type SearchIndexHotel } from '@/lib/hotel-search-index';
 import {useHotelSearchIndex} from './use-hotel-search-index';
+function writeBookingUrl(q:BookingQuery){const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
 function Picker({value,onChange,options,label}:{value:string;onChange:(v:string)=>void;options:{value:string;label:string}[];label:string}){
  return <Select value={value} onValueChange={onChange}><SelectTrigger className="picker" aria-label={label}><SelectValue/></SelectTrigger><SelectContent position="popper">{options.map(o=><SelectItem value={o.value} key={o.value}>{o.label}</SelectItem>)}</SelectContent></Select>
 }
@@ -43,6 +45,8 @@ function Filters({filters,setFilters,counts,ryokanCount}:{filters:HotelFilters;s
 }
 export default function HotelExplorer({initial,initialSearchIndex,initialQuery,initialView}:{initial:SearchResponse;initialSearchIndex:SearchIndexHotel[];initialQuery:HotelQuery;initialView:string}){
  const {prepared:preparedIndex,ready:indexReady,failed:indexFailed}=useHotelSearchIndex(initialSearchIndex);
+ const [booking,setBooking]=useState<BookingQuery>(DEFAULT_BOOKING);
+ const bookingRef=useRef<BookingQuery>(DEFAULT_BOOKING);
  const [filters,setFilterState]=useState<HotelFilters>(initialQuery.filters),[draft,setDraft]=useState(initialQuery.filters.query),[sort,setSort]=useState<SortOrder>(initialQuery.sort);
  const [retry,setRetry]=useState(0);
  const [dismissSuggestions,setDismissSuggestions]=useState(0);
@@ -132,13 +136,20 @@ export default function HotelExplorer({initial,initialSearchIndex,initialQuery,i
    const params=new URLSearchParams(window.location.search),query=parseHotelQuery(params);
    if(query){setFilterState(query.filters);setDraft(query.filters.query);setSort(query.sort);setSavedOnly(query.savedOnly)}
    const view=params.get('view');if(view&&['split','list','map'].includes(view))setMode(view);
+   // Closing a stay goes back to the list entry written before the dates were
+   // chosen; keep the chosen conditions and put them back into that entry.
+   writeBookingUrl(bookingRef.current);
   };
+  const initial=parseBookingQuery(new URLSearchParams(window.location.search));bookingRef.current=initial;setBooking(initial);
   window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
  },[]);
  useEffect(()=>{
   const next=listingUrl(window.location.href,{filters,sort,savedOnly,page:1},mode);
   if(next!==window.location.pathname+window.location.search+window.location.hash)history.replaceState(history.state,'',next);
  },[filters,sort,savedOnly,mode]);
+ // Booking dates live in the page URL (listingUrl keeps them) so a shared or
+ // reloaded page opens the same dated booking links.
+ function onBooking(q:BookingQuery){bookingRef.current=q;setBooking(q);writeBookingUrl(q)}
  function refreshResults(){setRetry(r=>r+1);document.querySelector('.results-section')?.scrollIntoView({behavior:'instant',block:'start'})}
  useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(''),3500);return()=>clearTimeout(t)}},[toast]);
  // Optional browser-agent interface; no dependency on WebMCP for normal use.
@@ -190,7 +201,7 @@ export default function HotelExplorer({initial,initialSearchIndex,initialQuery,i
  <Sheet open={filterOpen} onOpenChange={setFilterOpen}><SheetContent side="left" showCloseButton={false} className="mobile-filter-sheet !w-[min(92vw,360px)] !max-w-[360px] !gap-0"><div className="mobile-sheet-title"><div><SheetTitle>숙소 필터</SheetTitle><SheetDescription>조건에 맞는 {response.total.toLocaleString()}곳</SheetDescription></div><SheetClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></SheetClose></div><div className="mobile-sheet-body"><Filters filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></div><SheetClose asChild><button className="apply-filters">{response.total.toLocaleString()}곳 보기</button></SheetClose></SheetContent></Sheet>
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
  <HotelComparison open={comparisonOpen} ids={comparisonIds} onClose={()=>setComparisonOpen(false)} onRemove={id=>setComparisonIds(previous=>previous.filter(item=>item!==id))} onClear={()=>setComparisonIds([])} onRestoreFocus={restoreComparisonFocus} onDetail={openDetail}/>
- <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady}/>
+ <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady} booking={booking} onBooking={onBooking}/>
  {detailLoading&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
  {toast&&<div className="toast-message" role="status">{toast}</div>}
  <footer className="site-footer"><span>유케무리 · 일본 온천 탐색</span><span>v0.5 · <a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span></footer>
