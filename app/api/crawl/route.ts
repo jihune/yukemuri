@@ -3,7 +3,7 @@ import {observeHotelPresence,observeMissingSource} from '@/lib/hotel-lifecycle';
 import { crawlUpdate,providerCooldown } from '@/lib/crawl-contract';
 import { favoritesDb } from '@/lib/favorites-db';
 import { hotelRepository, readCoverage, readCachedCoverage, writeHotels } from '@/lib/hotel-repository';
-import { catalogHotels } from '@/lib/hotel-catalog';
+import { curatedCatalogHotels } from '@/lib/catalog-core';
 import type { Hotel } from '@/lib/hotel-types';
 import { sourceRegion } from '@/lib/hotel-region';
 import { verifiedHotels } from '@/lib/hotel-enrichment';
@@ -56,7 +56,7 @@ export async function PUT(request:Request){
   const claimToken=update.claimToken??crypto.randomUUID(),now=Date.now()/1000;
   const reserved=await db.prepare('UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))').bind(claimToken,now+LEASE_SECONDS,update.url,claimToken,now,now,update.claimToken?0:1).run();
   if(!reserved.meta.changes)return Response.json({error:'Crawl claim expired or belongs to another worker; claim again'},{status:409});
-  const curatedIds=new Set(catalogHotels.filter(h=>!h.id.match(/^(jalan|trip)-\d+$/)).flatMap(h=>h.links.flatMap(l=>{const match=l.url?.match(/yad(\d+)|hotel-detail-(\d+)/);return match?[match[1]?'jalan-'+match[1]:'trip-'+match[2]]:[]})));
+  const curatedIds=new Set(curatedCatalogHotels.flatMap(h=>h.links.flatMap(l=>{const match=l.url?.match(/yad(\d+)|hotel-detail-(\d+)/);return match?[match[1]?'jalan-'+match[1]:'trip-'+match[2]]:[]})));
   for(const h of verifiedHotels)for(const l of h.links){const match=l.url?.match(/yad(\d+)|hotel-detail-(\d+)/);if(match){const id=match[1]?'jalan-'+match[1]:'trip-'+match[2];if(id!==h.id)curatedIds.add(id)}}
   const observations=update.observations.filter(h=>!curatedIds.has(h.id));
   const linked=await writeLinkedSourceObservations(update.observations.filter(h=>curatedIds.has(h.id)) as Hotel[]);

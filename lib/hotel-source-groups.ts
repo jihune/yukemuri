@@ -1,6 +1,5 @@
 import {favoritesDb} from './favorites-db';
 import type {Hotel,FeatureKey} from './hotel-types';
-import {catalogHotels} from './hotel-catalog';
 import {enrichHotel} from './hotel-enrichment';
 import {composePreferredHotel} from './source-policy';
 import {sourceGroupPatch,type SourceGroupPatch} from './source-group-contract';
@@ -56,6 +55,7 @@ export async function refreshSourceGroupIndexes(ids:string[],force=false){
 export async function importVerifiedSourceGroups(){
  const db=favoritesDb(),key='verified-source-groups-v1';
  if(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())return;
+ const {catalogHotels}=await import('./hotel-catalog');
  const groups=catalogHotels.flatMap(h=>{
   const trip=h.links.find(l=>l.provider==='trip')?.url?.match(/-hotel-detail-(\d+)\//)?.[1],jalan=h.links.find(l=>l.provider==='jalan')?.url?.match(/\/yad(\d+)\//)?.[1];
   if(!trip||!jalan)return[];
