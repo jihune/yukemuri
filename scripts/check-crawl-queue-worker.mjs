@@ -137,6 +137,15 @@ try{
  await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
  assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
+ // Overlapping collector runs: a full-count GET racing new-property PUTs must
+ // not drop their increments (Codex review on PR #28).
+ for(let round=0;round<30;round++){
+  const puts=[0,1,2].map(i=>{const p=fixture('jalan',String(999300+round*3+i));p.sources[0].label='Jalan 숙소 상세';return p});
+  for(const p of puts)await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','pending',0,0)").bind(p.sources[0].url).run();
+  const later=ms=>new Promise(r=>setTimeout(r,ms));
+  await Promise.all([...puts.map(p=>api('/api/crawl','PUT',{url:p.sources[0].url,status:'done',observations:[p],links:[]})),...[0,4,8,12,16].map(ms=>later(ms+round%5).then(()=>api('/api/crawl?provider=trip&kind=detail&limit=1')))]);
+  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount(),'Counter after overlapping GET and PUTs, round '+round);
+ }
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:trip'").run();
  assert.equal((await api('/api/crawl','POST',{provider:'trip',phase:'names',token:randomUUID()})).jobs[0].url,trip.sources[0].url);
  await api('/api/crawl?report=1','GET',undefined,403,false);
