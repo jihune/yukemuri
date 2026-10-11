@@ -165,11 +165,12 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
   - 실제 D1 ID는 환경 변수가 없으면 지금 자리표시자를 쓴다. 이렇게 해서 CI 검사와 로컬 개발을 그대로 둔다.
   - `migrations_dir: "drizzle"`, `workers_dev: true`, 미리보기 URL 설정(Access로 보호하거나 끔), `placement`, `observability`를 둔다.
 - 새 workflow `deploy.yml`:
+  - 자동 배포는 4단계 적재(`catalog_meta` 포함)가 끝난 뒤에 켠다. 그 전 main 병합에서는 workflow가 Time Travel 조회·마이그레이션·배포·점검을 모두 건너뛴다. 실제 `database_id`가 없거나 설정의 자동 배포 표시가 꺼져 있으면 건너뛴다. 첫 배포는 적재 완료를 기록하는 PR이 이 표시를 켜면서 일어난다(Codex 검토, 2026-10-11).
   - main push 때 checks와 같은 설치·빌드를 한다.
   - `wrangler d1 time-travel info yukemuri --config dist/server/wrangler.json`으로 복구 지점(bookmark)을 기록한다. 데이터베이스 이름은 필수 인자다(Codex 검토, 2026-10-11).
   - `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`(새 마이그레이션이 있을 때만) → `wrangler deploy --config dist/server/wrangler.json` 순서다.
   - 비밀 `CRAWL_ACCESS_KEY`는 wrangler-action `secrets` 입력으로 올린다.
-  - 서비스 토큰으로 `/api/hotels`·`/api/crawl?report=1`을 점검한다.
+  - 서비스 토큰으로 `/api/hotels`·`/api/crawl?report=1`을 점검한다. 이 점검은 적재가 끝난 뒤에만 실행된다. `/api/hotels`는 `hotelRepository.ready()`를 거쳐 빈 DB에 `importSnapshot()`·`reindexNames()`로 쓰기 때문이다. 적재 전 상태 확인은 DB를 바꾸지 않는 `wrangler d1 execute ... --command "SELECT COUNT(*) ..."`로만 한다(Codex 검토, 2026-10-11).
   - 배포 버전 ID를 요약에 남긴다. 권한은 `contents: read`로 둔다.
 - 수집기·배포 자료:
   - `build-collector-release.mjs`의 `siteOrigin`을 빌드 변수로 정한다.
@@ -186,7 +187,7 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 
 **3단계. D1 생성과 스키마(에이전트, 수동 실행 workflow)**
 - `wrangler d1 create yukemuri --location apac`를 실행한다. 출력된 `database_id`(비밀 아님)를 PR로 커밋한다.
-- `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`으로 0000–0012를 적용한다(Codex 검토, 2026-10-11).
+- `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`으로 0000–0012를 적용한다(Codex 검토, 2026-10-11). 이 단계는 수동 실행 workflow로 하고 Worker는 배포하지 않는다. 자동 배포는 아직 꺼져 있다.
 - 운영 DB를 개발 환경에 연결하지 않는다. 개발·CI는 계속 임시 Miniflare DB를 쓴다.
 
 **4단계. 백업에서 새 DB로 적재(에이전트, 실행기 레포의 수동 실행 workflow)**
