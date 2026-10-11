@@ -164,7 +164,7 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
   - `migrations_dir: "drizzle"`, `workers_dev: true`, 미리보기 URL 설정(Access로 보호하거나 끔), `placement`, `observability`를 둔다.
 - 새 workflow `deploy.yml`:
   - main push 때 checks와 같은 설치·빌드를 한다.
-  - `wrangler d1 time-travel info`로 복구 지점을 기록한다.
+  - `wrangler d1 time-travel info yukemuri --config dist/server/wrangler.json`으로 복구 지점(bookmark)을 기록한다. 데이터베이스 이름은 필수 인자다(Codex 검토, 2026-10-11).
   - `wrangler d1 migrations apply yukemuri --remote`(새 마이그레이션이 있을 때만) → `wrangler deploy --config dist/server/wrangler.json` 순서다.
   - 비밀 `CRAWL_ACCESS_KEY`는 wrangler-action `secrets` 입력으로 올린다.
   - 서비스 토큰으로 `/api/hotels`·`/api/crawl?report=1`을 점검한다.
@@ -206,14 +206,16 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 
 **6단계. 전환(에이전트 PR + 사용자 확인)**
 1. 실행기 예약을 잠시 멈춘다. 예약을 끄는 PR을 병합하거나, 사용자가 `YUKEMURI_ENABLED`를 `false`로 바꾼다. 실행 중인 작업이 끝났는지 본다.
-2. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
-3. 4단계 적재본과 비교해 바뀐 행만 새 D1에 upsert한다(키 + 행 해시 비교). 행 수를 대조한다.
-4. 실행기 PR:
+2. 사용자 쓰기도 멈춘다. 수집기·백업 밖에서 기존 Sites에 쓰는 것은 즐겨찾기(`PUT /api/favorites`)다. 앱에는 쓰기를 막는 설정이 없다. 막으려면 Sites 게시가 필요하다. 그래서 사용자는 최종 체크포인트부터 전환이 끝날 때까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다(Codex 검토, 2026-10-11).
+3. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
+4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
+5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영한다.
+6. 실행기 PR:
    - 수집 workflow를 새 Secret `YUKEMURI_CF_ACCESS_JSON`과 새 주소로 바꾼다.
    - `bootstrap.py`의 `SITE_ORIGIN`, `run-updates.py` 허용 호스트, `run-backup.py` 허용 호스트, `catalog-checkpoint.py` 검사와 헤더를 바꾼다.
    - 백업 workflow도 새 주소로 바꾼다.
    - 수동 `check-access` → `gentle` 1회를 실행하고 저장 후 조회를 확인한다.
-5. 예약을 다시 켠다. Sites는 그대로 두되 수집기 대상에서 뺀다.
+7. 예약을 다시 켠다. Sites는 그대로 두되 수집기 대상에서 뺀다.
 
 **7단계. 관찰(에이전트, 첫 1주)**
 - 실제 cron 실행의 `collectorRelease`, 저장 수, 1102 오류, D1 일일 사용량을 매일 기록한다.
@@ -229,7 +231,7 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 |---|---|---|
 | 6단계 전 | 아무것도 하지 않음. Sites·수집·백업 무변경 | 없음 |
 | 전환 직후 앱 결함 | `wrangler rollback`(이전 Worker 버전) 또는 이전 커밋 재배포 | 없음 |
-| DB 손상 | `wrangler d1 time-travel restore`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
+| DB 손상 | `wrangler d1 time-travel restore yukemuri --bookmark <배포 때 기록한 값>`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
 | 새 호스팅 포기 | 실행기 PR을 되돌려 Sites Secret·주소로 복귀 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
 
 ### 3.3 사용자만 할 수 있는 일
