@@ -67,6 +67,15 @@ async function run(page){
  await still.close();
  check('스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음',bareCards===40&&bareVisible==='visible'&&!barePending,{bareCards,bareVisible,barePending});
  const appScripts=url=>url.pathname.startsWith('/_next/')&&url.pathname.endsWith('.js');
+ // The address the app writes for the view without conditions (every default
+ // spelled out) is that view: reloaded, its first page shows before the app.
+ await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForFunction(()=>location.search.includes('sort='));
+ const spelled=new URL(page.url());spelled.hash='';
+ await page.route(appScripts,route=>route.abort());
+ await page.goto(spelled.href,{waitUntil:'load'});
+ const defaults={visibility:await page.locator('main.workspace').evaluate(e=>getComputedStyle(e).visibility),mark:await page.evaluate(()=>document.documentElement.hasAttribute('data-conditions')),pending:await page.locator('.conditions-pending').isVisible(),search:spelled.search};
+ check('기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임',defaults.visibility==='visible'&&!defaults.mark&&!defaults.pending&&spelled.search.length>1,defaults);
+ await page.unroute(appScripts);
  await page.route(appScripts,route=>route.abort());
  await page.goto(base+'/?rating=8',{waitUntil:'load'});
  const hidden={...await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')})),cardsVisible:await page.locator('.hotel-list .card-title').first().isVisible(),pending:await page.locator('.conditions-pending').isVisible(),mapCount:await page.locator('.mobile-map-toggle span').isVisible()};
