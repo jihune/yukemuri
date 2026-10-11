@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {buildSnapshot,readOnly,remoteSource,HEADERS_RULE} from './build-search-snapshot.mjs';
+import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='snapshot-check-only';
@@ -87,22 +87,30 @@ try{
  await assert.rejects(guard.prepare('SELECT 1').run(),/read-only/);
 
  // The Cloudflare API source: same files from the same rows, string parameters,
- // one retry after 429, and failures that never carry the token or account.
- const calls=[];let throttled=false;
+ // one retry after 429 that waits as long as Retry-After asks, and failures
+ // that never carry the token or account.
+ const calls=[],waits=[];let throttled=false;
  const fake=async(url,init)=>{
   const body=JSON.parse(init.body);calls.push({url,auth:init.headers.Authorization,body});
-  if(!throttled){throttled=true;return new Response('{}',{status:429})}
+  if(!throttled){throttled=true;return new Response('{}',{status:429,headers:{'Retry-After':'7'}})}
   assert(body.params.every(p=>typeof p==='string'),'params are strings');
   const result=await db.prepare(body.sql).bind(...body.params).all();
   return Response.json({success:true,errors:[],result:[{success:true,results:result.results,meta:result.meta}]});
  };
  const remote=join(temp,'remote');
- const fromApi=await buildSnapshot({db:remoteSource({token:'tok-secret',account:'acct-secret',database:'128a3c5b-8e5f-470a-a901-d899d396cae1',fetchImpl:fake}),out:remote,now:new Date('2026-10-12T00:00:00Z')});
+ const fromApi=await buildSnapshot({db:remoteSource({token:'tok-secret',account:'acct-secret',database:'128a3c5b-8e5f-470a-a901-d899d396cae1',fetchImpl:fake,sleep:async ms=>{waits.push(ms)}}),out:remote,now:new Date('2026-10-12T00:00:00Z')});
+ assert.deepEqual(waits,[7000],'waited as long as Retry-After asked');
  assert.equal(fromApi.manifest.id,manifest.id,'API source builds the same snapshot');
  assert(calls.every(c=>c.url==='https://api.cloudflare.com/client/v4/accounts/acct-secret/d1/database/128a3c5b-8e5f-470a-a901-d899d396cae1/query'&&c.auth==='Bearer tok-secret'));
  assert(calls.every(c=>/^\s*(SELECT|WITH)\b/i.test(c.body.sql)),'only reads are sent');
  const denied=remoteSource({token:'tok-secret',account:'acct-secret',database:'128a3c5b-8e5f-470a-a901-d899d396cae1',fetchImpl:async()=>Response.json({success:false,errors:[{code:10000,message:'Authentication error'}],result:null},{status:403})});
  await assert.rejects(denied.prepare('SELECT 1').all(),e=>/HTTP 403/.test(e.message)&&!/tok-secret|acct-secret/.test(e.message));
+ const at=Date.parse('2026-10-12T00:00:00Z'),asking=value=>new Response('{}',{status:429,headers:value===null?{}:{'Retry-After':value}});
+ assert.equal(retryWait(asking(null),0,at),2000);assert.equal(retryWait(asking(null),2,at),8000);assert.equal(retryWait(asking('1'),1,at),4000);
+ assert.equal(retryWait(asking('Mon, 12 Oct 2026 00:00:30 GMT'),0,at),30000);assert.equal(retryWait(asking('soon'),0,at),2000);
+ // A wait beyond the limit fails at once: no early retries, no sleep.
+ const slept=[],limited=remoteSource({token:'tok-secret',account:'acct-secret',database:'128a3c5b-8e5f-470a-a901-d899d396cae1',sleep:async ms=>{slept.push(ms)},fetchImpl:async()=>asking(String(MAX_RETRY_WAIT/1000+1))});
+ await assert.rejects(limited.prepare('SELECT 1').all(),e=>/asks to wait 301s/.test(e.message)&&!/tok-secret|acct-secret/.test(e.message));assert.deepEqual(slept,[]);
  assert.throws(()=>remoteSource({token:'',account:'a',database:'128a3c5b-8e5f-470a-a901-d899d396cae1'}),/needs/);
 
  // Rebuilding replaces the version folder and adds the cache rule once.
