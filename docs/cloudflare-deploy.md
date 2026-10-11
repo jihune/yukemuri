@@ -16,6 +16,7 @@
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
 | `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
 | `scripts/cloudflare-smoke.mjs` | 배포 뒤 점검 |
+| `scripts/build-search-snapshot.mjs` | 검색 스냅숏 생성(D1 읽기 전용, 정적 자산 `/snapshot/`). P03, `P03-20261012.md` |
 | `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한) |
 | `public/robots.txt` | `/api/`와 알려진 AI 수집 봇 차단 요청 |
 
@@ -65,14 +66,15 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 ## 자동 배포(deploy.yml)
 
-- 시작: main push와 수동 실행. `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 두 이벤트에서만 쓴다. 토큰 권한은 `contents: read`다. D1 setup과 같은 동시 실행 그룹(`cloudflare-account`)이라 둘이 겹치지 않는다. 6단계에 들어올 앱 레포 수집 workflow는 별도 그룹(`yukemuri-catalog-updates`)을 쓰므로 배포와 서로 막지 않는다.
+- 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. D1 setup과 같은 동시 실행 그룹(`cloudflare-account`)이라 둘이 겹치지 않는다. 6단계에 들어올 앱 레포 수집 workflow는 별도 그룹(`yukemuri-catalog-updates`)을 쓰므로 배포와 서로 막지 않는다.
 - 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다.
 - 켜졌을 때 순서:
   1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다.
   2. `d1 time-travel info yukemuri --json`으로 복구 지점(bookmark)을 요약에 남긴다. JSON의 `bookmark` 필드는 wrangler 4.92.0 소스에서 확인했다. 값이 없으면 배포 전에 멈춘다.
   3. `d1 migrations apply yukemuri --remote`. 새 마이그레이션이 없으면 아무것도 하지 않는다.
+  3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다.
   4. `deploy --config dist/server/wrangler.json`. 크롤 키는 `cloudflare/wrangler-action`의 `secrets` 입력으로 `CRAWL_ACCESS_KEY`에 올린다. 배포 버전 ID를 요약에 남긴다.
-  5. `scripts/cloudflare-smoke.mjs`: 공개 `/api/hotels`가 200이고 숙소가 있는지, 키 없는 `/api/crawl?report=1`이 403인지, 키를 쓴 같은 요청이 200인지, `robots.txt`가 `/api/`를 막는지 본다. 로그에는 상태와 개수만 남긴다.
+  5. `scripts/cloudflare-smoke.mjs`: 공개 `/api/hotels`가 200이고 숙소가 있는지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일 네 개가 열리는지, 키 없는 `/api/crawl?report=1`이 403인지, 키를 쓴 같은 요청이 200인지, `robots.txt`가 `/api/`를 막는지 본다. 로그에는 상태와 개수만 남긴다.
 - `cloudflare/wrangler-action`은 v4.1.3 커밋 `953926a2e2182532811c01a25e53647d93bf07c0`로 고정했다(2026-10-11 `git ls-remote` 확인). `wranglerVersion`은 잠금 파일과 같은 4.92.0이다.
 
 ## 공개 사이트 보호
