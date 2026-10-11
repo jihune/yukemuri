@@ -240,10 +240,9 @@ async function backfillBathFacts(){
 async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
 export type HotelAlternative={hotel:Hotel;unmetConditions:string[];queryMatched:boolean};
 export type SearchResponse={hotels:Hotel[];total:number;unknownExcluded?:number;page:number;pageSize:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;coverage:typeof catalogCoverage;similarCount?:number;similarHotelIds?:string[];alternatives?:HotelAlternative[];snapshot?:{token:string;createdAt:string;expiresAt:string}};
-async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
-  await ensureCatalog();const db=favoritesDb();
-  const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
-  if(options.snapshot)return readResultSession(options.snapshot,queryKey,page);
+// One WHERE for the list and the map: scope (lifecycle, region, saved, query),
+// then the facility, rating and review conditions.
+async function searchWhere(filters:HotelFilters,savedOnly:boolean,savedIds:string[]){
   const clauses:string[]=[],args:(string|number)[]=[];
   addConstraints(filters,clauses,args,savedOnly,false,savedIds);
   const q=normalizeSearch(filters.query);
@@ -252,9 +251,47 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
    const matches=await nameMatches(filters.query,filters.region);matchesJson=JSON.stringify(matches);similarJson=JSON.stringify(matches.filter(m=>m.similar).map(m=>m.id));
    clauses.push(`(${exactQuery} OR id IN (SELECT value FROM json_each(?)))`);args.push(q,q,JSON.stringify(matches.map(m=>m.id)));
   }
-  const scope=clauses.length?'WHERE '+clauses.join(' AND '):'';
-  const scopeArgs=[...args],facilityClauses:string[]=[],facilityArgs:(string|number)[]=[];
+  const facilityClauses:string[]=[],facilityArgs:(string|number)[]=[];
   addConstraints({...filters,region:'all'},facilityClauses,facilityArgs,false,true);
+  return{clauses,args,q,matchesJson,similarJson,facilityClauses,facilityArgs};
+}
+export const MAP_POINT_LIMIT=500;
+export type MapBounds={west:number;south:number;east:number;north:number};
+export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|null};
+export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number};
+export type MapAreaResponse={total:number;inBounds:number;outOfBounds:number;withoutCoordinates:number;limit:number;points:MapPoint[];cells:MapCell[]};
+// Every matching record inside the bounds, not only the loaded list pages.
+// Coordinates live only in the payload in this phase (docs/U02-20261010.md).
+async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,savedIds:string[]):Promise<MapAreaResponse>{
+  await ensureCatalog();const db=favoritesDb();
+  const {clauses,args,facilityClauses,facilityArgs}=await searchWhere(filters,savedOnly,savedIds);
+  const all=[...clauses,...facilityClauses],where=all.length?'WHERE '+all.join(' AND '):'',whereArgs=[...args,...facilityArgs];
+  const score=filters.ratingProvider==='jalan'?'jalan_score':'trip_score';
+  // Same rule as hasCoordinates on the client: both values must be numbers.
+  const numeric=`json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real')`;
+  const located=`SELECT id,name,${score} AS score,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng FROM hotels ${where}`;
+  const inside='lat IS NOT NULL AND lat BETWEEN ? AND ? AND lng BETWEEN ? AND ?',box=[bounds.south,bounds.north,bounds.west,bounds.east];
+  const summary=await db.prepare(`SELECT COUNT(*) AS total,COALESCE(SUM(lat IS NULL),0) AS missing,COALESCE(SUM(${inside}),0) AS inside FROM (${located})`).bind(...box,...whereArgs).first<{total:number;missing:number;inside:number}>();
+  const total=summary?.total??0,withoutCoordinates=summary?.missing??0,inBounds=summary?.inside??0;
+  const result:MapAreaResponse={total,inBounds,outOfBounds:total-withoutCoordinates-inBounds,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
+  if(!inBounds)return result;
+  if(inBounds<=MAP_POINT_LIMIT){
+   const rows=await db.prepare(`SELECT id,name,score,lat,lng FROM (${located}) WHERE ${inside} ORDER BY id`).bind(...whereArgs,...box).all<MapPoint>();
+   result.points=rows.results;return result;
+  }
+  // Too many points for one response: counts on a 16 x 16 grid over the bounds.
+  const latStep=(bounds.north-bounds.south)/16||1e-9,lngStep=(bounds.east-bounds.west)/16||1e-9;
+  const rows=await db.prepare(`SELECT MIN(15,CAST((lat-?)/? AS INTEGER)) AS row,MIN(15,CAST((lng-?)/? AS INTEGER)) AS col,COUNT(*) AS count,AVG(lat) AS lat,AVG(lng) AS lng FROM (${located}) WHERE ${inside} GROUP BY row,col ORDER BY row,col`).bind(bounds.south,latStep,bounds.west,lngStep,...whereArgs,...box).all<{row:number;col:number;count:number;lat:number;lng:number}>();
+  result.cells=rows.results.map(c=>({lat:c.lat,lng:c.lng,count:c.count,south:bounds.south+c.row*latStep,north:bounds.south+(c.row+1)*latStep,west:bounds.west+c.col*lngStep,east:bounds.west+(c.col+1)*lngStep}));
+  return result;
+}
+async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
+  await ensureCatalog();const db=favoritesDb();
+  const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
+  if(options.snapshot)return readResultSession(options.snapshot,queryKey,page);
+  const {clauses,args,q,matchesJson,similarJson,facilityClauses,facilityArgs}=await searchWhere(filters,savedOnly,savedIds);
+  const scope=clauses.length?'WHERE '+clauses.join(' AND '):'';
+  const scopeArgs=[...args];
   const eligible=facilityClauses.length?facilityClauses.join(' AND '):'1';
   const rating=filters.ratingProvider==='jalan'?'jalan':'trip';
   // Candidates that fail no selected condition, only lack the fact for one.
@@ -267,10 +304,7 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
   const unknownOnly=unknownClauses.length?unknownClauses.join(' AND '):'0';
   const coveragePromise=readCoverage(true);
   const facetsPromise=db.prepare(`SELECT ${Object.entries(featureColumns).map(([k,c])=>`SUM(CASE WHEN ${c}=1 THEN 1 ELSE 0 END) AS ${k}`).join(',')},SUM(CASE WHEN kind='ryokan' THEN 1 ELSE 0 END) AS ryokan,COUNT(CASE WHEN ${eligible} THEN 1 END) AS count,COALESCE(SUM(CASE WHEN (${eligible}) AND id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END),0) AS similar,COALESCE(SUM(CASE WHEN COALESCE((${eligible}),0)=0 AND (${unknownOnly}) THEN 1 ELSE 0 END),0) AS unknown FROM hotels ${scope}`).bind(...facilityArgs,...facilityArgs,similarJson,...facilityArgs,...unknownArgs,...scopeArgs).first<Record<string,number>>();
-  if(filters.ryokanOnly)clauses.push("kind='ryokan'");
-  for(const key of filters.features)clauses.push(featureColumns[key]+'=1');
-  if(filters.minRating){clauses.push(rating+'_score>=?');args.push(filters.minRating)}
-  if(filters.minReviews){clauses.push(rating+'_reviews>=?');args.push(filters.minReviews)}
+  clauses.push(...facilityClauses);args.push(...facilityArgs);
   const where=clauses.length?'WHERE '+clauses.join(' AND '):'';
   const [facets,coverage]=await Promise.all([facetsPromise,coveragePromise]);
   const total=facets?.count??0,pageSize=40,actualPage=Math.max(1,Math.min(page,Math.max(1,Math.ceil(total/pageSize))));
@@ -317,6 +351,7 @@ export const hotelRepository={
   promise.catch(()=>{if(resultCache.get(key)?.promise===promise)resultCache.delete(key)});
   return promise;
  },
+ mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly=false,savedIds:string[]=[]){return mapArea(filters,bounds,savedOnly,savedIds)},
  async suggest(filters:HotelFilters,savedOnly=false,savedIds:string[]=[]):Promise<HotelSuggestion[]>{
   await ensureCatalog();const index=await catalogueSearchIndex();
   const saved=savedOnly?new Set(savedIds):undefined;
