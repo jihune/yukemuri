@@ -9,7 +9,8 @@ const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-queue-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
-const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'queue-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'queue-test-only'}});
+const options={modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'queue-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'queue-test-only'}};
+const runtime=new Miniflare(options);
 try{
  const db=await runtime.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
@@ -137,6 +138,18 @@ try{
  await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
  assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
+ // That GET also stores the aggregate. A new isolate shows it (here with a
+ // marked field) instead of counting both tables again, with the exact count.
+ const full=(await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage;
+ assert.deepEqual(JSON.parse((await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()).value),full);
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.failed',-7) WHERE key='coverage-snapshot'").run();
+ const fresh=new Miniflare(options);
+ try{
+  const shown=await (await fresh.dispatchFetch('http://localhost/api/hotels?fresh=1')).json();
+  assert.equal(shown.coverage.failed,-7,'A new isolate reads the stored aggregate');
+  assert.equal(shown.coverage.records,await hotelCount());assert.equal(shown.coverage.pending,full.pending);
+ }finally{await fresh.dispose()}
+ await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(JSON.stringify(full)).run();
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:trip'").run();
  assert.equal((await api('/api/crawl','POST',{provider:'trip',phase:'names',token:randomUUID()})).jobs[0].url,trip.sources[0].url);
  await api('/api/crawl?report=1','GET',undefined,403,false);
