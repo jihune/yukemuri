@@ -15,6 +15,9 @@ try{
  const {filterHotels}=require(join(root,'hotel-search.js'));
  const {primaryRating,meetsVerifiedCriteria}=require(join(root,'hotel-ratings.js'));
  const {catalogHotels}=require(join(root,'hotel-catalog.js'));
+ // P01: requests use the small curated list instead of loading the 4.77MB seed.
+ const {curatedCatalogHotels}=require(join(root,'catalog-core.js'));
+ assert.deepEqual(curatedCatalogHotels,catalogHotels.filter(h=>!/^(jalan|trip)-\d+$/.test(h.id)));
  const criteria={...DEFAULT_FILTERS,minRating:9,minReviews:50};
  assert.equal(realHotels.length,20);
  assert.equal(new Set(realHotels.map(h=>h.id)).size,20);

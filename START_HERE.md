@@ -12,7 +12,7 @@
 
 | 대상 | 역할·상태 |
 |---|---|
-| 전체 앱 개발 레포 | https://github.com/jihune/yukemuri — private, 전체 앱 개발 기준 |
+| 전체 앱 개발 레포 | https://github.com/jihune/yukemuri — public(2026-10-11 전환), 전체 앱 개발 기준 |
 | 시작 소스 | Sites v49, `608a38042df8d101d28ae480debfdddc5f3de7dc` |
 | Sites ID | `appgprj_6abf95be6ea0819181cc3e93535413ac` |
 | 운영 주소 | https://yukemuri.jihun7891.chatgpt.site |

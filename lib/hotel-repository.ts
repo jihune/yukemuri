@@ -3,10 +3,9 @@ import {attachLifecycle} from './hotel-lifecycle';
 import {attachSourceGroups,importVerifiedSourceGroups,refreshSourceGroupIndexes} from './hotel-source-groups';
 import { favoritesDb } from './favorites-db';
 import { Hotel, HotelFilters, FeatureKey, type CoreFeatureKey } from './hotel-types';
-import { catalogHotels, catalogVersion, catalogCoverage } from './hotel-catalog';
+import { catalogVersion, catalogCoverage } from './catalog-core';
 import { providerRating } from './hotel-ratings';
 import { SortOrder } from './hotel-search';
-import queue from '../data/crawl-jobs.json';
 import { enrichHotel } from './hotel-enrichment';
 import { normalizeSearch, hotelNames, hotelSearchText } from './hotel-names';
 import { formatHotelLocation, hotelPlaceSearchText } from './japan-place-labels';
@@ -27,14 +26,18 @@ let searchIndex:{expires:number;promise:Promise<{hotels:SearchIndexHotel[];prepa
 async function catalogueSearchIndex(){
  if(!searchIndex||searchIndex.expires<Date.now()){
   const promise=(async()=>{
-   type Row={id:string;region:string;prefecture:string|null;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;names:string;location:string;aliases:string}&Record<string,unknown>;
-   const hotels:SearchIndexHotel[]=[];let cursor='';
+   type Row={id:string;region:string;prefecture:string|null;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;names:string;location:string}&Record<string,unknown>;
+   const hotels:SearchIndexHotel[]=[],db=favoritesDb();let cursor='';
+   // All aliases in one primary-key-ordered read, in the same (hotel_id,
+   // name_key) order the former per-hotel subquery returned them.
+   const aliases=new Map<string,string[]>();
+   for(const r of (await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all<{hotel_id:string;name:string}>()).results){const list=aliases.get(r.hotel_id);if(list)list.push(r.name);else aliases.set(r.hotel_id,[r.name])}
    for(;;){
-    const rows=await favoritesDb().prepare(`SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location,(SELECT json_group_array(name) FROM hotel_names WHERE hotel_id=hotels.id) AS aliases FROM hotels WHERE id>? AND id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed')) ORDER BY id LIMIT 1500`).bind(cursor).all<Row>();
+    const rows=await db.prepare(`SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE id>? AND NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id LIMIT 1500`).bind(cursor).all<Row>();
     for(const row of rows.results){
      const names=JSON.parse(row.names) as Hotel['names'],location=JSON.parse(row.location) as Hotel['location'];
      const place={prefecture:row.prefecture,regionId:row.region,location,names};
-     hotels.push({id:row.id,names:[...new Set([names.ko,names.ja,names.en,...(JSON.parse(row.aliases) as string[])].filter(Boolean))],location:formatHotelLocation(place),context:hotelPlaceSearchText(place),region:row.region,prefecture:row.prefecture,kind:row.kind,features:Number(row.bath_features??0),knownFeatures:Number(row.bath_known??0),tripScore:row.trip_score,tripReviews:row.trip_reviews,jalanScore:row.jalan_score,jalanReviews:row.jalan_reviews});
+     hotels.push({id:row.id,names:[...new Set([names.ko,names.ja,names.en,...(aliases.get(row.id)??[])].filter(Boolean))],location:formatHotelLocation(place),context:hotelPlaceSearchText(place),region:row.region,prefecture:row.prefecture,kind:row.kind,features:Number(row.bath_features??0),knownFeatures:Number(row.bath_known??0),tripScore:row.trip_score,tripReviews:row.trip_reviews,jalanScore:row.jalan_score,jalanReviews:row.jalan_reviews});
     }
     if(rows.results.length<1500)break;cursor=rows.results.at(-1)!.id;
    }
@@ -49,7 +52,7 @@ async function nameMatches(query:string,region:string){
 }
 const exactQuery=`(instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched.name_key JOIN hotels original ON original.id=matched.hotel_id JOIN hotels target ON target.id=linked.hotel_id WHERE matched.hotel_id IN (SELECT hotel_id FROM hotel_names WHERE instr(name_key,?)>0) AND (matched.hotel_id=linked.hotel_id OR original.prefecture IS NOT NULL AND original.prefecture=target.prefecture)))`;
 function addConstraints(filters:HotelFilters,clauses:string[],args:(string|number)[],savedOnly:boolean,facilities=true,savedIds:string[]=[]){
- if(!savedOnly&&!facilities)clauses.push("id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed'))");
+ if(!savedOnly&&!facilities)clauses.push("NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed'))");
  if(filters.region!=='all'){clauses.push('(region=? OR prefecture=?)');args.push(filters.region,filters.region)}
  if(savedOnly){clauses.push('id IN (SELECT value FROM json_each(?))');args.push(JSON.stringify(savedIds))}
  if(!facilities)return;
@@ -116,24 +119,34 @@ function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  promise.catch(()=>{if(coverageCache?.promise===promise)coverageCache=null});
  return promise;
 }
+const COVERAGE_SNAPSHOT='coverage-snapshot',COVERAGE_SEQUENCE='coverage-sequence';
 // Full count, read by the collector at the end of each run. It also resets
 // the record counter (first run, restored backups) from the true count in the
 // same transaction, so a write either lands before it and is counted, or after
-// it and adds to the corrected value (overlapping collector runs).
+// it and adds to the corrected value (overlapping collector runs). The
+// aggregate is stored so other isolates need not count it again; a sequence
+// number taken in that transaction keeps a slower GET from storing an older
+// aggregate over a newer one.
 export async function readCoverage(){
  const db=favoritesDb();
- const [,counts,jobs]=await db.batch([db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
- return cacheCoverage(Promise.resolve(coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[])));
+ const [sequence,,counts,jobs]=await db.batch([db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value").bind(COVERAGE_SEQUENCE),db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
+ const coverage=coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
+ const seq=Number((sequence.results as {value:string}[])[0].value);
+ await db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')").bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})).run();
+ return cacheCoverage(Promise.resolve(coverage));
 }
-// Exact record count over an aggregate up to five minutes old. Without a
-// counter yet, the collector (sync) takes the full count and starts it.
+// Exact record count over the aggregate of the last full count: from this
+// isolate's memory for five minutes, else as stored by the collector's GET.
+// Without a counter yet, the collector (sync) takes the full count first.
 export async function readCachedCoverage(sync=false){
- const [coverage,counter]=await Promise.all([
-  coverageCache&&coverageCache.expires>=Date.now()?coverageCache.promise:cacheCoverage(queryCoverage()),
-  favoritesDb().prepare('SELECT value FROM catalog_meta WHERE key=?').bind(RECORD_COUNTER).first<{value:string}>(),
- ]);
- if(!counter)return sync?readCoverage():coverage;
- const records=Number(counter.value);
+ const rows=await favoritesDb().prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?)').bind(RECORD_COUNTER,COVERAGE_SNAPSHOT).all<{key:string;value:string}>();
+ const stored=new Map(rows.results.map(r=>[r.key,r.value]));
+ const counter=stored.get(RECORD_COUNTER);
+ if(counter===undefined&&sync)return readCoverage();
+ const snapshot=stored.get(COVERAGE_SNAPSHOT);
+ const coverage=await(coverageCache&&coverageCache.expires>=Date.now()?coverageCache.promise:cacheCoverage(snapshot?Promise.resolve((JSON.parse(snapshot) as {coverage:Awaited<ReturnType<typeof queryCoverage>>}).coverage):queryCoverage()));
+ if(counter===undefined)return coverage;
+ const records=Number(counter);
  return{...coverage,records,crawledRecords:records-20};
 }
 const resultCache=new Map<string,{expires:number;promise:Promise<SearchResponse>}>();
@@ -196,6 +209,7 @@ async function importSnapshot(){
  const db=favoritesDb();
  const version=await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind('snapshot').first<{value:string}>();
  if(version?.value===catalogVersion)return;
+ const [{catalogHotels},{default:queue}]=await Promise.all([import('./hotel-catalog'),import('../data/crawl-jobs.json')]);
  await writeHotels(catalogHotels);
  const jobKeys=['url','provider','kind','prefecture','status','attempts','next_at','error','fetched_at'];
  const jobSql=`INSERT INTO crawl_jobs (${jobKeys.join(',')}) SELECT ${jobKeys.map(k=>`json_extract(value,'$.${k}')`).join(',')} FROM json_each(?) WHERE 1 ON CONFLICT(url) DO NOTHING`;
@@ -260,13 +274,17 @@ export async function prepareOnsenCatalog(){
  return {done:search.done&&priorities.done&&bathScope.done,search,priorities,bathScope};
 }
 async function backfillBathFacts(){
- const db=favoritesDb();
+ // The scan for unset masks reads every hotel; run it until it finds none once.
+ // writeHotels always sets the masks, so no later row needs it.
+ const db=favoritesDb(),key='bath-facts-backfill-v1';
+ if(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())return;
  for(;;){
   const rows=await db.prepare('SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200').all<{id:string;payload:string}>();
   if(!rows.results.length)break;
   const updates=rows.results.map(row=>{const h=enrichHotel(JSON.parse(row.payload) as Hotel);return{id:h.id,...featureMasks(h),natural:hotelFeature(h,'natural').value===null?null:Number(hotelFeature(h,'natural').value),original:row.payload}});
   await db.prepare("WITH patches AS (SELECT json_extract(value,'$.id') AS id,json_extract(value,'$.features') AS features,json_extract(value,'$.knownFeatures') AS known,json_extract(value,'$.natural') AS natural,json_extract(value,'$.original') AS original FROM json_each(?)) UPDATE hotels SET bath_features=(SELECT features FROM patches WHERE patches.id=hotels.id),bath_known=(SELECT known FROM patches WHERE patches.id=hotels.id),natural=(SELECT natural FROM patches WHERE patches.id=hotels.id) WHERE bath_features IS NULL AND id IN (SELECT id FROM patches) AND payload=(SELECT original FROM patches WHERE patches.id=hotels.id)").bind(JSON.stringify(updates)).run();
  }
+ await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,'done').run();
  searchIndex=null;
 }
 async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
@@ -281,7 +299,10 @@ async function searchWhere(filters:HotelFilters,savedOnly:boolean,savedIds:strin
   let matchesJson='[]',similarJson='[]';
   if(q){
    const matches=await nameMatches(filters.query,filters.region);matchesJson=JSON.stringify(matches);similarJson=JSON.stringify(matches.filter(m=>m.similar).map(m=>m.id));
-   clauses.push(`(${exactQuery} OR id IN (SELECT value FROM json_each(?)))`);args.push(q,q,JSON.stringify(matches.map(m=>m.id)));
+   // The substring match scans hotels and hotel_names once per request. The
+   // counts and the ordered list then read only the matching rows by id.
+   const exact=await favoritesDb().prepare(`SELECT id FROM hotels WHERE ${exactQuery}`).bind(q,q).all<{id:string}>();
+   clauses.push('id IN (SELECT value FROM json_each(?))');args.push(JSON.stringify([...new Set([...exact.results.map(r=>r.id),...matches.map(m=>m.id)])]));
   }
   const facilityClauses:string[]=[],facilityArgs:(string|number)[]=[];
   addConstraints({...filters,region:'all'},facilityClauses,facilityArgs,false,true);
