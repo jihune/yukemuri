@@ -152,6 +152,29 @@ async function run(page,cdp){
  await back.focus();await page.keyboard.press('Enter');
  await page.waitForTimeout(300);
  check('Enter로 불러온 목록 위치로 돌아가면 기존 표시 수 안내로 돌아옴',(await text()).includes('검색 결과')&&(await text()).includes('중 지도에'),{text:await text()});
+
+ // Where PR #13 and this PR meet. Opening the phone map scrolls its column to the top
+ // (PR #13); the area button must then be on screen and clear without further scrolling.
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ await page.locator('.mobile-map-toggle').tap();
+ await coverage.waitFor();await page.waitForTimeout(500);
+ await canvas.focus();await page.keyboard.press('ArrowRight');await page.waitForTimeout(600);
+ await areaButton.waitFor({timeout:5000}).catch(()=>{});
+ check('지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',await areaButton.count()===1&&inView(await box(areaButton))&&await fullyReachable(areaButton),{button:await areaButton.count()?await box(areaButton):null});
+ // A shortened total (PR #13) and an area result (this PR) shown together.
+ await page.route(url=>url.pathname==='/api/hotels',async route=>{
+  if(new URL(route.request().url()).searchParams.get('page')==='1')return route.continue();
+  const real=await (await route.fetch()).json();
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...real,hotels:[]})});
+ });
+ await coverage.getByRole('button',{name:/더 불러와 지도에 표시/}).tap();
+ await page.locator('.list-shortened').waitFor({timeout:10000}).catch(()=>{});
+ await page.unroute(url=>url.pathname==='/api/hotels');
+ await areaButton.tap();
+ await coverage.getByText('이 지역').first().waitFor({timeout:10000}).catch(()=>{});
+ const both=await text();
+ check('줄어든 결과 수 안내와 범위 검색 결과가 지도 표시 줄에 함께 보이고 가로 넘침 없음',both.includes('이 지역')&&both.includes('결과 수를 불러온')&&await page.locator('.list-shortened').count()===1&&await overflow()<=0,{text:both});
+ await shot('overlap');
 }
 
 // Desktop: hovering a list card re-renders the page; the moved map must stay where it is.
