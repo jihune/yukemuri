@@ -6,7 +6,7 @@
 
 ## H01 2단계(앱 레포 Cloudflare 배포 준비)
 
-기록: 2026-10-11T10:15Z / 2026-10-11 19:15 KST. 상위 세션이 맡긴 작업이다. 위 P01 기록은 그대로 두고 이 절을 더했다. 상세는 `H01-20261011.md`, 절차는 `cloudflare-deploy.md`다.
+기록: 2026-10-11T10:14Z / 2026-10-11 19:14 KST(커밋 `d4057b1`). 상위 세션이 맡긴 작업이다. 위 P01 기록은 그대로 두고 이 절을 더했다. 상세는 `H01-20261011.md`, 절차는 `cloudflare-deploy.md`다.
 
 - 브랜치 `claude/h01-cloudflare-deploy`. 시작 기준 main `6f09287`. 이 절을 쓰기 직전에 main `274f687`(PR #31·#32 병합)을 merge했다. 충돌은 없었다. 코드 커밋은 `e426686`이다.
 - 바꾼 것: `cloudflare-deploy.json`(비밀 아닌 배포 값, `databaseId`·`publicOrigin`은 `null`, `autoDeploy` false), `vite.config.ts`(Worker 이름·workers.dev·미리보기 끔·observability·smart placement·D1 이름과 `migrations_dir`·Rate Limiting 바인딩), `deploy.yml`(설정이 켜질 때까지 모두 건너뜀), `d1-setup.yml`(수동, `workers.dev` 서브도메인 읽기·없을 때만 등록, D1 생성·마이그레이션, 배포 없음), `lib/edge-guard.ts`(`/api/*` IP별 제한, 크롤 키 면제, 익명 검색 30초 Cache API), `public/robots.txt`, 수집기 `siteOrigin` 빌드 변수와 `source_safety.py`의 주소 허용 목록.
