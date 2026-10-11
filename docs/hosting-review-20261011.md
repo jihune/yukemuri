@@ -24,6 +24,55 @@
 
 - 실행기 레포 수정이 허락됐다(사용자 결정, 2026-10-11T09:31Z, 영구). 4단계 적재와 6단계 전환의 실행기 PR은 이 허락으로 진행한다. 6단계에서 수집 예약은 public 앱 레포로 옮긴다. 수집기 코드가 이미 앱 레포에 있고 public 레포의 Actions 사용 시간은 한도가 없기 때문이다. DB 백업과 복원 검사는 개인 즐겨찾기가 들어 있어 private 실행기 레포에 남긴다(에이전트 권장, 2026-10-11T09:31Z). 수집 주기·상한은 바꾸지 않는다.
 
+## 2차 검토: 무료 한도에 맞는 구조(2026-10-11)
+
+기록: 2026-10-11T15:40Z / 2026-10-12 00:40 KST. 이 절이 ‘결정 반영’ 절과 3.2절보다 우선한다.
+
+### 배경
+
+H01 2–4단계와 P01·P02 측정에서 Cloudflare 무료 한도 세 가지가 실제 문제로 드러났다.
+
+- D1 읽기(하루 500만 행): P01 뒤에도 목록 첫 쪽 한 번이 37,723행, 이름 검색 한 번이 약 2.7만–3.0만 행이다. `workers.dev`에서는 Cache API가 효과가 없어 공유 캐시도 없다. 수집기 선점 비용은 P02 PR A(#37)로 gentle 1회 약 66만 → 4.8만 행으로 줄었다.
+- Worker CPU(요청당 10ms): Node 측정에서 첫 방문(목록 + `/api/hotels/search-index`) cold가 약 500ms, 목록 cold가 약 16ms다(P02). main도 넘는다. 사용자가 한 명이면 isolate가 자주 내려가 대부분의 방문이 cold 경로를 탄다.
+- D1 쓰기(하루 10만 행): 4단계 적재 1일차(약 8.7만 행)로 2026-10-11에 Cloudflare의 87% 알림 메일이 왔다. 계획된 값이다. 일상 수집 쓰기는 하루 약 2.3만–6.1만 행으로 추정한다(P02).
+
+사용자 요청(2026-10-11 15시대 UTC): 최적화로 더 나아지기 어렵다면 무료로 쓸 수 있는 다른 DB·웹 호스팅으로 옮길 의향이 있다. AWS·Oracle Cloud·무료 호스팅·Sites 유지·무료 계정 분산까지 모두 검토한다. 사용자는 한 명으로 가정하되 DB 정보 갱신은 계속돼야 한다. 추가 결제는 하지 않는다(이미 구독 중인 Google AI Pro·Claude Max·ChatGPT Plus 외 결제 없음).
+
+### 후보 비교
+
+| 안 | 무료 지속성 | 한도·제약 | 바꿀 것 | 판단 |
+|---|---|---|---|---|
+| **Cloudflare 무료 유지 + 정적 스냅숏** | 계속 무료. 넘으면 그날 오류(요금 없음) | 정적 자산 요청은 무료·무제한이고 Worker 호출로 세지 않는다. Worker는 상세·비교·즐겨찾기·수집 API만 처리 | 목록·검색·지도 계산을 브라우저로 옮김. 수집 뒤 Actions가 스냅숏을 만들어 배포 | **추천** |
+| Cloudflare 현 구조 + 서버 최적화(P02 PR B·P03) | 계속 무료 | 읽기는 맞출 수 있으나 cold CPU 10ms를 맞추기 어렵다(P02 측정). 읽기 요청이 쓰기를 만드는 캐시는 봇에 약하다 | 스냅숏 표·trigger·결과 캐시 | 보류 |
+| Vercel Hobby + Turso | 계속 무료(비상업). 넘으면 그 달 정지 | Vercel: 월 Active CPU 4시간·호출 100만. Turso: 월 읽기 5억·쓰기 1천만 행·5GB | 실행 환경을 Worker에서 Node로, DB 접근을 D1 바인딩에서 libSQL로 | 차선 |
+| Oracle Cloud Always Free VM | 계속 무료(카드 확인 필요) | 요청당 CPU 제한 없음. A1 할당이 2026-06에 줄었다는 보도(미확인), 용량 부족, 7일 유휴 회수 규칙, 운영(OS·TLS·방화벽)을 직접 해야 함, DDoS 보호 약함 | 서버 운영 전체 | 대비책 |
+| AWS | 2025-07-15 뒤 새 계정은 6개월 크레딧 플랜. 이후 유료 전환 또는 계정 종료 | 장기 무료 아님 | 전체 | 제외 |
+| Google Cloud Always Free e2-micro | 계속 무료(결제 계정 필요) | 미국 3개 지역만 무료, 북미 밖 송신 월 1GB, 메모리 1GB, 한국에서 멂 | 전체 | 제외 |
+| ChatGPT Sites 유지 | 사용자 구독 안 | 한도 비공개, 게시는 ChatGPT 안에서만, 느림 | 없음 | 전환 전까지 운영 유지 |
+| 무료 계정 여러 개로 분산 | — | 서비스 약관 위반 소지(미확인). 정지되면 전부 잃음 | — | 제외 |
+
+### 결정
+
+- Cloudflare 무료를 유지하고 정적 스냅숏 구조로 바꾼다(에이전트 판단, 2026-10-11T15:40Z, 사용자 요청 ‘가장 좋은 권장 따름’에 따름).
+  - 수집 실행이 끝날 때마다 GitHub Actions(public 앱 레포, 사용 시간 무제한)가 D1에서 카탈로그를 읽어 검색용 스냅숏 조각을 만들고 Worker 정적 자산으로 배포한다. 갱신 간격은 수집 주기(3시간)와 같다.
+  - 브라우저가 스냅숏을 받아 필터·정렬·쪽 나누기·지도·이름 부분일치·오타 색인을 계산한다. 서버의 검색 코드를 옮겨 재사용한다.
+  - Worker에는 상세·비교·즐겨찾기·수집 API만 남긴다. 요청당 CPU와 D1 읽기가 작다. 속도 제한은 이 API에만 걸린다.
+  - D1에는 수집 상태·숙소 원본·즐겨찾기를 그대로 둔다. 4단계 적재는 계획대로 계속한다.
+- 영향:
+  - P02 PR B(#38, 검색 스냅숏 표·trigger·결과 캐시)는 병합하지 않고 보류한다. 측정과 검색 코드는 P03의 입력이다.
+  - P03을 ‘정적 스냅숏 전환’으로 정한다. 완료 조건: 목록·검색·지도 요청이 Worker를 호출하지 않음, 남은 API의 요청당 CPU가 Node 측정 cold·warm 약 5ms 이하, 화면 결과가 지금과 같음.
+  - H01 6단계(전환)의 선행 조건: P03 완료와 5단계 실측(1102 오류 없음, D1 읽기·쓰기 일일 한도 안).
+  - 차선(Vercel Hobby + Turso)은 P03 뒤에도 Cloudflare 무료 한도를 넘을 때 다시 검토한다.
+
+### 미확인
+
+- 정적 자산이 무료·무제한이라는 점은 Cloudflare 문서(`workers/static-assets/billing-and-limitations`)를 검색 요약으로 확인했다. 원문과 파일 수·크기 한도는 P03에서 확인한다.
+- 휴대폰 브라우저에서 스냅숏(core 약 1.5MB, text 약 6.9MB, 압축 전) 해석 시간과 메모리.
+- Oracle A1 할당 축소 보도는 Oracle 문서와 대조하지 못했다.
+- 여러 무료 계정 분산의 약관 조항은 원문을 확인하지 못했다.
+
+출처(2026-10-11 검색): https://developers.cloudflare.com/workers/static-assets/billing-and-limitations , https://aws.amazon.com/about-aws/whats-new/2025/07/aws-free-tier-credits-month-free-plan/ , https://docs.oracle.com/en-us/iaas/Content/FreeTier/resourceref.htm , https://infoq.com/news/2026/07/oracle-cloud-free-tier-limits/ , https://vercel.com/docs/limits , https://turso.tech/blog/turso-cloud-debuts-the-new-developer-plan , https://freetier.co/articles/cloud-provider-free-tiers-2026
+
 ## 1. 현재 구조
 
 ### 1.1 런타임과 빌드
