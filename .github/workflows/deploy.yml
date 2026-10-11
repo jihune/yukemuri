@@ -4,12 +4,17 @@ name: Cloudflare deploy
 # cloudflare-deploy.json records the D1 database_id and autoDeploy is true
 # (docs/cloudflare-deploy.md). Every run also rebuilds the static search
 # snapshot from D1; the collection workflow calls this one after a run
-# (workflow_call) so the snapshot follows the catalogue.
+# (workflow_call, after_collection: true) so the snapshot follows the catalogue.
 on:
   push:
     branches: [main]
   workflow_dispatch:
   workflow_call:
+    inputs:
+      after_collection:
+        description: Called by the collection workflow at the end of its run
+        type: boolean
+        default: false
 concurrency:
   group: cloudflare-account
   cancel-in-progress: false
@@ -17,6 +22,13 @@ permissions:
   contents: read
 jobs:
   deploy:
+    # The snapshot reads D1 over many requests, so it must not overlap a
+    # catalogue write: other runs wait in the collection's group. Called from
+    # the collection (which already holds that group), the job takes its own
+    # group, since the same group would wait on itself.
+    concurrency:
+      group: ${{ inputs.after_collection && 'yukemuri-snapshot-after-collection' || 'yukemuri-catalog-updates' }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

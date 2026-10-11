@@ -90,7 +90,9 @@ try{
 
  // The guard refuses anything but a read before it reaches the database.
  const guard=readOnly(db).db;
- for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1'])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
+ for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1','WITH x AS (SELECT 1) DELETE FROM hotels RETURNING id','with x as (select 1) insert into catalog_meta select 1,2','WITH x AS (SELECT 1) UPDATE hotels SET name=1','with/**/x as (select 1) replace into catalog_meta values (1,2)',"SELECT 'a' -- x\n; DELETE FROM hotels"])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
+ // Words inside literals and comments are text, not writes.
+ assert.doesNotThrow(()=>guard.prepare("SELECT 'DELETE FROM hotels' AS a -- UPDATE\n"));
  await assert.rejects(guard.prepare('SELECT 1').run(),/read-only/);
 
  // The Cloudflare API source: same files from the same rows, string parameters,
