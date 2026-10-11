@@ -350,8 +350,8 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     names,aliases=localized_names(doc,provider,raw,detail)
     region_part, locality, street = (str(address.get(k, '')) for k in ['addressRegion', 'addressLocality', 'streetAddress'])
     # Trip's streetAddress is already the formatted full address that repeats
-    # its locality and region; Jalan sends parts that must be joined.
-    full_address = street if locality and region_part and locality in street and region_part in street else region_part + locality + street
+    # its locality and region; Jalan sends parts that must always be joined.
+    full_address = street if provider == 'trip' and locality and region_part and locality in street and region_part in street else region_part + locality + street
     maps = 'https://www.google.com/maps/search/?api=1&query=' + urllib.parse.quote(full_address or name)
     return dict(id=source, names=names, aliases=aliases, kind='ryokan' if re.search(r'旅館|Ryokan', name, re.I) else 'hotel' if re.search(r'ホテル|Hotel',name,re.I) else 'unknown', regionId=found or 'unassigned', prefecture=found,
                 location=dict(label=region or (next((p['name'] for p in PREFS if p['id'] == found), '일본')), address=full_address, latitude=lat, longitude=lng, isApproximate=False),
