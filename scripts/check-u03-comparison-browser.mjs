@@ -71,7 +71,7 @@ async function run(page,touch){
  check('켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정',/비교에서 빼기$/.test(afterRemove)&&(await sheet.locator('.comparison-remove').count())===3&&threeRows.every(r=>r.diff),{focus:afterRemove,rows:threeRows.map(r=>r.name)});
  await removeAt(2);
  const pairRows=await rows(),pairLive=await live();
- check('켠 채로 2곳(같은 Trip.com 점수)만 남으면 다름 1행(자란넷)만 보이고 알림 문장이 지난 개수를 말하지 않음',same(pairRows.map(r=>r.name),['자란넷 · 5점'])&&!pairLive.includes('4개')&&['','다른 항목 1개만 표시 중'].includes(pairLive),{rows:pairRows.map(r=>r.name),live:pairLive});
+ check('켠 채로 2곳(같은 Trip.com 점수)만 남으면 다름 1행(자란넷)만 보이고 알림 문장이 새 개수(1개)를 말함',same(pairRows.map(r=>r.name),['자란넷 · 5점'])&&pairLive==='다른 항목 1개만 표시 중',{rows:pairRows.map(r=>r.name),live:pairLive});
  await removeAt(0);
  const oneRows=await rows();
  check('후보가 1곳이 되면 전환 버튼과 표지가 사라지고 모든 행이 보임',await toggle.count()===0&&oneRows.length===19&&oneRows.every(r=>!r.diff&&!r.undecided),{toggle:await toggle.count(),rows:oneRows.length});
