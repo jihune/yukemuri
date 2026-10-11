@@ -13,7 +13,7 @@
 | 2026-10-11 | `4ab16029bf94b422a19b087542f1d492e80447b4` (`claude/u03-comparison-diff`) | 없음 | 없음 | U03 PR B 비교 차이 강조 검사·Codex 3회·Claude 1회 검토 완료. 앱 화면만 변경. main 병합(`1ff8f48`)·Sites 미게시 |
 | 2026-10-11 | `fa99371` (`claude/p01-d1-reads`) | 없음 | 없음 | P01 PR A 수집 저장 경로 D1 읽기 감소 검사 완료(Codex 1회째 P2 수정 포함). Worker API·카탈로그 저장소 변경(스키마·수집기 변경 없음). Codex 2회째 검토(`ea324a9`) 큰 문제 없음. main 병합(`264f3bb`)·Sites 미게시 |
 | 2026-10-11 | `1ea607308bb6bf9b1b2fbc5bc52081428843c5e5` (`claude/p01-search-scans`) | 없음 | 없음 | P01 PR B 검색 전체 스캔·첫 요청·seed 지연 로드 검사·Codex 2회 검토 완료(P2 1건 수정, 2회째 `1ea6073` 큰 문제 없음). 검색 응답 193개 main과 같음. 스키마·수집기 변경 없음. main 병합(`4b98c26`)·Sites 미게시 |
-| 2026-10-11 | `4ce95cf` (`claude/u04-booking-dates`, 코드 `7992d78`·Codex 지적 수정 `4ce95cf`) | 없음 | 없음 | U04 예약 링크 날짜·인원·설명 번역 문구 검사 완료(cloud-check 23개, 브라우저 U04 57개·U01~U03 통과). Codex 1회째 P2 2건 수정. 앱 화면·검사 변경. 수집기 release 그대로. 재검토 대기·Sites 미게시 |
+| 2026-10-11 | `4ce95cf` (`claude/u04-booking-dates`, 코드 `7992d78`·Codex 지적 수정 `4ce95cf`) | 없음 | 없음 | U04 예약 링크 날짜·인원·설명 번역 문구 검사 완료(cloud-check 23개, 브라우저 U04 57개·U01~U03 통과). Codex 1회째 P2 2건 수정, 2회째(`bb1b7d9`) 큰 문제 없음. 앱 화면·검사 변경. 수집기 release 그대로. 병합 대기·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
