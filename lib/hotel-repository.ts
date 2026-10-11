@@ -119,17 +119,20 @@ function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  promise.catch(()=>{if(coverageCache?.promise===promise)coverageCache=null});
  return promise;
 }
-const COVERAGE_SNAPSHOT='coverage-snapshot';
+const COVERAGE_SNAPSHOT='coverage-snapshot',COVERAGE_SEQUENCE='coverage-sequence';
 // Full count, read by the collector at the end of each run. It also resets
 // the record counter (first run, restored backups) from the true count in the
 // same transaction, so a write either lands before it and is counted, or after
 // it and adds to the corrected value (overlapping collector runs). The
-// aggregate is stored so other isolates need not count it again.
+// aggregate is stored so other isolates need not count it again; a sequence
+// number taken in that transaction keeps a slower GET from storing an older
+// aggregate over a newer one.
 export async function readCoverage(){
  const db=favoritesDb();
- const [,counts,jobs]=await db.batch([db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
+ const [sequence,,counts,jobs]=await db.batch([db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value").bind(COVERAGE_SEQUENCE),db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
  const coverage=coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
- await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(COVERAGE_SNAPSHOT,JSON.stringify(coverage)).run();
+ const seq=Number((sequence.results as {value:string}[])[0].value);
+ await db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')").bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})).run();
  return cacheCoverage(Promise.resolve(coverage));
 }
 // Exact record count over the aggregate of the last full count: from this
@@ -141,7 +144,7 @@ export async function readCachedCoverage(sync=false){
  const counter=stored.get(RECORD_COUNTER);
  if(counter===undefined&&sync)return readCoverage();
  const snapshot=stored.get(COVERAGE_SNAPSHOT);
- const coverage=await(coverageCache&&coverageCache.expires>=Date.now()?coverageCache.promise:cacheCoverage(snapshot?Promise.resolve(JSON.parse(snapshot) as Awaited<ReturnType<typeof queryCoverage>>):queryCoverage()));
+ const coverage=await(coverageCache&&coverageCache.expires>=Date.now()?coverageCache.promise:cacheCoverage(snapshot?Promise.resolve((JSON.parse(snapshot) as {coverage:Awaited<ReturnType<typeof queryCoverage>>}).coverage):queryCoverage()));
  if(counter===undefined)return coverage;
  const records=Number(counter);
  return{...coverage,records,crawledRecords:records-20};

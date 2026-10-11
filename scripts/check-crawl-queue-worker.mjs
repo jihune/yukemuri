@@ -46,6 +46,7 @@ try{
  await api('/api/crawl','PUT',{...payload,observations:[other]},400);
  const result=await api('/api/crawl','PUT',payload);assert.equal(result.accepted,1);
  // P01: the PUT reports the exact record count (the collector prints it).
+ const storedCoverage=row=>JSON.parse(row.value).coverage;
  const hotelCount=async()=>(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
  assert.equal(result.coverage.records,await hotelCount());assert.equal(result.coverage.crawledRecords,result.coverage.records-20);
  const job=await db.prepare('SELECT * FROM crawl_jobs WHERE url=?').bind(url).first();assert.equal(job.attempts,1);assert.equal(job.lease_until,0);
@@ -144,21 +145,33 @@ try{
   const puts=[0,1,2].map(i=>{const p=fixture('jalan',String(999300+round*3+i));p.sources[0].label='Jalan 숙소 상세';return p});
   for(const p of puts)await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','pending',0,0)").bind(p.sources[0].url).run();
   const later=ms=>new Promise(r=>setTimeout(r,ms));
-  await Promise.all([...puts.map(p=>api('/api/crawl','PUT',{url:p.sources[0].url,status:'done',observations:[p],links:[]})),...[0,4,8,12,16].map(ms=>later(ms+round%5).then(()=>api('/api/crawl?provider=trip&kind=detail&limit=1')))]);
+  const gets=[0,0,1,1,2,2,3].map(ms=>later(ms+round%3).then(()=>api('/api/crawl?provider=trip&kind=detail&limit=1')));
+  await Promise.all([...puts.map(p=>api('/api/crawl','PUT',{url:p.sources[0].url,status:'done',observations:[p],links:[]})),...gets]);
   assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount(),'Counter after overlapping GET and PUTs, round '+round);
+  // The stored aggregate is never older than one a GET already returned
+  // (records and completed pages only grow here; Codex review on PR #31).
+  const seen=(await Promise.all(gets)).map(r=>r.coverage),stored=storedCoverage(await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first());
+  for(const key of ['records','completedDetailPages'])assert(stored[key]>=Math.max(...seen.map(c=>c[key])),`Stored ${key} ${stored[key]} is older than a returned one, round ${round}`);
  }
  // That GET also stores the aggregate. A new isolate shows it (here with a
  // marked field) instead of counting both tables again, with the exact count.
  const full=(await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage;
- assert.deepEqual(JSON.parse((await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()).value),full);
- await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.failed',-7) WHERE key='coverage-snapshot'").run();
+ assert.deepEqual(storedCoverage(await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()),full);
+ // A GET whose sequence number is lower than the stored one (a slower,
+ // overlapping GET) leaves the newer aggregate in place.
+ const newer=(await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()).value;
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.seq',1e9,'$.coverage.failed',-8) WHERE key='coverage-snapshot'").run();
+ await api('/api/crawl?provider=trip&kind=detail&limit=1');
+ assert.equal(storedCoverage(await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()).failed,-8,'An older aggregate must not replace a newer stored one');
+ await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(newer).run();
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.coverage.failed',-7) WHERE key='coverage-snapshot'").run();
  const fresh=new Miniflare(options);
  try{
   const shown=await (await fresh.dispatchFetch('http://localhost/api/hotels?fresh=1')).json();
   assert.equal(shown.coverage.failed,-7,'A new isolate reads the stored aggregate');
   assert.equal(shown.coverage.records,await hotelCount());assert.equal(shown.coverage.pending,full.pending);
  }finally{await fresh.dispose()}
- await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(JSON.stringify(full)).run();
+ await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(newer).run();
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:trip'").run();
  assert.equal((await api('/api/crawl','POST',{provider:'trip',phase:'names',token:randomUUID()})).jobs[0].url,trip.sources[0].url);
  await api('/api/crawl?report=1','GET',undefined,403,false);
