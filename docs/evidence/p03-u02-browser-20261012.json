@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T22:06:24.127Z",
+ "measuredAt": "2026-10-11T22:29:14.972Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -63,7 +63,7 @@
     "visibility": "visible",
     "mark": false,
     "pending": false,
-    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&utm_source=mail"
    }
   },
   {
@@ -72,7 +72,7 @@
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "6e2fe933291f6e71",
+    "first": "c125805fb04fc60a",
     "mark": true,
     "cardsVisible": false,
     "pending": true,
@@ -324,7 +324,7 @@
     "visibility": "visible",
     "mark": false,
     "pending": false,
-    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&utm_source=mail"
    }
   },
   {
@@ -333,7 +333,7 @@
    "pass": true,
    "detail": {
     "visibility": "hidden",
-    "first": "6e2fe933291f6e71",
+    "first": "c125805fb04fc60a",
     "mark": true,
     "cardsVisible": false,
     "pending": true,
