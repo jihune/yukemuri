@@ -11,9 +11,6 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 node=['node','--import','./scripts/sites-env.mjs','./node_modules/wrangler/bin/wrangler.js']
 config='dist/server/wrangler.json'
-if '--prices-fixture' in sys.argv:
- subprocess.run(['node','scripts/check-price-worker.mjs'],cwd=root,check=True,timeout=180)
- sys.exit(0)
 if '--public-access' in sys.argv:
  subprocess.run(['node','--import','./scripts/sites-env.mjs','scripts/check-public-worker.mjs'],cwd=root,check=True,timeout=200)
  sys.exit(0)
@@ -37,7 +34,7 @@ with tempfile.TemporaryDirectory(prefix='yukemuri-runtime-') as folder:
     except (urllib.error.URLError,TimeoutError):
      if time.monotonic()>deadline:raise RuntimeError('Worker startup timed out')
      time.sleep(.5)
-   test='scripts/check-public-access.py' if '--public-access' in sys.argv else 'scripts/check-price-runtime.py' if '--prices-live' in sys.argv else 'scripts/check-runtime.py'
+   test='scripts/check-public-access.py' if '--public-access' in sys.argv else 'scripts/check-runtime.py'
    subprocess.run(['python',test],cwd=root,check=True,timeout=180)
   except Exception:
    log.seek(0);print(log.read()[-8000:]);raise
