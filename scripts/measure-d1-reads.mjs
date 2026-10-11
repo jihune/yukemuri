@@ -155,7 +155,7 @@ try{
   ['exportManifest','catalog-export 목록','/api/catalog-export'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
  ];
- const results=[];let snapshot=null;
+ const results=[];let snapshot=null,gentleRun=null;
  const warm=start();
  try{
   await call(warm,'/api/hotels');
@@ -170,6 +170,41 @@ try{
    if(key.startsWith('crawlPut'))row.coverageRecords=r.body.coverage?.records,row.accepted=r.body.accepted;
    if(r.body.total!==undefined)row.total=r.body.total;
    results.push(row);byKey[key]={...row,snapshot:r.body.snapshot?.token};console.log(JSON.stringify(row));
+  }
+  // One gentle collector run as scripts/crawler/update-site.py makes it:
+  // preparation, rounds of claims over its eight phases (national lane for
+  // each provider's first detail claim and every fifth page), one PUT per
+  // claimed page and the closing GET. The PUTs are estimated from the measured
+  // detail PUT (crawlPut) and, as an upper case, the 30-new-hotel list PUT.
+  {
+   const wdb=await warm.getD1Database('DB'),sum=()=>({requests:0,rowsRead:0,rowsWritten:0}),part={prepare:sum(),claims:sum(),get:sum()};
+   const add=(k,m)=>{part[k].requests++;part[k].rowsRead+=m.rowsRead;part[k].rowsWritten+=m.rowsWritten};
+   // The claim scenarios above left leases and provider pacing behind.
+   await wdb.batch([wdb.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE lease_until>0'),wdb.prepare("DELETE FROM catalog_meta WHERE key LIKE 'crawl-provider-ready:%'")]);
+   // Production has finished the one-time preparation; finish it here first.
+   for(let i=0;i<100&&!(await call(warm,'/api/crawl-prepare',{method:'POST'})).body.done;i++);
+   add('prepare',(await call(warm,'/api/crawl-prepare',{method:'POST'})).meter);
+   const groups=[['jalan','detail'],['jalan','baths'],['trip','detail'],['jalan','refresh'],['trip','refresh'],['jalan','list'],['trip','list'],['trip','names']];
+   let completed=0,emptyClaims=0;const firstDetail=new Set();
+   for(let round=0;round<10&&completed<16;round++){
+    let progress=false;
+    for(const [provider,phase] of groups){
+     const first=phase==='detail'&&!firstDetail.has(provider);if(first)firstDetail.add(provider);
+     const r=await call(warm,'/api/crawl',{method:'POST',body:JSON.stringify({provider,phase,lane:first||completed%5===4?'national':'priority',token:randomUUID()})});add('claims',r.meter);
+     const job=r.body.jobs[0];if(!job){emptyClaims++;continue}
+     progress=true;
+     // The page's PUT is not sent (copied queue URLs are not valid source
+     // URLs); its job update is applied directly and its cost estimated below.
+     await wdb.batch([wdb.prepare("UPDATE crawl_jobs SET status='retry',attempts=attempts+1,next_at=?,lease_token=NULL,lease_until=0 WHERE url=?").bind(Date.now()/1000+3600,job.url),wdb.prepare("DELETE FROM catalog_meta WHERE key LIKE 'crawl-provider-ready:%'")]);
+     if(++completed>=16)break;
+    }
+    if(!progress)break;
+   }
+   add('get',(await call(warm,'/api/crawl?provider=jalan&kind=list&limit=1')).meter);
+   const total={rowsRead:0,rowsWritten:0};for(const k in part){total.rowsRead+=part[k].rowsRead;total.rowsWritten+=part[k].rowsWritten}
+   const put=results.find(r=>r.key==='crawlPut'),putList=results.find(r=>r.key==='crawlPutList');
+   gentleRun={pages:completed,emptyClaims,...part,total,withDetailPuts:{rowsRead:total.rowsRead+completed*put.rowsRead,rowsWritten:total.rowsWritten+completed*put.rowsWritten},withListPuts:{rowsRead:total.rowsRead+completed*putList.rowsRead,rowsWritten:total.rowsWritten+completed*putList.rowsWritten}};
+   console.log('gentleRun='+JSON.stringify(gentleRun));
   }
   // Size of the search snapshot and the time V8 takes to parse it in this
   // process (a stand-in for the Worker's CPU time on a new isolate).
@@ -202,7 +237,7 @@ try{
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} read and ${Object.keys(writeBounds).length} write bounds, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }
- const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,...(snapshot?{snapshot}:{}),seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,...(snapshot?{snapshot}:{}),gentleRun,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
 }finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

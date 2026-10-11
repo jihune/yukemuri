@@ -1,0 +1,295 @@
+{
+ "measuredAt": "2026-10-11T14:26:02.609Z",
+ "runs": 15,
+ "environment": "Node v24.21.0 (V8 13.6.233.17-node.53), node:sqlite on a copy of a grown temporary D1. JavaScript CPU = process CPU minus time inside SQLite. Not Worker CPU.",
+ "results": [
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "cold",
+   "median": 110.1,
+   "p95": 174.86,
+   "max": 174.86
+  },
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "warm",
+   "median": 23.7,
+   "p95": 55.21,
+   "max": 55.21
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "cold",
+   "median": 112.89,
+   "p95": 242.07,
+   "max": 242.07
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "warm",
+   "median": 21.95,
+   "p95": 39.23,
+   "max": 39.23
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "cold",
+   "median": 113.17,
+   "p95": 278.04,
+   "max": 278.04
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "warm",
+   "median": 14.85,
+   "p95": 40.08,
+   "max": 40.08
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "cold",
+   "median": 89.88,
+   "p95": 160.85,
+   "max": 160.85
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "warm",
+   "median": 11.74,
+   "p95": 47.15,
+   "max": 47.15
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "cold",
+   "median": 923.72,
+   "p95": 1419.48,
+   "max": 1419.48
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "warm",
+   "median": 44.32,
+   "p95": 126.74,
+   "max": 126.74
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "cold",
+   "median": 788.39,
+   "p95": 1082.64,
+   "max": 1082.64
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "warm",
+   "median": 38.61,
+   "p95": 72.14,
+   "max": 72.14
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "cold",
+   "median": 37.99,
+   "p95": 130.39,
+   "max": 130.39
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "warm",
+   "median": 0.89,
+   "p95": 5.16,
+   "max": 5.16
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "cold",
+   "median": 879.85,
+   "p95": 1491.62,
+   "max": 1491.62
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "warm",
+   "median": 24.22,
+   "p95": 63.82,
+   "max": 63.82
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "cold",
+   "median": 24.27,
+   "p95": 112.38,
+   "max": 112.38
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "warm",
+   "median": 0.05,
+   "p95": 0.21,
+   "max": 0.21
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "cold",
+   "median": 106.53,
+   "p95": 220.42,
+   "max": 220.42
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "warm",
+   "median": 0.08,
+   "p95": 2.53,
+   "max": 2.53
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "cold",
+   "median": 22.66,
+   "p95": 44.1,
+   "max": 44.1
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "warm",
+   "median": 13.05,
+   "p95": 29.59,
+   "max": 29.59
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "cold",
+   "median": 15.56,
+   "p95": 43.63,
+   "max": 43.63
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "warm",
+   "median": 11.59,
+   "p95": 36.63,
+   "max": 36.63
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "cold",
+   "median": 9.24,
+   "p95": 38.84,
+   "max": 38.84
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "warm",
+   "median": 8.19,
+   "p95": 21.64,
+   "max": 21.64
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "cold",
+   "median": 6.9,
+   "p95": 33.31,
+   "max": 33.31
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "warm",
+   "median": 6.01,
+   "p95": 24.84,
+   "max": 24.84
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "cold",
+   "median": 754.9,
+   "p95": 981.51,
+   "max": 981.51
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "warm",
+   "median": 26.12,
+   "p95": 62.72,
+   "max": 62.72
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "cold",
+   "median": 688.06,
+   "p95": 928.81,
+   "max": 928.81
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "warm",
+   "median": 35.96,
+   "p95": 60.62,
+   "max": 60.62
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "cold",
+   "median": -0.09,
+   "p95": 4.37,
+   "max": 4.37
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "warm",
+   "median": 0.11,
+   "p95": 0.42,
+   "max": 0.42
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "cold",
+   "median": 724.59,
+   "p95": 949.87,
+   "max": 949.87
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "warm",
+   "median": 21.69,
+   "p95": 66.17,
+   "max": 66.17
+  }
+ ]
+}

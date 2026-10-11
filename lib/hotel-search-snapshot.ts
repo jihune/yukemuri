@@ -6,12 +6,17 @@ import type {Hotel} from './hotel-types';
 // so list, map and name searches no longer read the catalogue table by table.
 export type SnapshotCore=[region:string,prefecture:string|null,name:string,kind:string,tripScore:number|null,tripReviews:number|null,jalanScore:number|null,jalanReviews:number|null,natural:number|null,bathFeatures:number|null,bathKnown:number|null,lat:number|null,lng:number|null,state:string|null];
 export type SnapshotText=[searchText:string,names:Hotel['names'],location:Hotel['location'],aliases:[nameKey:string,name:string][]|null];
-export type SnapshotRow={id:string;core:SnapshotCore;text?:SnapshotText};
+// plain: id and name hold no surrogate pair, so native string order is SQLite's.
+export type SnapshotRow={id:string;core:SnapshotCore;text?:SnapshotText;plain:boolean};
 const CHUNKS=64;
-type Chunk={version:number;core:Record<string,SnapshotCore>;text?:Record<string,SnapshotText>};
+type Chunk={version:number;core:Record<string,SnapshotCore>;text?:Record<string,SnapshotText>;plain:boolean};
 const chunks=new Map<number,Chunk>();
 let rows:SnapshotRow[]|null=null,generation=0,queue:Promise<unknown>=Promise.resolve();
+const SURROGATE=/[\ud800-\udfff]/;
 // SQLite BINARY order (UTF-8 bytes, i.e. code points) for ORDER BY on text.
+// Native comparison of UTF-16 units agrees except where a surrogate pair
+// meets U+E000..U+FFFF, so it is used when neither text has a surrogate.
+export function textOrder(a:string,b:string,plain:boolean){return plain?(a<b?-1:a>b?1:0):compareText(a,b)}
 export function compareText(a:string,b:string){
  for(let i=0,n=Math.min(a.length,b.length);i<n;i++){
   let x=a.charCodeAt(i),y=b.charCodeAt(i);if(x===y)continue;
@@ -37,18 +42,19 @@ async function sync(withText:boolean){
  const stale=versions.filter(v=>{const c=chunks.get(v.chunk);return!c||c.version!==v.version||withText&&!c.text});
  if(!stale.length)return;
  const fetched=await db.prepare(`SELECT chunk,version,core${withText?',text':''} FROM hotel_search_chunks WHERE chunk IN (SELECT value FROM json_each(?))`).bind(JSON.stringify(stale.map(v=>v.chunk))).all<{chunk:number;version:number;core:string;text?:string}>();
- for(const r of fetched.results)chunks.set(r.chunk,{version:r.version,core:JSON.parse(r.core),text:r.text===undefined?undefined:JSON.parse(r.text)});
+ // One test per chunk: no surrogate anywhere in its core JSON (ids, names).
+ for(const r of fetched.results)chunks.set(r.chunk,{version:r.version,core:JSON.parse(r.core),text:r.text===undefined?undefined:JSON.parse(r.text),plain:!SURROGATE.test(r.core)});
  rows=null;generation++;
 }
-// Rows in id order, assembled in the same queued step as their sync, so a
-// concurrent sync without text cannot drop text from rows a caller asked for.
+// Rows (in no particular order), assembled in the same queued step as their
+// sync, so a concurrent sync without text cannot drop text from rows a caller
+// asked for.
 export async function searchSnapshot(withText=false){
  const run=queue.then(async()=>{
   await sync(withText);
   if(!rows){
    rows=[];
-   for(const c of chunks.values())for(const [id,core] of Object.entries(c.core))rows.push({id,core,text:c.text?.[id]});
-   rows.sort((a,b)=>compareText(a.id,b.id));
+   for(const c of chunks.values())for(const [id,core] of Object.entries(c.core))rows.push({id,core,text:c.text?.[id],plain:c.plain});
   }
   return{rows,generation};
  });

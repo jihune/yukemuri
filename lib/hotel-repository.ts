@@ -18,7 +18,7 @@ import localizedNames from '../data/korean-hotel-names.json';
 import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
 import {createResultSession,readResultSession,resultQueryKey,hotelsInOrder,type SearchOptions} from './hotel-result-session';
-import {searchSnapshot,compareText,type SnapshotCore,type SnapshotRow} from './hotel-search-snapshot';
+import {searchSnapshot,compareText,textOrder,type SnapshotCore,type SnapshotRow} from './hotel-search-snapshot';
 import {validComparisonIds} from './hotel-comparison';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
@@ -27,7 +27,8 @@ async function catalogueSearchIndex(){
  if(!searchIndex||searchIndex.expires<Date.now()){
   const promise=(async()=>{
    const hotels:SearchIndexHotel[]=[];
-   for(const {id,core,text} of (await searchSnapshot(true)).rows){
+   const byId=(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.id,b.id,a.plain&&b.plain);
+   for(const {id,core,text} of (await searchSnapshot(true)).rows.slice().sort(byId)){
     if(core[13]!==null&&CLOSED.has(core[13]))continue;
     const [,names,location,aliases]=text!,place={prefecture:core[1],regionId:core[0],location,names};
     // Aliases in name-key order, as the former (hotel_id, name_key) read.
@@ -102,10 +103,11 @@ function sortedRows(snapshot:Awaited<ReturnType<typeof searchSnapshot>>,sort:Sor
  if(orders?.generation!==snapshot.generation)orders={generation:snapshot.generation,lists:new Map()};
  const key=sort+':'+provider,cached=orders.lists.get(key);if(cached)return cached;
  const [score,reviews]=provider==='jalan'?[6,7]:[4,5];
- const rating=(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[score] as number|null,b.core[score] as number|null)||desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||compareText(a.id,b.id);
+ const id=(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.id,b.id,a.plain&&b.plain);
+ const rating=(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[score] as number|null,b.core[score] as number|null)||desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||id(a,b);
  const top=(r:SnapshotRow)=>r.core[4]!==null&&r.core[4]>=9&&r.core[5]!==null&&r.core[5]>=50?1:0;
- const compare=sort==='name'?(a:SnapshotRow,b:SnapshotRow)=>compareText(a.core[2],b.core[2])||compareText(a.id,b.id)
-  :sort==='reviews'?(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||desc(a.core[score] as number|null,b.core[score] as number|null)||compareText(a.id,b.id)
+ const compare=sort==='name'?(a:SnapshotRow,b:SnapshotRow)=>textOrder(a.core[2],b.core[2],a.plain&&b.plain)||id(a,b)
+  :sort==='reviews'?(a:SnapshotRow,b:SnapshotRow)=>desc(a.core[reviews] as number|null,b.core[reviews] as number|null)||desc(a.core[score] as number|null,b.core[score] as number|null)||id(a,b)
   :sort==='rating'?rating
   :(a:SnapshotRow,b:SnapshotRow)=>(b.core[8]===1?1:0)-(a.core[8]===1?1:0)||top(b)-top(a)||rating(a,b);
  const list=snapshot.rows.slice().sort(compare);orders.lists.set(key,list);return list;
@@ -371,6 +373,8 @@ async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,s
    if(lat===null||lng===null){withoutCoordinates++;continue}
    if(lat>=bounds.south&&lat<=bounds.north&&lng>=bounds.west&&lng<=bounds.east)inside.push(row);
   }
+  // Points in id order (the former ORDER BY id); the grid sums in that order.
+  inside.sort((a,b)=>textOrder(a.id,b.id,a.plain&&b.plain));
   const inBounds=inside.length,score=filters.ratingProvider==='jalan'?6:4;
   const result:MapAreaResponse={total,inBounds,outOfBounds:total-withoutCoordinates-inBounds,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
   if(!inBounds)return result;
@@ -397,19 +401,22 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
   const coveragePromise=readCachedCoverage();
   const snapshot=await searchSnapshot(!!normalizeSearch(filters.query)),scope=await searchScope(filters,savedOnly,savedIds,snapshot);
   const similar=scope.matches.filter(m=>m.similar).map(m=>m.id),similarSet=new Set(similar);
-  const featureCounts=Object.fromEntries(FEATURE_KEYS.map(key=>[key,0])) as Record<FeatureKey,number>;
-  let ryokanCount=0,total=0,similarCount=0,unknownExcluded=0;
+  const bitCounts=new Array<number>(32).fill(0),matched=new Set<SnapshotRow>();
+  let ryokanCount=0,similarCount=0,unknownExcluded=0;
   for(const row of snapshot.rows){
    if(!inScope(row,scope))continue;
-   for(const key of FEATURE_KEYS)if(hasFeature(row.core,FEATURE_BITS[key]))featureCounts[key]++;
+   // Count each set feature bit (lowest first) instead of testing every key.
+   for(let v=row.core[9]??0;v;v&=v-1)bitCounts[31-Math.clz32(v&-v)]++;
    if(row.core[3]==='ryokan')ryokanCount++;
    // Unknown: excluded only for lacking a fact, counted so the list can say so.
-   if(eligible(row.core,filters)){total++;if(similarSet.has(row.id))similarCount++}
+   if(eligible(row.core,filters)){matched.add(row);if(similarSet.has(row.id))similarCount++}
    else if(unknownOnly(row.core,filters))unknownExcluded++;
   }
+  const featureCounts=Object.fromEntries(FEATURE_KEYS.map(key=>[key,bitCounts[Math.log2(FEATURE_BITS[key])]])) as Record<FeatureKey,number>;
+  const total=matched.size;
   const coverage=await coveragePromise;
   const pageSize=40,actualPage=Math.max(1,Math.min(page,Math.max(1,Math.ceil(total/pageSize))));
-  let list=sortedRows(snapshot,sort,filters.ratingProvider).filter(row=>inScope(row,scope)&&eligible(row.core,filters));
+  let list=sortedRows(snapshot,sort,filters.ratingProvider).filter(row=>matched.has(row));
   // Broad legacy full-text hits can join separate name words. Keep them below
   // the shared name/place relevance so both result and prediction order agree.
   if(sort==='recommended'&&scope.q){const score=new Map(scope.matches.map(m=>[m.id,m.score]));list=list.map(row=>({row,score:score.get(row.id)??20})).sort((a,b)=>b.score-a.score).map(r=>r.row)}
