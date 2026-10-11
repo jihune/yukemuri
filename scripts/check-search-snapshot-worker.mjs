@@ -91,9 +91,12 @@ try{
 
  // The guard refuses anything but a read before it reaches the database.
  const guard=readOnly(db).db;
- for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1','WITH x AS (SELECT 1) DELETE FROM hotels RETURNING id','with x as (select 1) insert into catalog_meta select 1,2','WITH x AS (SELECT 1) UPDATE hotels SET name=1','with/**/x as (select 1) replace into catalog_meta values (1,2)',"SELECT 'a' -- x\n; DELETE FROM hotels"])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
+ for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1','WITH x AS (SELECT 1) DELETE FROM hotels RETURNING id','with x as (select 1) insert into catalog_meta select 1,2','WITH x AS (SELECT 1) UPDATE hotels SET name=1','with/**/x as (select 1) replace into catalog_meta values (1,2)',"SELECT 'a' -- x\n; DELETE FROM hotels",
+  // A quote inside a comment, or a comment marker inside a string, hides nothing.
+  "WITH x AS (SELECT 1) /* it's */ DELETE FROM hotels WHERE name<>'zz'","SELECT 1 -- it's\n; DELETE FROM hotels WHERE name='a'","SELECT 'a /* b' AS c, 1 DELETE FROM hotels"])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
  // Words inside literals and comments are text, not writes.
  assert.doesNotThrow(()=>guard.prepare("SELECT 'DELETE FROM hotels' AS a -- UPDATE\n"));
+ for(const sql of ["SELECT 'it''s DELETE' AS a",'SELECT "UPDATE", [INSERT], `DROP` FROM hotels','SELECT 1 /* DELETE */ FROM hotels -- UPDATE','SELECT "a""DELETE" FROM hotels'])assert.doesNotThrow(()=>guard.prepare(sql),sql);
  await assert.rejects(guard.prepare('SELECT 1').run(),/read-only/);
 
  // The Cloudflare API source: same files from the same rows, string parameters,
@@ -137,7 +140,7 @@ try{
  const html=pageOf();
  assert(html.includes(`data-first-page="${manifest.id}"`),'static page marks its snapshot');
  assert.deepEqual(titles(html),first.hotels.map(h=>h.names.ko),'static page renders the first page cards in order');
- assert(html.includes(first.total.toLocaleString('ko-KR')+'곳'),'static page shows the total');
+ assert(new RegExp(first.total.toLocaleString('ko-KR')+'(?:<!-- -->)?곳').test(html),'static page shows the total');
  // Rebuilding replaces the version folder and adds the cache rule once.
  const again=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
  assert.equal(again.manifest.id,manifest.id);

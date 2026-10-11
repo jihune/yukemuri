@@ -27,7 +27,25 @@ const READ_ONLY=/^\s*(?:SELECT|WITH)\b/i;
 // (WITH x AS (...) DELETE ...), so every word of the statement is checked,
 // outside string literals and comments. replace() is refused with REPLACE.
 const WRITES=/\b(?:INSERT|UPDATE|DELETE|REPLACE|UPSERT|CREATE|DROP|ALTER|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX|ANALYZE|BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE|RETURNING)\b/i;
-const code=sql=>sql.replace(/'(?:[^']|'')*'/g,"''").replace(/--[^\n]*/g,' ').replace(/\/\*[\s\S]*?\*\//g,' ');
+// The statement without strings, quoted names and comments, read in one pass
+// from the left as SQLite reads it: a quote inside a comment starts nothing, a
+// comment marker inside a string is text. Strings become '', quoted names ""
+// and comments a space; an unterminated one runs to the end.
+const code=sql=>{
+ let out='',i=0;
+ const quoted=(q,from)=>{for(let j=from;;){const k=sql.indexOf(q,j);if(k<0)return sql.length;if(sql[k+1]===q){j=k+2;continue}return k+1}};
+ const until=(close,from)=>{const end=sql.indexOf(close,from);return end<0?sql.length:end+close.length};
+ while(i<sql.length){
+  const c=sql[i],next=sql[i+1];
+  if(c==="'"){i=quoted("'",i+1);out+="''"}
+  else if(c==='"'||c==='`'){i=quoted(c,i+1);out+='""'}
+  else if(c==='['){i=until(']',i+1);out+='""'}
+  else if(c==='-'&&next==='-'){i=until('\n',i+2);out+=' '}
+  else if(c==='/'&&next==='*'){i=until('*/',i+2);out+=' '}
+  else{out+=c;i++}
+ }
+ return out;
+};
 
 // A D1 binding that only reads: every statement is checked before it runs.
 // rowsRead adds up meta.rows_read where the source reports it (D1, Miniflare).
