@@ -24,7 +24,11 @@ export const hotelNames=sqliteTable('hotel_names',{
 export const crawlJobs=sqliteTable('crawl_jobs',{
  url:text('url').primaryKey(),provider:text('provider').notNull(),kind:text('kind').notNull(),prefecture:text('prefecture'),status:text('status').notNull(),attempts:integer('attempts').notNull(),nextAt:real('next_at').notNull(),error:text('error'),fetchedAt:text('fetched_at'),
  leaseToken:text('lease_token'),leaseUntil:real('lease_until').notNull().default(0),lastToken:text('last_token'),priority:integer('priority').notNull().default(90),
-},table=>[index('idx_crawl_jobs_ready').on(table.status,table.nextAt),index('idx_crawl_jobs_provider_ready').on(table.provider,table.kind,table.status,table.nextAt),index('idx_crawl_jobs_provider_lease').on(table.provider,table.leaseUntil)]);
+},table=>[index('idx_crawl_jobs_ready').on(table.status,table.nextAt),index('idx_crawl_jobs_provider_ready').on(table.provider,table.kind,table.status,table.nextAt),index('idx_crawl_jobs_provider_lease').on(table.provider,table.leaseUntil),
+ // Claim order of each lane (lib/crawl-queue.ts), so a claim reads the first
+ // eligible job in index order instead of sorting every waiting job.
+ index('idx_crawl_jobs_claim_priority').on(table.provider,table.kind,table.status,table.priority,sql`COALESCE(unixepoch(${table.fetchedAt}),0)`,table.attempts,table.url),
+ index('idx_crawl_jobs_claim_national').on(table.provider,table.kind,table.status,sql`COALESCE(unixepoch(${table.fetchedAt}),0)`,table.nextAt,table.attempts,table.url)]);
 export const priceQuotes=sqliteTable('price_quotes',{
  key:text('key').primaryKey(),payload:text('payload').notNull(),expiresAt:integer('expires_at').notNull(),
 },table=>[index('idx_price_quotes_expiry').on(table.expiresAt)]);

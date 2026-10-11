@@ -4,6 +4,7 @@
 //  --grow   copy checked-in rows up to the 2026-10-08 production row counts
 //  --check  fail when a request reads more rows than its P01 upper bound
 //  --dist   build to measure (default dist) and --label, the commit it was built from
+//  --schema last migration to apply (e.g. 0012 for a build from before 0013)
 // Row counts come from the meta that Miniflare's D1 returns per statement.
 // Whether Miniflare counts rows exactly like production D1 is unverified.
 import {createRequire} from 'node:module';
@@ -15,7 +16,7 @@ import {execSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
-const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null,dist=argv.includes('--dist')?argv[argv.indexOf('--dist')+1]:'dist',label=argv.includes('--label')?argv[argv.indexOf('--label')+1]:null;
+const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null,dist=argv.includes('--dist')?argv[argv.indexOf('--dist')+1]:'dist',label=argv.includes('--label')?argv[argv.indexOf('--label')+1]:null,schema=argv.includes('--schema')?argv[argv.indexOf('--schema')+1]:'9999';
 // INSERT statement counts in the 2026-10-08 account export (docs/hosting-review-20261011.md 1.2).
 const TARGET={hotels:12271,hotel_names:13849,crawl_jobs:15417};
 const KEY='measure-d1-only',VISITOR='d'.repeat(64);
@@ -63,7 +64,7 @@ let runtime=start();
 const counts={};
 try{
  const db=await runtime.getD1Database('DB');
- for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
+ for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const seeding=await call(runtime,'/api/hotels');
  if(grow){
   // Copies of the checked-in rows under new ids, the way measure-map-area.mjs grows
@@ -91,30 +92,62 @@ try{
   return JSON.stringify({url:base.sources[0].url,status:'done',observations:[observation],links:[]});
  });
  for(const body of puts){const {url,observations:[h]}=JSON.parse(body);await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail',?,'pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',lease_token=NULL,lease_until=0,last_token=NULL").bind(url,h.prefecture).run()}
+ // A list page that finds 30 new properties (new ids, new detail jobs) and 15
+ // known ones, the write-heavy case of a collector list PUT.
+ const listUrl='https://www.jalan.net/130000/LRG_130200/';
+ await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','list','pref-tokyo','pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',lease_token=NULL,lease_until=0,last_token=NULL").bind(listUrl).run();
+ const listPut=(()=>{
+  const at=new Date().toISOString(),bases=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).filter(h=>/^jalan-\d+$/.test(h.id));
+  const observe=(base,id)=>{const url='https://www.jalan.net/yad'+id.slice(6)+'/';return{...base,id,links:base.links.map(l=>l.provider==='jalan'?{...l,url}:l),sources:[{...base.sources[0],sourceId:id,url:listUrl,label:'Jalan 목록',retrievedAt:at}],features:Object.fromEntries(Object.entries(base.features).map(([k,f])=>[k,f&&{...f,sourceId:id}])),ratings:base.ratings.map(r=>({...r,sourceId:id}))}};
+  const fresh=bases.slice(0,30).map((b,i)=>observe(b,'jalan-'+(9000000+i))),known=bases.slice(30,45).map(b=>observe(b,b.id));
+  return JSON.stringify({url:listUrl,status:'done',observations:[...fresh,...known],links:fresh.map(h=>({url:'https://www.jalan.net/yad'+h.id.slice(6)+'/',kind:'detail',prefecture:h.prefecture}))});
+ })();
  const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 3").all()).results.map(r=>r.id);
  const nameQuery=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).find(h=>h.names?.ja?.length>=4).names.ja.slice(0,3);
+ const q=v=>'&q='+encodeURIComponent(v);
  // A previous collector run ended with its full-count GET, as in production.
  await call(runtime,'/api/crawl?provider=jalan&kind=list&limit=1');
  await runtime.dispose();runtime=null;
 
  const list='/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1';
  const scenarios=[
-  // [key, label, path, init, expected, cold]
+  // [key, label, path, init, expected, cold]. A path may be a function of the
+  // earlier results (byKey) when it continues a result session.
   ['listCold','목록 첫 쪽(새 isolate)',list.replace('&fresh=1',''),{},200,true],
   ['detailCold','상세(새 isolate)','/api/hotels/'+sample[0],{},200,true],
-  ['nameCold','이름 부분검색(새 isolate, 색인 생성 포함)','/api/hotels?stable=1&saved=0&page=1&q='+encodeURIComponent(nameQuery),{},200,true],
+  ['nameCold','이름 부분검색(새 isolate, 색인 생성 포함)','/api/hotels?stable=1&saved=0&page=1'+q(nameQuery),{},200,true],
+  ['searchIndexCold','검색 색인 전송(새 isolate)','/api/hotels/search-index',{},200,true],
+  ['mapCold','지도 범위: 일본 전체(새 isolate)','/api/hotels/map?bbox=122,24,146,46',{},200,true],
   ['list','목록 첫 쪽(fresh)',list],
+  ['listRating','목록: 평점순(fresh)',list.replace('sort=recommended','sort=rating')],
+  ['listReviews','목록: 리뷰순(fresh)',list.replace('sort=recommended','sort=reviews')],
+  ['listName','목록: 이름순(fresh)',list.replace('sort=recommended','sort=name')],
   ['listFilters','목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)',list+'&features=natural&rating=9&reviews=50'],
+  ['listJalan','목록: Jalan 4.0+ 평점순(fresh)',list.replace('sort=recommended','sort=rating')+'&provider=jalan&rating=4'],
+  ['listRyokan','목록: 료칸+노천탕(fresh)',list+'&ryokan=1&features=outdoor'],
   ['listRegion','목록: 홋카이도(fresh)',list+'&region=pref-hokkaido'],
-  ['nameIndex','이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)',list+'&q='+encodeURIComponent(nameQuery)],
-  ['name','이름 부분검색(fresh, 색인 있음)',list+'&q='+encodeURIComponent(nameQuery)],
+  ['listNext','목록 이어 읽기(2쪽, 결과 세션)',byKey=>'/api/hotels?stable=1&sort=recommended&saved=0&page=2&snapshot='+byKey.list.snapshot],
+  ['listPage2','목록 2쪽(결과 세션 없음, fresh)',list.replace('stable=1&','').replace('page=1','page=2')],
+  ['nameIndex','이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)',list+q(nameQuery)],
+  ['name','이름 부분검색: 일본어(fresh, 색인 있음)',list+q(nameQuery)],
+  ['nameKo','이름 부분검색: 한글(fresh)',list+q('노보리베츠')],
+  ['nameRomaji','이름 부분검색: 로마자(fresh)',list+q('noboribetsu')],
+  ['namePlace','이름 부분검색: 箱根(fresh)',list+q('箱根')],
   ['suggest','검색어 예측','/api/hotels/suggestions?q='+encodeURIComponent(nameQuery)],
+  ['map','지도 범위: 일본 전체','/api/hotels/map?bbox=122,24,146,46'],
+  ['mapRegion','지도 범위: 홋카이도+천연온천','/api/hotels/map?bbox=139,41,146,46&features=natural'],
+  ['mapName','지도 범위: 이름 검색','/api/hotels/map?bbox=122,24,146,46'+q(nameQuery)],
   ['detail','상세','/api/hotels/'+sample[0]],
   ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.join(',')],
   ['crawlGet','수집 GET 집계(실행 끝)','/api/crawl?provider=jalan&kind=list&limit=1'],
   ['crawlClaim','수집 작업 선점(POST)','/api/crawl',{method:'POST',body:JSON.stringify({provider:'trip',phase:'detail',token:randomUUID()})}],
+  // Every phase and lane a gentle run claims (scripts/crawler/update-site.py).
+  // A claim reads the same rows whether or not the provider is already leased.
+  ...[['jalan','detail'],['jalan','baths'],['trip','detail'],['jalan','refresh'],['trip','refresh'],['jalan','list'],['trip','list'],['trip','names']].flatMap(([provider,phase])=>['priority','national'].map(lane=>[`claim:${provider}:${phase}:${lane}`,`수집 작업 선점(POST, ${provider} ${phase} ${lane})`,'/api/crawl',{method:'POST',body:JSON.stringify({provider,phase,lane,token:randomUUID()})}])),
   ['crawlPut','수집 저장(PUT, 상세 1곳)','/api/crawl',{method:'PUT',body:puts[0]}],
-  ['nameAfterPut','PUT 뒤 이름 부분검색(fresh)',list+'&q='+encodeURIComponent(nameQuery)],
+  ['nameAfterPut','PUT 뒤 이름 부분검색(fresh)',list+q(nameQuery)],
+  ['crawlPutList','수집 저장(PUT, 목록: 새 숙소 30·기존 15)','/api/crawl',{method:'PUT',body:listPut}],
+  ['listAfterPut','목록 PUT 뒤 목록 첫 쪽(fresh)',list],
   ['crawlPutCold','수집 저장(PUT, 새 isolate)','/api/crawl',{method:'PUT',body:puts[1]},200,true],
   ['exportManifest','catalog-export 목록','/api/catalog-export'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
@@ -123,13 +156,15 @@ try{
  const warm=start();
  try{
   await call(warm,'/api/hotels');
-  for(const [key,label,path,init={},expected=200,cold=false] of scenarios){
-   let r;
+  const byKey={};
+  for(const [key,label,route,init={},expected=200,cold=false] of scenarios){
+   let r;const path=typeof route==='function'?route(byKey):route;
    if(cold){const fresh=start();try{r=await call(fresh,path,init,expected)}finally{await fresh.dispose()}}
    else r=await call(warm,path,init,expected);
    const row={key,label,path:path.replace(/q=[^&]+/,'q=…'),ms:+r.ms.toFixed(1),...r.meter};
-   if(key==='crawlPut')row.coverageRecords=r.body.coverage?.records,row.accepted=r.body.accepted;
-   results.push(row);console.log(JSON.stringify(row));
+   if(key.startsWith('crawlPut'))row.coverageRecords=r.body.coverage?.records,row.accepted=r.body.accepted;
+   if(r.body.total!==undefined)row.total=r.body.total;
+   results.push(row);byKey[key]={...row,snapshot:r.body.snapshot?.token};console.log(JSON.stringify(row));
   }
  }finally{await warm.dispose()}
  const byKey=Object.fromEntries(results.map(r=>[r.key,r]));
@@ -140,12 +175,15 @@ try{
   // or name search scans the catalogue two or three times, not five to ten, and
   // a collector write does not make the next name search rebuild the index.
   const h=counts.hotels,bound=(k,c)=>k*h+c;
-  const bounds={crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),listCold:bound(3.5,2000),list:bound(3.5,2000),listFilters:bound(1.1,2000),name:bound(3,2000),nameIndex:bound(6,2000),nameCold:bound(6,2000),nameAfterPut:byKey.name.rowsRead+0.02*h};
+  // P02: a claim reads the first eligible job of each kind and status in its
+  // lane's index order and the jobs verified links name, not the whole queue.
+  const claims=Object.fromEntries(results.filter(r=>r.key==='crawlClaim'||r.key.startsWith('claim:')).map(r=>[r.key,bound(0.05,200)]));
+  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),listCold:bound(3.5,2000),list:bound(3.5,2000),listFilters:bound(1.1,2000),name:bound(3,2000),nameIndex:bound(6,2000),nameCold:bound(6,2000),nameAfterPut:byKey.name.rowsRead+0.02*h};
   const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }
- const report={measuredAt:new Date().toISOString(),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
 }finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

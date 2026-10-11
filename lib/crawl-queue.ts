@@ -48,12 +48,12 @@ export function jobIdentity(url:string):string|null{
 // most one active claim, across processes/isolates and enrichment phases.
 export async function claimCrawlJob(claim:CrawlClaim){
  const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):['names','baths'].includes(claim.phase)?'detail':claim.phase;
- const kindWhere=kind==='any'?"j.kind IN ('list','detail')":'j.kind=?';
- const kinds=kind==='any'?[]:[kind];
+ const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
  if(repeated.results.length)return repeated.results;
  const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NULL AND h.id NOT IN (SELECT value FROM json_each(?)))":'';
- const statuses=claim.phase==='refresh'?"('done','failed')":['names','baths'].includes(claim.phase)?"('done','pending','retry')":"('pending','retry')";
+ const extraArgs=claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[];
+ const statuses=claim.phase==='refresh'?['done','failed']:['names','baths'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.
@@ -61,11 +61,28 @@ export async function claimCrawlJob(claim:CrawlClaim){
  // Due retries would otherwise stay behind the pending backlog indefinitely.
  // Use the national lane for those pages; all readiness and lease guards below
  // still apply. The priority lane continues normal discovery/enrichment.
- const order=claim.lane==='national'?"CASE WHEN j.status='retry' THEN 0 ELSE 1 END,COALESCE(unixepoch(j.fetched_at),0),j.next_at,j.attempts,j.url":'j.priority,'+missingLinkedDetail+',COALESCE(unixepoch(j.fetched_at),0),j.attempts,j.url';
+ const fetched='COALESCE(unixepoch(j.fetched_at),0)',national=claim.lane==='national';
+ const order=national?`CASE WHEN status='retry' THEN 0 ELSE 1 END,fetched,next_at,attempts,url`:'priority,missing,fetched,attempts,url';
+ // The lane's order without the missing-detail term is the column order of its
+ // index, so each kind and status yields its first eligible job without a sort
+ // of the whole queue. Missing details are found separately (few: one per
+ // verified link) and win over the other jobs of their priority, as before.
+ const eligible=`j.next_at<=? AND j.lease_until<=? ${extra} ${refresh} ${claim.url?'AND j.url=?':''}`,eligibleArgs=[now,now,...extraArgs,...(claim.url?[claim.url]:[])];
+ const columns=`j.url,j.status,j.priority,${fetched} AS fetched,j.next_at,j.attempts`;
+ const branches:{sql:string;args:unknown[]}[]=[];
+ for(const k of kinds)for(const status of statuses)branches.push({sql:`SELECT * FROM (SELECT ${columns},1 AS missing FROM crawl_jobs j INDEXED BY ${national?'idx_crawl_jobs_claim_national':'idx_crawl_jobs_claim_priority'} WHERE j.provider=? AND j.kind=? AND j.status=? AND ${eligible} ORDER BY ${national?`${fetched},j.next_at`:`j.priority,${fetched}`},j.attempts,j.url LIMIT 1)`,args:[claim.provider,k,status,...eligibleArgs]});
+ if(!national&&kinds.includes('detail')){
+  // Only jobs a verified group can name are tested against the full condition:
+  // for Jalan the URL the group names, for Trip a URL whose only detail id is a
+  // group's id, or one that holds the detail marker twice.
+  const after="substr(j.url,instr(j.url,'-hotel-detail-')+14)";
+  const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL))`];
+  branches.push({sql:`SELECT * FROM (SELECT ${columns},0 AS missing FROM ${jobs} WHERE j.provider=? AND j.kind='detail' AND j.status IN (${statuses.map(()=>'?').join(',')}) AND ${eligible} ${named} AND (${missingLinkedDetail})=0 ORDER BY j.priority,${fetched},j.attempts,j.url LIMIT 1)`,args:[claim.provider,...statuses,...eligibleArgs]});
+ }
  const result=await db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
-  WHERE url=(SELECT j.url FROM crawl_jobs j WHERE j.provider=? AND ${kindWhere} AND j.status IN ${statuses} AND j.next_at<=? AND j.lease_until<=? ${extra} ${refresh} ${claim.url?'AND j.url=?':''} ORDER BY ${order} LIMIT 1)
+  WHERE url=(SELECT url FROM (${branches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1)
   AND lease_until<=? AND COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)<=? AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)
-  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,claim.provider,...kinds,now,now,...(claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[]),...(claim.url?[claim.url]:[]),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now).all();
+  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now).all();
  if(result.results.length)return result.results;
  // Concurrent retries of the same POST may arrive before either SELECT sees
 // the other claim. Return that same claim after the guarded UPDATE.

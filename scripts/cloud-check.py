@@ -35,6 +35,7 @@ if args.full:
         ['node', 'scripts/run-framework.mjs', 'build'],
         ['node', 'scripts/check-collector-release-worker.mjs'],
         ['node', 'scripts/check-crawl-queue-worker.mjs'],
+        ['node', 'scripts/check-claim-order-worker.mjs'],
         ['node', 'scripts/check-collection-status-worker.mjs'],
         ['node', 'scripts/check-comparison-worker.mjs'],
         ['node', 'scripts/check-catalog-worker.mjs'],
