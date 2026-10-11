@@ -13,7 +13,7 @@ const options={modules,modulesRoot:resolve('dist/server'),compatibilityDate:'202
 const runtime=new Miniflare(options);
 try{
  const db=await runtime.getD1Database('DB');
- for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
+ for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const api=async(path,method='GET',data,expected=200,authorized=true)=>{
   const r=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json',...(authorized?{'X-Yukemuri-Crawl-Key':'queue-test-only'}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body;

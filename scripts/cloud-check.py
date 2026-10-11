@@ -39,6 +39,7 @@ if args.full:
         ['node', 'scripts/check-collection-status-worker.mjs'],
         ['node', 'scripts/check-comparison-worker.mjs'],
         ['node', 'scripts/check-catalog-worker.mjs'],
+        ['node', 'scripts/check-search-snapshot-worker.mjs'],
         ['node', 'scripts/check-map-area-worker.mjs'],
         ['node', 'scripts/check-edge-guard-worker.mjs'],
         ['node', 'scripts/check-deploy-config.mjs'],

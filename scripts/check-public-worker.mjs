@@ -12,7 +12,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],host:'127.0.0.1',port:8787,d1Databases:{DB:'public-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'local-runtime-maintenance-test'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
+ for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
  await db.prepare("INSERT INTO favorites(hotel_id) VALUES ('toya-02')").run();
  await runtime.ready;
  await new Promise((resolve,reject)=>{

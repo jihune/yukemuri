@@ -149,22 +149,35 @@ try{
   ['crawlPutList','수집 저장(PUT, 목록: 새 숙소 30·기존 15)','/api/crawl',{method:'PUT',body:listPut}],
   ['listAfterPut','목록 PUT 뒤 목록 첫 쪽(fresh)',list],
   ['crawlPutCold','수집 저장(PUT, 새 isolate)','/api/crawl',{method:'PUT',body:puts[1]},200,true],
+  // P02: without its chunk rows (a fresh or newly loaded D1) the first search
+  // rebuilds the search snapshot in one statement.
+  ['searchRebuild','검색 스냅숏 다시 만들기(chunk 행을 지운 뒤 목록 첫 쪽, 새 isolate)',list,{before:'DELETE FROM hotel_search_chunks'},200,true],
   ['exportManifest','catalog-export 목록','/api/catalog-export'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
  ];
- const results=[];
+ const results=[];let snapshot=null;
  const warm=start();
  try{
   await call(warm,'/api/hotels');
   const byKey={};
   for(const [key,label,route,init={},expected=200,cold=false] of scenarios){
    let r;const path=typeof route==='function'?route(byKey):route;
+   // A build from before migration 0014 has no snapshot table to clear.
+   if(init.before)await (await warm.getD1Database('DB')).prepare(init.before).run().catch(()=>{});
    if(cold){const fresh=start();try{r=await call(fresh,path,init,expected)}finally{await fresh.dispose()}}
    else r=await call(warm,path,init,expected);
    const row={key,label,path:path.replace(/q=[^&]+/,'q=…'),ms:+r.ms.toFixed(1),...r.meter};
    if(key.startsWith('crawlPut'))row.coverageRecords=r.body.coverage?.records,row.accepted=r.body.accepted;
    if(r.body.total!==undefined)row.total=r.body.total;
    results.push(row);byKey[key]={...row,snapshot:r.body.snapshot?.token};console.log(JSON.stringify(row));
+  }
+  // Size of the search snapshot and the time V8 takes to parse it in this
+  // process (a stand-in for the Worker's CPU time on a new isolate).
+  const rows=await (await warm.getD1Database('DB')).prepare('SELECT core,text FROM hotel_search_chunks').all().catch(()=>null);
+  if(rows?.results.length){
+   const parse=key=>{const t=performance.now();for(const r of rows.results)JSON.parse(r[key]);return +(performance.now()-t).toFixed(1)};
+   snapshot={chunks:rows.results.length,coreBytes:rows.results.reduce((n,r)=>n+Buffer.byteLength(r.core),0),textBytes:rows.results.reduce((n,r)=>n+Buffer.byteLength(r.text),0),parseCoreMs:parse('core'),parseTextMs:parse('text')};
+   console.log('snapshot='+JSON.stringify(snapshot));
   }
  }finally{await warm.dispose()}
  const byKey=Object.fromEntries(results.map(r=>[r.key,r]));
@@ -178,12 +191,18 @@ try{
   // P02: a claim reads the first eligible job of each kind and status in its
   // lane's index order and the jobs verified links name, not the whole queue.
   const claims=Object.fromEntries(results.filter(r=>r.key==='crawlClaim'||r.key.startsWith('claim:')).map(r=>[r.key,bound(0.05,200)]));
-  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),listCold:bound(3.5,2000),list:bound(3.5,2000),listFilters:bound(1.1,2000),name:bound(3,2000),nameIndex:bound(6,2000),nameCold:bound(6,2000),nameAfterPut:byKey.name.rowsRead+0.02*h};
-  const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
-  console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
+  // P02: what a visitor's list, search, map, detail and comparison request
+  // reads stays under 2,000 rows (about 2,000 such requests a day after the
+  // collector and backup), at any catalogue size. Rebuilding the snapshot reads
+  // the catalogue once; collector writes stay small.
+  const visitor=['listCold','detailCold','nameCold','searchIndexCold','mapCold','list','listRating','listReviews','listName','listFilters','listJalan','listRyokan','listRegion','listNext','listPage2','nameIndex','name','nameKo','nameRomaji','namePlace','suggest','map','mapRegion','mapName','detail','compare','nameAfterPut','listAfterPut'];
+  const bounds={...claims,...Object.fromEntries(visitor.map(k=>[k,2000])),crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),crawlPutList:2000,searchRebuild:bound(5,2000)};
+  const writeBounds={crawlPut:40,crawlPutCold:40,crawlPutList:1000};
+  const failures=[...Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`),...Object.entries(writeBounds).filter(([k,max])=>byKey[k].rowsWritten>max).map(([k,max])=>`${k}: rowsWritten ${byKey[k].rowsWritten} > ${max}`)];
+  console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} read and ${Object.keys(writeBounds).length} write bounds, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }
- const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,...(snapshot?{snapshot}:{}),seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
 }finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

@@ -12,7 +12,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'map-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'map-test-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
+ for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
  const call=async(path,expected=200)=>{const r=await runtime.dispatchFetch('http://localhost'+path,{headers:{'X-Yukemuri-Visitor':'b'.repeat(64)}});const body=await r.json();assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));return body};
  const map=(query,bbox)=>call('/api/hotels/map?'+new URLSearchParams({...query,bbox:bbox.join(',')}));
  const list=async query=>{const ids=[];let page=await call('/api/hotels?'+new URLSearchParams({...query,stable:'1'}));ids.push(...page.hotels);for(let n=2;page.snapshot&&ids.length<page.total;n++){page=await call('/api/hotels?'+new URLSearchParams({...query,stable:'1',page:String(n),snapshot:page.snapshot.token}));ids.push(...page.hotels)}return ids};

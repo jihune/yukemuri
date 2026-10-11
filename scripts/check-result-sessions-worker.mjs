@@ -13,7 +13,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'sessions-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'sessions-test-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
+ for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const api=async(path,status=200,extra={})=>{
   const response=await runtime.dispatchFetch('http://localhost'+path,{headers:extra}),data=await response.json();assert.equal(response.status,status,JSON.stringify(data));return data;
  };

@@ -27,7 +27,7 @@ try{
  const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(path=>path.endsWith('.js')&&path!=='index.js').map(path=>({type:'ESModule',path:resolve('dist/server',path)}))];
  runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'comparison-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'comparison-test-only'}});
  const db=await runtime.getD1Database('DB');
- for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
+ for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').split('--> statement-breakpoint').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
  const api=async(path,expected=200,init={})=>{
   const response=await runtime.dispatchFetch('http://localhost'+path,init),body=await response.json();
   assert.equal(response.status,expected,JSON.stringify(body));

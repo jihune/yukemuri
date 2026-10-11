@@ -10,7 +10,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'sources-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'sources-test-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
+ for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const api=async(path,method='GET',data,expected=200,authorized=true,visitor='a'.repeat(64),origin)=>{
   const response=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':visitor,...(authorized?{'X-Yukemuri-Crawl-Key':'sources-test-only'}:{}),...(origin?{Origin:origin}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await response.json();assert.equal(response.status,expected,JSON.stringify(body));return body;

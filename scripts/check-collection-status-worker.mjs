@@ -11,7 +11,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'status-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'private-maintenance-only',GOOGLE_PLACES_ENABLED:'true',GOOGLE_PLACES_API_KEY:'private-google-key-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
+ for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').split('--> statement-breakpoint').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
  await runtime.dispatchFetch('http://localhost/api/hotels');
  const baseline=await(await runtime.dispatchFetch('http://localhost/api/collection-status')).json();
  const row=await db.prepare('SELECT * FROM hotels LIMIT 1').first(),columns=Object.keys(row);

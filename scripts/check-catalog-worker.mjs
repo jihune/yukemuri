@@ -11,7 +11,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'catalog-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'catalog-test-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
+ for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
  const api=async(path,init,expected=200)=>{const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{...init?.headers,'X-Yukemuri-Visitor':'a'.repeat(64),...(path.startsWith('/api/crawl')?{'X-Yukemuri-Crawl-Key':'catalog-test-only'}:{})}});const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body};
  const search=q=>api('/api/hotels?'+new URLSearchParams({q}));
  // An existing live row has no new mask columns or bath facts. Derive only

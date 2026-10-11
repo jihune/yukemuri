@@ -17,7 +17,7 @@ let ipCounter=0;const freshIp=()=>`198.51.100.${++ipCounter}`;
 const call=(runtime,path,headers={},init={})=>runtime.dispatchFetch('http://localhost'+path,{...init,headers});
 try{
  const db=await limited.getD1Database('DB');
- for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
+ for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
 
  // Limit: an IP gets LIMIT API responses per window, then 429 with guidance.
  const ip=freshIp(),probe='/api/collector-release';

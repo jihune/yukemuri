@@ -72,3 +72,10 @@ export const hotelSourceGroups=sqliteTable('hotel_source_groups',{
 export const hotelSourceObservations=sqliteTable('hotel_source_observations',{
  id:text('id').primaryKey(),payload:text('payload').notNull(),observedAt:text('observed_at').notNull(),
 });
+
+// Search columns of every hotel in 64 JSON rows, kept by the triggers of
+// migration 0014 and read by lib/hotel-search-snapshot.ts. Derived from hotels,
+// hotel_names and hotel_lifecycle; not exported or backed up.
+export const hotelSearchChunks=sqliteTable('hotel_search_chunks',{
+ chunk:integer('chunk').primaryKey(),version:integer('version').notNull(),core:text('core').notNull(),text:text('text').notNull(),
+});

@@ -14,7 +14,7 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'map-measure'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'map-measure-only'}});
 try{
  const db=await runtime.getD1Database('DB');
- for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
+ for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
  const call=async path=>{const t=performance.now();const r=await runtime.dispatchFetch('http://localhost'+path,{headers:{'X-Yukemuri-Visitor':'c'.repeat(64)}});const body=await r.json();if(r.status!==200)throw new Error(path+' '+r.status);return{ms:performance.now()-t,server:Number((r.headers.get('Server-Timing')??'').match(/dur=([\d.]+)/)?.[1]),body}};
  await call('/api/hotels');
  const seed=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
