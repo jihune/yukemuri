@@ -1,0 +1,639 @@
+{
+ "measuredAt": "2026-10-11T15:27:09.109Z",
+ "schema": "0015_mysterious_thor.sql",
+ "gitHead": "3d0b680",
+ "dirty": false,
+ "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.",
+ "grown": false,
+ "snapshot": {
+  "chunks": 64,
+  "coreBytes": 237734,
+  "textBytes": 927106,
+  "parseCoreMs": 4.6,
+  "parseTextMs": 4.8
+ },
+ "gentleRun": {
+  "pages": 16,
+  "emptyClaims": 3,
+  "prepare": {
+   "requests": 1,
+   "rowsRead": 3,
+   "rowsWritten": 0
+  },
+  "claims": {
+   "requests": 19,
+   "rowsRead": 1368,
+   "rowsWritten": 32
+  },
+  "get": {
+   "requests": 1,
+   "rowsRead": 7707,
+   "rowsWritten": 2
+  },
+  "total": {
+   "rowsRead": 9078,
+   "rowsWritten": 34
+  },
+  "withDetailPuts": {
+   "rowsRead": 9798,
+   "rowsWritten": 402
+  },
+  "withListPuts": {
+   "rowsRead": 32966,
+   "rowsWritten": 13170
+  }
+ },
+ "seedRequest": {
+  "rowsRead": 306250,
+  "rowsWritten": 41542
+ },
+ "tables": {
+  "hotels": 1655,
+  "hotel_names": 1711,
+  "crawl_jobs": 3505,
+  "hotel_lifecycle": 0
+ },
+ "results": [
+  {
+   "key": "listCold",
+   "label": "목록 첫 쪽(새 isolate)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1",
+   "ms": 85.3,
+   "statements": 17,
+   "rowsRead": 810,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "detailCold",
+   "label": "상세(새 isolate)",
+   "path": "/api/hotels/akan-tsuruga",
+   "ms": 58.8,
+   "statements": 10,
+   "rowsRead": 30,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "nameCold",
+   "label": "이름 부분검색(새 isolate, 색인 생성 포함)",
+   "path": "/api/hotels?stable=1&saved=0&page=1&q=…",
+   "ms": 222.9,
+   "statements": 16,
+   "rowsRead": 344,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 1
+  },
+  {
+   "key": "searchIndexCold",
+   "label": "검색 색인 전송(새 isolate)",
+   "path": "/api/hotels/search-index",
+   "ms": 190.7,
+   "statements": 7,
+   "rowsRead": 261,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "mapCold",
+   "label": "지도 범위: 일본 전체(새 isolate)",
+   "path": "/api/hotels/map?bbox=122,24,146,46",
+   "ms": 74,
+   "statements": 10,
+   "rowsRead": 265,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "list",
+   "label": "목록 첫 쪽(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+   "ms": 43.6,
+   "statements": 11,
+   "rowsRead": 806,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "listRating",
+   "label": "목록: 평점순(fresh)",
+   "path": "/api/hotels?stable=1&sort=rating&saved=0&page=1&fresh=1",
+   "ms": 56.8,
+   "statements": 15,
+   "rowsRead": 1005,
+   "rowsWritten": 6,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "listReviews",
+   "label": "목록: 리뷰순(fresh)",
+   "path": "/api/hotels?stable=1&sort=reviews&saved=0&page=1&fresh=1",
+   "ms": 41.7,
+   "statements": 14,
+   "rowsRead": 760,
+   "rowsWritten": 6,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "listName",
+   "label": "목록: 이름순(fresh)",
+   "path": "/api/hotels?stable=1&sort=name&saved=0&page=1&fresh=1",
+   "ms": 32.5,
+   "statements": 12,
+   "rowsRead": 528,
+   "rowsWritten": 6,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "listFilters",
+   "label": "목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&features=natural&rating=9&reviews=50",
+   "ms": 34.3,
+   "statements": 11,
+   "rowsRead": 399,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 13
+  },
+  {
+   "key": "listJalan",
+   "label": "목록: Jalan 4.0+ 평점순(fresh)",
+   "path": "/api/hotels?stable=1&sort=rating&saved=0&page=1&fresh=1&provider=jalan&rating=4",
+   "ms": 32.1,
+   "statements": 14,
+   "rowsRead": 546,
+   "rowsWritten": 6,
+   "heaviest": [],
+   "total": 1388
+  },
+  {
+   "key": "listRyokan",
+   "label": "목록: 료칸+노천탕(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&ryokan=1&features=outdoor",
+   "ms": 25.3,
+   "statements": 11,
+   "rowsRead": 376,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 12
+  },
+  {
+   "key": "listRegion",
+   "label": "목록: 홋카이도(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&region=pref-hokkaido",
+   "ms": 33.8,
+   "statements": 14,
+   "rowsRead": 816,
+   "rowsWritten": 6,
+   "heaviest": [],
+   "total": 77
+  },
+  {
+   "key": "listNext",
+   "label": "목록 이어 읽기(2쪽, 결과 세션)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=2&snapshot=44d563c8-14fa-42a7-aae7-2466225556fa",
+   "ms": 21.9,
+   "statements": 4,
+   "rowsRead": 441,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "listPage2",
+   "label": "목록 2쪽(결과 세션 없음, fresh)",
+   "path": "/api/hotels?sort=recommended&saved=0&page=2&fresh=1",
+   "ms": 22.2,
+   "statements": 5,
+   "rowsRead": 508,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "nameIndex",
+   "label": "이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 16,
+   "statements": 7,
+   "rowsRead": 81,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1
+  },
+  {
+   "key": "name",
+   "label": "이름 부분검색: 일본어(fresh, 색인 있음)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 15.7,
+   "statements": 6,
+   "rowsRead": 80,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1
+  },
+  {
+   "key": "nameKo",
+   "label": "이름 부분검색: 한글(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 158.9,
+   "statements": 13,
+   "rowsRead": 437,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 4
+  },
+  {
+   "key": "nameRomaji",
+   "label": "이름 부분검색: 로마자(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 30.9,
+   "statements": 11,
+   "rowsRead": 182,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 4
+  },
+  {
+   "key": "namePlace",
+   "label": "이름 부분검색: 箱根(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 46.9,
+   "statements": 11,
+   "rowsRead": 252,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 0
+  },
+  {
+   "key": "suggest",
+   "label": "검색어 예측",
+   "path": "/api/hotels/suggestions?q=…",
+   "ms": 14.2,
+   "statements": 0,
+   "rowsRead": 0,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "map",
+   "label": "지도 범위: 일본 전체",
+   "path": "/api/hotels/map?bbox=122,24,146,46",
+   "ms": 9.1,
+   "statements": 2,
+   "rowsRead": 65,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1655
+  },
+  {
+   "key": "mapRegion",
+   "label": "지도 범위: 홋카이도+천연온천",
+   "path": "/api/hotels/map?bbox=139,41,146,46&features=natural",
+   "ms": 9.5,
+   "statements": 4,
+   "rowsRead": 79,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 24
+  },
+  {
+   "key": "mapName",
+   "label": "지도 범위: 이름 검색",
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=…",
+   "ms": 12.1,
+   "statements": 4,
+   "rowsRead": 80,
+   "rowsWritten": 3,
+   "heaviest": [],
+   "total": 1
+  },
+  {
+   "key": "detail",
+   "label": "상세",
+   "path": "/api/hotels/akan-tsuruga",
+   "ms": 11.7,
+   "statements": 5,
+   "rowsRead": 25,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "compare",
+   "label": "비교 3곳",
+   "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
+   "ms": 12.6,
+   "statements": 5,
+   "rowsRead": 75,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "crawlGet",
+   "label": "수집 GET 집계(실행 끝)",
+   "path": "/api/crawl?provider=jalan&kind=list&limit=1",
+   "ms": 19.2,
+   "statements": 6,
+   "rowsRead": 7620,
+   "rowsWritten": 2,
+   "heaviest": [
+    {
+     "rowsRead": 1656,
+     "sql": "INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=exclude"
+    },
+    {
+     "rowsRead": 1655,
+     "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+    },
+    {
+     "rowsRead": 3506,
+     "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+    }
+   ]
+  },
+  {
+   "key": "crawlClaim",
+   "label": "수집 작업 선점(POST)",
+   "path": "/api/crawl",
+   "ms": 18.7,
+   "statements": 2,
+   "rowsRead": 158,
+   "rowsWritten": 2,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:detail:priority",
+   "label": "수집 작업 선점(POST, jalan detail priority)",
+   "path": "/api/crawl",
+   "ms": 9.2,
+   "statements": 2,
+   "rowsRead": 45,
+   "rowsWritten": 2,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:detail:national",
+   "label": "수집 작업 선점(POST, jalan detail national)",
+   "path": "/api/crawl",
+   "ms": 7.9,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:baths:priority",
+   "label": "수집 작업 선점(POST, jalan baths priority)",
+   "path": "/api/crawl",
+   "ms": 8.2,
+   "statements": 3,
+   "rowsRead": 41,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:baths:national",
+   "label": "수집 작업 선점(POST, jalan baths national)",
+   "path": "/api/crawl",
+   "ms": 10.6,
+   "statements": 3,
+   "rowsRead": 17,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:detail:priority",
+   "label": "수집 작업 선점(POST, trip detail priority)",
+   "path": "/api/crawl",
+   "ms": 14.2,
+   "statements": 3,
+   "rowsRead": 160,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:detail:national",
+   "label": "수집 작업 선점(POST, trip detail national)",
+   "path": "/api/crawl",
+   "ms": 14.2,
+   "statements": 3,
+   "rowsRead": 8,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:refresh:priority",
+   "label": "수집 작업 선점(POST, jalan refresh priority)",
+   "path": "/api/crawl",
+   "ms": 13.1,
+   "statements": 3,
+   "rowsRead": 155,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:refresh:national",
+   "label": "수집 작업 선점(POST, jalan refresh national)",
+   "path": "/api/crawl",
+   "ms": 10.4,
+   "statements": 3,
+   "rowsRead": 131,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:refresh:priority",
+   "label": "수집 작업 선점(POST, trip refresh priority)",
+   "path": "/api/crawl",
+   "ms": 10.7,
+   "statements": 3,
+   "rowsRead": 152,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:refresh:national",
+   "label": "수집 작업 선점(POST, trip refresh national)",
+   "path": "/api/crawl",
+   "ms": 10.1,
+   "statements": 3,
+   "rowsRead": 21,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:list:priority",
+   "label": "수집 작업 선점(POST, jalan list priority)",
+   "path": "/api/crawl",
+   "ms": 12.8,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:list:national",
+   "label": "수집 작업 선점(POST, jalan list national)",
+   "path": "/api/crawl",
+   "ms": 11.2,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:list:priority",
+   "label": "수집 작업 선점(POST, trip list priority)",
+   "path": "/api/crawl",
+   "ms": 7.6,
+   "statements": 3,
+   "rowsRead": 7,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:list:national",
+   "label": "수집 작업 선점(POST, trip list national)",
+   "path": "/api/crawl",
+   "ms": 8.7,
+   "statements": 3,
+   "rowsRead": 7,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:names:priority",
+   "label": "수집 작업 선점(POST, trip names priority)",
+   "path": "/api/crawl",
+   "ms": 8.1,
+   "statements": 3,
+   "rowsRead": 170,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:names:national",
+   "label": "수집 작업 선점(POST, trip names national)",
+   "path": "/api/crawl",
+   "ms": 8.4,
+   "statements": 3,
+   "rowsRead": 18,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "crawlPut",
+   "label": "수집 저장(PUT, 상세 1곳)",
+   "path": "/api/crawl",
+   "ms": 25,
+   "statements": 12,
+   "rowsRead": 45,
+   "rowsWritten": 23,
+   "heaviest": [],
+   "coverageRecords": 1655,
+   "accepted": 1
+  },
+  {
+   "key": "nameAfterPut",
+   "label": "PUT 뒤 이름 부분검색(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+   "ms": 25.4,
+   "statements": 8,
+   "rowsRead": 84,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 1
+  },
+  {
+   "key": "crawlPutList",
+   "label": "수집 저장(PUT, 목록: 새 숙소 30·기존 15)",
+   "path": "/api/crawl",
+   "ms": 86.2,
+   "statements": 12,
+   "rowsRead": 1493,
+   "rowsWritten": 821,
+   "heaviest": [],
+   "coverageRecords": 1685,
+   "accepted": 45
+  },
+  {
+   "key": "listAfterPut",
+   "label": "목록 PUT 뒤 목록 첫 쪽(fresh)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+   "ms": 42.2,
+   "statements": 15,
+   "rowsRead": 918,
+   "rowsWritten": 5,
+   "heaviest": [],
+   "total": 1685
+  },
+  {
+   "key": "crawlPutCold",
+   "label": "수집 저장(PUT, 새 isolate)",
+   "path": "/api/crawl",
+   "ms": 131.5,
+   "statements": 17,
+   "rowsRead": 46,
+   "rowsWritten": 22,
+   "heaviest": [],
+   "coverageRecords": 1685,
+   "accepted": 1
+  },
+  {
+   "key": "searchRebuild",
+   "label": "검색 스냅숏 다시 만들기(chunk 행을 지운 뒤 목록 첫 쪽, 새 isolate)",
+   "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+   "ms": 146,
+   "statements": 22,
+   "rowsRead": 8118,
+   "rowsWritten": 69,
+   "heaviest": [
+    {
+     "rowsRead": 7081,
+     "sql": "WITH RECURSIVE c(chunk) AS (SELECT 0 UNION ALL SELECT chunk+1 FROM c WHERE chunk<63), g AS MATERIALIZED (SELECT chunk,json_group_object(id,json(core)) AS core,j"
+    }
+   ],
+   "total": 1685
+  },
+  {
+   "key": "exportManifest",
+   "label": "catalog-export 목록",
+   "path": "/api/catalog-export",
+   "ms": 28.7,
+   "statements": 26,
+   "rowsRead": 7049,
+   "rowsWritten": 0,
+   "heaviest": [
+    {
+     "rowsRead": 1685,
+     "sql": "SELECT COUNT(*) AS count FROM hotels"
+    },
+    {
+     "rowsRead": 1741,
+     "sql": "SELECT COUNT(*) AS count FROM hotel_names"
+    },
+    {
+     "rowsRead": 3536,
+     "sql": "SELECT COUNT(*) AS count FROM crawl_jobs"
+    }
+   ]
+  },
+  {
+   "key": "exportPage",
+   "label": "catalog-export hotels 한 쪽(250행)",
+   "path": "/api/catalog-export?table=hotels&limit=250",
+   "ms": 53.4,
+   "statements": 1,
+   "rowsRead": 251,
+   "rowsWritten": 0,
+   "heaviest": []
+  }
+ ]
+}

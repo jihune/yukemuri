@@ -1,0 +1,1740 @@
+{
+ "comparedAt": "2026-10-11T13:54:59.855Z",
+ "oldBuild": "see P02-20261011.md",
+ "grown": true,
+ "claims": 96,
+ "claimed": 96,
+ "different": 0,
+ "before": [
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad364904/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad396050/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300361/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300504/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301552/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301765/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301950/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad302045/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300504/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300572/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300770/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301033/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301352/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301531/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad302628/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad304122/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad305378/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad306636/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad310176/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad310914/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-21907111/apa-hotel-and-resort-tokyo-bay-makuhari/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-21907111/apa-hotel-and-resort-tokyo-bay-makuhari/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/osaka-hotel-detail-10836901/hot-spring-osaka-hinode-hotel-nipponbashi/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/osaka-hotel-detail-37082416/hotel-hankyu-respire-osaka/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-1061004/agora-place-asakusa/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-687323/hotel-mystays-asakusa/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-704030/tokyo-dome-hotel/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-993510/imperial-hotel-tokyo/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/120000/LRG_120200/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/akita/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/fukuoka/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/hokkaido/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/kagawa/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300170/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300665/copy4/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/270000/LRG_271400/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/280000/LRG_280200/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/aomori/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/fukushima/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/hyogo/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/country/japan.htmlcopy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.html",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page4.html",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page4.htmlcopy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_010300/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_011700/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_012900/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/050000/LRG_051100/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/090000/LRG_090500/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/100000/LRG_100800/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bangkok-hotels-list-359/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bangkok-hotels-list-359/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/ho-chi-minh-city-hotels-list-301/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/kobe-hotels-list-423/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/naha-hotels-list-92573/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/seoul-hotels-list-274/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/chengdu-hotels-list-28/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/sapporo-hotels-list-641/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/narita-hotel-detail-705045/toyoko-inn-narita-kuko/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-1061004/agora-place-asakusa/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-114045806/nestay-inn-tokyo-ryogoku/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-21145159/apa-hotel-ginza-shintomicho-ekimae/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-3095695/daiwa-roynet-hotel-ginza-premier/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-687323/hotel-mystays-asakusa/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-91275931/hotaku-hotel/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-688168/hotel-mystays-ochanomizu-cc/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-994895/shinagawa-prince-hotel/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  }
+ ],
+ "after": [
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad364904/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad396050/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300171/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300361/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300504/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301552/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301765/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad301950/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad302045/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300504/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300572/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300770/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301033/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301352/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad301531/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad302628/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad304122/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad305378/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad306636/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad310176/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "baths",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad310914/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-118232955/hotel-springs-makuhari-premier/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-21907111/apa-hotel-and-resort-tokyo-bay-makuhari/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/chiba-hotel-detail-21907111/apa-hotel-and-resort-tokyo-bay-makuhari/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/osaka-hotel-detail-10836901/hot-spring-osaka-hinode-hotel-nipponbashi/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/osaka-hotel-detail-37082416/hotel-hankyu-respire-osaka/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-1061004/agora-place-asakusa/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-687323/hotel-mystays-asakusa/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-704030/tokyo-dome-hotel/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "detail",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-993510/imperial-hotel-tokyo/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/120000/LRG_120200/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/akita/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/fukuoka/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/hokkaido/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/ikisaki/map/kagawa/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.jalan.net/yad300170/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/yad300665/copy4/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/270000/LRG_271400/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/280000/LRG_280200/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/aomori/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/fukushima/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.jalan.net/ikisaki/map/hyogo/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-49509069/hotel-villa-fontaine-grand-haneda-airport-directly-connected-to-haneda-airport-terminal-3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/copy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/copy2/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/country/japan.htmlcopy3/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "refresh",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/copy1/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.html",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page3.htmlcopy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page4.html",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.jalan.net/010000/LRG_010200/page4.htmlcopy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_010300/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_011700/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/010000/LRG_012900/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/050000/LRG_051100/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/090000/LRG_090500/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "jalan",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.jalan.net/100000/LRG_100800/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bali-hotels-list-723/copy3/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bangkok-hotels-list-359/copy1/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/bangkok-hotels-list-359/copy2/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/ho-chi-minh-city-hotels-list-301/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/kobe-hotels-list-423/copy1/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/naha-hotels-list-92573/copy2/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/seoul-hotels-list-274/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/chengdu-hotels-list-28/copy3/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "list",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/sapporo-hotels-list-641/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/narita-hotel-detail-705045/toyoko-inn-narita-kuko/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-1061004/agora-place-asakusa/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-114045806/nestay-inn-tokyo-ryogoku/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-21145159/apa-hotel-ginza-shintomicho-ekimae/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-3095695/daiwa-roynet-hotel-ginza-premier/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "priority",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-687323/hotel-mystays-asakusa/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-91275931/hotaku-hotel/",
+   "status": "retry",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-688168/hotel-mystays-ochanomizu-cc/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/tokyo-hotel-detail-994895/shinagawa-prince-hotel/",
+   "status": "pending",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/towada-hotel-detail-1679075/hotel-towadaso/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/urayasu-hotel-detail-688630/sheraton-grande-tokyo-bay-hotel/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  },
+  {
+   "provider": "trip",
+   "phase": "names",
+   "lane": "national",
+   "url": "https://www.trip.com/hotels/yokohama-hotel-detail-129054710/koko-hotel-yokohama-tsurumi/",
+   "status": "done",
+   "ownLease": true,
+   "leaseSeconds": 180
+  }
+ ]
+}

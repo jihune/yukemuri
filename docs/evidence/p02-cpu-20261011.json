@@ -1,0 +1,647 @@
+{
+ "measuredAt": "2026-10-11T15:37:51.660Z",
+ "runs": 9,
+ "environment": "Node v24.21.0 (V8 13.6.233.17-node.53), node:sqlite on a copy of a grown temporary D1. JavaScript CPU = process CPU minus time inside SQLite. Not Worker CPU.",
+ "results": [
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "cold",
+   "median": 12.35,
+   "p95": 95.88,
+   "max": 95.88
+  },
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "coldMiss",
+   "median": 58.74,
+   "p95": 95.58,
+   "max": 95.58
+  },
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "warm",
+   "median": 7.04,
+   "p95": 11.17,
+   "max": 11.17
+  },
+  {
+   "version": "current",
+   "scenario": "list",
+   "mode": "warmMiss",
+   "median": 29.74,
+   "p95": 56.92,
+   "max": 56.92
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "cold",
+   "median": 8.16,
+   "p95": 78.51,
+   "max": 78.51
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "coldMiss",
+   "median": 62,
+   "p95": 89.19,
+   "max": 89.19
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "warm",
+   "median": 8.59,
+   "p95": 19.23,
+   "max": 19.23
+  },
+  {
+   "version": "current",
+   "scenario": "listJalan",
+   "mode": "warmMiss",
+   "median": 23,
+   "p95": 73.81,
+   "max": 73.81
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "cold",
+   "median": 9.47,
+   "p95": 75.81,
+   "max": 75.81
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "coldMiss",
+   "median": 57.58,
+   "p95": 69.92,
+   "max": 69.92
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "warm",
+   "median": 5.58,
+   "p95": 7.19,
+   "max": 7.19
+  },
+  {
+   "version": "current",
+   "scenario": "listFilters",
+   "mode": "warmMiss",
+   "median": 22.79,
+   "p95": 76.06,
+   "max": 76.06
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "cold",
+   "median": 8.89,
+   "p95": 71.32,
+   "max": 71.32
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "coldMiss",
+   "median": 61.72,
+   "p95": 100.28,
+   "max": 100.28
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "warm",
+   "median": 4.11,
+   "p95": 7.18,
+   "max": 7.18
+  },
+  {
+   "version": "current",
+   "scenario": "listPage2",
+   "mode": "warmMiss",
+   "median": 20.52,
+   "p95": 60.24,
+   "max": 60.24
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "cold",
+   "median": 2.47,
+   "p95": 659.47,
+   "max": 659.47
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "coldMiss",
+   "median": 545.81,
+   "p95": 696.13,
+   "max": 696.13
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "warm",
+   "median": 1.4,
+   "p95": 2.74,
+   "max": 2.74
+  },
+  {
+   "version": "current",
+   "scenario": "nameJa",
+   "mode": "warmMiss",
+   "median": 53.88,
+   "p95": 697.92,
+   "max": 697.92
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "cold",
+   "median": 4.74,
+   "p95": 642.87,
+   "max": 642.87
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "coldMiss",
+   "median": 639.38,
+   "p95": 796.34,
+   "max": 796.34
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "warm",
+   "median": 4.18,
+   "p95": 6.87,
+   "max": 6.87
+  },
+  {
+   "version": "current",
+   "scenario": "nameKo",
+   "mode": "warmMiss",
+   "median": 45.09,
+   "p95": 679.81,
+   "max": 679.81
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "cold",
+   "median": 0.82,
+   "p95": 46.8,
+   "max": 46.8
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "coldMiss",
+   "median": 30.46,
+   "p95": 41.35,
+   "max": 41.35
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "warm",
+   "median": 0.43,
+   "p95": 0.81,
+   "max": 0.81
+  },
+  {
+   "version": "current",
+   "scenario": "map",
+   "mode": "warmMiss",
+   "median": 3.12,
+   "p95": 36.45,
+   "max": 36.45
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "cold",
+   "median": 0.5,
+   "p95": 768.41,
+   "max": 768.41
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "coldMiss",
+   "median": 533.62,
+   "p95": 712.42,
+   "max": 712.42
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "warm",
+   "median": 0.33,
+   "p95": 8.23,
+   "max": 8.23
+  },
+  {
+   "version": "current",
+   "scenario": "mapName",
+   "mode": "warmMiss",
+   "median": 59.67,
+   "p95": 695.28,
+   "max": 695.28
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "cold",
+   "median": 530.82,
+   "p95": 697.37,
+   "max": 697.37
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "coldMiss",
+   "median": 571.4,
+   "p95": 672.05,
+   "max": 672.05
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "warm",
+   "median": 7.75,
+   "p95": 11.28,
+   "max": 11.28
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "warmMiss",
+   "median": 35.89,
+   "p95": 37.47,
+   "max": 37.47
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "cold",
+   "median": 18.51,
+   "p95": 33.28,
+   "max": 33.28
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "coldMiss",
+   "median": 25.35,
+   "p95": 37.08,
+   "max": 37.08
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "warm",
+   "median": 0.18,
+   "p95": 0.28,
+   "max": 0.28
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotCore",
+   "mode": "warmMiss",
+   "median": 0.7,
+   "p95": 3.41,
+   "max": 3.41
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "cold",
+   "median": 47.1,
+   "p95": 80.36,
+   "max": 80.36
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "coldMiss",
+   "median": 49.23,
+   "p95": 91.64,
+   "max": 91.64
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "warm",
+   "median": 0.15,
+   "p95": 0.21,
+   "max": 0.21
+  },
+  {
+   "version": "current",
+   "scenario": "snapshotText",
+   "mode": "warmMiss",
+   "median": 1.23,
+   "p95": 9.46,
+   "max": 9.46
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "cold",
+   "median": 15.11,
+   "p95": 30.76,
+   "max": 30.76
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "coldMiss",
+   "median": 14.31,
+   "p95": 35.65,
+   "max": 35.65
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "warm",
+   "median": 13.04,
+   "p95": 32.37,
+   "max": 32.37
+  },
+  {
+   "version": "274f687",
+   "scenario": "list",
+   "mode": "warmMiss",
+   "median": 15.53,
+   "p95": 30.16,
+   "max": 30.16
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "cold",
+   "median": 11.99,
+   "p95": 40.49,
+   "max": 40.49
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "coldMiss",
+   "median": 11.52,
+   "p95": 24.69,
+   "max": 24.69
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "warm",
+   "median": 10.03,
+   "p95": 13.39,
+   "max": 13.39
+  },
+  {
+   "version": "274f687",
+   "scenario": "listJalan",
+   "mode": "warmMiss",
+   "median": 11.39,
+   "p95": 24.87,
+   "max": 24.87
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "cold",
+   "median": 10.06,
+   "p95": 24.85,
+   "max": 24.85
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "coldMiss",
+   "median": 8.37,
+   "p95": 19.72,
+   "max": 19.72
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "warm",
+   "median": 6.94,
+   "p95": 8.32,
+   "max": 8.32
+  },
+  {
+   "version": "274f687",
+   "scenario": "listFilters",
+   "mode": "warmMiss",
+   "median": 6.93,
+   "p95": 11,
+   "max": 11
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "cold",
+   "median": 5.32,
+   "p95": 15.47,
+   "max": 15.47
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "coldMiss",
+   "median": 5.86,
+   "p95": 14.47,
+   "max": 14.47
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "warm",
+   "median": 5.44,
+   "p95": 12.25,
+   "max": 12.25
+  },
+  {
+   "version": "274f687",
+   "scenario": "listPage2",
+   "mode": "warmMiss",
+   "median": 4.05,
+   "p95": 6.04,
+   "max": 6.04
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "cold",
+   "median": 491.09,
+   "p95": 619.18,
+   "max": 619.18
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "coldMiss",
+   "median": 544.46,
+   "p95": 700.6,
+   "max": 700.6
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "warm",
+   "median": 24.53,
+   "p95": 37.13,
+   "max": 37.13
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameJa",
+   "mode": "warmMiss",
+   "median": 25.57,
+   "p95": 41.29,
+   "max": 41.29
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "cold",
+   "median": 535.74,
+   "p95": 640.29,
+   "max": 640.29
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "coldMiss",
+   "median": 523.42,
+   "p95": 729.73,
+   "max": 729.73
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "warm",
+   "median": 35.42,
+   "p95": 53.63,
+   "max": 53.63
+  },
+  {
+   "version": "274f687",
+   "scenario": "nameKo",
+   "mode": "warmMiss",
+   "median": 24.09,
+   "p95": 38.1,
+   "max": 38.1
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "cold",
+   "median": 0.17,
+   "p95": 0.89,
+   "max": 0.89
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "coldMiss",
+   "median": 0.24,
+   "p95": 2.5,
+   "max": 2.5
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "warm",
+   "median": 0.27,
+   "p95": 0.57,
+   "max": 0.57
+  },
+  {
+   "version": "274f687",
+   "scenario": "map",
+   "mode": "warmMiss",
+   "median": 0.26,
+   "p95": 0.39,
+   "max": 0.39
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "cold",
+   "median": 542.26,
+   "p95": 737.41,
+   "max": 737.41
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "coldMiss",
+   "median": 674.23,
+   "p95": 765.83,
+   "max": 765.83
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "warm",
+   "median": 23.49,
+   "p95": 37.68,
+   "max": 37.68
+  },
+  {
+   "version": "274f687",
+   "scenario": "mapName",
+   "mode": "warmMiss",
+   "median": 23.48,
+   "p95": 56.1,
+   "max": 56.1
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "cold",
+   "median": 498.18,
+   "p95": 670.75,
+   "max": 670.75
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "coldMiss",
+   "median": 471.92,
+   "p95": 650.93,
+   "max": 650.93
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "warm",
+   "median": 12.66,
+   "p95": 29.38,
+   "max": 29.38
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "warmMiss",
+   "median": 12.18,
+   "p95": 15.04,
+   "max": 15.04
+  }
+ ]
+}
