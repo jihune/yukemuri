@@ -50,7 +50,7 @@
 - `measure-d1-reads.mjs --check` 상한 9개: B 통과, main 빌드는 두 규모 모두 9개 실패.
 - `compare-search-builds.mjs`: 193개 요청 같음. 대조 변형 두 가지(별칭 순서, 폐업 제외 누락)에서 실패.
 - `check-catalog.mjs`·`check-crawl-queue-worker.mjs`의 새 단언과 대조 변형 실패 확인.
-- `python3 scripts/cloud-check.py --full`(`ef8df77` 작업 트리, 22개 명령): 통과(08:51:17Z–08:54:25Z, rc=0). Worker 검사 11개 통과.
+- `python3 scripts/cloud-check.py --full`(22개 명령): `ef8df77` 작업 트리 08:51:17Z–08:54:25Z, `5e860ba` 작업 트리 09:17:56Z–09:21:10Z 통과(rc=0). Worker 검사 11개 통과.
 
 ## 미확인 사항
 
@@ -78,6 +78,8 @@
 - PR A 1회째: CI(`checks`)가 `ef6c1e8`에서 통과한 뒤 08:10Z에 Codex 리뷰를 요청했다. Codex가 08:14Z에 P2 1건(끝 GET의 카운터 재설정이 겹친 PUT의 증가분을 덮어씀)을 남겼다. 겹친 GET·PUT 검사로 재현했고(`da919d5`에서 첫 회 실패) `fa99371`에서 고쳤다. 검토 요청은 1회 썼다.
 - PR A 2회째: main `59b2dfe` merge 뒤 `ea324a9`의 CI 통과 뒤 08:51Z에 재검토를 요청했다. Codex가 08:54Z에 ‘큰 문제 없음(Didn't find any major issues)’으로 응답했다. 검토 요청은 2회 썼다. 지적 스레드에는 수정 내용을 답하고 resolve했다.
 - PR A 병합 판단: 마지막 검토 커밋 `ea324a9`가 head다. P0~P2 지적은 모두 해결됐다. CI 통과, 충돌 없음. 08:59Z에 상위 세션에 병합을 요청했다.
+
+- PR B 1회째: CI가 `c30e44e`에서 통과한 뒤 09:05Z에 Codex 리뷰를 요청했다. Codex가 09:08Z에 P2 1건(겹친 끝 GET 중 늦게 끝난 쪽이 오래된 집계로 `coverage-snapshot`을 덮어씀)을 남겼다. 타이밍 겹침으로는 재현되지 않았다. 집계를 읽는 트랜잭션에서 순번을 받아 더 큰 순번일 때만 저장하도록 고쳤다(`5e860ba`). 순번 조건을 뺀 변형에서 새 단언이 실패했다. 검토 요청은 1회 썼다.
 
 병합은 `AGENTS.md`의 ‘상위 세션이 맡긴 작업’ 규칙을 따른다. 조건을 충족하면 상위 세션에 head 커밋과 근거를 알리고 상위 세션이 병합한다.
 
