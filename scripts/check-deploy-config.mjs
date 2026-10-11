@@ -87,7 +87,12 @@ const steps=['cloudflare-deploy-gate.mjs','d1 time-travel info yukemuri','d1 mig
 assert(steps.every((v,i)=>v>0&&(i===0||v>steps[i-1])),'deploy order: gate, time travel, migrations, search snapshot, deploy, smoke');
 assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_call:$/m,'the collection workflow refreshes the snapshot through workflow_call');
 // The deploy job (and its snapshot) waits for a collection run (P03, Codex review on PR #43).
-assert.match(deploy,/^ {4}concurrency:\n {6}group: \$\{\{ inputs\.after_collection && 'yukemuri-snapshot-after-collection' \|\| 'yukemuri-catalog-updates' \}\}\n {6}cancel-in-progress: false\n/m,'deploy job serialized with catalogue writes');
+// Lock order: catalogue group at the top, account inside the job, so a push
+// deploy and the collection's call never hold one each while waiting on the other.
+assert.match(deploy,/^concurrency:\n  group: \$\{\{ inputs\.after_collection && 'yukemuri-snapshot-after-collection' \|\| 'yukemuri-catalog-updates' \}\}\n  cancel-in-progress: false\n/m,'deploy serialized with catalogue writes at the top');
+assert.match(deploy,/^ {4}concurrency:\n {6}group: cloudflare-account\n {6}cancel-in-progress: false\n/m,'deploy job holds the account inside the catalogue group');
+assert.equal((deploy.match(/^\s*concurrency:/gm)??[]).length,2,'exactly the two deploy locks');
+assert.match(readFileSync('.github/workflows/d1-setup.yml','utf8'),/^concurrency:\n  group: cloudflare-account\n/m,'D1 setup shares the account lock');
 assert.equal((deploy.match(/^ {6}- (?:if|uses|id|run|env)/gm)??[]).length-(deploy.match(/^ {6}- if: steps\.gate\.outputs\.enabled == 'true'/gm)??[]).length,3,'only checkout, gate and the skip notice run when the gate is off');
 const setup=readFileSync('.github/workflows/d1-setup.yml','utf8').replace(/^\s*#.*$/gm,'');
 assert(/wrangler\.js d1 migrations apply/.test(setup)&&!/(?:wrangler(?:\.js)?|command:)\s+(?:deploy|versions\s+(?:upload|deploy)|secret)\b|wrangler-action/.test(setup),'D1 setup applies migrations and never deploys the Worker');

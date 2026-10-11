@@ -15,19 +15,23 @@ on:
         description: Called by the collection workflow at the end of its run
         type: boolean
         default: false
+# Two locks, always taken in the same order: the catalogue group (outer), then
+# the Cloudflare account (inner, shared with d1-setup.yml). The snapshot reads D1
+# over many requests, so a push or manual run waits for any collection run. The
+# collection workflow holds the catalogue group for its whole run and calls this
+# one at its end (after_collection: true); that run takes a group of its own at
+# the top, since the catalogue group would wait on its caller, and then the
+# account like every other run. Taking the account first here and the catalogue
+# second would let a push deploy and a collection's call wait on each other.
 concurrency:
-  group: cloudflare-account
+  group: ${{ inputs.after_collection && 'yukemuri-snapshot-after-collection' || 'yukemuri-catalog-updates' }}
   cancel-in-progress: false
 permissions:
   contents: read
 jobs:
   deploy:
-    # The snapshot reads D1 over many requests, so it must not overlap a
-    # catalogue write: other runs wait in the collection's group. Called from
-    # the collection (which already holds that group), the job takes its own
-    # group, since the same group would wait on itself.
     concurrency:
-      group: ${{ inputs.after_collection && 'yukemuri-snapshot-after-collection' || 'yukemuri-catalog-updates' }}
+      group: cloudflare-account
       cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
