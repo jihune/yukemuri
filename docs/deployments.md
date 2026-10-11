@@ -25,3 +25,4 @@ GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록�
 | 확인 날짜 | 앱 커밋 | Worker 버전 ID | D1 bookmark | 상태 |
 |---|---|---|---|---|
 | 2026-10-11 | H01 2단계 PR | 없음 | 없음 | 배포 설정·workflow 준비. D1 미생성·자동 배포 꺼짐. 실제 Cloudflare 계정 미접속 |
+| 2026-10-11 | `da47a7a`(PR #33 병합, 12:12:47Z) | 없음 | 없음 | main push의 `deploy.yml`은 배포를 건너뜀(D1 ID 없음). 3단계 run 38138420167(12:13–12:17Z): 서브도메인 `jihune` 등록, D1 `yukemuri`(`128a3c5b-8e5f-470a-a901-d899d396cae1`) 생성, 마이그레이션 13개 적용. Worker 미배포 |
