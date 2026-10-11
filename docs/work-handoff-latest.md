@@ -5,6 +5,20 @@
 이전 인수인계(U03, PR #23·#24와 상위 세션 기록 포함)는 `history/work-handoff-U03-20261011.md`에 보존했다.
 U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해 이 문서 끝의 ‘U04’ 절에 따로 적는다.
 
+## H01 2단계(앱 레포 Cloudflare 배포 준비)
+
+기록: 2026-10-11T10:14Z / 2026-10-11 19:14 KST(커밋 `d4057b1`). 상위 세션이 맡긴 작업이다. 위 P01 기록은 그대로 두고 이 절을 더했다. 상세는 `H01-20261011.md`, 절차는 `cloudflare-deploy.md`다.
+
+- 브랜치 `claude/h01-cloudflare-deploy`. 시작 기준 main `6f09287`. 이 절을 쓰기 직전에 main `274f687`(PR #31·#32 병합)을 merge했다. 충돌은 없었다. 코드 커밋은 `e426686`이다.
+- 바꾼 것: `cloudflare-deploy.json`(비밀 아닌 배포 값, `databaseId`·`publicOrigin`은 `null`, `autoDeploy` false), `vite.config.ts`(Worker 이름·workers.dev·미리보기 끔·observability·smart placement·D1 이름과 `migrations_dir`·Rate Limiting 바인딩), `deploy.yml`(설정이 켜질 때까지 모두 건너뜀), `d1-setup.yml`(수동, `workers.dev` 서브도메인 읽기·없을 때만 등록, D1 생성·마이그레이션, 배포 없음), `lib/edge-guard.ts`(Worker 요청 전체의 IP별 제한, 크롤 키 면제), `public/robots.txt`, 수집기 `siteOrigin` 빌드 변수와 `source_safety.py`의 주소 허용 목록.
+- 수집기 release가 `08ca3bfe…`에서 `ab24b621…`로 바뀌었다. 파일 목록과 `siteOrigin` 기본값은 그대로다. Sites에 게시하지 않으므로 예약 실행에는 반영되지 않는다.
+- 실제 Cloudflare 계정·운영 Sites·운영 D1에 접속하지 않았다. 실행기 레포·DB 스키마·수집 상한은 바꾸지 않았다.
+- 검사: 시작 기준 `cloud-check.py --full` 22개 통과(09:34Z–09:37Z). 변경 뒤 25개 통과(10:05Z–10:08Z). `wrangler deploy --dry-run` rc=0(업로드 5,968.40KiB, gzip 886.73KiB). 로컬 `d1 migrations apply yukemuri` 13개 적용. actionlint 통과. 새 검사 3개(`check-edge-guard-worker.mjs`, `check-deploy-config.mjs`, `crawler/check_site_access.py`)는 변형 13종(Worker 5, 설정·workflow 6, 수집기 2)에서 실패하는 것을 확인했다. main merge 뒤에도 25개 통과(10:10:30Z–10:14:03Z), dry-run rc=0.
+- workers.dev에서는 Cache API가 효과 없다(Cloudflare 문서). 위치 간 공유 검색 캐시는 없고 기존 isolate 30초 캐시만 있다. 위 P01 다음 작업 3번의 ‘H01의 익명 검색 캐시’는 기대할 수 없으므로 색인·쿼리 개선으로 줄여야 한다.
+- 미확인: 무료 플랜의 Rate Limiting 바인딩, `wrangler-action`의 실제 실행, 429 화면의 실제 브라우저 확인. 첫 실제 배포와 5단계에서 확인한다.
+- 다음 작업: 상위 세션 병합 → (Secret은 사용자 등록 완료, 값 미확인, 2026-10-11T09:55Z 상위 세션 전달) → 이 PR 병합 뒤 상위 세션이 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다. **P02(목록·검색 요청당 D1 읽기 감소) 완료 전에는 6단계 전환을 하지 않는다.** 공유 캐시가 없어 목록 첫 쪽 요청 약 115회면 그날 D1 무료 읽기가 바닥나고, 속도 제한(60초 120회)으로는 막지 못한다(`H01-20261011.md`).
+- 검토: Codex 1회째(`d608401`, 10:28Z 요청)에서 P1 1건(첫 화면 `/?q=`가 `/api/*` 속도 제한을 우회)과 P2 1건(Cache API는 workers.dev에서 효과 없음)이 나왔다. P1은 변형 검사로 재현했고 Cloudflare 문서로 P2를 확인했다. 둘 다 고쳤다. Codex 2회째(`8ca5ebf`, 11:40Z)에서 P2 1건(배포 설정 검사가 속도 제한 수치를 보지 않음)이 나와 재현하고 고쳤다(`H01-20261011.md`의 ‘검토’). Codex 3회째(`e622408`, 12:01Z)는 ‘큰 문제 없음’이었다. 검토 요청 3회를 모두 썼고 남은 지적은 없다. 그 뒤 변경은 기록 파일뿐이다.
+
 ## 기준과 상태
 
 - 작업 환경: Claude Code 웹 클라우드. 상위 세션이 맡긴 작업이다.

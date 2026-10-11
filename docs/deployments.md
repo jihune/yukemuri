@@ -17,3 +17,11 @@
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
+
+## Cloudflare(H01)
+
+기록: 2026-10-11. 절차는 `cloudflare-deploy.md`다. main 병합은 `cloudflare-deploy.json`의 `databaseId`와 `autoDeploy`가 모두 설정된 뒤에만 자동 배포가 된다. 그 전에는 `deploy.yml`이 배포를 건너뛴다. 배포 결과는 Actions 실행 요약(Worker 버전 ID·D1 bookmark·점검 결과)으로 확인하고 아래에 옮긴다.
+
+| 확인 날짜 | 앱 커밋 | Worker 버전 ID | D1 bookmark | 상태 |
+|---|---|---|---|---|
+| 2026-10-11 | H01 2단계 PR | 없음 | 없음 | 배포 설정·workflow 준비. D1 미생성·자동 배포 꺼짐. 실제 Cloudflare 계정 미접속 |
