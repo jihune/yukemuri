@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T10:13:57.322Z",
+ "measuredAt": "2026-10-11T10:55:04.189Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop mouse",
@@ -241,6 +241,25 @@
   },
   {
    "width": 360,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:5173/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-10&checkOut=2026-11-12&adults=2",
+    "in": "2026-11-10",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=10&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 360,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 360,
    "name": "번역 없는 설명: ‘자동으로 순차 반영’ 대신 번역 없음·정기 추가 없음을 알림",
    "pass": true,
    "detail": {
@@ -478,6 +497,25 @@
   },
   {
    "width": 390,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:5173/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-10&checkOut=2026-11-12&adults=2",
+    "in": "2026-11-10",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=10&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 390,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 390,
    "name": "번역 없는 설명: ‘자동으로 순차 반영’ 대신 번역 없음·정기 추가 없음을 알림",
    "pass": true,
    "detail": {
@@ -711,6 +749,25 @@
    "pass": true,
    "detail": {
     "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:5173/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-10&checkOut=2026-11-12&adults=2",
+    "in": "2026-11-10",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=10&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-10&checkOut=2026-11-12&adult=2&crn=1&currency=JPY"
    }
   },
   {

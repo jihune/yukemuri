@@ -120,14 +120,14 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 결과
 
-- R37: 상세의 ‘공식 안내와 예약 사이트’ 절에 체크인·체크아웃·성인 인원 입력을 다시 넣었다. Jalan·Trip.com 링크에 기존 코드의 형식으로 조건을 넣는다. 요금 조회는 없다. 날짜가 없거나 잘못되면, 또는 저장 주소가 숙소 페이지 형식이 아니면 링크는 저장 주소 그대로 열린다. 조건은 페이지 주소에 남는다. 쓰이지 않던 요금 코드와 요금 검사를 지웠다. `/api/prices`의 410 응답은 남겼다.
+- R37: 상세의 ‘공식 안내와 예약 사이트’ 절에 체크인·체크아웃·성인 인원 입력을 다시 넣었다. Jalan·Trip.com(`www`·`kr`) 링크에 기존 코드의 형식으로 조건을 넣는다. 요금 조회는 없다. 날짜가 없거나 잘못되면, 또는 저장 주소가 숙소 페이지 형식이 아니면 링크는 저장 주소 그대로 열린다. 조건은 페이지 주소에 남는다. 쓰이지 않던 요금 코드와 요금 검사를 지웠다. `/api/prices`의 410 응답은 남겼다.
 - 근거: Jalan은 체크인된 plan 페이지 3개가 같은 조건을 돌려준다. Trip.com은 기존 코드와 원래 README뿐이고 체크인된 응답은 없다. 공식·지도 링크에는 날짜를 넣지 않는다.
 - D03: 번역 없는 설명의 ‘한국어 번역은 자동으로 순차 반영됩니다’를 ‘이 숙소의 한국어 번역은 없습니다. 새 번역은 지금 정기적으로 추가되지 않습니다.’로 바꿨다. `update-descriptions.py` 머리 주석도 고쳤다. 이 파일은 수집기 release 목록에 없어 release가 다시 만들어지지 않는다.
 
 ### 검사
 
 - `python3 scripts/cloud-check.py --full`: 새 `check-booking-links.mjs`를 더한 23개 명령 통과. `7992d78` 작업 트리 09:55Z–10:00Z, `70e4326` 10:00:34Z–10:05:24Z(rc=0).
-- `check-u04-browser.mjs`: 360·390px(터치·키보드)와 1280px(마우스·키보드) 51개 통과(`70e4326`, `evidence/ui-u04-booking-20261011.json`). 수정 전 화면에서는 세 폭 모두 실패했다(`evidence/ui-u04-booking-before-20261011.json`). 수정 전 `booking-query.ts`에서 단위 검사가 실패했다. 변형 3종에서 모두 실패했다.
+- `check-u04-browser.mjs`: 360·390px(터치·키보드)와 1280px(마우스·키보드) 51개 통과(`70e4326`). Codex 지적 수정 `4ce95cf`에서 단언 6개를 더해 57개 통과(`evidence/ui-u04-booking-20261011.json`). 수정 전 화면에서는 세 폭 모두 실패했다(`evidence/ui-u04-booking-before-20261011.json`). 수정 전 `booking-query.ts`에서 단위 검사가 실패했다. 변형 3종에서 모두 실패했다.
 - 기존 검사: U01 64개, U02 42개, U02 지도 59개, U03 비교 60개, U03 데스크톱 12개, U01 DOM 검사 통과(`70e4326`).
 - 기존 `check-facility-links.cjs`는 main에서도 실패한다(`components/hotel-photo` 없음). `cloud-check.py` 밖의 검사라 고치지 않았다.
 - main merge 뒤 새 로컬 D1의 개발 서버 첫 요청이 가끔 `Network connection lost`(seed를 불러오는 `importSnapshot`)로 실패했다. `70e4326` 5회 중 4회, main `274f687` 4회 중 2회. 원인은 미확인이다. 서버를 다시 열고 `/api/hotels`를 먼저 요청하면 화면 검사는 정상이었다.
@@ -146,12 +146,14 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 검토와 병합
 
-`cloud-development.md`의 ‘검토 요청’ 1번을 따른다. CI 통과 뒤 PR 대화창에 Codex 리뷰를 요청한다. 결과는 이 절에 적는다. 병합은 `AGENTS.md`의 ‘상위 세션이 맡긴 작업’ 규칙대로 상위 세션이 한다.
+`cloud-development.md`의 ‘검토 요청’ 1번을 따른다. 병합은 `AGENTS.md`의 ‘상위 세션이 맡긴 작업’ 규칙대로 상위 세션이 한다.
+
+- 1회째: CI가 `2761657`에서 통과한 뒤 10:40Z에 Codex 리뷰를 요청했다. 10:46Z에 P2 2건이 달렸다. (가) `kr.trip.com` 숙소 링크 3개에 날짜가 들어가지 않음. (나) 목록에서 연 상세를 닫으면 조건이 빈 값으로 돌아감. 둘 다 재현했고(수정 전 브라우저 단언 6개·단위 검사 실패) `4ce95cf`에서 고쳤다. 상세는 `U04-20261011.md`의 ‘Codex 검토 반영’. 검토 요청은 1회 썼다. 수정 뒤 2회째를 요청한다.
 
 ### Sites 전달
 
 - 게시하지 않았다. H01 전환으로 반영한다(`roadmap.md` S01).
-- 검사한 커밋은 `70e4326`이다. 앱 화면(`hotel-detail`·`hotel-explorer`·`hotel-description`), `lib/booking-query.ts`, CSS, 검사 스크립트를 바꾼다. Worker API·DB 스키마·수집기 release는 바꾸지 않는다.
+- 검사한 커밋은 `4ce95cf`이다. 앱 화면(`hotel-detail`·`hotel-explorer`·`hotel-description`), `lib/booking-query.ts`, CSS, 검사 스크립트를 바꾼다. Worker API·DB 스키마·수집기 release는 바꾸지 않는다.
 
 ### 다음 작업
 
