@@ -15,7 +15,7 @@
 ## 환경 확인
 
 - Node 24.21.0(`nvm install 24`), pnpm 11.25.0, Python 3.13이다. Playwright 1.56.1을 `.sites-runtime/u01-browser`에 설치했다(Git 제외). Chromium 141.0.7390.37은 `/opt/pw-browsers`의 것을 썼다.
-- `bash scripts/cloud-setup.sh`: exit 0(2026-10-11T04:4xZ). 잠금 파일은 바뀌지 않았다.
+- `bash scripts/cloud-setup.sh`: exit 0(2026-10-11 04시대 UTC, 정확한 시각은 기록하지 않았다). 잠금 파일은 바뀌지 않았다.
 - `python3 scripts/cloud-check.py --full`: 시작 기준 `11f03e7`에서 20개 명령 통과(rc=0, 04:48Z 전후 실행). PR A 코드 커밋 결과는 아래 ‘PR A 검사’에 적는다.
 - 개발 DB: `.wrangler/state`를 지우고 마이그레이션 13개를 적용했다(rc=0). 개발 서버는 `node scripts/run-framework.mjs dev`(portable)다.
 
@@ -29,7 +29,7 @@
 
 ## PR A 검사
 
-- `python3 scripts/cloud-check.py --full`(코드 커밋 `b677574`): 실행 중. 결과를 이 줄에 적는다.
+- `python3 scripts/cloud-check.py --full`(코드 커밋 `b677574`): 20개 명령 통과(05:04:36Z–05:07:45Z, rc=0).
 
 ## 미확인 사항
 
