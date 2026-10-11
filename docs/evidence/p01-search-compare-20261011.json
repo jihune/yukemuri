@@ -1,0 +1,1367 @@
+{
+ "comparedAt": "2026-10-11T08:28:41.242Z",
+ "oldDist": "/tmp/claude-0/dist-0",
+ "newDist": "dist",
+ "tables": {
+  "hotels": 12271,
+  "hotel_names": 14748,
+  "crawl_jobs": 15417,
+  "hotel_lifecycle": 1753
+ },
+ "compared": 193,
+ "different": 0,
+ "nonEmpty": 138,
+ "results": [
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "cdfa5979605b9f86"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "6f339bb903619c6a"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "6247e1171ad565f4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "70947fedfbb27573"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "4a5e2d737ef27308"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "040ced196fff1c2d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "0e39ff457a8461f1"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "db895903d6a41700"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "7bd76296434d7074"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "825c8c198145e64b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "e98e1085b9ceb1ae"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "12bcfdcf7a12abc3"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=recommended&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "7c22f3aea36d0d7d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=recommended&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "aecf1aeccb1c1d6c"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "de6cf5f119d508fb"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "695202f93df2079f"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "6247e1171ad565f4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "70947fedfbb27573"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "4a5e2d737ef27308"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "040ced196fff1c2d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "0e39ff457a8461f1"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "db895903d6a41700"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "7bd76296434d7074"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "825c8c198145e64b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "e72680af88853e31"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "34dce9bdd6bcba15"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=rating&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "7b224351a6184106"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=rating&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "3849687485427f03"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "2d53409905ea5401"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "d43104f2d4276f36"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "cc93616f7ed2314a"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "831b4fa4045ceb74"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "a11545397e169b76"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "e854e340894b8e30"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "03d633cea94b63f3"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "f286ad9d853a9fc1"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "9cde626d42420582"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "302bcac82160aa2f"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "0e1cea6ef0f9c4d7"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "99bd4f810452a077"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=reviews&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "a51eec211946d397"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=reviews&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "5f11e1f1467d192c"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "dfc3a487d4f82cc9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "5954fd608b569a00"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "424d5f5ac9c91cb8"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "009a9c0934249bc4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "6a46ffd45706f580"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true,
+   "hash": "85880d23726e0d3b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "f0185c45d88eaee4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true,
+   "hash": "cffc02241b844fa7"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "b83ea29ee104234c"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true,
+   "hash": "cd77b02e26e7eeff"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true,
+   "hash": "013ef2e029088bb5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "365586e5be40de44"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true,
+   "hash": "615a781fdb3b3dc0"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&sort=name&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "e477f6620afc2f6d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&page=2&sort=name&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true,
+   "hash": "ef110aa245701e18"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=あいう",
+   "status": 200,
+   "count": 205,
+   "same": true,
+   "hash": "10c6e48bcdd9e1d5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=あいう&sort=rating",
+   "status": 200,
+   "count": 205,
+   "same": true,
+   "hash": "a2e980dbddd9a250"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=あいう&region=pref-kanagawa",
+   "status": 200,
+   "count": 205,
+   "same": true,
+   "hash": "10c6e48bcdd9e1d5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=あいう&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "66c71b9d7e5070a2"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=あいう",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "654fe4fe0a85a4ec"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=あいう",
+   "status": 200,
+   "count": 205,
+   "same": true,
+   "hash": "613020495503eebf"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=aliasx",
+   "status": 200,
+   "count": 2109,
+   "same": true,
+   "hash": "04f36e14ef5dacb7"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=aliasx&sort=rating",
+   "status": 200,
+   "count": 2109,
+   "same": true,
+   "hash": "917955dee09585d5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=aliasx&region=pref-kanagawa",
+   "status": 200,
+   "count": 63,
+   "same": true,
+   "hash": "7dbc240a8378a0b4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=aliasx&features=natural&rating=9",
+   "status": 200,
+   "count": 25,
+   "same": true,
+   "hash": "51eb5913fdc0344e"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=aliasx",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "44de6f1391bcaf70"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=aliasx",
+   "status": 200,
+   "count": 2109,
+   "same": true,
+   "hash": "141a40329d6a7409"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=Alias trip",
+   "status": 200,
+   "count": 767,
+   "same": true,
+   "hash": "b4c43c109b7fc8e8"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=Alias trip&sort=rating",
+   "status": 200,
+   "count": 767,
+   "same": true,
+   "hash": "95dc13d9ccca6da3"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=Alias trip&region=pref-kanagawa",
+   "status": 200,
+   "count": 10,
+   "same": true,
+   "hash": "4806d03521ef3dff"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=Alias trip&features=natural&rating=9",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "2104ae951d48e779"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=Alias trip",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "df29562a9aecc83e"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=Alias trip",
+   "status": 200,
+   "count": 767,
+   "same": true,
+   "hash": "e3570780c2f3492d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=バーデ",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "f429b859f1d83da2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=バーデ&sort=rating",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "f429b859f1d83da2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=バーデ&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "72ba073aa240363f"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=バーデ&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "7a3bd15414177950"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデ",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "94c22eb60998c8ac"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=バーデ",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "33d54c6917ae7007"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "f429b859f1d83da2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=バーデン明日&sort=rating",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "f429b859f1d83da2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=バーデン明日&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "72ba073aa240363f"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=バーデン明日&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "7a3bd15414177950"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "94c22eb60998c8ac"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "33d54c6917ae7007"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=다이",
+   "status": 200,
+   "count": 442,
+   "same": true,
+   "hash": "3fda12a88e2f44a4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=다이&sort=rating",
+   "status": 200,
+   "count": 442,
+   "same": true,
+   "hash": "e8c29a48ef0d46a5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=다이&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "a408e0e2d3579a8f"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=다이&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "9c23d346569213dc"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "6b6c54e6c0cf1336"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=다이",
+   "status": 200,
+   "count": 442,
+   "same": true,
+   "hash": "3043bd158fd163b0"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "53d0eef92aa70825"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=다이이치 타키모토칸&sort=rating",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "53d0eef92aa70825"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=다이이치 타키모토칸&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "0e370513b4bb1a93"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=다이이치 타키모토칸&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "53d0eef92aa70825"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "05fd94df6c60d88f"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "5ab3c3655ddaebe2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "80876cdd55cdf00b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHOR&sort=rating",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "80876cdd55cdf00b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHOR&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c2512f02f96c8257"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHOR&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "ad36e9047fed9b50"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "8b9ac0bbfbb2883e"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "5ef49110a10de0f8"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "80876cdd55cdf00b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&sort=rating",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "80876cdd55cdf00b"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c2512f02f96c8257"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "4797db49ca4f686a"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "8b9ac0bbfbb2883e"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "5ef49110a10de0f8"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "0496bd826dc65cf1"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&sort=rating",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "0496bd826dc65cf1"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "959f5804aefb53db"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "4797db49ca4f686a"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "7bb23a7eb3a3ee8a"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "5ef49110a10de0f8"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=온천",
+   "status": 200,
+   "count": 1640,
+   "same": true,
+   "hash": "6210d685bc7fd8fb"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=온천&sort=rating",
+   "status": 200,
+   "count": 1640,
+   "same": true,
+   "hash": "7ba70da64a1dbbb2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=온천&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "cbf123d1bd80b009"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=온천&features=natural&rating=9",
+   "status": 200,
+   "count": 74,
+   "same": true,
+   "hash": "3c7826cd7ec2bd59"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=온천",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "2cd5010c701eeaca"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=온천",
+   "status": 200,
+   "count": 1640,
+   "same": true,
+   "hash": "914510c6d0e093e7"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ホテル",
+   "status": 200,
+   "count": 6423,
+   "same": true,
+   "hash": "38e821321bc48d5d"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ホテル&sort=rating",
+   "status": 200,
+   "count": 6423,
+   "same": true,
+   "hash": "0faa8f29f3c9b2a6"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=ホテル&region=pref-kanagawa",
+   "status": 200,
+   "count": 184,
+   "same": true,
+   "hash": "544a77883261e864"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=ホテル&features=natural&rating=9",
+   "status": 200,
+   "count": 2,
+   "same": true,
+   "hash": "19f0560c2b96fb55"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ホテル",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "57c62acd7c3abdc1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ホテル",
+   "status": 200,
+   "count": 6423,
+   "same": true,
+   "hash": "2477ae6373612355"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=hotel",
+   "status": 200,
+   "count": 912,
+   "same": true,
+   "hash": "77f856c02404c5df"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=hotel&sort=rating",
+   "status": 200,
+   "count": 912,
+   "same": true,
+   "hash": "46848176b3c0ce82"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=hotel&region=pref-kanagawa",
+   "status": 200,
+   "count": 32,
+   "same": true,
+   "hash": "ee41584f710dae2e"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=hotel&features=natural&rating=9",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "8dc4b06e665aa71e"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=hotel",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "7633f44a9a1a029e"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=hotel",
+   "status": 200,
+   "count": 912,
+   "same": true,
+   "hash": "ebfd1bef72e61a9a"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=箱根",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=箱根&sort=rating",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=箱根&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "686371535ecd1e14"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=箱根&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=箱根",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c1bd9f5f1b6864b1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=箱根",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3251596e98ab73fa"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=하코네",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3abd947df61a4c3c"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=하코네&sort=rating",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3abd947df61a4c3c"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=하코네&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "686371535ecd1e14"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=하코네&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=하코네",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c1bd9f5f1b6864b1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=하코네",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3251596e98ab73fa"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=유후인",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=유후인&sort=rating",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=유후인&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "686371535ecd1e14"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=유후인&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=유후인",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c1bd9f5f1b6864b1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=유후인",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3251596e98ab73fa"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=由布院",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=由布院&sort=rating",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=由布院&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "686371535ecd1e14"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=由布院&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=由布院",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c1bd9f5f1b6864b1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=由布院",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3251596e98ab73fa"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=noboribetsu",
+   "status": 200,
+   "count": 30,
+   "same": true,
+   "hash": "26fd5345b0f66eec"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=noboribetsu&sort=rating",
+   "status": 200,
+   "count": 30,
+   "same": true,
+   "hash": "eccabc0eb29786c9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=noboribetsu&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "55f7464e50ab32b3"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=noboribetsu&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true,
+   "hash": "25625dd43fb6d84d"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=noboribetsu",
+   "status": 200,
+   "count": 8,
+   "same": true,
+   "hash": "55c8eb02f007ef50"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=noboribetsu",
+   "status": 200,
+   "count": 30,
+   "same": true,
+   "hash": "b2a5a2d1ac229ca9"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "afa3af94bc0ed4d0"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=soznkyo&sort=rating",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "afa3af94bc0ed4d0"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=soznkyo&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "48795a7a7b974c7a"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=soznkyo&features=natural&rating=9",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "afa3af94bc0ed4d0"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "d08fefefebb9aca2"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "8cac85b0c3b7e9f5"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=소잔쿄",
+   "status": 200,
+   "count": 23,
+   "same": true,
+   "hash": "4309b2ce17e44bdf"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=소잔쿄&sort=rating",
+   "status": 200,
+   "count": 23,
+   "same": true,
+   "hash": "4309b2ce17e44bdf"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=소잔쿄&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "bb10df855babc034"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=소잔쿄&features=natural&rating=9",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "1748626b09f9b3c1"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=소잔쿄",
+   "status": 200,
+   "count": 7,
+   "same": true,
+   "hash": "274989bdd53b405b"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=소잔쿄",
+   "status": 200,
+   "count": 23,
+   "same": true,
+   "hash": "b5a215d8420493e2"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "5923f3e43d61b9b4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=zzzzqqq&sort=rating",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "5923f3e43d61b9b4"
+  },
+  {
+   "path": "/api/hotels?fresh=1&stable=1&q=zzzzqqq&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "686371535ecd1e14"
+  },
+  {
+   "path": "/api/hotels?fresh=1&q=zzzzqqq&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "1a17658a42b96ed9"
+  },
+  {
+   "path": "/api/hotels/suggestions?q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "c1bd9f5f1b6864b1"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "same": true,
+   "hash": "3251596e98ab73fa"
+  },
+  {
+   "path": "/api/hotels/search-index",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "3375cc8c2e423c40"
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46",
+   "status": 200,
+   "count": 11394,
+   "same": true,
+   "hash": "6546b0e2720a0582"
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true,
+   "hash": "be9ea3154bb0a6ea"
+  }
+ ]
+}
