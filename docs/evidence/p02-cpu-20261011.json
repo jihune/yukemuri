@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T14:38:15.478Z",
+ "measuredAt": "2026-10-11T14:43:56.578Z",
  "runs": 15,
  "environment": "Node v24.21.0 (V8 13.6.233.17-node.53), node:sqlite on a copy of a grown temporary D1. JavaScript CPU = process CPU minus time inside SQLite. Not Worker CPU.",
  "results": [
@@ -7,289 +7,321 @@
    "version": "current",
    "scenario": "list",
    "mode": "cold",
-   "median": 102.97,
-   "p95": 141.8,
-   "max": 141.8
+   "median": 91.29,
+   "p95": 157.46,
+   "max": 157.46
   },
   {
    "version": "current",
    "scenario": "list",
    "mode": "warm",
-   "median": 14.14,
-   "p95": 40.87,
-   "max": 40.87
+   "median": 14.97,
+   "p95": 41.43,
+   "max": 41.43
   },
   {
    "version": "current",
    "scenario": "listJalan",
    "mode": "cold",
-   "median": 79.59,
-   "p95": 145.54,
-   "max": 145.54
+   "median": 79.8,
+   "p95": 247.59,
+   "max": 247.59
   },
   {
    "version": "current",
    "scenario": "listJalan",
    "mode": "warm",
-   "median": 16.87,
-   "p95": 39.92,
-   "max": 39.92
+   "median": 16.49,
+   "p95": 47.18,
+   "max": 47.18
   },
   {
    "version": "current",
    "scenario": "listFilters",
    "mode": "cold",
-   "median": 90.94,
-   "p95": 137.89,
-   "max": 137.89
+   "median": 77.02,
+   "p95": 133.32,
+   "max": 133.32
   },
   {
    "version": "current",
    "scenario": "listFilters",
    "mode": "warm",
-   "median": 17.41,
-   "p95": 41.03,
-   "max": 41.03
+   "median": 12.08,
+   "p95": 35.3,
+   "max": 35.3
   },
   {
    "version": "current",
    "scenario": "listPage2",
    "mode": "cold",
-   "median": 80.21,
-   "p95": 129.53,
-   "max": 129.53
+   "median": 74.14,
+   "p95": 112.41,
+   "max": 112.41
   },
   {
    "version": "current",
    "scenario": "listPage2",
    "mode": "warm",
-   "median": 12.66,
-   "p95": 18.16,
-   "max": 18.16
+   "median": 12.14,
+   "p95": 16.22,
+   "max": 16.22
   },
   {
    "version": "current",
    "scenario": "nameJa",
    "mode": "cold",
-   "median": 814.39,
-   "p95": 1244.88,
-   "max": 1244.88
+   "median": 792.11,
+   "p95": 1061.64,
+   "max": 1061.64
   },
   {
    "version": "current",
    "scenario": "nameJa",
    "mode": "warm",
-   "median": 29.34,
-   "p95": 117.69,
-   "max": 117.69
+   "median": 39.39,
+   "p95": 91.17,
+   "max": 91.17
   },
   {
    "version": "current",
    "scenario": "nameKo",
    "mode": "cold",
-   "median": 758.84,
-   "p95": 1076.39,
-   "max": 1076.39
+   "median": 808.01,
+   "p95": 1076.5,
+   "max": 1076.5
   },
   {
    "version": "current",
    "scenario": "nameKo",
    "mode": "warm",
-   "median": 38.16,
-   "p95": 76.93,
-   "max": 76.93
+   "median": 38.53,
+   "p95": 89.44,
+   "max": 89.44
   },
   {
    "version": "current",
    "scenario": "map",
    "mode": "cold",
-   "median": 46.13,
-   "p95": 92.44,
-   "max": 92.44
+   "median": 47.99,
+   "p95": 134.3,
+   "max": 134.3
   },
   {
    "version": "current",
    "scenario": "map",
    "mode": "warm",
-   "median": 0.84,
-   "p95": 5.59,
-   "max": 5.59
+   "median": 0.92,
+   "p95": 7.93,
+   "max": 7.93
   },
   {
    "version": "current",
    "scenario": "mapName",
    "mode": "cold",
-   "median": 863.76,
-   "p95": 1300.09,
-   "max": 1300.09
+   "median": 761.24,
+   "p95": 1207.53,
+   "max": 1207.53
   },
   {
    "version": "current",
    "scenario": "mapName",
    "mode": "warm",
-   "median": 27.56,
-   "p95": 70.21,
-   "max": 70.21
+   "median": 28.99,
+   "p95": 60.56,
+   "max": 60.56
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "cold",
+   "median": 786.42,
+   "p95": 2444.23,
+   "max": 2444.23
+  },
+  {
+   "version": "current",
+   "scenario": "visit",
+   "mode": "warm",
+   "median": 15.52,
+   "p95": 52.96,
+   "max": 52.96
   },
   {
    "version": "current",
    "scenario": "snapshotCore",
    "mode": "cold",
-   "median": 30.38,
-   "p95": 142.5,
-   "max": 142.5
+   "median": 24.57,
+   "p95": 139.11,
+   "max": 139.11
   },
   {
    "version": "current",
    "scenario": "snapshotCore",
    "mode": "warm",
-   "median": 0.13,
-   "p95": 2.4,
-   "max": 2.4
+   "median": 0.08,
+   "p95": 3.15,
+   "max": 3.15
   },
   {
    "version": "current",
    "scenario": "snapshotText",
    "mode": "cold",
-   "median": 101.29,
-   "p95": 177.39,
-   "max": 177.39
+   "median": 109.93,
+   "p95": 202.5,
+   "max": 202.5
   },
   {
    "version": "current",
    "scenario": "snapshotText",
    "mode": "warm",
-   "median": 0.06,
-   "p95": 3.86,
-   "max": 3.86
+   "median": 0.09,
+   "p95": 0.54,
+   "max": 0.54
   },
   {
    "version": "274f687",
    "scenario": "list",
    "mode": "cold",
-   "median": 17.1,
-   "p95": 51.06,
-   "max": 51.06
+   "median": 15.71,
+   "p95": 40.62,
+   "max": 40.62
   },
   {
    "version": "274f687",
    "scenario": "list",
    "mode": "warm",
-   "median": 13.51,
-   "p95": 33.53,
-   "max": 33.53
+   "median": 12.3,
+   "p95": 29.97,
+   "max": 29.97
   },
   {
    "version": "274f687",
    "scenario": "listJalan",
    "mode": "cold",
-   "median": 14.37,
-   "p95": 46.36,
-   "max": 46.36
+   "median": 13.59,
+   "p95": 47.14,
+   "max": 47.14
   },
   {
    "version": "274f687",
    "scenario": "listJalan",
    "mode": "warm",
-   "median": 10.72,
-   "p95": 34.83,
-   "max": 34.83
+   "median": 10.89,
+   "p95": 36.17,
+   "max": 36.17
   },
   {
    "version": "274f687",
    "scenario": "listFilters",
    "mode": "cold",
-   "median": 10.6,
-   "p95": 38.01,
-   "max": 38.01
+   "median": 9.88,
+   "p95": 33,
+   "max": 33
   },
   {
    "version": "274f687",
    "scenario": "listFilters",
    "mode": "warm",
-   "median": 7.73,
-   "p95": 19.8,
-   "max": 19.8
+   "median": 7.27,
+   "p95": 22.95,
+   "max": 22.95
   },
   {
    "version": "274f687",
    "scenario": "listPage2",
    "mode": "cold",
-   "median": 5.88,
-   "p95": 30.07,
-   "max": 30.07
+   "median": 6.14,
+   "p95": 36.62,
+   "max": 36.62
   },
   {
    "version": "274f687",
    "scenario": "listPage2",
    "mode": "warm",
-   "median": 5.75,
-   "p95": 32.37,
-   "max": 32.37
+   "median": 6.47,
+   "p95": 26.95,
+   "max": 26.95
   },
   {
    "version": "274f687",
    "scenario": "nameJa",
    "mode": "cold",
-   "median": 743.89,
-   "p95": 949.17,
-   "max": 949.17
+   "median": 709.53,
+   "p95": 958.12,
+   "max": 958.12
   },
   {
    "version": "274f687",
    "scenario": "nameJa",
    "mode": "warm",
-   "median": 25.82,
-   "p95": 43.31,
-   "max": 43.31
+   "median": 27.21,
+   "p95": 52.59,
+   "max": 52.59
   },
   {
    "version": "274f687",
    "scenario": "nameKo",
    "mode": "cold",
-   "median": 630.55,
-   "p95": 923.17,
-   "max": 923.17
+   "median": 704.22,
+   "p95": 861.49,
+   "max": 861.49
   },
   {
    "version": "274f687",
    "scenario": "nameKo",
    "mode": "warm",
-   "median": 27.81,
-   "p95": 58.37,
-   "max": 58.37
+   "median": 31.08,
+   "p95": 63,
+   "max": 63
   },
   {
    "version": "274f687",
    "scenario": "map",
    "mode": "cold",
-   "median": -0.43,
-   "p95": 3.3,
-   "max": 3.3
+   "median": -0.14,
+   "p95": 4.6,
+   "max": 4.6
   },
   {
    "version": "274f687",
    "scenario": "map",
    "mode": "warm",
-   "median": -1.05,
-   "p95": 0.22,
-   "max": 0.22
+   "median": -0.45,
+   "p95": 0.51,
+   "max": 0.51
   },
   {
    "version": "274f687",
    "scenario": "mapName",
    "mode": "cold",
-   "median": 728.34,
-   "p95": 966.49,
-   "max": 966.49
+   "median": 738.43,
+   "p95": 931.47,
+   "max": 931.47
   },
   {
    "version": "274f687",
    "scenario": "mapName",
    "mode": "warm",
-   "median": 21.99,
-   "p95": 91.45,
-   "max": 91.45
+   "median": 23.15,
+   "p95": 62.17,
+   "max": 62.17
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "cold",
+   "median": 634,
+   "p95": 1405.83,
+   "max": 1405.83
+  },
+  {
+   "version": "274f687",
+   "scenario": "visit",
+   "mode": "warm",
+   "median": 11.01,
+   "p95": 16.53,
+   "max": 16.53
   }
  ]
 }

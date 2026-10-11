@@ -32,6 +32,9 @@ if(process.env.BENCH_CHILD){
   nameKo:r=>r.hotelRepository.search(filters({query:'노보리베츠'}),'recommended',1,false,[],{stable:true,fresh:true}),
   map:r=>r.hotelRepository.mapArea(filters(),{west:122,south:24,east:146,north:46}),
   mapName:r=>r.hotelRepository.mapArea(filters({query:ja}),{west:122,south:24,east:146,north:46}),
+  // A first visit: the page's list, then the search index the client fetches
+  // after the first paint (components/use-hotel-search-index.ts).
+  visit:async r=>{await r.hotelRepository.search(filters(),'recommended',1,false,[],{stable:true,fresh:true});await r.hotelRepository.searchIndex()},
   // Parts: loading the snapshot (core, then with text) without a search.
   snapshotCore:()=>req(join(libDir,'lib/hotel-search-snapshot.js')).searchSnapshot(false),
   snapshotText:()=>req(join(libDir,'lib/hotel-search-snapshot.js')).searchSnapshot(true),
@@ -83,7 +86,7 @@ try{
  }
  const stat=a=>{const s=[...a].sort((x,y)=>x-y);return{median:s[Math.floor(s.length/2)],p95:s[Math.min(s.length-1,Math.ceil(s.length*0.95)-1)],max:s.at(-1)}};
  const report={measuredAt:new Date().toISOString(),runs,environment:`Node ${process.version} (V8 ${process.versions.v8}), node:sqlite on a copy of a grown temporary D1. JavaScript CPU = process CPU minus time inside SQLite. Not Worker CPU.`,results:[]};
- for(const [version,libDir] of Object.entries(versions))for(const scenario of (process.env.BENCH_SCENARIOS?.split(',')??['list','listJalan','listFilters','listPage2','nameJa','nameKo','map','mapName',...(version==='current'?['snapshotCore','snapshotText']:[])]))for(const mode of ['cold','warm']){
+ for(const [version,libDir] of Object.entries(versions))for(const scenario of (process.env.BENCH_SCENARIOS?.split(',')??['list','listJalan','listFilters','listPage2','nameJa','nameKo','map','mapName','visit',...(version==='current'?['snapshotCore','snapshotText']:[])]))for(const mode of ['cold','warm']){
   const r=spawnSync(process.execPath,[resolve('scripts/bench-search-cpu.mjs')],{encoding:'utf8',env:{...process.env,BENCH_CHILD:[libDir,dbFile,scenario,mode,runs].join('|')},maxBuffer:1<<24});
   const line=r.stdout.trim().split('\n').at(-1);let samples;try{samples=JSON.parse(line)}catch{throw new Error(r.stdout+r.stderr)}
   const row={version,scenario,mode,...stat(samples)};report.results.push(row);console.log(JSON.stringify(row));
