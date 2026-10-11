@@ -233,9 +233,9 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
 5. 6번 PR 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
 6. 수집 예약을 앱 레포로 옮기는 PR 두 개(결정 반영, Codex 검토 2026-10-11):
-   - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. cron·작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. 예약은 이 PR에서 아직 켜지 않는다(수동 실행만). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
+   - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. cron·작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. 동시 실행 제어도 같게 둔다. `concurrency` 그룹 `yukemuri-catalog-updates`, `cancel-in-progress: false`다. 예약 실행 중 수동 실행을 시작해도 앞 실행이 끝난 뒤 돈다. 그래서 호스트별 순차 요청 규칙이 깨지지 않는다(Codex 검토, 2026-10-11). 예약은 이 PR에서 아직 켜지 않는다(수동 실행만). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
    - 실행기 PR: 수집 workflow와 그 예약을 지운다. 백업 workflow만 새 주소와 Secret `YUKEMURI_CLOUDFLARE_JSON`으로 바꾼다. `run-backup.py` 허용 호스트와 `catalog-checkpoint.py` 검사·헤더를 바꾼다. 수집 전용 파일(`bootstrap.py`, `run-updates.py`)은 지우거나 쓰지 않는다고 표시한다.
-   - 앱 레포 수집 workflow를 수동으로 `check-access` → `gentle` 1회 실행하고 저장 후 조회를 확인한다.
+   - 앱 레포 수집 workflow를 수동으로 `check-access` → `gentle` 1회 실행하고 저장 후 조회를 확인한다. `gentle` 실행 중에 수동 실행을 하나 더 넣어 대기 상태로 기다렸다가 뒤이어 도는지 확인한다.
 7. 앱 레포 수집 예약을 켜고 실행기 백업 예약을 재개한다. 실행기 쪽 수집 예약은 다시 켜지 않는다. 두 수집 예약이 동시에 돌지 않음을 Actions 실행 목록으로 확인한다. Sites는 그대로 두되 수집 대상에서 뺀다. 사용자는 이후 새 주소만 쓴다. 기존 Sites에서 바꾼 즐겨찾기는 새 DB로 옮기지 않는다.
 
 **7단계. 관찰(에이전트, 첫 1주)**
