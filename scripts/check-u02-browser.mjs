@@ -71,6 +71,8 @@ async function run(page){
  // spelled out) is that view: reloaded, its first page shows before the app.
  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForFunction(()=>location.search.includes('sort='));
  const spelled=new URL(page.url());spelled.hash='';
+ // A parameter the app does not read (a mail campaign tag) changes nothing either.
+ spelled.searchParams.set('utm_source','mail');
  await page.route(appScripts,route=>route.abort());
  await page.goto(spelled.href,{waitUntil:'load'});
  const defaults={visibility:await page.locator('main.workspace').evaluate(e=>getComputedStyle(e).visibility),mark:await page.evaluate(()=>document.documentElement.hasAttribute('data-conditions')),pending:await page.locator('.conditions-pending').isVisible(),search:spelled.search};
