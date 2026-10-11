@@ -1,0 +1,1138 @@
+{
+ "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.",
+ "order": [
+  "1ff8f48",
+  "3c613c4",
+  "3c613c4",
+  "1ff8f48",
+  "da919d5"
+ ],
+ "note": "1ff8f48 = main before P01, da919d5 = PR A, 3c613c4 = PR B. rowsRead from the first run of each build; ms lists every run in the order above (single-run wall clock, noisy).",
+ "builds": [
+  {
+   "build": "1ff8f48",
+   "tables": {
+    "hotels": 1655,
+    "hotel_names": 1711,
+    "crawl_jobs": 3505,
+    "hotel_lifecycle": 0
+   },
+   "seedRequest": {
+    "rowsRead": 293757,
+    "rowsWritten": 34463
+   },
+   "results": [
+    {
+     "key": "listCold",
+     "label": "목록 첫 쪽(새 isolate)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1",
+     "ms": [
+      225,
+      144.3
+     ],
+     "statements": 21,
+     "rowsRead": 16444,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      },
+      {
+       "rowsRead": 4967,
+       "sql": "SELECT id FROM hotels WHERE id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed')) ORDER BY CASE WHEN natural=1 THEN 1 "
+      }
+     ]
+    },
+    {
+     "key": "detailCold",
+     "label": "상세(새 isolate)",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      142.9,
+      151.4
+     ],
+     "statements": 10,
+     "rowsRead": 1684,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      }
+     ]
+    },
+    {
+     "key": "nameCold",
+     "label": "이름 부분검색(새 isolate, 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&saved=0&page=1&q=…",
+     "ms": [
+      253.3,
+      228
+     ],
+     "statements": 16,
+     "rowsRead": 23582,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 6030,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "list",
+     "label": "목록 첫 쪽(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+     "ms": [
+      51.6,
+      46.2
+     ],
+     "statements": 14,
+     "rowsRead": 9627,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 4967,
+       "sql": "SELECT id FROM hotels WHERE id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed')) ORDER BY CASE WHEN natural=1 THEN 1 "
+      }
+     ]
+    },
+    {
+     "key": "listFilters",
+     "label": "목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&features=natural&rating=9&reviews=50",
+     "ms": [
+      31.1,
+      27.4
+     ],
+     "statements": 11,
+     "rowsRead": 3982,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      }
+     ]
+    },
+    {
+     "key": "listRegion",
+     "label": "목록: 홋카이도(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&region=pref-hokkaido",
+     "ms": [
+      33.6,
+      30.6
+     ],
+     "statements": 14,
+     "rowsRead": 1723,
+     "rowsWritten": 3,
+     "heaviest": []
+    },
+    {
+     "key": "nameIndex",
+     "label": "이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      117.3,
+      120.5
+     ],
+     "statements": 9,
+     "rowsRead": 16763,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 6030,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "name",
+     "label": "이름 부분검색(fresh, 색인 있음)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      21.2,
+      21.3
+     ],
+     "statements": 7,
+     "rowsRead": 10084,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "suggest",
+     "label": "검색어 예측",
+     "path": "/api/hotels/suggestions?q=…",
+     "ms": [
+      9.9,
+      8.8
+     ],
+     "statements": 0,
+     "rowsRead": 0,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "detail",
+     "label": "상세",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      13.3,
+      13.2
+     ],
+     "statements": 5,
+     "rowsRead": 25,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "compare",
+     "label": "비교 3곳",
+     "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
+     "ms": [
+      11.8,
+      12
+     ],
+     "statements": 5,
+     "rowsRead": 75,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "crawlGet",
+     "label": "수집 GET 집계(실행 끝)",
+     "path": "/api/crawl?provider=jalan&kind=list&limit=1",
+     "ms": [
+      11.6,
+      11.3
+     ],
+     "statements": 3,
+     "rowsRead": 5958,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ]
+    },
+    {
+     "key": "crawlClaim",
+     "label": "수집 작업 선점(POST)",
+     "path": "/api/crawl",
+     "ms": [
+      18.3,
+      16.7
+     ],
+     "statements": 2,
+     "rowsRead": 1630,
+     "rowsWritten": 2,
+     "heaviest": [
+      {
+       "rowsRead": 1629,
+       "sql": "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT j.url FROM crawl_jobs j WHERE j.provider=? AND j.kind=? AND j.status IN ('pending','retry') "
+      }
+     ]
+    },
+    {
+     "key": "crawlPut",
+     "label": "수집 저장(PUT, 상세 1곳)",
+     "path": "/api/crawl",
+     "ms": [
+      26.4,
+      32.2
+     ],
+     "statements": 12,
+     "rowsRead": 5180,
+     "rowsWritten": 17,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ],
+     "coverageRecords": 1655,
+     "accepted": 1
+    },
+    {
+     "key": "nameAfterPut",
+     "label": "PUT 뒤 이름 부분검색(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      139.7,
+      141.6
+     ],
+     "statements": 11,
+     "rowsRead": 21923,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 6030,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "crawlPutCold",
+     "label": "수집 저장(PUT, 새 isolate)",
+     "path": "/api/crawl",
+     "ms": [
+      178.7,
+      116.7
+     ],
+     "statements": 17,
+     "rowsRead": 6838,
+     "rowsWritten": 16,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ]
+    },
+    {
+     "key": "exportManifest",
+     "label": "catalog-export 목록",
+     "path": "/api/catalog-export",
+     "ms": [
+      35.4,
+      33.1
+     ],
+     "statements": 26,
+     "rowsRead": 6908,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS count FROM hotels"
+      },
+      {
+       "rowsRead": 1711,
+       "sql": "SELECT COUNT(*) AS count FROM hotel_names"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT COUNT(*) AS count FROM crawl_jobs"
+      }
+     ]
+    },
+    {
+     "key": "exportPage",
+     "label": "catalog-export hotels 한 쪽(250행)",
+     "path": "/api/catalog-export?table=hotels&limit=250",
+     "ms": [
+      50.3,
+      48
+     ],
+     "statements": 1,
+     "rowsRead": 251,
+     "rowsWritten": 0,
+     "heaviest": []
+    }
+   ],
+   "measuredAt": [
+    "2026-10-11T08:29:22.920Z",
+    "2026-10-11T08:30:27.731Z"
+   ]
+  },
+  {
+   "build": "3c613c4",
+   "tables": {
+    "hotels": 1655,
+    "hotel_names": 1711,
+    "crawl_jobs": 3505,
+    "hotel_lifecycle": 0
+   },
+   "seedRequest": {
+    "rowsRead": 290445,
+    "rowsWritten": 34465
+   },
+   "results": [
+    {
+     "key": "listCold",
+     "label": "목록 첫 쪽(새 isolate)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1",
+     "ms": [
+      85.5,
+      110.3
+     ],
+     "statements": 20,
+     "rowsRead": 6320,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3310,
+       "sql": "SELECT id FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY CASE"
+      }
+     ]
+    },
+    {
+     "key": "detailCold",
+     "label": "상세(새 isolate)",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      42.9,
+      62.1
+     ],
+     "statements": 10,
+     "rowsRead": 30,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "nameCold",
+     "label": "이름 부분검색(새 isolate, 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&saved=0&page=1&q=…",
+     "ms": [
+      169.3,
+      255.8
+     ],
+     "statements": 17,
+     "rowsRead": 6776,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1711,
+       "sql": "SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key"
+      },
+      {
+       "rowsRead": 1500,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 3373,
+       "sql": "SELECT id FROM hotels WHERE (instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched"
+      }
+     ]
+    },
+    {
+     "key": "list",
+     "label": "목록 첫 쪽(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+     "ms": [
+      53.4,
+      90
+     ],
+     "statements": 15,
+     "rowsRead": 6317,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3310,
+       "sql": "SELECT id FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY CASE"
+      }
+     ]
+    },
+    {
+     "key": "listFilters",
+     "label": "목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&features=natural&rating=9&reviews=50",
+     "ms": [
+      27.6,
+      42.5
+     ],
+     "statements": 12,
+     "rowsRead": 2302,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      }
+     ]
+    },
+    {
+     "key": "listRegion",
+     "label": "목록: 홋카이도(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&region=pref-hokkaido",
+     "ms": [
+      34,
+      48.5
+     ],
+     "statements": 15,
+     "rowsRead": 1569,
+     "rowsWritten": 3,
+     "heaviest": []
+    },
+    {
+     "key": "nameIndex",
+     "label": "이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      148.8,
+      147.6
+     ],
+     "statements": 12,
+     "rowsRead": 6771,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1711,
+       "sql": "SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key"
+      },
+      {
+       "rowsRead": 1500,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 3373,
+       "sql": "SELECT id FROM hotels WHERE (instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched"
+      }
+     ]
+    },
+    {
+     "key": "name",
+     "label": "이름 부분검색(fresh, 색인 있음)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      21.1,
+      24.8
+     ],
+     "statements": 9,
+     "rowsRead": 3405,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 3373,
+       "sql": "SELECT id FROM hotels WHERE (instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched"
+      }
+     ]
+    },
+    {
+     "key": "suggest",
+     "label": "검색어 예측",
+     "path": "/api/hotels/suggestions?q=…",
+     "ms": [
+      8.8,
+      8.8
+     ],
+     "statements": 0,
+     "rowsRead": 0,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "detail",
+     "label": "상세",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      10.6,
+      9
+     ],
+     "statements": 5,
+     "rowsRead": 25,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "compare",
+     "label": "비교 3곳",
+     "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
+     "ms": [
+      10.5,
+      9.9
+     ],
+     "statements": 5,
+     "rowsRead": 75,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "crawlGet",
+     "label": "수집 GET 집계(실행 끝)",
+     "path": "/api/crawl?provider=jalan&kind=list&limit=1",
+     "ms": [
+      12.9,
+      10.9
+     ],
+     "statements": 5,
+     "rowsRead": 5960,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ]
+    },
+    {
+     "key": "crawlClaim",
+     "label": "수집 작업 선점(POST)",
+     "path": "/api/crawl",
+     "ms": [
+      15,
+      13
+     ],
+     "statements": 2,
+     "rowsRead": 1630,
+     "rowsWritten": 2,
+     "heaviest": [
+      {
+       "rowsRead": 1629,
+       "sql": "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT j.url FROM crawl_jobs j WHERE j.provider=? AND j.kind=? AND j.status IN ('pending','retry') "
+      }
+     ]
+    },
+    {
+     "key": "crawlPut",
+     "label": "수집 저장(PUT, 상세 1곳)",
+     "path": "/api/crawl",
+     "ms": [
+      21.3,
+      20.4
+     ],
+     "statements": 12,
+     "rowsRead": 27,
+     "rowsWritten": 18,
+     "heaviest": [],
+     "coverageRecords": 1655,
+     "accepted": 1
+    },
+    {
+     "key": "nameAfterPut",
+     "label": "PUT 뒤 이름 부분검색(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      21,
+      18.3
+     ],
+     "statements": 9,
+     "rowsRead": 3405,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 3373,
+       "sql": "SELECT id FROM hotels WHERE (instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched"
+      }
+     ]
+    },
+    {
+     "key": "crawlPutCold",
+     "label": "수집 저장(PUT, 새 isolate)",
+     "path": "/api/crawl",
+     "ms": [
+      58.7,
+      67.4
+     ],
+     "statements": 17,
+     "rowsRead": 31,
+     "rowsWritten": 17,
+     "heaviest": []
+    },
+    {
+     "key": "exportManifest",
+     "label": "catalog-export 목록",
+     "path": "/api/catalog-export",
+     "ms": [
+      32.1,
+      29.4
+     ],
+     "statements": 26,
+     "rowsRead": 6911,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS count FROM hotels"
+      },
+      {
+       "rowsRead": 1711,
+       "sql": "SELECT COUNT(*) AS count FROM hotel_names"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT COUNT(*) AS count FROM crawl_jobs"
+      }
+     ]
+    },
+    {
+     "key": "exportPage",
+     "label": "catalog-export hotels 한 쪽(250행)",
+     "path": "/api/catalog-export?table=hotels&limit=250",
+     "ms": [
+      46.4,
+      45.4
+     ],
+     "statements": 1,
+     "rowsRead": 251,
+     "rowsWritten": 0,
+     "heaviest": []
+    }
+   ],
+   "measuredAt": [
+    "2026-10-11T08:29:43.703Z",
+    "2026-10-11T08:30:05.154Z"
+   ]
+  },
+  {
+   "build": "da919d5",
+   "tables": {
+    "hotels": 1655,
+    "hotel_names": 1711,
+    "crawl_jobs": 3505,
+    "hotel_lifecycle": 0
+   },
+   "seedRequest": {
+    "rowsRead": 293757,
+    "rowsWritten": 34463
+   },
+   "results": [
+    {
+     "key": "listCold",
+     "label": "목록 첫 쪽(새 isolate)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1",
+     "ms": [
+      158.9
+     ],
+     "statements": 22,
+     "rowsRead": 16445,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      },
+      {
+       "rowsRead": 4967,
+       "sql": "SELECT id FROM hotels WHERE id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed')) ORDER BY CASE WHEN natural=1 THEN 1 "
+      }
+     ]
+    },
+    {
+     "key": "detailCold",
+     "label": "상세(새 isolate)",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      107.7
+     ],
+     "statements": 10,
+     "rowsRead": 1684,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      }
+     ]
+    },
+    {
+     "key": "nameCold",
+     "label": "이름 부분검색(새 isolate, 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&saved=0&page=1&q=…",
+     "ms": [
+      227.9
+     ],
+     "statements": 17,
+     "rowsRead": 23583,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 6030,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "list",
+     "label": "목록 첫 쪽(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
+     "ms": [
+      50.8
+     ],
+     "statements": 15,
+     "rowsRead": 9628,
+     "rowsWritten": 3,
+     "heaviest": [
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 4967,
+       "sql": "SELECT id FROM hotels WHERE id NOT IN (SELECT hotel_id FROM hotel_lifecycle WHERE state IN ('closed','temporarily_closed')) ORDER BY CASE WHEN natural=1 THEN 1 "
+      }
+     ]
+    },
+    {
+     "key": "listFilters",
+     "label": "목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&features=natural&rating=9&reviews=50",
+     "ms": [
+      33.4
+     ],
+     "statements": 12,
+     "rowsRead": 3983,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 3312,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      }
+     ]
+    },
+    {
+     "key": "listRegion",
+     "label": "목록: 홋카이도(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&region=pref-hokkaido",
+     "ms": [
+      35
+     ],
+     "statements": 15,
+     "rowsRead": 1724,
+     "rowsWritten": 3,
+     "heaviest": []
+    },
+    {
+     "key": "nameIndex",
+     "label": "이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      127.3
+     ],
+     "statements": 10,
+     "rowsRead": 16764,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 6030,
+       "sql": "SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extrac"
+      },
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "name",
+     "label": "이름 부분검색(fresh, 색인 있음)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      22.8
+     ],
+     "statements": 8,
+     "rowsRead": 10085,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "suggest",
+     "label": "검색어 예측",
+     "path": "/api/hotels/suggestions?q=…",
+     "ms": [
+      9
+     ],
+     "statements": 0,
+     "rowsRead": 0,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "detail",
+     "label": "상세",
+     "path": "/api/hotels/akan-tsuruga",
+     "ms": [
+      10.3
+     ],
+     "statements": 5,
+     "rowsRead": 25,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "compare",
+     "label": "비교 3곳",
+     "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
+     "ms": [
+      10.2
+     ],
+     "statements": 5,
+     "rowsRead": 75,
+     "rowsWritten": 0,
+     "heaviest": []
+    },
+    {
+     "key": "crawlGet",
+     "label": "수집 GET 집계(실행 끝)",
+     "path": "/api/crawl?provider=jalan&kind=list&limit=1",
+     "ms": [
+      11.8
+     ],
+     "statements": 4,
+     "rowsRead": 5959,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ]
+    },
+    {
+     "key": "crawlClaim",
+     "label": "수집 작업 선점(POST)",
+     "path": "/api/crawl",
+     "ms": [
+      14.7
+     ],
+     "statements": 2,
+     "rowsRead": 1630,
+     "rowsWritten": 2,
+     "heaviest": [
+      {
+       "rowsRead": 1629,
+       "sql": "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT j.url FROM crawl_jobs j WHERE j.provider=? AND j.kind=? AND j.status IN ('pending','retry') "
+      }
+     ]
+    },
+    {
+     "key": "crawlPut",
+     "label": "수집 저장(PUT, 상세 1곳)",
+     "path": "/api/crawl",
+     "ms": [
+      22.5
+     ],
+     "statements": 12,
+     "rowsRead": 24,
+     "rowsWritten": 18,
+     "heaviest": [],
+     "coverageRecords": 1655,
+     "accepted": 1
+    },
+    {
+     "key": "nameAfterPut",
+     "label": "PUT 뒤 이름 부분검색(fresh)",
+     "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
+     "ms": [
+      36.9
+     ],
+     "statements": 8,
+     "rowsRead": 10085,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 5031,
+       "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
+      },
+      {
+       "rowsRead": 5034,
+       "sql": "WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) SELECT id,COALESCE(q"
+      }
+     ]
+    },
+    {
+     "key": "crawlPutCold",
+     "label": "수집 저장(PUT, 새 isolate)",
+     "path": "/api/crawl",
+     "ms": [
+      122.1
+     ],
+     "statements": 19,
+     "rowsRead": 6842,
+     "rowsWritten": 17,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT id,payload FROM hotels WHERE bath_features IS NULL ORDER BY id LIMIT 200"
+      },
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+      }
+     ]
+    },
+    {
+     "key": "exportManifest",
+     "label": "catalog-export 목록",
+     "path": "/api/catalog-export",
+     "ms": [
+      25.2
+     ],
+     "statements": 26,
+     "rowsRead": 6909,
+     "rowsWritten": 0,
+     "heaviest": [
+      {
+       "rowsRead": 1655,
+       "sql": "SELECT COUNT(*) AS count FROM hotels"
+      },
+      {
+       "rowsRead": 1711,
+       "sql": "SELECT COUNT(*) AS count FROM hotel_names"
+      },
+      {
+       "rowsRead": 3505,
+       "sql": "SELECT COUNT(*) AS count FROM crawl_jobs"
+      }
+     ]
+    },
+    {
+     "key": "exportPage",
+     "label": "catalog-export hotels 한 쪽(250행)",
+     "path": "/api/catalog-export?table=hotels&limit=250",
+     "ms": [
+      58
+     ],
+     "statements": 1,
+     "rowsRead": 251,
+     "rowsWritten": 0,
+     "heaviest": []
+    }
+   ],
+   "measuredAt": [
+    "2026-10-11T08:23:35.136Z"
+   ]
+  }
+ ]
+}

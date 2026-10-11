@@ -1,0 +1,145 @@
+// Count D1 rows read/written and time representative requests against the built
+// Worker and a temporary Miniflare D1. Never touches the production database.
+// Usage: node scripts/measure-d1-reads.mjs [--grow] [--check] [--out evidence.json]
+//  --grow   copy checked-in rows up to the 2026-10-08 production row counts
+//  --check  fail when a request reads more rows than its P01 upper bound
+// Row counts come from the meta that Miniflare's D1 returns per statement.
+// Whether Miniflare counts rows exactly like production D1 is unverified.
+import {createRequire} from 'node:module';
+import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,writeFileSync,cpSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {randomUUID} from 'node:crypto';
+import {execSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
+const {Miniflare}=require('miniflare');
+const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null;
+// INSERT statement counts in the 2026-10-08 account export (docs/hosting-review-20261011.md 1.2).
+const TARGET={hotels:12271,hotel_names:13849,crawl_jobs:15417};
+const KEY='measure-d1-only',VISITOR='d'.repeat(64);
+const temp=mkdtempSync(join(tmpdir(),'yukemuri-d1-reads-'));
+// The app reads env.DB from cloudflare:workers. A test-only entry module wraps
+// that binding in place and serves the counters on /__d1meter. The copied build
+// is the one under test; dist/ itself is not modified.
+const server=join(temp,'server');cpSync(resolve('dist/server'),server,{recursive:true});
+writeFileSync(join(server,'__d1meter.js'),`import app from './index.js';
+import {env} from 'cloudflare:workers';
+const empty=()=>({statements:0,rowsRead:0,rowsWritten:0,heaviest:[]});
+let meter=empty(),wrapped=false;
+const count=(meta,sql)=>{meter.statements++;meter.rowsRead+=meta?.rows_read??0;meter.rowsWritten+=meta?.rows_written??0;if(meta?.rows_read>=1000)meter.heaviest.push({rowsRead:meta.rows_read,sql:sql.replace(/\\s+/g,' ').slice(0,160)})};
+const statement=(inner,sql)=>({__inner:inner,__sql:sql,
+ bind:(...args)=>statement(inner.bind(...args),sql),
+ all:async()=>{const r=await inner.all();count(r.meta,sql);return r},
+ run:async()=>{const r=await inner.run();count(r.meta,sql);return r},
+ first:async column=>{const r=await inner.all();count(r.meta,sql);const row=r.results[0]??null;return column===undefined?row:row?(row[column]??null):null},
+ raw:async()=>{throw new Error('raw() is not metered')}});
+function wrap(){
+ if(wrapped)return;wrapped=true;
+ const db=env.DB,prepare=db.prepare.bind(db),batch=db.batch.bind(db);
+ db.prepare=sql=>statement(prepare(sql),sql);
+ db.batch=async list=>{const results=await batch(list.map(s=>s.__inner??s));results.forEach((r,i)=>count(r.meta,list[i].__sql??''));return results};
+ db.exec=async()=>{throw new Error('exec() is not metered')};
+}
+export default {async fetch(request,env2,ctx){
+ wrap();
+ if(new URL(request.url).pathname==='/__d1meter'){const body=JSON.stringify(meter);meter=empty();return new Response(body)}
+ return app.fetch(request,env2,ctx);
+}};
+`);
+const modules=[{type:'ESModule',path:join(server,'__d1meter.js')},...readdirSync(server,{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='__d1meter.js').map(p=>({type:'ESModule',path:join(server,p)}))];
+const start=()=>new Miniflare({modules,modulesRoot:server,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'d1-reads'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:KEY}});
+const call=async(runtime,path,init={},expected=200)=>{
+ await runtime.dispatchFetch('http://localhost/__d1meter');
+ const t=performance.now();
+ const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(path.startsWith('/api/crawl')||path.startsWith('/api/catalog-export')?{'X-Yukemuri-Crawl-Key':KEY}:{}),...init.headers}});
+ const body=await r.json(),ms=performance.now()-t;
+ assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));
+ const meter=await (await runtime.dispatchFetch('http://localhost/__d1meter')).json();
+ return{ms,meter,body};
+};
+let runtime=start();
+const counts={};
+try{
+ const db=await runtime.getD1Database('DB');
+ for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
+ const seeding=await call(runtime,'/api/hotels');
+ if(grow){
+  // Copies of the checked-in rows under new ids, the way measure-map-area.mjs grows
+  // the catalogue. Names and queue rows are copied with them so joins see real sizes.
+  const cols=Object.keys(await db.prepare('SELECT * FROM hotels LIMIT 1').first()).filter(c=>c!=='id'&&c!=='payload');
+  for(let n=1;;n++){
+   const have=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;if(have>=TARGET.hotels)break;
+   await db.prepare(`INSERT INTO hotels (id,${cols.join(',')},payload) SELECT id||'-copy${n}',${cols.join(',')},json_set(payload,'$.id',id||'-copy${n}') FROM hotels WHERE id NOT LIKE '%-copy%' LIMIT ?`).bind(TARGET.hotels-have).run();
+  }
+  for(let n=1;;n++){
+   const have=(await db.prepare('SELECT COUNT(*) AS n FROM hotel_names').first()).n;if(have>=TARGET.hotel_names)break;
+   const added=await db.prepare(`INSERT OR IGNORE INTO hotel_names (hotel_id,name_key,name) SELECT h.id,n.name_key||'${n}',n.name FROM hotel_names n JOIN hotels h ON h.id LIKE n.hotel_id||'-copy%' WHERE n.hotel_id NOT LIKE '%-copy%' LIMIT ?`).bind(TARGET.hotel_names-have).run();
+   if(!added.meta.changes)break;
+  }
+  for(let n=1;;n++){
+   const have=(await db.prepare('SELECT COUNT(*) AS n FROM crawl_jobs').first()).n;if(have>=TARGET.crawl_jobs)break;
+   await db.prepare(`INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,error,fetched_at) SELECT url||'copy${n}/',provider,kind,prefecture,priority,status,attempts,next_at,error,fetched_at FROM crawl_jobs WHERE url NOT LIKE '%copy%' LIMIT ?`).bind(TARGET.crawl_jobs-have).run();
+  }
+ }
+ for(const table of ['hotels','hotel_names','crawl_jobs','hotel_lifecycle'])counts[table]=(await db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first()).n;
+ // One pending Trip detail job whose observation is a checked-in record with a
+ // newer retrieval time, so the PUT really writes like a collector page does.
+ const puts=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).filter(h=>/^trip-\d+$/.test(h.id)&&h.sources?.[0]?.url&&h.links?.[0]?.url===h.sources[0].url).slice(0,2).map(base=>{
+  const observation={...base,sources:[{...base.sources[0],retrievedAt:new Date().toISOString()}]};
+  return JSON.stringify({url:base.sources[0].url,status:'done',observations:[observation],links:[]});
+ });
+ for(const body of puts){const {url,observations:[h]}=JSON.parse(body);await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail',?,'pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',lease_token=NULL,lease_until=0,last_token=NULL").bind(url,h.prefecture).run()}
+ const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 3").all()).results.map(r=>r.id);
+ const nameQuery=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).find(h=>h.names?.ja?.length>=4).names.ja.slice(0,3);
+ await runtime.dispose();runtime=null;
+
+ const list='/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1';
+ const scenarios=[
+  // [key, label, path, init, expected, cold]
+  ['listCold','목록 첫 쪽(새 isolate)',list.replace('&fresh=1',''),{},200,true],
+  ['nameCold','이름 부분검색(새 isolate, 색인 생성 포함)','/api/hotels?stable=1&saved=0&page=1&q='+encodeURIComponent(nameQuery),{},200,true],
+  ['list','목록 첫 쪽(fresh)',list],
+  ['listFilters','목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)',list+'&features=natural&rating=9&reviews=50'],
+  ['listRegion','목록: 홋카이도(fresh)',list+'&region=pref-hokkaido'],
+  ['nameIndex','이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)',list+'&q='+encodeURIComponent(nameQuery)],
+  ['name','이름 부분검색(fresh, 색인 있음)',list+'&q='+encodeURIComponent(nameQuery)],
+  ['suggest','검색어 예측','/api/hotels/suggestions?q='+encodeURIComponent(nameQuery)],
+  ['detail','상세','/api/hotels/'+sample[0]],
+  ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.join(',')],
+  // A previous run ended with this GET; the measured run follows it.
+  ['crawlGet','수집 GET 집계(실행 끝)','/api/crawl?provider=jalan&kind=list&limit=1'],
+  ['crawlClaim','수집 작업 선점(POST)','/api/crawl',{method:'POST',body:JSON.stringify({provider:'trip',phase:'detail',token:randomUUID()})}],
+  ['crawlPut','수집 저장(PUT, 상세 1곳)','/api/crawl',{method:'PUT',body:puts[0]}],
+  ['nameAfterPut','PUT 뒤 이름 부분검색(fresh)',list+'&q='+encodeURIComponent(nameQuery)],
+  ['crawlPutCold','수집 저장(PUT, 새 isolate)','/api/crawl',{method:'PUT',body:puts[1]},200,true],
+  ['exportManifest','catalog-export 목록','/api/catalog-export'],
+  ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
+ ];
+ const results=[];
+ const warm=start();
+ try{
+  await call(warm,'/api/hotels');
+  for(const [key,label,path,init={},expected=200,cold=false] of scenarios){
+   let r;
+   if(cold){const fresh=start();try{r=await call(fresh,path,init,expected)}finally{await fresh.dispose()}}
+   else r=await call(warm,path,init,expected);
+   const row={key,label,path:path.replace(/q=[^&]+/,'q=…'),ms:+r.ms.toFixed(1),...r.meter};
+   if(key==='crawlPut')row.coverageRecords=r.body.coverage?.records,row.accepted=r.body.accepted;
+   results.push(row);console.log(JSON.stringify(row));
+  }
+ }finally{await warm.dispose()}
+ const byKey=Object.fromEntries(results.map(r=>[r.key,r]));
+ if(check){
+  // P01 upper bounds, as a share of the hotels table so they hold at any scale.
+  // A PUT reads its own rows, not the catalogue, and a collector write does not
+  // make the next name search rebuild the fuzzy index.
+  const h=counts.hotels,bounds={crawlPut:0.02*h,nameAfterPut:byKey.name.rowsRead+0.02*h};
+  const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
+  console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
+  if(failures.length)process.exitCode=1;
+ }
+ const report={measuredAt:new Date().toISOString(),gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!=='',environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
+ console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
+}finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

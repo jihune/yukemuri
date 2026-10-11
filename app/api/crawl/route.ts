@@ -2,7 +2,7 @@ import {collectionPriority} from '@/lib/collection-priorities';
 import {observeHotelPresence,observeMissingSource} from '@/lib/hotel-lifecycle';
 import { crawlUpdate,providerCooldown } from '@/lib/crawl-contract';
 import { favoritesDb } from '@/lib/favorites-db';
-import { hotelRepository, readCoverage, writeHotels } from '@/lib/hotel-repository';
+import { hotelRepository, readCoverage, readCachedCoverage, writeHotels } from '@/lib/hotel-repository';
 import { catalogHotels } from '@/lib/hotel-catalog';
 import type { Hotel } from '@/lib/hotel-types';
 import { sourceRegion } from '@/lib/hotel-region';
@@ -50,7 +50,7 @@ export async function PUT(request:Request){
   await hotelRepository.ready();const db=favoritesDb();
   const job=await db.prepare('SELECT provider,kind,attempts,status,lease_token,lease_until,last_token FROM crawl_jobs WHERE url=?').bind(update.url).first<{provider:string;kind:string;attempts:number;status:string;lease_token:string|null;lease_until:number;last_token:string|null}>();
   if(!job)return Response.json({error:'Unknown crawl job'},{status:404});
-  if(update.claimToken&&job.last_token===update.claimToken)return Response.json({accepted:0,replayed:true,coverage:await readCoverage(true)});
+  if(update.claimToken&&job.last_token===update.claimToken)return Response.json({accepted:0,replayed:true,coverage:await readCachedCoverage(true)});
   if(job.kind==='detail'&&update.observations.some(h=>h.id!==jobIdentity(update.url)))return Response.json({error:'Detail observation identity does not match requested property'},{status:400});
   if(update.observations.some(h=>!h.id.startsWith(job.provider+'-')||h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&s.nameLocaleUrl.replace('https://kr.trip.com/','https://www.trip.com/')!==update.url))||job.kind==='detail'&&update.status==='done'&&!update.observations.length)return Response.json({error:'Observation does not match crawl job'},{status:400});
   const claimToken=update.claimToken??crypto.randomUUID(),now=Date.now()/1000;
@@ -80,6 +80,6 @@ export async function PUT(request:Request){
   // its old worldwide-navigation jobs together, without spending a request on
   // every unrelated property. No hotel or favorite is removed.
   if(update.excludedCity)await db.prepare("UPDATE crawl_jobs SET status='skipped',error='Explicit non-Japanese source country',next_at=0 WHERE provider='trip' AND instr(url,?)=1").bind('https://www.trip.com/hotels/'+update.excludedCity+'-').run();
-  return Response.json({accepted,linkedAccepted:linked.accepted,readbackId:normalAccepted?observations[0]?.id:linked.hotelIds[0]??null,observed:update.observations.length,coverage:await readCoverage()});
+  return Response.json({accepted,linkedAccepted:linked.accepted,readbackId:normalAccepted?observations[0]?.id:linked.hotelIds[0]??null,observed:update.observations.length,coverage:await readCachedCoverage(true)});
  }catch(error){console.error('Crawl observation write failed',error);return Response.json({error:'Observation save failed; safe to retry'},{status:503})}
 }
