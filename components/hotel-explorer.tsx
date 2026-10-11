@@ -5,7 +5,7 @@ import { Hotel, HotelFilters, DEFAULT_FILTERS, FEATURE_LABELS, FEATURE_GROUPS, F
 import { SortOrder } from '@/lib/hotel-search';
 import { providerRating, displayRating, meetsVerifiedCriteria } from '@/lib/hotel-ratings';
 import type { HotelSummary } from '@/lib/search-snapshot';
-import {searchSnapshot,needsText,PAGE_SIZE,type SearchResponse} from '@/lib/static-search';
+import {searchSnapshot,needsText,PAGE_SIZE,type FirstPage,type SearchResponse} from '@/lib/static-search';
 import {loadSnapshot,loadSnapshotText} from '@/lib/snapshot-client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -49,8 +49,8 @@ function Filters({filters,setFilters,counts,ryokanCount}:{filters:HotelFilters;s
 }
 // The page is a static asset: conditions come from the address once mounted,
 // and every list, search and map result from the static search snapshot.
-export default function HotelExplorer(){
- const snap=useSearchSnapshot();
+export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|null}){
+ const snap=useSearchSnapshot(firstPage?.manifest);
  const preparedIndex=snap.textReady?snap.snapshot!.index!.prepared:NO_INDEX,indexReady=snap.textReady,indexFailed=!!snap.textError;
  const [booking,setBooking]=useState<BookingQuery>(DEFAULT_BOOKING);
  const bookingRef=useRef<BookingQuery>(DEFAULT_BOOKING);
@@ -60,7 +60,7 @@ export default function HotelExplorer(){
  function setFilters(value:HotelFilters|((previous:HotelFilters)=>HotelFilters)){setFilterState(value)}
 
  const [favorites,setFavorites]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
- const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady);
+ const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady,firstPage);
  const mapArea=useMapArea(snap,filters,savedOnly,favorites),[areaHotel,setAreaHotel]=useState<HotelSummary|null>(null);
  // Suggestions read the name-search part of the snapshot; fetch it once typing starts.
  useEffect(()=>{if(draft.trim())snap.wantText()},[draft,snap.wantText]);
@@ -155,7 +155,9 @@ export default function HotelExplorer(){
    // chosen; keep the chosen conditions and put them back into that entry.
    writeBookingUrl(bookingRef.current);
   };
-  read();setUrlRead(true);
+  // From here the state follows the address; the head script's mark that hid
+  // the static first page for an address with conditions is no longer needed.
+  read();setUrlRead(true);document.documentElement.removeAttribute('data-conditions');
   const initial=parseBookingQuery(new URLSearchParams(window.location.search));bookingRef.current=initial;setBooking(initial);
   window.addEventListener(POPSTATE,restore);return()=>window.removeEventListener(POPSTATE,restore);
  },[]);
@@ -194,7 +196,7 @@ export default function HotelExplorer(){
  {snap.snapshot||preview?<><div className="demo-banner"><Info size={15}/><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p></div><CollectionStatusPanel coverage={response.coverage}/></>:<div className="demo-banner"><Info size={15}/><p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p></div>}
  {searchError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{searchError}</span><button onClick={snap.refresh}>다시 시도</button>{reopenSearch&&<button onClick={()=>window.location.reload()}>페이지 다시 열기</button>}</div>}
  {favoritesError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{favoritesError}</span><button onClick={loadFavorites}>다시 시도</button></div>}
- <main className={`workspace view-${mode}`}>
+ <main className={`workspace view-${mode}`} data-first-page={preview?firstPage?.snapshot:undefined}>
   <aside className="desktop-filters"><Filters filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></aside>
   <section className="results-section" aria-label="숙소 검색 결과" aria-busy={loading}>
    <div className="results-header"><div><div className="eyebrow">{savedOnly?'MY SAVED STAYS':'EXPLORE JAPAN'}</div><h2>{savedOnly?'즐겨찾기':regionName} <span>{response.total.toLocaleString()}곳</span></h2></div><div className="result-actions"><button ref={comparisonButton} className="compare-open" onClick={showComparison} aria-label={"숙소 비교 열기, "+comparisonIds.length+"곳 선택"}><ArrowLeftRight size={17}/>비교 {comparisonIds.length}/4</button><button className="mobile-filter" onClick={()=>setFilterOpen(true)}><SlidersHorizontal size={17}/>필터{chips.length>0&&<span>{chips.length}</span>}</button><Picker label="숙소 정렬" value={sort} onChange={v=>{setSort(v as SortOrder)}} options={[{value:'recommended',label:filters.query?'관련성 높은 순':'온천 확인 우선'},{value:'rating',label:'평점 높은 순'},{value:'reviews',label:'리뷰 많은 순'},{value:'name',label:'이름순'}]}/></div></div>

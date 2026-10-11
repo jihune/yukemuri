@@ -1,0 +1,788 @@
+{
+ "measuredAt": "2026-10-11T19:17:57.666Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop mouse",
+ "dates": {
+  "checkIn": "2026-11-11",
+  "checkOut": "2026-11-13",
+  "outOfRange": "2026-11-20"
+ },
+ "externalRequests": "blocked; Jalan and Trip.com documents get a local stub page",
+ "results": [
+  {
+   "width": 360,
+   "name": "처음에는 날짜가 없고 모든 링크가 저장된 주소 그대로",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "날짜를 고르면 Jalan·Trip.com 링크에 날짜와 성인 인원(객실 1개)이 들어갑니다. 요금 조회는 하지 않습니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "날짜·인원 칸이 화면 안에 있고 가려지지 않으며 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "boxes": [
+     {
+      "name": "체크인",
+      "left": 19,
+      "right": 175.5,
+      "top": 396.328125,
+      "bottom": 440.328125,
+      "height": 44,
+      "vw": 360,
+      "vh": 780,
+      "reachable": true
+     },
+     {
+      "name": "체크아웃",
+      "left": 185.5,
+      "right": 342,
+      "top": 396.328125,
+      "bottom": 440.328125,
+      "height": 44,
+      "vw": 360,
+      "vh": 780,
+      "reachable": true
+     },
+     {
+      "name": "성인 인원",
+      "left": 19,
+      "right": 199,
+      "top": 477.328125,
+      "bottom": 521.328125,
+      "height": 44,
+      "vw": 360,
+      "vh": 780,
+      "reachable": true
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치·키보드로 체크인 2026-11-11, 체크아웃 2026-11-13 입력",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "out": "2026-11-13"
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치로 성인 3명을 고르면 포커스가 인원 칸으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "adults": "3명",
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Jalan 링크: 숙소 plan 페이지에 날짜·박수·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Trip.com 링크: 같은 숙소 주소에 체크인·체크아웃·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/?checkIn=2026-11-11&checkOut=2026-11-13&adult=3&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 360,
+   "name": "공식 홈페이지·Google Maps 링크는 그대로, 날짜가 들어간 두 링크만 ‘고른 날짜·인원으로 열기’",
+   "pass": true,
+   "detail": {
+    "notes": {
+     "Trip.com": "고른 날짜·인원으로 열기",
+     "Jalan": "고른 날짜·인원으로 열기",
+     "공식 홈페이지": "공식 객실·온천·예약 안내",
+     "Google Maps": "숙소 이름과 주소로 위치 보기"
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "안내 문장이 날짜 포함 링크를 알려 줌",
+   "pass": true,
+   "detail": {
+    "help": "‘고른 날짜·인원으로 열기’로 표시된 링크에 날짜와 인원이 들어갑니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "Jalan 링크를 누르면 새 탭이 날짜 포함 주소로 열림",
+   "pass": true,
+   "detail": {
+    "opened": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 주소에 checkIn·checkOut·adults가 남음",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&adults=3&checkOut=2026-11-13#stay/daiichi-takimotokan"
+   }
+  },
+  {
+   "width": 360,
+   "name": "새로고침 뒤에도 같은 날짜·인원과 날짜 포함 링크",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 360,
+   "name": "8박(범위 밖)이면 모든 링크가 날짜 없이 열리고 이유를 알림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "1~7박 일정만 링크에 넣을 수 있습니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "체크인을 지우면 모든 링크가 날짜 없이 열림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "체크인과 체크아웃 날짜를 모두 고르면 링크에 들어갑니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "Tab 순서: 체크인 → 체크아웃 → 성인 인원 → 첫 예약 사이트 링크",
+   "pass": true,
+   "detail": {
+    "order": [
+     "detail-daiichi-takimotokan-in",
+     "detail-daiichi-takimotokan-out",
+     "성인 인원",
+     "Trip.com"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "인원 목록에서 Escape는 목록만 닫고 상세는 열린 채 인원 칸에 포커스",
+   "pass": true,
+   "detail": {
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:8787/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&checkOut=2026-11-13&adults=2",
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 360,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 360,
+   "name": "번역 없는 설명: ‘자동으로 순차 반영’ 대신 번역 없음·정기 추가 없음을 알림",
+   "pass": true,
+   "detail": {
+    "caption": "원문 · 이 숙소의 한국어 번역은 없습니다. 새 번역은 지금 정기적으로 추가되지 않습니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "처음에는 날짜가 없고 모든 링크가 저장된 주소 그대로",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "날짜를 고르면 Jalan·Trip.com 링크에 날짜와 성인 인원(객실 1개)이 들어갑니다. 요금 조회는 하지 않습니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "날짜·인원 칸이 화면 안에 있고 가려지지 않으며 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "boxes": [
+     {
+      "name": "체크인",
+      "left": 19,
+      "right": 190.5,
+      "top": 395.75,
+      "bottom": 439.75,
+      "height": 44,
+      "vw": 390,
+      "vh": 780,
+      "reachable": true
+     },
+     {
+      "name": "체크아웃",
+      "left": 200.5,
+      "right": 372,
+      "top": 395.75,
+      "bottom": 439.75,
+      "height": 44,
+      "vw": 390,
+      "vh": 780,
+      "reachable": true
+     },
+     {
+      "name": "성인 인원",
+      "left": 19,
+      "right": 199,
+      "top": 476.75,
+      "bottom": 520.75,
+      "height": 44,
+      "vw": 390,
+      "vh": 780,
+      "reachable": true
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치·키보드로 체크인 2026-11-11, 체크아웃 2026-11-13 입력",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "out": "2026-11-13"
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치로 성인 3명을 고르면 포커스가 인원 칸으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "adults": "3명",
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Jalan 링크: 숙소 plan 페이지에 날짜·박수·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Trip.com 링크: 같은 숙소 주소에 체크인·체크아웃·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/?checkIn=2026-11-11&checkOut=2026-11-13&adult=3&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 390,
+   "name": "공식 홈페이지·Google Maps 링크는 그대로, 날짜가 들어간 두 링크만 ‘고른 날짜·인원으로 열기’",
+   "pass": true,
+   "detail": {
+    "notes": {
+     "Trip.com": "고른 날짜·인원으로 열기",
+     "Jalan": "고른 날짜·인원으로 열기",
+     "공식 홈페이지": "공식 객실·온천·예약 안내",
+     "Google Maps": "숙소 이름과 주소로 위치 보기"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "안내 문장이 날짜 포함 링크를 알려 줌",
+   "pass": true,
+   "detail": {
+    "help": "‘고른 날짜·인원으로 열기’로 표시된 링크에 날짜와 인원이 들어갑니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "Jalan 링크를 누르면 새 탭이 날짜 포함 주소로 열림",
+   "pass": true,
+   "detail": {
+    "opened": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 주소에 checkIn·checkOut·adults가 남음",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&adults=3&checkOut=2026-11-13#stay/daiichi-takimotokan"
+   }
+  },
+  {
+   "width": 390,
+   "name": "새로고침 뒤에도 같은 날짜·인원과 날짜 포함 링크",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 390,
+   "name": "8박(범위 밖)이면 모든 링크가 날짜 없이 열리고 이유를 알림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "1~7박 일정만 링크에 넣을 수 있습니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "체크인을 지우면 모든 링크가 날짜 없이 열림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "체크인과 체크아웃 날짜를 모두 고르면 링크에 들어갑니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "Tab 순서: 체크인 → 체크아웃 → 성인 인원 → 첫 예약 사이트 링크",
+   "pass": true,
+   "detail": {
+    "order": [
+     "detail-daiichi-takimotokan-in",
+     "detail-daiichi-takimotokan-out",
+     "성인 인원",
+     "Trip.com"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "인원 목록에서 Escape는 목록만 닫고 상세는 열린 채 인원 칸에 포커스",
+   "pass": true,
+   "detail": {
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:8787/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&checkOut=2026-11-13&adults=2",
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 390,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 390,
+   "name": "번역 없는 설명: ‘자동으로 순차 반영’ 대신 번역 없음·정기 추가 없음을 알림",
+   "pass": true,
+   "detail": {
+    "caption": "원문 · 이 숙소의 한국어 번역은 없습니다. 새 번역은 지금 정기적으로 추가되지 않습니다."
+   }
+  },
+  {
+   "width": 1280,
+   "name": "처음에는 날짜가 없고 모든 링크가 저장된 주소 그대로",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "날짜를 고르면 Jalan·Trip.com 링크에 날짜와 성인 인원(객실 1개)이 들어갑니다. 요금 조회는 하지 않습니다."
+   }
+  },
+  {
+   "width": 1280,
+   "name": "날짜·인원 칸이 화면 안에 있고 가려지지 않으며 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "boxes": [
+     {
+      "name": "체크인",
+      "left": 533,
+      "right": 721.65625,
+      "top": 407.859375,
+      "bottom": 451.859375,
+      "height": 44,
+      "vw": 1280,
+      "vh": 800,
+      "reachable": true
+     },
+     {
+      "name": "체크아웃",
+      "left": 733.65625,
+      "right": 922.328125,
+      "top": 407.859375,
+      "bottom": 451.859375,
+      "height": 44,
+      "vw": 1280,
+      "vh": 800,
+      "reachable": true
+     },
+     {
+      "name": "성인 인원",
+      "left": 934.328125,
+      "right": 1123,
+      "top": 407.859375,
+      "bottom": 451.859375,
+      "height": 44,
+      "vw": 1280,
+      "vh": 800,
+      "reachable": true
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "마우스·키보드로 체크인 2026-11-11, 체크아웃 2026-11-13 입력",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "out": "2026-11-13"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드로 성인 3명을 고르면 포커스가 인원 칸으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "adults": "3명",
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Jalan 링크: 숙소 plan 페이지에 날짜·박수·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Trip.com 링크: 같은 숙소 주소에 체크인·체크아웃·성인·객실 1개",
+   "pass": true,
+   "detail": {
+    "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/?checkIn=2026-11-11&checkOut=2026-11-13&adult=3&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "공식 홈페이지·Google Maps 링크는 그대로, 날짜가 들어간 두 링크만 ‘고른 날짜·인원으로 열기’",
+   "pass": true,
+   "detail": {
+    "notes": {
+     "Trip.com": "고른 날짜·인원으로 열기",
+     "Jalan": "고른 날짜·인원으로 열기",
+     "공식 홈페이지": "공식 객실·온천·예약 안내",
+     "Google Maps": "숙소 이름과 주소로 위치 보기"
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "안내 문장이 날짜 포함 링크를 알려 줌",
+   "pass": true,
+   "detail": {
+    "help": "‘고른 날짜·인원으로 열기’로 표시된 링크에 날짜와 인원이 들어갑니다."
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Jalan 링크를 누르면 새 탭이 날짜 포함 주소로 열림",
+   "pass": true,
+   "detail": {
+    "opened": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 주소에 checkIn·checkOut·adults가 남음",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&adults=3&checkOut=2026-11-13#stay/daiichi-takimotokan"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "새로고침 뒤에도 같은 날짜·인원과 날짜 포함 링크",
+   "pass": true,
+   "detail": {
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad364904/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=3&roomCount=1&roomCrack=300000&dateUndecided=0"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "8박(범위 밖)이면 모든 링크가 날짜 없이 열리고 이유를 알림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "1~7박 일정만 링크에 넣을 수 있습니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 1280,
+   "name": "체크인을 지우면 모든 링크가 날짜 없이 열림",
+   "pass": true,
+   "detail": {
+    "links": {
+     "Trip.com": {
+      "href": "https://www.trip.com/hotels/noboribetsu-hotel-detail-842622/dai-ichi-takimotokan/",
+      "note": "이 숙소의 가격·객실 확인"
+     },
+     "Jalan": {
+      "href": "https://www.jalan.net/yad364904/",
+      "note": "이 숙소의 일본어 예약 페이지"
+     },
+     "공식 홈페이지": {
+      "href": "https://takimotokan.co.jp/en/",
+      "note": "공식 객실·온천·예약 안내"
+     },
+     "Google Maps": {
+      "href": "https://www.google.com/maps/search/?api=1&query=%E7%AC%AC%E4%B8%80%E6%BB%9D%E6%9C%AC%E9%A4%A8%20onsencho%2C%20%EF%BC%95%EF%BC%95%2C%20Noboribetsu%20City%2C%20Hokkaido%2C%20059-0551%2C%20Japan",
+      "note": "숙소 이름과 주소로 위치 보기"
+     }
+    },
+    "help": "체크인과 체크아웃 날짜를 모두 고르면 링크에 들어갑니다. 지금은 날짜 없이 열립니다."
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Tab 순서: 체크인 → 체크아웃 → 성인 인원 → 첫 예약 사이트 링크",
+   "pass": true,
+   "detail": {
+    "order": [
+     "detail-daiichi-takimotokan-in",
+     "detail-daiichi-takimotokan-out",
+     "성인 인원",
+     "Trip.com"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "인원 목록에서 Escape는 목록만 닫고 상세는 열린 채 인원 칸에 포커스",
+   "pass": true,
+   "detail": {
+    "focus": "성인 인원"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감",
+   "pass": true,
+   "detail": {
+    "listUrl": "http://127.0.0.1:8787/?q=%EB%85%B8%EB%B3%B4%EB%A6%AC%EB%B2%A0%EC%B8%A0&region=all&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&checkIn=2026-11-11&checkOut=2026-11-13&adults=2",
+    "in": "2026-11-11",
+    "jalan": "https://www.jalan.net/yad320864/plan/?stayYear=2026&stayMonth=11&stayDay=11&stayCount=2&adultNum=2&roomCount=1&roomCrack=200000&dateUndecided=0",
+    "trip": "https://www.trip.com/hotels/noboribetsu-hotel-detail-1647140/noboribetsu-onsenkyo-takinoya/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "kr.trip.com 숙소 링크에도 날짜·인원이 들어감",
+   "pass": true,
+   "detail": {
+    "kr": "https://kr.trip.com/hotels/toyako-hotel-detail-993419/toyako-manseikaku-hotel-lakeside-terrace/?checkIn=2026-11-11&checkOut=2026-11-13&adult=2&crn=1&currency=JPY"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "번역 없는 설명: ‘자동으로 순차 반영’ 대신 번역 없음·정기 추가 없음을 알림",
+   "pass": true,
+   "detail": {
+    "caption": "원문 · 이 숙소의 한국어 번역은 없습니다. 새 번역은 지금 정기적으로 추가되지 않습니다."
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기와 기기의 날짜 선택기(터치 폭의 체크인은 칸을 누른 뒤 값을 넣음)",
+  "Jalan·Trip.com 실제 페이지가 날짜를 받아 들이는지(외부 요청 차단)",
+  "스크린리더 읽기 순서",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}

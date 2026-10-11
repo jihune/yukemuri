@@ -15,12 +15,14 @@ assert.equal(manifest.status,200,'/snapshot/manifest.json status '+manifest.stat
 assert(manifest.body?.format===1&&manifest.body.hotels>0,'/snapshot/manifest.json has no catalogue');
 if(process.env.SNAPSHOT_ID)assert.equal(manifest.body.id,process.env.SNAPSHOT_ID,'served snapshot is not the one this run built');
 for(const path of Object.values(manifest.body.files)){const file=await get(path);assert.equal(file.status,200,path+' status '+file.status)}
-// The static page carries the first page of this snapshot; its first hotel has a detail.
+// The static page carries the first page of this snapshot as cards; the first
+// hotel of the snapshot has a detail.
 const page=await get('/',{Accept:'text/html'});
 assert.equal(page.status,200,'/ status '+page.status);
-const first=JSON.parse(/<script id="yukemuri-first-page" type="application\/json">([^<]*)<\/script>/.exec(String(page.body))?.[1]??'null');
-assert(first?.snapshot===manifest.body.id&&first.response.hotels.length>0&&first.response.total>0,'/ has no first page of the served snapshot');
-const detail=await get('/api/hotels/'+encodeURIComponent(first.response.hotels[0].id));
+const cards=(String(page.body).match(/class="card-title"/g)??[]).length;
+assert(String(page.body).includes(`data-first-page="${manifest.body.id}"`)&&cards>0,'/ has no first page of the served snapshot');
+const core=await get(manifest.body.files.core);
+const detail=await get('/api/hotels/'+encodeURIComponent(core.body.ids[0]));
 assert.equal(detail.status,200,'/api/hotels/<id> status '+detail.status);
 const denied=await get('/api/crawl?report=1');
 assert.equal(denied.status,403,'/api/crawl?report=1 must reject a missing key');
@@ -29,4 +31,4 @@ assert.equal(report.status,200,'/api/crawl?report=1 with key status '+report.sta
 assert(report.body&&typeof report.body==='object'&&!Array.isArray(report.body),'/api/crawl?report=1 is not a report');
 const robots=await get('/robots.txt');
 assert.equal(robots.status,200);assert.match(String(robots.body),/^Disallow: \/api\/$/m);
-console.log(`Smoke passed: first page total=${first.response.total}, a detail 200, snapshot ${manifest.body.id} with ${manifest.body.hotels} hotels and ${Object.keys(manifest.body.files).length} files, report without key 403, report with key 200, robots.txt blocks /api/.`);
+console.log(`Smoke passed: first page with ${cards} cards, a detail 200, snapshot ${manifest.body.id} with ${manifest.body.hotels} hotels and ${Object.keys(manifest.body.files).length} files, report without key 403, report with key 200, robots.txt blocks /api/.`);

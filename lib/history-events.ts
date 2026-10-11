@@ -4,4 +4,7 @@
 // head takes every popstate before the router's own listener (registered when
 // its module starts) and passes it on as POPSTATE.
 export const POPSTATE='yukemuri:popstate';
-export const POPSTATE_SCRIPT=`addEventListener('popstate',function(e){e.stopImmediatePropagation();dispatchEvent(new PopStateEvent('${POPSTATE}',{state:e.state}))},true)`;
+// The same head script marks an address with conditions before the page paints:
+// the static HTML carries the first page of the view without conditions, which
+// stays hidden (globals.css) until the explorer has read the address.
+export const POPSTATE_SCRIPT=`addEventListener('popstate',function(e){e.stopImmediatePropagation();dispatchEvent(new PopStateEvent('${POPSTATE}',{state:e.state}))},true);if(location.search)document.documentElement.setAttribute('data-conditions','')`;

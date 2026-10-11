@@ -36,10 +36,12 @@ window.measure=async()=>{
  let textText=await read(m.files.text);
  const [parseText,text]=await time(()=>JSON.parse(textText));
  const [index]=await time(()=>addSnapshotText(s,text));
- const [nameSearch,named]=await time(()=>resultPage(s,searchSnapshot(s,{...DEFAULT_FILTERS,query:'箱根'},'recommended'),1));
- const [koreanSearch]=await time(()=>resultPage(s,searchSnapshot(s,{...DEFAULT_FILTERS,query:'하코네'},'recommended'),1));
- const [suggest]=await time(()=>suggestions(s,{...DEFAULT_FILTERS,query:'はこ'}));
- Object.assign(out,{parseText,index,nameSearch,koreanSearch,suggest,nameTotal:named.total});
+ // A name with results, a second one, and one without (the alternatives are ranked).
+ const [nameSearch,named]=await time(()=>resultPage(s,searchSnapshot(s,{...DEFAULT_FILTERS,query:'노보리베츠'},'recommended'),1));
+ const [koreanSearch]=await time(()=>resultPage(s,searchSnapshot(s,{...DEFAULT_FILTERS,query:'登別'},'recommended'),1));
+ const [noMatchSearch,none]=await time(()=>resultPage(s,searchSnapshot(s,{...DEFAULT_FILTERS,query:'箱根'},'recommended'),1));
+ const [suggest]=await time(()=>suggestions(s,{...DEFAULT_FILTERS,query:'のぼり'}));
+ Object.assign(out,{parseText,index,nameSearch,koreanSearch,noMatchSearch,suggest,nameTotal:named.total,noMatchTotal:none.total,noMatchAlternatives:none.alternatives.length});
  textText=null;
  out.heapText=await heap();
  return out;
@@ -71,7 +73,7 @@ try{
   await context.close();
  }
 }finally{await browser.close();server.close()}
-const ms=['parseCore','parseCards','open','firstList','ratingList','map','parseText','index','nameSearch','koreanSearch','suggest'];
+const ms=['parseCore','parseCards','open','firstList','ratingList','map','parseText','index','nameSearch','koreanSearch','noMatchSearch','suggest'];
 const median=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]};
 const summary=Object.fromEntries([1,4,6].map(rate=>{const rs=results.filter(r=>r.rate===rate);return [rate+'x',{
  ...Object.fromEntries(ms.map(k=>[k+'Ms',Math.round(median(rs.map(r=>r[k])))])),
@@ -82,5 +84,5 @@ const summary=Object.fromEntries([1,4,6].map(rate=>{const rs=results.filter(r=>r
 const manifest=JSON.parse(readFileSync(join(dir,'snapshot/manifest.json'),'utf8'));
 const report={measuredAt:new Date().toISOString(),browser:'Chromium '+browser.version(),snapshot:manifest.id,hotels:manifest.hotels,runs,summary,results,
  note:'CDP Emulation.setCPUThrottlingRate on desktop Chromium; 4x is the Lighthouse mobile setting, 6x a slower phone. Times are medians in ms of the library steps the page runs, network excluded. Heap: Runtime.getHeapUsage after HeapProfiler.collectGarbage, minus the empty page, with the opened snapshot alive and the downloaded JSON text released.'};
-for(const [rate,v] of Object.entries(summary))console.log(`${rate}: first list ${v.untilFirstListMs}ms (core ${v.parseCoreMs}, cards ${v.parseCardsMs}, open ${v.openMs}, list ${v.firstListMs}), map ${v.mapMs}ms, name search +${v.untilNameSearchMs}ms (text ${v.parseTextMs}, index ${v.indexMs}, search ${v.nameSearchMs}, next search ${v.koreanSearchMs}, suggest ${v.suggestMs}), heap ${v.heapCoreMiB}MiB / ${v.heapWithTextMiB}MiB`);
+for(const [rate,v] of Object.entries(summary))console.log(`${rate}: first list ${v.untilFirstListMs}ms (core ${v.parseCoreMs}, cards ${v.parseCardsMs}, open ${v.openMs}, list ${v.firstListMs}), map ${v.mapMs}ms, name search +${v.untilNameSearchMs}ms (text ${v.parseTextMs}, index ${v.indexMs}, search ${v.nameSearchMs}, next search ${v.koreanSearchMs}, no match ${v.noMatchSearchMs}, suggest ${v.suggestMs}), heap ${v.heapCoreMiB}MiB / ${v.heapWithTextMiB}MiB`);
 if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');

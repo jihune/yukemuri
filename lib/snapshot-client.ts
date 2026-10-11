@@ -1,6 +1,6 @@
-import {FIRST_PAGE,SNAPSHOT_FORMAT,SNAPSHOT_MANIFEST,type SnapshotManifest,type SnapshotCore,type SnapshotText,type HotelSummary} from './search-snapshot';
+import {SNAPSHOT_FORMAT,SNAPSHOT_MANIFEST,type SnapshotManifest,type SnapshotCore,type SnapshotText,type HotelSummary} from './search-snapshot';
 import type {CollectionStatus} from './collection-status';
-import {openSnapshot,addSnapshotText,type SearchSnapshot,type SearchResponse} from './static-search';
+import {openSnapshot,addSnapshotText,type SearchSnapshot} from './static-search';
 // Loads the static search snapshot. The manifest is revalidated on every load;
 // the versioned files are immutable. A deploy can replace the version between
 // the manifest and a file (404): then the manifest is read once more.
@@ -22,9 +22,11 @@ async function manifest(signal?:AbortSignal){
 }
 let loaded:SearchSnapshot|null=null;
 // The snapshot of the current manifest; the loaded one when it is still current.
-export async function loadSnapshot(signal?:AbortSignal):Promise<SearchSnapshot>{
+// known: the manifest the static page was rendered with (as fresh as the page,
+// which is revalidated on every visit); its files may already be preloading.
+export async function loadSnapshot(signal?:AbortSignal,known?:SnapshotManifest):Promise<SearchSnapshot>{
  for(let attempt=0;;attempt++){
-  const m=await manifest(signal);
+  const m=attempt===0&&known?.format===SNAPSHOT_FORMAT?known:await manifest(signal);
   if(loaded?.manifest.id===m.id)return loaded;
   try{
    const [core,cards]=await Promise.all([json<SnapshotCore>(m.files.core,'default',signal),json<HotelSummary[]>(m.files.cards,'default',signal)]);
@@ -48,16 +50,3 @@ export function loadSnapshotText(s:SearchSnapshot):Promise<SearchSnapshot>{
  return pending;
 }
 export function loadSnapshotStatus(s:SearchSnapshot,signal?:AbortSignal){return json<CollectionStatus>(s.manifest.files.status,'default',signal)}
-let first:{snapshot:string;response:SearchResponse}|null|undefined;
-// The default view's first page in the static page, for an address without
-// conditions; null elsewhere and when the page has none or it does not parse.
-export function readFirstPage(){
- if(first===undefined){
-  first=null;
-  try{
-   const text=document.getElementById(FIRST_PAGE)?.textContent;
-   if(text&&!window.location.search){const value=JSON.parse(text);if(typeof value?.snapshot==='string'&&Array.isArray(value.response?.hotels))first=value}
-  }catch{first=null}
- }
- return first;
-}

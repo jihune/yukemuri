@@ -16,7 +16,8 @@ if (command === "build") {
     : spawnSync(process.execPath, [fileURLToPath(new URL("../node_modules/vinext/dist/cli.js", import.meta.url)), "build", ...args], { stdio: "inherit" });
   if (result.error) throw result.error;
   if (result.status) process.exit(result.status);
-  await import("./build-static-page.mjs");
+  const { renderStaticPage } = await import("./build-static-page.mjs");
+  console.log(`Static page: dist/client/index.html (${((await renderStaticPage()) / 1024).toFixed(1)}KiB)`);
   process.exit(0);
 }
 

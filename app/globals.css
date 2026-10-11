@@ -155,3 +155,4 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .comparison-undecided{display:block;margin-top:4px;font-size:.8125rem;font-weight:400;color:var(--muted-foreground);line-height:1.5}
 .comparison-diff-none,.comparison-diff-hidden{color:var(--muted-foreground);font-size:.875rem}
 .comparison-diff-hidden{margin:10px 0 0}
+html[data-conditions] main[data-first-page]{visibility:hidden}

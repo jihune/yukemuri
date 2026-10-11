@@ -59,6 +59,23 @@ async function run(page){
  await page.waitForLoadState('networkidle');await page.unroute(snapshotFiles);
  check('스냅숏을 받은 뒤에도 같은 첫 쪽',JSON.stringify(await titles())===JSON.stringify(early));
 
+ // Before any script runs: the static HTML shows the first page only for the
+ // address without conditions; with conditions it stays hidden.
+ const still=await browser.newContext({javaScriptEnabled:false,viewport:page.viewportSize()}),bare=await still.newPage();
+ // The head script cannot run either; the mark it sets is checked with scripts on below.
+ await bare.goto(base+'/');const bareCards=await bare.locator('.hotel-list .card-title').count(),bareVisible=await bare.locator('main.workspace').evaluate(e=>getComputedStyle(e).visibility);
+ await still.close();
+ check('스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳',bareCards===40&&bareVisible==='visible',{bareCards,bareVisible});
+ const appScripts=url=>url.pathname.startsWith('/_next/')&&url.pathname.endsWith('.js');
+ await page.route(appScripts,route=>route.abort());
+ await page.goto(base+'/?rating=8',{waitUntil:'load'});
+ const hidden=await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')}));
+ check('조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽을 숨김',hidden.visibility==='hidden'&&!!hidden.first&&hidden.mark,hidden);
+ await page.unroute(appScripts);
+ await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
+ const shownAfter=await page.locator('main.workspace').evaluate(e=>({visibility:getComputedStyle(e).visibility,first:e.dataset.firstPage??null,mark:document.documentElement.hasAttribute('data-conditions')}));
+ check('앱이 주소를 읽은 뒤에는 조건의 결과를 표시',shownAfter.visibility==='visible'&&shownAfter.first===null&&!shownAfter.mark,shownAfter);
+
  // Loading: until the snapshot arrives only the loading notice shows; no old count.
  await page.route(snapshotFiles,async route=>{await new Promise(r=>setTimeout(r,1500));await route.continue()});
  await page.goto(base+'/?provider=trip&rating=9&reviews=50',{waitUntil:'commit'});
@@ -90,7 +107,7 @@ async function run(page){
 
  // A page older than the deployed snapshot format asks to be opened again.
  await page.route(manifestFile,async route=>{const r=await route.fetch();await route.fulfill({response:r,json:{...await r.json(),format:999}})});
- await page.goto(base+'/',{waitUntil:'networkidle'});
+ await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
  await error.waitFor();
  check('스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼',(await error.innerText()).includes('새 버전')&&await error.getByRole('button',{name:'페이지 다시 열기'}).isVisible()&&await page.locator('.hotel-list .card-title').count()===0,{text:await error.innerText()});
  await page.unroute(manifestFile);

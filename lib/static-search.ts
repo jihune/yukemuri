@@ -16,6 +16,8 @@ export type SearchSnapshot={manifest:SnapshotManifest;core:SnapshotCore;cards:Ho
 export type HotelAlternative={hotel:HotelSummary;unmetConditions:string[];queryMatched:boolean};
 export type SearchResult={order:number[];total:number;unknownExcluded:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;similarCount:number;similar:string[];alternatives:HotelAlternative[]};
 export type SearchResponse={hotels:HotelSummary[];total:number;unknownExcluded:number;page:number;pageSize:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;coverage:SnapshotCoverage;similarCount:number;similarHotelIds:string[];alternatives:HotelAlternative[]};
+// The default view's first page of one snapshot, rendered into the static page.
+export type FirstPage={snapshot:string;manifest:SnapshotManifest;response:SearchResponse};
 export type MapBounds={west:number;south:number;east:number;north:number};
 export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|null};
 export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number};
