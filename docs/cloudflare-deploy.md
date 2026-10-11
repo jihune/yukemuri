@@ -66,7 +66,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 ## 자동 배포(deploy.yml)
 
-- 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. D1 setup과 같은 동시 실행 그룹(`cloudflare-account`)이라 둘이 겹치지 않는다. 6단계에 들어올 앱 레포 수집 workflow는 별도 그룹(`yukemuri-catalog-updates`)을 쓰므로 배포와 서로 막지 않는다.
+- 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. 동시 실행 잠금은 둘이고 언제나 같은 순서로 잡는다. 바깥은 workflow 최상위의 카탈로그 그룹(`yukemuri-catalog-updates`)이다. 6단계 수집 workflow도 이 그룹을 쓰므로 스냅숏 생성이 수집 쓰기와 겹치지 않는다. 수집 끝 호출은 `yukemuri-snapshot-after-collection`을 쓴다. 안쪽은 배포 job의 계정 그룹(`cloudflare-account`)이고 D1 setup과 같다. 수집 workflow는 계정 그룹을 먼저 잡으면 안 된다(순서가 엇갈리면 서로 기다린다, P03).
 - 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다.
 - 켜졌을 때 순서:
   1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다.
