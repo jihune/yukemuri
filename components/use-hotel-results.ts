@@ -1,57 +1,39 @@
 'use client';
-import {useCallback,useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useMemo,useState} from 'react';
 import type {HotelFilters} from '@/lib/hotel-types';
 import type {SortOrder} from '@/lib/hotel-search';
-import type {SearchResponse} from '@/lib/hotel-repository';
-import {hotelQueryParams} from '@/lib/hotel-query';
-import {apiJson,ApiError} from '@/lib/api-client';
-import {appendHotelPage} from '@/lib/paged-hotel-results';
+import {searchSnapshot,resultPage,pageSimilar,needsText,mayNeedAlternatives,PAGE_SIZE,type SearchResponse,type SearchResult} from '@/lib/static-search';
+import type {SnapshotCoverage} from '@/lib/search-snapshot';
+import type {SnapshotState} from './use-search-snapshot';
 
-export function useHotelResults(initial:SearchResponse,filters:HotelFilters,sort:SortOrder,savedOnly:boolean,favoriteKey:string,retry:number){
- const [response,setResponse]=useState(initial),[loading,setLoading]=useState(false),[loadingMore,setLoadingMore]=useState(false);
- const [searchError,setSearchError]=useState(''),[moreError,setMoreError]=useState(''),[shortened,setShortened]=useState<{total:number;loaded:number}|null>(null),[reopenSearch,setReopenSearch]=useState(false),[refreshRequired,setRefreshRequired]=useState(false);
- const params=hotelQueryParams(filters);params.set('sort',sort);params.set('saved',savedOnly?'1':'0');params.set('stable','1');
- const cacheKey=params.toString()+(savedOnly?'&favoriteIds='+encodeURIComponent(favoriteKey):'');
- const key=cacheKey+'&retry='+retry;
- const cachedResults=useRef(new Map<string,{expires:number;data:SearchResponse}>()),lastRetry=useRef(retry);
- const remember=(id:string,data:SearchResponse)=>{
-  cachedResults.current.set(id,{expires:Date.now()+30000,data});
-  while(cachedResults.current.size>16)cachedResults.current.delete(cachedResults.current.keys().next().value!);
- };
- const first=useRef(true),generation=useRef(0),controller=useRef<AbortController|null>(null),moreController=useRef<AbortController|null>(null),moreLock=useRef(false),resetting=useRef(false);
- const current=useRef({response,loading,key});current.current={response,loading,key};
- const requestParams=useRef(params);requestParams.current=params;
- useEffect(()=>{
-  if(first.current){first.current=false;remember(cacheKey,initial);return}
-  const epoch=++generation.current;
-  resetting.current=true;
-  controller.current?.abort();moreController.current?.abort();moreLock.current=false;
-  const request=new AbortController();controller.current=request;
-  const cached=cachedResults.current.get(cacheKey),forceRefresh=lastRetry.current!==retry;lastRetry.current=retry;
-  setShortened(null);
-  if(!forceRefresh&&cached&&cached.expires>Date.now()){
-   setResponse(cached.data);setLoading(false);setLoadingMore(false);setSearchError('');setMoreError('');setReopenSearch(false);setRefreshRequired(false);resetting.current=false;
-   return()=>request.abort();
-  }
-  setLoading(true);setLoadingMore(false);setSearchError('');setMoreError('');setReopenSearch(false);setRefreshRequired(false);
-  setResponse(old=>({...old,hotels:[],total:0,unknownExcluded:0,page:1,alternatives:[],similarHotelIds:[],similarCount:0,snapshot:undefined}));
-  const p=new URLSearchParams(requestParams.current);p.set('page','1');if(forceRefresh)p.set('fresh','1');
-  apiJson<SearchResponse>('/api/hotels?'+p,{signal:request.signal}).then(data=>{if(!request.signal.aborted&&generation.current===epoch){remember(cacheKey,data);setResponse(data)}}).catch(e=>{if(!request.signal.aborted&&generation.current===epoch){setSearchError(e instanceof Error?e.message:'숙소 검색에 실패했습니다.');setReopenSearch(e instanceof ApiError&&e.reopen)}}).finally(()=>{if(!request.signal.aborted&&generation.current===epoch){resetting.current=false;setLoading(false)}});
-  return()=>{request.abort();moreController.current?.abort()};
- },[key]);
- const loadMore=useCallback(()=>{
-  const state=current.current;
-  if(moreLock.current||resetting.current||state.loading||state.key!==key||state.response.page*state.response.pageSize>=state.response.total)return;
-  moreLock.current=true;setLoadingMore(true);setMoreError('');
-  const epoch=generation.current,nextPage=state.response.page+1,request=new AbortController();moreController.current=request;
-  const p=new URLSearchParams(requestParams.current);p.set('page',String(nextPage));if(state.response.snapshot)p.set('snapshot',state.response.snapshot.token);
-  apiJson<SearchResponse>('/api/hotels?'+p,{signal:request.signal}).then(data=>{
-   if(request.signal.aborted||generation.current!==epoch||current.current.key!==key)return;
-   // The server sent no further page. Keep what loaded and say the total was cut to it.
-   if(data.page!==nextPage||!data.hotels.length){setShortened({total:current.current.response.total,loaded:current.current.response.hotels.length});setResponse(old=>({...old,total:old.hotels.length}));return}
-   setResponse(old=>appendHotelPage(old,data));
-  }).catch(e=>{if(!request.signal.aborted&&generation.current===epoch){setMoreError(e instanceof Error?e.message:'추가 숙소를 불러오지 못했습니다.');setRefreshRequired(e instanceof ApiError&&(e.status===410||e.status===409))}}).finally(()=>{if(!request.signal.aborted&&generation.current===epoch){moreLock.current=false;setLoadingMore(false)}});
- },[key]);
- useEffect(()=>()=>{controller.current?.abort();moreController.current?.abort()},[]);
- return{response,loading,loadingMore,searchError,moreError,reopenSearch,refreshRequired,shortened,loadMore,hasMore:response.page*response.pageSize<response.total,key};
+const EMPTY_COVERAGE:SnapshotCoverage={records:0,prefectures:0,crawledRecords:0,curatedRecords:0,inventoryComplete:false,discoveredDetailUrls:0,completedDetailPages:0,pending:0,failed:0,updatedAt:'',providers:{jalan:{discovered:0,completed:0},trip:{discovered:0,completed:0}}};
+// The list of the current conditions, computed in the browser from the
+// snapshot. More pages are slices of the same order, so they never fail or
+// change while the snapshot stays the same.
+export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:SortOrder,savedOnly:boolean,favorites:string[],favoritesReady:boolean){
+ const s=snap.snapshot,favoriteKey=[...favorites].sort().join(',');
+ const textNeeded=needsText(filters);
+ useEffect(()=>{if(textNeeded)snap.wantText()},[textNeeded,snap.wantText]);
+ const textReady=snap.textReady,key=JSON.stringify([filters,sort,savedOnly,savedOnly?favoriteKey:'']);
+ const result=useMemo<SearchResult|'text'|null>(()=>{
+  if(!s||textNeeded&&!textReady||savedOnly&&!favoritesReady)return null;
+  // No match and conditions set: the alternatives rank over the name index.
+  try{return searchSnapshot(s,filters,sort,savedOnly,favorites)}catch(error){if(!textReady&&mayNeedAlternatives(filters))return'text';throw error}
+  // favorites enter through favoriteKey; textReady changes when the index arrives.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[s,key,textReady,favoritesReady]);
+ useEffect(()=>{if(result==='text')snap.wantText()},[result,snap.wantText]);
+ // Loaded pages belong to one list: new conditions or a new snapshot start at page 1.
+ const list=key+(s?.manifest.id??''),[paging,setPaging]=useState({list,pages:1}),pages=paging.list===list?paging.pages:1;
+ const response=useMemo<SearchResponse>(()=>{
+  if(!s||!result||result==='text')return{hotels:[],total:0,unknownExcluded:0,page:1,pageSize:PAGE_SIZE,featureCounts:{} as SearchResponse['featureCounts'],ryokanCount:0,coverage:s?.manifest.coverage??EMPTY_COVERAGE,similarCount:0,similarHotelIds:[],alternatives:[]};
+  const last=resultPage(s,result,pages);
+  if(pages===1)return last;
+  const hotels=result.order.slice(0,last.page*PAGE_SIZE).map(i=>s.cards[i]);
+  return{...last,hotels,similarHotelIds:pageSimilar(result,hotels)};
+ },[s,result,pages]);
+ const hasMore=response.page*response.pageSize<response.total;
+ const loadMore=useCallback(()=>{if(hasMore)setPaging({list,pages:pages+1})},[hasMore,list,pages]);
+ const error=snap.error??(textNeeded||result==='text'?snap.textError:null);
+ return{response,loading:!error&&(!result||result==='text'),searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
 }

@@ -1,38 +1,34 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import type {HotelFilters} from '@/lib/hotel-types';
-import type {MapAreaResponse,MapBounds} from '@/lib/hotel-repository';
-import {hotelQueryParams} from '@/lib/hotel-query';
-import {apiJson} from '@/lib/api-client';
+import {mapArea,needsText,type MapAreaResponse,type MapBounds} from '@/lib/static-search';
+import {loadSnapshotText} from '@/lib/snapshot-client';
 import {mapSearchBounds} from '@/lib/map-bounds';
+import type {SnapshotState} from './use-search-snapshot';
 
-// One request per press of the area-search button. A newer press cancels the
-// pending one; an identical query within 30 seconds is answered from memory.
-export function useMapArea(filters:HotelFilters,savedOnly:boolean,favoriteKey:string){
- const [area,setArea]=useState<{bounds:MapBounds;data:MapAreaResponse}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
- const params=hotelQueryParams(filters,filters.query,savedOnly).toString();
- const scope=params+(savedOnly?'&favoriteIds='+encodeURIComponent(favoriteKey):'');
- const cache=useRef(new Map<string,{expires:number;data:MapAreaResponse}>()),controller=useRef<AbortController|null>(null),last=useRef<MapBounds|null>(null);
- // New conditions make the old area result wrong; drop it.
- useEffect(()=>{controller.current?.abort();setArea(null);setBusy(false);setError('')},[scope]);
- useEffect(()=>()=>controller.current?.abort(),[]);
+// One computation per press of the area-search button, over the snapshot in
+// the browser. A name search waits for the snapshot's name-search part.
+export function useMapArea(snap:SnapshotState,filters:HotelFilters,savedOnly:boolean,favorites:string[]){
+ const [area,setArea]=useState<{bounds:MapBounds;bbox:string;data:MapAreaResponse}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const s=snap.snapshot,scope=JSON.stringify([filters,savedOnly,savedOnly?[...favorites].sort():[],s?.manifest.id]);
+ const last=useRef<MapBounds|null>(null),request=useRef(0);
+ // New conditions or a new snapshot make the old area result wrong; drop it.
+ useEffect(()=>{request.current++;setArea(null);setBusy(false);setError('')},[scope]);
  const search=useCallback((raw:MapBounds)=>{
-  const bounds=mapSearchBounds(raw);
-  last.current=bounds;
-  const bbox=[bounds.west,bounds.south,bounds.east,bounds.north].map(v=>v.toFixed(5)).join(',');
-  const key=scope+'&bbox='+bbox;
-  controller.current?.abort();
-  const hit=cache.current.get(key);
-  if(hit&&hit.expires>Date.now()){setArea({bounds,data:hit.data});setBusy(false);setError('');return}
-  const request=new AbortController();controller.current=request;setBusy(true);setError('');
-  apiJson<MapAreaResponse>('/api/hotels/map?'+params+'&bbox='+bbox,{signal:request.signal}).then(data=>{
-   if(request.signal.aborted)return;
-   cache.current.set(key,{expires:Date.now()+30000,data});
-   while(cache.current.size>16)cache.current.delete(cache.current.keys().next().value!);
-   setArea({bounds,data});
-  }).catch(e=>{if(!request.signal.aborted)setError(e instanceof Error?e.message:'지도 범위의 숙소를 불러오지 못했습니다.')}).finally(()=>{if(!request.signal.aborted)setBusy(false)});
- },[scope,params]);
+  const bounds=mapSearchBounds(raw),id=++request.current;last.current=bounds;
+  if(!s){setError('지도 범위의 숙소를 불러오지 못했습니다. 다시 시도해 주세요.');return}
+  setError('');
+  // The bounds as the former request sent them (five decimals).
+  const [west,south,east,north]=[bounds.west,bounds.south,bounds.east,bounds.north].map(v=>Number(v.toFixed(5)));
+  if(!(south<north&&west<east)){setArea(null);setError('지도 범위를 확인하세요.');return}
+  const run=()=>{if(id===request.current){setArea({bounds,bbox:[west,south,east,north].join(','),data:mapArea(s,filters,{west,south,east,north},savedOnly,favorites)});setBusy(false)}};
+  if(!needsText(filters)||s.index){run();return}
+  setBusy(true);
+  loadSnapshotText(s).then(run).catch(e=>{if(id===request.current){setBusy(false);setError(e instanceof Error?e.message:'지도 범위의 숙소를 불러오지 못했습니다. 다시 시도해 주세요.')}});
+  // filters, savedOnly and favorites are in scope.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[scope,s]);
  const retry=useCallback(()=>{if(last.current)search(last.current)},[search]);
- const clear=useCallback(()=>{controller.current?.abort();setArea(null);setBusy(false);setError('')},[]);
+ const clear=useCallback(()=>{request.current++;setArea(null);setBusy(false);setError('')},[]);
  return{area,busy,error,search,retry,clear};
 }

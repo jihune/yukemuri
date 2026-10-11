@@ -36,7 +36,8 @@ try{
  };
  for(const query of ['', '?ids=', '?ids=one,two,three,four,five', '?ids=one,one', '?ids=..%2Fprivate', '?ids=one&ids=two', '?ids=one&token=private'])await api('/api/hotel-comparison'+query,400);
  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n,0,'Invalid requests are rejected before catalog initialization');
- await api('/api/hotels');
+ // The collector's preparation fills the catalogue (no list request does since P03).
+ await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'comparison-test-only'}});
  const row=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),columns=Object.keys(row);
  for(const id of ['qa-current','qa-stale']){
   const hotel=JSON.parse(row.payload);hotel.id=id;hotel.description='日本語の現在の説明 '+id;

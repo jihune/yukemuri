@@ -61,21 +61,23 @@ export function remoteSource({token,account,database,fetchImpl=fetch,base='https
 }
 // lib/ compiled to CommonJS in a temporary folder; cloudflare:workers becomes
 // the env given to build().
-function compile(temp){
+export function compileLib(temp,entry='lib/search-snapshot-build.ts',more=[]){
  symlinkSync(join(ROOT,'node_modules'),join(temp,'node_modules'));
- const r=spawnSync(process.execPath,[join(ROOT,'node_modules/typescript/bin/tsc'),join(ROOT,'lib/search-snapshot-build.ts'),'--outDir',temp,'--rootDir',ROOT,'--module','commonjs','--target','es2022','--esModuleInterop','--skipLibCheck','--resolveJsonModule','--moduleResolution','node','--noCheck'],{encoding:'utf8'});
- const entry=join(temp,'lib/search-snapshot-build.js');
- if(!existsSync(entry))throw new Error('Snapshot compile failed\n'+r.stdout+r.stderr);
- for(const f of readdirSync(join(temp,'lib'),{recursive:true}).filter(f=>f.endsWith('.js'))){const p=join(temp,'lib',f),s=readFileSync(p,'utf8');if(s.includes('require("cloudflare:workers")'))writeFileSync(p,s.replaceAll('require("cloudflare:workers")','({env:globalThis.__SNAPSHOT_ENV})'))}
- return entry;
+ const r=spawnSync(process.execPath,[join(ROOT,'node_modules/typescript/bin/tsc'),...[entry,...more].map(f=>join(ROOT,f)),'--outDir',temp,'--rootDir',ROOT,'--module','commonjs','--target','es2022','--esModuleInterop','--skipLibCheck','--resolveJsonModule','--moduleResolution','node','--noCheck'],{encoding:'utf8'});
+ const compiled=join(temp,entry.replace(/\.ts$/,'.js'));
+ if(!existsSync(compiled))throw new Error('Snapshot compile failed\n'+r.stdout+r.stderr);
+ for(const f of readdirSync(join(temp,'lib'),{recursive:true}).filter(f=>f.endsWith('.js'))){const p=join(temp,'lib',f),s=readFileSync(p,'utf8');if(s.includes('require("cloudflare:workers")'))writeFileSync(p,s.replaceAll('require("cloudflare:workers")','({get env(){return globalThis.__SNAPSHOT_ENV}})'))}
+ return compiled;
 }
-export async function buildSnapshot({db,out,now=new Date()}){
+// builder: the compiled lib/search-snapshot-build module, to build more than
+// once without compiling again (tests); compiled here when absent.
+export async function buildSnapshot({db,out,now=new Date(),builder}){
  const temp=mkdtempSync(join(tmpdir(),'yukemuri-snapshot-'));
  try{
   const guarded=readOnly(db);
   globalThis.__SNAPSHOT_ENV={DB:guarded.db};
   const started=performance.now();
-  const {buildSearchSnapshot}=createRequire(import.meta.url)(compile(temp));
+  const {buildSearchSnapshot}=builder??createRequire(import.meta.url)(compileLib(temp));
   const data=await buildSearchSnapshot(now);
   const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status)};
   const id=createHash('sha256').update(JSON.stringify(files)).digest('hex').slice(0,16);
@@ -91,7 +93,7 @@ export async function buildSnapshot({db,out,now=new Date()}){
   writeFileSync(join(folder,'manifest.json'),JSON.stringify(manifest));
   const headers=join(out,'_headers'),current=existsSync(headers)?readFileSync(headers,'utf8'):'';
   if(!current.includes(HEADERS_RULE))writeFileSync(headers,current+(current&&!current.endsWith('\n')?'\n':'')+HEADERS_RULE);
-  return{manifest,sizes,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
+  return{manifest,sizes,data,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
  }finally{delete globalThis.__SNAPSHOT_ENV;rmSync(temp,{recursive:true,force:true})}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
@@ -108,6 +110,6 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const kb=n=>(n/1024).toFixed(1)+'KiB';
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
-  if(report)writeFileSync(report,JSON.stringify({...result,manifest:{...result.manifest,coverage:undefined}},null,1)+'\n');
+  if(report)writeFileSync(report,JSON.stringify({...result,data:undefined,manifest:{...result.manifest,coverage:undefined}},null,1)+'\n');
  }finally{close()}
 }

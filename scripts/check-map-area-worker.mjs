@@ -5,17 +5,21 @@ import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs'
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
+import {formerSearchFor,FORMER_PATHS} from './former-search-api.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-map-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
+// List and map: the browser's code over a snapshot of this D1 (P03).
+let former;
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'map-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'map-test-only'}});
 try{
+ former=formerSearchFor(runtime,'map-test-only');
  const db=await runtime.getD1Database('DB');
  for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
- const call=async(path,expected=200)=>{const r=await runtime.dispatchFetch('http://localhost'+path,{headers:{'X-Yukemuri-Visitor':'b'.repeat(64)}});const body=await r.json();assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));return body};
+ const call=async(path,expected=200)=>{if(FORMER_PATHS.test(new URL(path,'http://localhost').pathname)){const r=await former.request(path,'b'.repeat(64));assert.equal(r.status,expected,path+' '+JSON.stringify(r.body).slice(0,300));return r.body}const r=await runtime.dispatchFetch('http://localhost'+path,{headers:{'X-Yukemuri-Visitor':'b'.repeat(64)}});const body=await r.json();assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));return body};
  const map=(query,bbox)=>call('/api/hotels/map?'+new URLSearchParams({...query,bbox:bbox.join(',')}));
- const list=async query=>{const ids=[];let page=await call('/api/hotels?'+new URLSearchParams({...query,stable:'1'}));ids.push(...page.hotels);for(let n=2;page.snapshot&&ids.length<page.total;n++){page=await call('/api/hotels?'+new URLSearchParams({...query,stable:'1',page:String(n),snapshot:page.snapshot.token}));ids.push(...page.hotels)}return ids};
+ const list=async query=>{const ids=[];let page=await call('/api/hotels?'+new URLSearchParams(query));ids.push(...page.hotels);for(let n=2;ids.length<page.total;n++){page=await call('/api/hotels?'+new URLSearchParams({...query,page:String(n)}));ids.push(...page.hotels)}return ids};
  const located=h=>Number.isFinite(h.location?.latitude)&&Number.isFinite(h.location?.longitude);
  await call('/api/hotels');
 
@@ -72,4 +76,4 @@ try{
  // The existing list answer keeps its shape: no map fields are added to it.
  const page=await call('/api/hotels?q=qagridzz');assert.equal(page.total,520);assert(!('points' in page)&&!('cells' in page));
  console.log(`Map area passed: bad bounds (including blank, hex and exponent fields) and conditions rejected, inclusive edges, non-numeric coordinates counted as missing, list conditions matched for ${3} catalogue queries, ${capped.points.length} points at the cap and ${over.cells.length} grid cells summing to ${over.inBounds} above it.`);
-}finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
+}finally{former?.close();await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

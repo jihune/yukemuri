@@ -84,5 +84,5 @@ export async function saveSourceGroup(p:SourceGroupPatch){
   if(!saved.meta.changes)return'stale';
  }catch(e){if(String(e).includes('UNIQUE constraint'))return'conflict';throw e}
  await refreshSourceGroupIndexes([...idsFor(current??{hotel_id:p.hotelId,trip_hotel_id:null,jalan_hotel_id:null} as Group),p.tripHotelId??p.hotelId,p.jalanHotelId??p.hotelId]);
- await db.prepare('DELETE FROM hotel_result_sessions').run();return'saved';
+ return'saved';
 }

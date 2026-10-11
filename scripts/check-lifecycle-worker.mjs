@@ -4,18 +4,24 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
+import {formerSearchFor,FORMER_PATHS} from './former-search-api.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare'),temp=mkdtempSync(join(tmpdir(),'yukemuri-life-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
+// List and search: the browser's code over a snapshot of this D1 (P03).
+let former;
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'life-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'life-test-only'}});
 try{
+ former=formerSearchFor(runtime,'life-test-only');
  const db=await runtime.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const api=async(path,method='GET',data,expected=200,authorized=true,visitor='a'.repeat(64))=>{
+  if(FORMER_PATHS.test(new URL(path,'http://localhost').pathname)){const r=await former.request(path,visitor);assert.equal(r.status,expected,JSON.stringify(r.body));return r.body}
   const response=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':visitor,...(authorized?{'X-Yukemuri-Crawl-Key':'life-test-only'}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await response.json();assert.equal(response.status,expected,JSON.stringify(body));return body;
  };
- await api('/api/hotels');
+ // A public read fills an empty catalogue (the maintenance backfills stay for crawl-prepare).
+ await api('/api/hotels/takinoya');
  assert.equal(await db.prepare("SELECT value FROM catalog_meta WHERE key='onsen-place-search-v1'").first(),null,'Public reads must not scan the whole catalog for a new maintenance backfill');
  const historical=await db.prepare('SELECT id,payload FROM hotels ORDER BY id LIMIT 1').first();
  await api('/api/crawl-prepare','POST',undefined,403,false);
@@ -36,9 +42,7 @@ try{
  await db.prepare('INSERT INTO hotels(id,region,prefecture,name,search_text,kind,natural,outdoor,private_bath,room_onsen,bath_features,bath_known,payload) VALUES (?,?,?,?,?,?,1,1,1,1,255,255,?)').bind(external.id,external.regionId,external.prefecture,external.names.ko,'lifeexternalresorthotel','hotel',JSON.stringify(external)).run();
  await db.prepare("DELETE FROM catalog_meta WHERE key='external-bath-scope-v1'").run();
  const externalQuery='/api/hotels?region=pref-okinawa&features=natural&q=Life%20External&fresh=1';
- const staleScope=await api('/api/hotels?stable=1&fresh=1');assert(staleScope.snapshot);
  prepared=await api('/api/crawl-prepare','POST');assert(prepared.bathScope.processed>=1);
- await api('/api/hotels?snapshot='+staleScope.snapshot.token,'GET',undefined,410);
  const externalRow=await db.prepare('SELECT natural,outdoor,private_bath,payload FROM hotels WHERE id=?').bind(external.id).first();
  assert.equal(externalRow.natural,null);assert.equal(externalRow.outdoor,null);assert.equal(externalRow.private_bath,null);assert.equal(externalRow.payload,JSON.stringify(external),'Scope correction must preserve the historical source payload');
  const externalRead=await api('/api/hotels/'+external.id);assert.equal(externalRead.features.natural.value,null);assert.equal(externalRead.features.roomIndoorOnsen.value,true);assert(externalRead.spring.useNotes.includes('외부 온천'));
@@ -80,4 +84,4 @@ try{
  await api('/api/crawl-seeds','PUT',{url:'https://www.jalan.net/yad999888/',prefecture:'pref-okinawa'},403,false);
  assert.equal((await api('/api/crawl-seeds','PUT',{url:'https://www.jalan.net/yad999888/',prefecture:'pref-okinawa'})).queued,true);assert.equal((await api('/api/crawl-seeds','PUT',{url:'https://www.jalan.net/yad999888/',prefecture:'pref-okinawa'})).queued,false);
  console.log('Lifecycle checks passed: priority, reserved national discovery, scheduled refresh, 404 review without deletion, official evidence, closure/reopening, private favorites, audit/export, volatile-price retirement.');
-}finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
+}finally{former?.close();await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

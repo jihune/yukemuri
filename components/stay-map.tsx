@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import type * as Leaflet from 'leaflet';
-import { Hotel } from '@/lib/hotel-types';
+import type { HotelSummary } from '@/lib/search-snapshot';
 import { displayRating } from '@/lib/hotel-ratings';
 import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
-import type { MapBounds, MapCell, MapPoint } from '@/lib/hotel-repository';
-type Props={hotels:Hotel[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
+import type { MapBounds, MapCell, MapPoint } from '@/lib/static-search';
+type Props={hotels:HotelSummary[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean};
 type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string};

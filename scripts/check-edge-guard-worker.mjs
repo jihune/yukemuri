@@ -19,6 +19,10 @@ try{
  const db=await limited.getD1Database('DB');
  for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
 
+ // The limiter counts in fixed one-minute windows: a sequence that crosses a
+ // minute boundary starts again from zero (CI run 38155871697 at 16:35:55-16:36:02Z).
+ // Start the limited sequence early in a minute.
+ if(Date.now()%60000>40000)await new Promise(r=>setTimeout(r,60500-Date.now()%60000));
  // Limit: an IP gets LIMIT API responses per window, then 429 with guidance.
  const ip=freshIp(),probe='/api/collector-release';
  for(let i=0;i<LIMIT;i++){const r=await call(limited,probe,{'CF-Connecting-IP':ip});assert.equal(r.status,403);await r.body?.cancel()}
@@ -30,15 +34,16 @@ try{
  for(let i=0;i<LIMIT+2;i++){const r=await call(limited,probe,{'CF-Connecting-IP':ip,'X-Yukemuri-Crawl-Key':KEY});assert.equal(r.status,200,'maintenance key is exempt');await r.body?.cancel()}
  // Another IP has its own counter.
  const other=await call(limited,probe,{'CF-Connecting-IP':freshIp()});assert.equal(other.status,403);await other.body?.cancel();
- // Pages share the same counter: the home page runs a D1 search per request.
+ // Pages share the same counter. Deployed, the home page is a static asset (P03)
+ // that never reaches the Worker; a page that does is limited all the same.
  const page=await call(limited,'/?q=x',{'CF-Connecting-IP':ip});
  assert.equal(page.status,429);assert.match(page.headers.get('Content-Type')??'',/^text\/html/);assert.equal(page.headers.get('Retry-After'),'60');assert.equal(page.headers.get('Cache-Control'),'no-store');
  assert((await page.text()).includes(MESSAGE));
  const pageIp=freshIp();
  for(let i=0;i<LIMIT;i++){const r=await call(limited,`/?q=${i}`,{'CF-Connecting-IP':pageIp});assert.equal(r.status,200,'home page under the limit');await r.body?.cancel()}
  const pageBlocked=await call(limited,'/?q=again',{'CF-Connecting-IP':pageIp});assert.equal(pageBlocked.status,429,'varying page queries cannot bypass the limit');await pageBlocked.body?.cancel();
- // An anonymous search under the limit still reaches the app unchanged.
- const search=await call(limited,'/api/hotels?q=x',{'CF-Connecting-IP':freshIp()});
+ // An anonymous read under the limit still reaches the app unchanged.
+ const search=await call(limited,'/api/favorites',{'CF-Connecting-IP':freshIp()});
  assert.equal(search.status,200);assert.equal(search.headers.get('Cache-Control'),'no-store');await search.body?.cancel();
 
  // Without the binding (local tools, or a plan without it) nothing is limited.

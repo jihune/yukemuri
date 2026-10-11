@@ -1,6 +1,8 @@
 import type {Hotel} from '@/lib/hotel-types';
-export default function HotelLifecycleNote({hotel,compact=false}:{hotel:Hotel;compact?:boolean}){
- const life=hotel.lifecycle;if(!life)return null;
+import type {HotelSummary} from '@/lib/search-snapshot';
+// compact (cards) reads the snapshot card's lifecycle; the full note needs the record's evidence.
+export default function HotelLifecycleNote({hotel,compact=false}:{hotel:Pick<Hotel,'lifecycle'>;compact?:false}|{hotel:Pick<HotelSummary,'lifecycle'>;compact:true}){
+ const life=hotel.lifecycle as Hotel['lifecycle'];if(!life)return null;
  const proof=life.evidence;
  const label=life.state==='closed'?'폐업 확인':life.state==='temporarily_closed'?'휴관 중':life.reviewNeeded?'영업 상태 재확인 중':proof?.openedAt?'개업일 확인':null;
  if(!label)return null;

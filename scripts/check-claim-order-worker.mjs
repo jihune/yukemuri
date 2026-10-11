@@ -38,7 +38,7 @@ try{
   const r=await runtime.dispatchFetch('http://localhost/api/crawl',{method:'POST',headers:{'Content-Type':'application/json','X-Yukemuri-Crawl-Key':'claim-order-only'},body:JSON.stringify(claim)});
   const body=await r.json();assert.equal(r.status,200,JSON.stringify(body));return body.jobs;
  };
- assert.equal((await runtime.dispatchFetch('http://localhost/api/hotels')).status,200);
+ assert.equal((await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'claim-order-only'}})).status,200);
  const ids=Array.from({length:14},(_,i)=>9100000+i*37),cities=['tokyo','osaka','hakone'];
  let claims=0,selected=0,missingWins=0,twoMarkers=0,blockedStates=0;
  for(let state=0;state<60;state++){

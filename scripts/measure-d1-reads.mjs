@@ -65,7 +65,7 @@ const counts={};
 try{
  const db=await runtime.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
- const seeding=await call(runtime,'/api/hotels');
+ const seeding=await call(runtime,'/api/crawl-prepare',{method:'POST'});
  if(grow){
   // Copies of the checked-in rows under new ids, the way measure-map-area.mjs grows
   // the catalogue. Names and queue rows are copied with them so joins see real sizes.
@@ -103,40 +103,14 @@ try{
   return JSON.stringify({url:listUrl,status:'done',observations:[...fresh,...known],links:fresh.map(h=>({url:'https://www.jalan.net/yad'+h.id.slice(6)+'/',kind:'detail',prefecture:h.prefecture}))});
  })();
  const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 3").all()).results.map(r=>r.id);
- const nameQuery=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).find(h=>h.names?.ja?.length>=4).names.ja.slice(0,3);
- const q=v=>'&q='+encodeURIComponent(v);
  // A previous collector run ended with its full-count GET, as in production.
  await call(runtime,'/api/crawl?provider=jalan&kind=list&limit=1');
  await runtime.dispose();runtime=null;
 
- const list='/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1';
  const scenarios=[
-  // [key, label, path, init, expected, cold]. A path may be a function of the
-  // earlier results (byKey) when it continues a result session.
-  ['listCold','목록 첫 쪽(새 isolate)',list.replace('&fresh=1',''),{},200,true],
+  // [key, label, path, init, expected, cold]. List, search and map requests no
+  // longer reach the Worker (P03: static snapshot).
   ['detailCold','상세(새 isolate)','/api/hotels/'+sample[0],{},200,true],
-  ['nameCold','이름 부분검색(새 isolate, 색인 생성 포함)','/api/hotels?stable=1&saved=0&page=1'+q(nameQuery),{},200,true],
-  ['searchIndexCold','검색 색인 전송(새 isolate)','/api/hotels/search-index',{},200,true],
-  ['mapCold','지도 범위: 일본 전체(새 isolate)','/api/hotels/map?bbox=122,24,146,46',{},200,true],
-  ['list','목록 첫 쪽(fresh)',list],
-  ['listRating','목록: 평점순(fresh)',list.replace('sort=recommended','sort=rating')],
-  ['listReviews','목록: 리뷰순(fresh)',list.replace('sort=recommended','sort=reviews')],
-  ['listName','목록: 이름순(fresh)',list.replace('sort=recommended','sort=name')],
-  ['listFilters','목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)',list+'&features=natural&rating=9&reviews=50'],
-  ['listJalan','목록: Jalan 4.0+ 평점순(fresh)',list.replace('sort=recommended','sort=rating')+'&provider=jalan&rating=4'],
-  ['listRyokan','목록: 료칸+노천탕(fresh)',list+'&ryokan=1&features=outdoor'],
-  ['listRegion','목록: 홋카이도(fresh)',list+'&region=pref-hokkaido'],
-  ['listNext','목록 이어 읽기(2쪽, 결과 세션)',byKey=>'/api/hotels?stable=1&sort=recommended&saved=0&page=2&snapshot='+byKey.list.snapshot],
-  ['listPage2','목록 2쪽(결과 세션 없음, fresh)',list.replace('stable=1&','').replace('page=1','page=2')],
-  ['nameIndex','이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)',list+q(nameQuery)],
-  ['name','이름 부분검색: 일본어(fresh, 색인 있음)',list+q(nameQuery)],
-  ['nameKo','이름 부분검색: 한글(fresh)',list+q('노보리베츠')],
-  ['nameRomaji','이름 부분검색: 로마자(fresh)',list+q('noboribetsu')],
-  ['namePlace','이름 부분검색: 箱根(fresh)',list+q('箱根')],
-  ['suggest','검색어 예측','/api/hotels/suggestions?q='+encodeURIComponent(nameQuery)],
-  ['map','지도 범위: 일본 전체','/api/hotels/map?bbox=122,24,146,46'],
-  ['mapRegion','지도 범위: 홋카이도+천연온천','/api/hotels/map?bbox=139,41,146,46&features=natural'],
-  ['mapName','지도 범위: 이름 검색','/api/hotels/map?bbox=122,24,146,46'+q(nameQuery)],
   ['detail','상세','/api/hotels/'+sample[0]],
   ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.join(',')],
   ['crawlGet','수집 GET 집계(실행 끝)','/api/crawl?provider=jalan&kind=list&limit=1'],
@@ -145,9 +119,7 @@ try{
   // A claim reads the same rows whether or not the provider is already leased.
   ...[['jalan','detail'],['jalan','baths'],['trip','detail'],['jalan','refresh'],['trip','refresh'],['jalan','list'],['trip','list'],['trip','names']].flatMap(([provider,phase])=>['priority','national'].map(lane=>[`claim:${provider}:${phase}:${lane}`,`수집 작업 선점(POST, ${provider} ${phase} ${lane})`,'/api/crawl',{method:'POST',body:JSON.stringify({provider,phase,lane,token:randomUUID()})}])),
   ['crawlPut','수집 저장(PUT, 상세 1곳)','/api/crawl',{method:'PUT',body:puts[0]}],
-  ['nameAfterPut','PUT 뒤 이름 부분검색(fresh)',list+q(nameQuery)],
   ['crawlPutList','수집 저장(PUT, 목록: 새 숙소 30·기존 15)','/api/crawl',{method:'PUT',body:listPut}],
-  ['listAfterPut','목록 PUT 뒤 목록 첫 쪽(fresh)',list],
   ['crawlPutCold','수집 저장(PUT, 새 isolate)','/api/crawl',{method:'PUT',body:puts[1]},200,true],
   ['exportManifest','catalog-export 목록','/api/catalog-export'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
@@ -155,7 +127,7 @@ try{
  const results=[];
  const warm=start();
  try{
-  await call(warm,'/api/hotels');
+  await call(warm,'/api/hotels/'+sample[0]);
   const byKey={};
   for(const [key,label,route,init={},expected=200,cold=false] of scenarios){
    let r;const path=typeof route==='function'?route(byKey):route;
@@ -178,7 +150,7 @@ try{
   // P02: a claim reads the first eligible job of each kind and status in its
   // lane's index order and the jobs verified links name, not the whole queue.
   const claims=Object.fromEntries(results.filter(r=>r.key==='crawlClaim'||r.key.startsWith('claim:')).map(r=>[r.key,bound(0.05,200)]));
-  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),listCold:bound(3.5,2000),list:bound(3.5,2000),listFilters:bound(1.1,2000),name:bound(3,2000),nameIndex:bound(6,2000),nameCold:bound(6,2000),nameAfterPut:byKey.name.rowsRead+0.02*h};
+  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200)};
   const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;

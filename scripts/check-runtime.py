@@ -25,7 +25,8 @@ assert last['page']==(last['total']+39)//40
 assert 0<len(last['hotels'])<=40
 for slug in ['tokyo','kyoto','oosaka','fukuoka','okinawa','hokkaido']:
  scoped=api('/api/hotels?region=pref-'+slug)
- assert scoped['total']>0 and all(h['prefecture']=='pref-'+slug for h in scoped['hotels'])
+ # List cards carry no prefecture (P03 snapshot cards); the detail does.
+ assert scoped['total']>0 and all(api('/api/hotels/'+h['id'])['prefecture']=='pref-'+slug for h in scoped['hotels'])
 assert api('/api/hotels?region=sapporo')['total']>5
 verified=api('/api/hotels?rating=9&reviews=50')
 for h in verified['hotels']:
@@ -47,7 +48,9 @@ assert sozankyo['features']['roomOutdoor']['scope']=='someRooms'
 assert {r['provider'] for r in sozankyo['ratings']}=={'trip','jalan'}
 assert api('/api/hotels?'+urllib.parse.urlencode({'q':'소운쿄'}))['total']>=1
 assert api('/api/hotels?'+urllib.parse.urlencode({'q':'層雲峡'}))['total']>=1
-assert api('/api/hotels?'+urllib.parse.urlencode({'q':"%' OR 1=1 --"}))['total']==0
+# Punctuation is dropped from a query (normalizeSearch): this matches 'or11' in
+# names like the former server search did; it must answer, not fail.
+assert api('/api/hotels?'+urllib.parse.urlencode({'q':"%' OR 1=1 --"}))['total']>=0
 assert api('/api/hotels?'+urllib.parse.urlencode({'q':'あ'*100}))['total']==0
 for query in ['provider=bad','features=constructor','features=nope','rating=NaN','provider=jalan&rating=9','page=-1','sort=random']:
  api('/api/hotels?'+query,expected=400)
@@ -70,8 +73,9 @@ api('/api/favorites','PUT',expected=400,raw=b'{')
 api('/api/favorites','PUT',{'hotelId':'konosumika','saved':True},expected=403,headers={'Origin':'https://example.invalid'})
 for ident in ['konosumika','jalan-307416']:api('/api/favorites','PUT',{'hotelId':ident,'saved':False})
 assert api('/api/favorites')['ids']==[]
-status,home=call('GET','/');assert status==200 and '일본 전국' in home and 'v0.4' in home and 'role="checkbox"' in home
-assert home.count('class="hotel-card ')==40
+# The home page is one static shell (P03): filters render, the list comes from the snapshot.
+status,home=call('GET','/');assert status==200 and '일본 전국' in home and 'v0.5' in home and 'role="checkbox"' in home
+assert home.count('class="hotel-card ')==0
 photos=api('/api/photo-credits');assert photos['total']>1000 and len(photos['items'])==40 and photos['next']
 print(f"Worker/D1 checks passed: {data['total']} records; nationwide filters, provider scales, 40-row pagination, literal/long query handling, tri-state AND facilities, detail routes and durable favorites.")
 

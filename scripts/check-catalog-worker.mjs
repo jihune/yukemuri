@@ -4,15 +4,19 @@ import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs'
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
+import {formerSearchFor,FORMER_PATHS} from './former-search-api.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-catalog-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
+// List, search and map: the browser's code over a snapshot of this D1 (P03).
+let former;
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'catalog-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'catalog-test-only'}});
 try{
+ former=formerSearchFor(runtime,'catalog-test-only');
  const db=await runtime.getD1Database('DB');
  for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
- const api=async(path,init,expected=200)=>{const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{...init?.headers,'X-Yukemuri-Visitor':'a'.repeat(64),...(path.startsWith('/api/crawl')?{'X-Yukemuri-Crawl-Key':'catalog-test-only'}:{})}});const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body};
+ const api=async(path,init,expected=200)=>{if(FORMER_PATHS.test(new URL(path,'http://localhost').pathname)){const r=await former.request(path,'a'.repeat(64));assert.equal(r.status,expected,JSON.stringify(r.body));return r.body}const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{...init?.headers,'X-Yukemuri-Visitor':'a'.repeat(64),...(path.startsWith('/api/crawl')?{'X-Yukemuri-Crawl-Key':'catalog-test-only'}:{})}});const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body};
  const search=q=>api('/api/hotels?'+new URLSearchParams({q}));
  // An existing live row has no new mask columns or bath facts. Derive only
  // explicit Jalan water information, without replacing its payload/favorites.
@@ -63,8 +67,8 @@ try{
  assert.deepEqual(await gaps({features:'natural'}),['adeg',2],'unknown natural: b,f');
  assert.deepEqual(await gaps({features:'natural',rating:'9'}),['ag',2],'b lacks natural, d lacks a score; f has a known low score');
  assert.deepEqual(await gaps({rating:'9',reviews:'50'}),['abc',2],'d and g lack review counts');
- const gapPage=await api('/api/hotels?rating=8&stable=1');assert(gapPage.snapshot,'Needs more than one page to cover the result session');assert(gapPage.unknownExcluded>0);
- assert.equal((await api('/api/hotels?'+new URLSearchParams({rating:'8',stable:'1',page:'2',snapshot:gapPage.snapshot.token}))).unknownExcluded,gapPage.unknownExcluded,'Later pages keep the count');
+ const gapPage=await api('/api/hotels?rating=8');assert(gapPage.total>gapPage.pageSize,'Needs more than one page');assert(gapPage.unknownExcluded>0);
+ assert.equal((await api('/api/hotels?rating=8&page=2')).unknownExcluded,gapPage.unknownExcluded,'Later pages keep the count');
  const noName=await search('xzqvjkzz');assert.equal(noName.total,0);assert(noName.alternatives.length>0);assert(noName.alternatives.every(h=>h.unmetConditions.includes('검색어 일치 없음')));
  const noSaved=await api('/api/hotels?saved=1&q=xzqvjkzz');assert.equal(noSaved.total,0);assert.equal(noSaved.alternatives.length,0);
  assert.equal(compact.hotels.find(h=>h.id==='trip-67309116').location,'나하 · 오키나와');
@@ -116,4 +120,4 @@ try{
  const put={method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:hotel.id,saved:true})};await api('/api/favorites',put);assert((await api('/api/favorites')).ids.includes(hotel.id));assert.equal((await api('/api/hotels?saved=1')).total,1);
  assert.equal((await suggest(hotel.names.ko,{saved:'1'})).suggestions[0].id,hotel.id);
  console.log(`Production Worker/D1 passed: ${first.total} records, advanced bath/High Class filters, unchanged legacy payload after bath backfill, separate alternatives with unmet conditions, unknown-only exclusion counts, multilingual relevance/autocomplete, favorites, nonoverlapping pages and original 20 properties.`);
-}finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
+}finally{former?.close();await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

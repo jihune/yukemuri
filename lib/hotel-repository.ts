@@ -2,66 +2,19 @@ import {prepareCollectionPriorities} from './collection-priorities';
 import {attachLifecycle} from './hotel-lifecycle';
 import {attachSourceGroups,importVerifiedSourceGroups,refreshSourceGroupIndexes} from './hotel-source-groups';
 import { favoritesDb } from './favorites-db';
-import { Hotel, HotelFilters, FeatureKey, type CoreFeatureKey } from './hotel-types';
+import { Hotel, FeatureKey, type CoreFeatureKey } from './hotel-types';
 import { catalogVersion, catalogCoverage } from './catalog-core';
 import { providerRating } from './hotel-ratings';
-import { SortOrder } from './hotel-search';
 import { enrichHotel } from './hotel-enrichment';
 import { normalizeSearch, hotelNames, hotelSearchText } from './hotel-names';
-import { formatHotelLocation, hotelPlaceSearchText } from './japan-place-labels';
-import { prepareSearchIndex, searchIndexMatches, localHotelSuggestions, type SearchIndexHotel, type PreparedSearchIndex } from './hotel-search-index';
-import type { HotelSuggestion } from './hotel-suggestions';
-import {FEATURE_KEYS,featureMasks,hotelFeature} from './hotel-bath-facts';
-import {rankHotelAlternatives} from './hotel-alternatives';
+import {featureMasks,hotelFeature} from './hotel-bath-facts';
 import {applyNamePatch, type HotelNamePatch} from './hotel-name-localization';
 import localizedNames from '../data/korean-hotel-names.json';
 import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
-import {createResultSession,readResultSession,resultQueryKey,hotelsInOrder,type SearchOptions} from './hotel-result-session';
 import {validComparisonIds} from './hotel-comparison';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
-const featureColumns=Object.fromEntries(FEATURE_KEYS.map((key,i)=>[key,`((bath_features & ${1<<i}) != 0)`])) as Record<FeatureKey,string>;
-let searchIndex:{expires:number;promise:Promise<{hotels:SearchIndexHotel[];prepared:PreparedSearchIndex}>}|null=null;
-async function catalogueSearchIndex(){
- if(!searchIndex||searchIndex.expires<Date.now()){
-  const promise=(async()=>{
-   type Row={id:string;region:string;prefecture:string|null;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;names:string;location:string}&Record<string,unknown>;
-   const hotels:SearchIndexHotel[]=[],db=favoritesDb();let cursor='';
-   // All aliases in one primary-key-ordered read, in the same (hotel_id,
-   // name_key) order the former per-hotel subquery returned them.
-   const aliases=new Map<string,string[]>();
-   for(const r of (await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all<{hotel_id:string;name:string}>()).results){const list=aliases.get(r.hotel_id);if(list)list.push(r.name);else aliases.set(r.hotel_id,[r.name])}
-   for(;;){
-    const rows=await db.prepare(`SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE id>? AND NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id LIMIT 1500`).bind(cursor).all<Row>();
-    for(const row of rows.results){
-     const names=JSON.parse(row.names) as Hotel['names'],location=JSON.parse(row.location) as Hotel['location'];
-     const place={prefecture:row.prefecture,regionId:row.region,location,names};
-     hotels.push({id:row.id,names:[...new Set([names.ko,names.ja,names.en,...(aliases.get(row.id)??[])].filter(Boolean))],location:formatHotelLocation(place),context:hotelPlaceSearchText(place),region:row.region,prefecture:row.prefecture,kind:row.kind,features:Number(row.bath_features??0),knownFeatures:Number(row.bath_known??0),tripScore:row.trip_score,tripReviews:row.trip_reviews,jalanScore:row.jalan_score,jalanReviews:row.jalan_reviews});
-    }
-    if(rows.results.length<1500)break;cursor=rows.results.at(-1)!.id;
-   }
-   return{hotels,prepared:prepareSearchIndex(hotels)};
-  })();
-  searchIndex={expires:Date.now()+120000,promise};promise.catch(()=>{if(searchIndex?.promise===promise)searchIndex=null});
- }
- return searchIndex.promise;
-}
-async function nameMatches(query:string,region:string){
- return searchIndexMatches((await catalogueSearchIndex()).prepared,query,region).map(({id,score,similar})=>({id,score,similar}));
-}
-const exactQuery=`(instr(search_text,?)>0 OR id IN (SELECT linked.hotel_id FROM hotel_names matched JOIN hotel_names linked ON linked.name_key=matched.name_key JOIN hotels original ON original.id=matched.hotel_id JOIN hotels target ON target.id=linked.hotel_id WHERE matched.hotel_id IN (SELECT hotel_id FROM hotel_names WHERE instr(name_key,?)>0) AND (matched.hotel_id=linked.hotel_id OR original.prefecture IS NOT NULL AND original.prefecture=target.prefecture)))`;
-function addConstraints(filters:HotelFilters,clauses:string[],args:(string|number)[],savedOnly:boolean,facilities=true,savedIds:string[]=[]){
- if(!savedOnly&&!facilities)clauses.push("NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed'))");
- if(filters.region!=='all'){clauses.push('(region=? OR prefecture=?)');args.push(filters.region,filters.region)}
- if(savedOnly){clauses.push('id IN (SELECT value FROM json_each(?))');args.push(JSON.stringify(savedIds))}
- if(!facilities)return;
- if(filters.ryokanOnly)clauses.push("kind='ryokan'");
- for(const key of filters.features)clauses.push(featureColumns[key]+'=1');
- const rating=filters.ratingProvider==='jalan'?'jalan':'trip';
- if(filters.minRating){clauses.push(rating+'_score>=?');args.push(filters.minRating)}
- if(filters.minReviews){clauses.push(rating+'_reviews>=?');args.push(filters.minReviews)}
-}
 async function indexNames(hotels:Hotel[]){
  const rows=hotels.flatMap(h=>hotelNames(h).map(name=>({hotelId:h.id,key:normalizeSearch(name),name}))).filter(r=>r.key);
  for(let offset=0;offset<rows.length;offset+=400)await favoritesDb().prepare("INSERT INTO hotel_names (hotel_id,name_key,name) SELECT json_extract(value,'$.hotelId'),json_extract(value,'$.key'),json_extract(value,'$.name') FROM json_each(?) WHERE 1 ON CONFLICT(hotel_id,name_key) DO NOTHING").bind(JSON.stringify(rows.slice(offset,offset+400))).run();
@@ -91,10 +44,7 @@ export async function writeHotels(observations:Hotel[]){
   await indexNames(accepted.results.map(row=>JSON.parse(row.payload) as Hotel));
   if(accepted.results.length)await refreshSourceGroupIndexes(accepted.results.map(row=>row.id));
  }
- // Substring search reads hotels and hotel_names directly, so new names are
- // found at once. The fuzzy index and the coverage aggregate expire on their
- // timers, as they already do in every isolate that did not take this write.
- resultCache.clear();
+ // The search snapshot shows new records from its next build (P03).
  return written;
 }
 type CoverageCounts={records:number;prefectures:number};
@@ -149,8 +99,9 @@ export async function readCachedCoverage(sync=false){
  const records=Number(counter);
  return{...coverage,records,crawledRecords:records-20};
 }
-const resultCache=new Map<string,{expires:number;promise:Promise<SearchResponse>}>();
-export function invalidateSearch(){searchIndex=null;resultCache.clear();coverageCache=null}
+// Writes outside the collector's PUT (names, lifecycle, source links) change
+// the collection summary; the search snapshot follows at the next build.
+export function invalidateSearch(){coverageCache=null}
 export async function requestDescriptionTranslation(hotel:Hotel){
  if(hotel.descriptionTranslation||!needsKoreanDescription(hotel.description))return;
  await favoritesDb().prepare('INSERT INTO hotel_description_requests (hotel_id,source_text,requested_at) VALUES (?,?,?) ON CONFLICT(hotel_id) DO UPDATE SET source_text=excluded.source_text,requested_at=excluded.requested_at WHERE hotel_description_requests.source_text!=excluded.source_text').bind(hotel.id,hotel.description,new Date().toISOString()).run();
@@ -261,9 +212,7 @@ async function prepareExternalBathFacts(){
  const assignments=['bath_features=(SELECT features FROM patches WHERE patches.id=hotels.id)','bath_known=(SELECT known FROM patches WHERE patches.id=hotels.id)',...Object.entries(coreColumns).map(([key,column])=>`${column}=(SELECT json_extract(core,'$.${key}') FROM patches WHERE patches.id=hotels.id)`)];
  const update=db.prepare(`WITH patches AS (SELECT json_extract(value,'$.id') AS id,json_extract(value,'$.features') AS features,json_extract(value,'$.knownFeatures') AS known,json_extract(value,'$.core') AS core,json_extract(value,'$.original') AS original FROM json_each(?)) UPDATE hotels SET ${assignments.join(',')} WHERE id IN (SELECT id FROM patches) AND payload=(SELECT original FROM patches WHERE patches.id=hotels.id)`).bind(JSON.stringify(updates));
  const progress=db.prepare("INSERT INTO catalog_meta(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!='done' AND (excluded.value='done' OR catalog_meta.value<excluded.value)").bind(key,next);
- // A corrected facility scope also expires paginated snapshots that still
- // contain the property's old filter qualification.
- await db.batch(updates.length?[update,db.prepare('DELETE FROM hotel_result_sessions'),progress]:[progress]);invalidateSearch();
+ await db.batch(updates.length?[update,progress]:[progress]);invalidateSearch();
  return {done:next==='done',processed:rows.results.length,cursor:next};
 }
 export async function prepareOnsenCatalog(){
@@ -285,132 +234,9 @@ async function backfillBathFacts(){
   await db.prepare("WITH patches AS (SELECT json_extract(value,'$.id') AS id,json_extract(value,'$.features') AS features,json_extract(value,'$.knownFeatures') AS known,json_extract(value,'$.natural') AS natural,json_extract(value,'$.original') AS original FROM json_each(?)) UPDATE hotels SET bath_features=(SELECT features FROM patches WHERE patches.id=hotels.id),bath_known=(SELECT known FROM patches WHERE patches.id=hotels.id),natural=(SELECT natural FROM patches WHERE patches.id=hotels.id) WHERE bath_features IS NULL AND id IN (SELECT id FROM patches) AND payload=(SELECT original FROM patches WHERE patches.id=hotels.id)").bind(JSON.stringify(updates)).run();
  }
  await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,'done').run();
- searchIndex=null;
 }
 async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
-export type HotelAlternative={hotel:Hotel;unmetConditions:string[];queryMatched:boolean};
-export type SearchResponse={hotels:Hotel[];total:number;unknownExcluded?:number;page:number;pageSize:number;featureCounts:Record<FeatureKey,number>;ryokanCount:number;coverage:typeof catalogCoverage;similarCount?:number;similarHotelIds?:string[];alternatives?:HotelAlternative[];snapshot?:{token:string;createdAt:string;expiresAt:string}};
-// One WHERE for the list and the map: scope (lifecycle, region, saved, query),
-// then the facility, rating and review conditions.
-async function searchWhere(filters:HotelFilters,savedOnly:boolean,savedIds:string[]){
-  const clauses:string[]=[],args:(string|number)[]=[];
-  addConstraints(filters,clauses,args,savedOnly,false,savedIds);
-  const q=normalizeSearch(filters.query);
-  let matchesJson='[]',similarJson='[]';
-  if(q){
-   const matches=await nameMatches(filters.query,filters.region);matchesJson=JSON.stringify(matches);similarJson=JSON.stringify(matches.filter(m=>m.similar).map(m=>m.id));
-   // The substring match scans hotels and hotel_names once per request. The
-   // counts and the ordered list then read only the matching rows by id.
-   const exact=await favoritesDb().prepare(`SELECT id FROM hotels WHERE ${exactQuery}`).bind(q,q).all<{id:string}>();
-   clauses.push('id IN (SELECT value FROM json_each(?))');args.push(JSON.stringify([...new Set([...exact.results.map(r=>r.id),...matches.map(m=>m.id)])]));
-  }
-  const facilityClauses:string[]=[],facilityArgs:(string|number)[]=[];
-  addConstraints({...filters,region:'all'},facilityClauses,facilityArgs,false,true);
-  return{clauses,args,q,matchesJson,similarJson,facilityClauses,facilityArgs};
-}
-export const MAP_POINT_LIMIT=500;
-export type MapBounds={west:number;south:number;east:number;north:number};
-export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|null};
-export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number};
-export type MapAreaResponse={total:number;inBounds:number;outOfBounds:number;withoutCoordinates:number;limit:number;points:MapPoint[];cells:MapCell[]};
-// Every matching record inside the bounds, not only the loaded list pages.
-// Coordinates live only in the payload in this phase (docs/U02-20261010.md).
-async function mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly:boolean,savedIds:string[]):Promise<MapAreaResponse>{
-  await ensureCatalog();const db=favoritesDb();
-  const {clauses,args,facilityClauses,facilityArgs}=await searchWhere(filters,savedOnly,savedIds);
-  const all=[...clauses,...facilityClauses],where=all.length?'WHERE '+all.join(' AND '):'',whereArgs=[...args,...facilityArgs];
-  const score=filters.ratingProvider==='jalan'?'jalan_score':'trip_score';
-  // Same rule as hasCoordinates on the client: both values must be numbers.
-  const numeric=`json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real')`;
-  const located=`SELECT id,name,${score} AS score,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng FROM hotels ${where}`;
-  const inside='lat IS NOT NULL AND lat BETWEEN ? AND ? AND lng BETWEEN ? AND ?',box=[bounds.south,bounds.north,bounds.west,bounds.east];
-  const summary=await db.prepare(`SELECT COUNT(*) AS total,COALESCE(SUM(lat IS NULL),0) AS missing,COALESCE(SUM(${inside}),0) AS inside FROM (${located})`).bind(...box,...whereArgs).first<{total:number;missing:number;inside:number}>();
-  const total=summary?.total??0,withoutCoordinates=summary?.missing??0,inBounds=summary?.inside??0;
-  const result:MapAreaResponse={total,inBounds,outOfBounds:total-withoutCoordinates-inBounds,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
-  if(!inBounds)return result;
-  if(inBounds<=MAP_POINT_LIMIT){
-   const rows=await db.prepare(`SELECT id,name,score,lat,lng FROM (${located}) WHERE ${inside} ORDER BY id`).bind(...whereArgs,...box).all<MapPoint>();
-   result.points=rows.results;return result;
-  }
-  // Too many points for one response: counts on a 16 x 16 grid over the bounds.
-  const latStep=(bounds.north-bounds.south)/16||1e-9,lngStep=(bounds.east-bounds.west)/16||1e-9;
-  const rows=await db.prepare(`SELECT MIN(15,CAST((lat-?)/? AS INTEGER)) AS row,MIN(15,CAST((lng-?)/? AS INTEGER)) AS col,COUNT(*) AS count,AVG(lat) AS lat,AVG(lng) AS lng FROM (${located}) WHERE ${inside} GROUP BY row,col ORDER BY row,col`).bind(bounds.south,latStep,bounds.west,lngStep,...whereArgs,...box).all<{row:number;col:number;count:number;lat:number;lng:number}>();
-  result.cells=rows.results.map(c=>({lat:c.lat,lng:c.lng,count:c.count,south:bounds.south+c.row*latStep,north:bounds.south+(c.row+1)*latStep,west:bounds.west+c.col*lngStep,east:bounds.west+(c.col+1)*lngStep}));
-  return result;
-}
-async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,savedOnly:boolean,savedIds:string[],options:SearchOptions={}):Promise<SearchResponse>{
-  await ensureCatalog();const db=favoritesDb();
-  const queryKey=await resultQueryKey(filters,sort,savedOnly,savedIds,options.scope);
-  if(options.snapshot)return readResultSession(options.snapshot,queryKey,page);
-  const {clauses,args,q,matchesJson,similarJson,facilityClauses,facilityArgs}=await searchWhere(filters,savedOnly,savedIds);
-  const scope=clauses.length?'WHERE '+clauses.join(' AND '):'';
-  const scopeArgs=[...args];
-  const eligible=facilityClauses.length?facilityClauses.join(' AND '):'1';
-  const rating=filters.ratingProvider==='jalan'?'jalan':'trip';
-  // Candidates that fail no selected condition, only lack the fact for one.
-  // They stay excluded and are counted so the list can say so.
-  const unknownClauses:string[]=[],unknownArgs:(string|number)[]=[];
-  if(filters.ryokanOnly)unknownClauses.push("kind='ryokan'");
-  for(const key of filters.features){const bit=1<<FEATURE_KEYS.indexOf(key);unknownClauses.push(`((bath_features & ${bit}) != 0 OR (COALESCE(bath_known,0) & ${bit}) = 0)`)}
-  if(filters.minRating){unknownClauses.push(`(${rating}_score>=? OR ${rating}_score IS NULL)`);unknownArgs.push(filters.minRating)}
-  if(filters.minReviews){unknownClauses.push(`(${rating}_reviews>=? OR ${rating}_reviews IS NULL)`);unknownArgs.push(filters.minReviews)}
-  const unknownOnly=unknownClauses.length?unknownClauses.join(' AND '):'0';
-  const coveragePromise=readCachedCoverage();
-  const facetsPromise=db.prepare(`SELECT ${Object.entries(featureColumns).map(([k,c])=>`SUM(CASE WHEN ${c}=1 THEN 1 ELSE 0 END) AS ${k}`).join(',')},SUM(CASE WHEN kind='ryokan' THEN 1 ELSE 0 END) AS ryokan,COUNT(CASE WHEN ${eligible} THEN 1 END) AS count,COALESCE(SUM(CASE WHEN (${eligible}) AND id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END),0) AS similar,COALESCE(SUM(CASE WHEN COALESCE((${eligible}),0)=0 AND (${unknownOnly}) THEN 1 ELSE 0 END),0) AS unknown FROM hotels ${scope}`).bind(...facilityArgs,...facilityArgs,similarJson,...facilityArgs,...unknownArgs,...scopeArgs).first<Record<string,number>>();
-  clauses.push(...facilityClauses);args.push(...facilityArgs);
-  const where=clauses.length?'WHERE '+clauses.join(' AND '):'';
-  const [facets,coverage]=await Promise.all([facetsPromise,coveragePromise]);
-  const total=facets?.count??0,pageSize=40,actualPage=Math.max(1,Math.min(page,Math.max(1,Math.ceil(total/pageSize))));
-  const ratingSort=`${rating}_score DESC,${rating}_reviews DESC,id ASC`;
-  const order=sort==='name'?'name ASC,id ASC':sort==='reviews'?`${rating}_reviews DESC,${rating}_score DESC,id ASC`:sort==='rating'?ratingSort:`CASE WHEN natural=1 THEN 1 ELSE 0 END DESC,CASE WHEN trip_score>=9 AND trip_reviews>=50 THEN 1 ELSE 0 END DESC,${ratingSort}`;
-  const relevance=sort==='recommended'&&!!q;
-  const cte=relevance?"WITH query_matches AS MATERIALIZED (SELECT json_extract(value,'$.id') AS hotel_id,json_extract(value,'$.score') AS score FROM json_each(?)) ":'';
-  // Broad legacy full-text hits can join separate name words. Keep them below
-  // the shared name/place relevance so both result and prediction order agree.
-  const matchScore=relevance?',COALESCE(query_matches.score,20) AS match_score':'';
-  const join=relevance?' LEFT JOIN query_matches ON query_matches.hotel_id=hotels.id':'';
-  const ordered=options.stable?await db.prepare(`${cte}SELECT id${matchScore} FROM hotels${join} ${where} ORDER BY ${relevance?'match_score DESC,':''}${order} LIMIT 50001`).bind(...(relevance?[matchesJson]:[]),...args).all<{id:string}>():null;
-  const rows=ordered?{results:[] as {id:string;payload:string;similar_match:number}[]}:await db.prepare(`${cte}SELECT id,payload,id IN (SELECT value FROM json_each(?)) AS similar_match${matchScore} FROM hotels${join} ${where} ORDER BY ${relevance?'match_score DESC,':''}${order} LIMIT ? OFFSET ?`).bind(...(relevance?[matchesJson]:[]),similarJson,...args,pageSize,(actualPage-1)*pageSize).all<{id:string;payload:string;similar_match:number}>();
-  let alternatives:HotelAlternative[]=[];
-  if((ordered?ordered.results.length:total)===0&&(q||filters.region!=='all'||filters.features.length||filters.ryokanOnly||filters.minRating||filters.minReviews)){
-   const saved=savedOnly?new Set(savedIds):undefined;
-   const candidates=rankHotelAlternatives((await catalogueSearchIndex()).prepared,filters,saved);
-   if(candidates.length){const picked=await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(candidates.map(c=>c.id))).all<{id:string;payload:string}>();const byId=new Map(picked.results.map(row=>[row.id,enrichHotel(JSON.parse(row.payload) as Hotel)]));alternatives=candidates.flatMap(c=>{const hotel=byId.get(c.id);return hotel?[{hotel,unmetConditions:c.unmetConditions,queryMatched:c.queryMatched}]:[]})}
-  }
-  const result:SearchResponse={hotels:rows.results.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),total,unknownExcluded:facets?.unknown??0,page:actualPage,pageSize,featureCounts:Object.fromEntries(Object.keys(featureColumns).map(k=>[k,facets?.[k]??0])) as Record<FeatureKey,number>,ryokanCount:facets?.ryokan??0,coverage,similarCount:facets?.similar??0,similarHotelIds:rows.results.filter(r=>r.similar_match).map(r=>r.id),alternatives};
-  if(ordered){
-   const ids=ordered.results.map(r=>r.id),idSet=new Set(ids),allSimilar=(JSON.parse(similarJson) as string[]).filter(id=>idSet.has(id));
-   result.total=ids.length;result.page=Math.max(1,Math.min(page,Math.max(1,Math.ceil(ids.length/pageSize))));
-   const pageIds=ids.slice((result.page-1)*pageSize,result.page*pageSize);
-   result.hotels=await hotelsInOrder(pageIds);result.similarHotelIds=allSimilar.filter(id=>pageIds.includes(id));result.similarCount=allSimilar.length;
-   if(ids.length>pageSize){
-    result.snapshot=await createResultSession(queryKey,ids,{total:result.total,unknownExcluded:result.unknownExcluded,pageSize,featureCounts:result.featureCounts,ryokanCount:result.ryokanCount,coverage,similarCount:result.similarCount,similarHotelIds:allSimilar,alternatives});
-   }
-  }
-  result.hotels=await attachLifecycle(await attachSourceGroups(result.hotels));
-  if(result.alternatives?.length){const attached=await attachLifecycle(await attachSourceGroups(result.alternatives.map(a=>a.hotel)));result.alternatives=result.alternatives.map((a,i)=>({...a,hotel:attached[i]}))}
-  return result;
-}
 export const hotelRepository={
- async search(filters:HotelFilters,sort:SortOrder='recommended',page=1,savedOnly=false,savedIds:string[]=[],options:SearchOptions={}):Promise<SearchResponse>{
-  await ensureCatalog();
-  const key=JSON.stringify([{...filters,features:[...filters.features].sort()},sort,page,savedOnly,savedOnly?[...savedIds].sort():[],options]);
-  if(options.snapshot||options.fresh)return searchHotels(filters,sort,page,savedOnly,savedIds,options);
-  const cached=resultCache.get(key);if(cached&&cached.expires>Date.now())return cached.promise;
-  if(cached)resultCache.delete(key);
-  const promise=searchHotels(filters,sort,page,savedOnly,savedIds,options);
-  resultCache.set(key,{expires:Date.now()+30000,promise});
-  while(resultCache.size>24)resultCache.delete(resultCache.keys().next().value!);
-  promise.catch(()=>{if(resultCache.get(key)?.promise===promise)resultCache.delete(key)});
-  return promise;
- },
- mapArea(filters:HotelFilters,bounds:MapBounds,savedOnly=false,savedIds:string[]=[]){return mapArea(filters,bounds,savedOnly,savedIds)},
- async suggest(filters:HotelFilters,savedOnly=false,savedIds:string[]=[]):Promise<HotelSuggestion[]>{
-  await ensureCatalog();const index=await catalogueSearchIndex();
-  const saved=savedOnly?new Set(savedIds):undefined;
-  return localHotelSuggestions(index.prepared,filters.query,filters,saved);
- },
- async searchIndex():Promise<SearchIndexHotel[]>{await ensureCatalog();return(await catalogueSearchIndex()).hotels},
  async get(id:string):Promise<Hotel|null>{
   if(!validComparisonIds([id]))return null;
   return(await this.getMany([id]))[0]??null;

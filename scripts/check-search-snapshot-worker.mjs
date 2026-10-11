@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {buildSnapshot,readOnly,remoteSource,HEADERS_RULE} from './build-search-snapshot.mjs';
+import {buildSnapshot,readOnly,remoteSource,HEADERS_RULE,compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='snapshot-check-only';
@@ -51,10 +51,18 @@ try{
  assert(core.lat.some(v=>v!==null)&&core.lat.filter(v=>v!==null).length<rows.length-1,'some, not all, coordinates');
  const states=new Set(core.state);for(const s of ['closed','temporarily_closed','operating','unverified',null])assert(states.has(s),'state '+s);
 
- // Name search: the substring columns and the former index (/api/hotels/search-index).
+ // Name search: the substring columns and the former index, as the Worker built
+ // it until P03 (lib/hotel-repository.ts catalogueSearchIndex): hotels not
+ // closed, in id order, names from the stored payload then the aliases.
  const names=(await db.prepare('SELECT hotel_id,name_key FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
  rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text);assert.deepEqual(text.nameKeys[i],names.filter(n=>n.hotel_id===row.id).map(n=>n.name_key))});
- const index=(await api('/api/hotels/search-index')).hotels,open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
+ const places=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'places-')),'lib/japan-place-labels.ts'));
+ const aliasRows=(await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
+ const index=(await db.prepare("SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id").all()).results.map(r=>{
+  const n=JSON.parse(r.names),place={prefecture:r.prefecture,regionId:r.region,location:JSON.parse(r.location),names:n};
+  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...aliasRows.filter(a=>a.hotel_id===r.id).map(a=>a.name)].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
+ });
+ const open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
  assert.deepEqual(open.map(i=>core.ids[i]),index.map(h=>h.id),'index rows: every hotel not closed, in id order');
  index.forEach((h,n)=>{const i=open[n];assert.deepEqual([text.names[i],text.location[i],text.context[i],core.region[i],core.prefecture[i],core.kind[i],core.features[i]??0,core.known[i]??0,core.tripScore[i],core.tripReviews[i],core.jalanScore[i],core.jalanReviews[i]],[h.names,h.location,h.context,h.region,h.prefecture,h.kind,h.features,h.knownFeatures,h.tripScore,h.tripReviews,h.jalanScore,h.jalanReviews],h.id)});
  core.ids.forEach((id,i)=>{if(text.names[i]===null){assert(['closed','temporarily_closed'].includes(core.state[i]),id);assert.equal(text.location[i],null);assert.equal(text.context[i],null)}});
@@ -74,7 +82,8 @@ try{
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
 
  // Coverage as the list showed it; collection status as its API returned it.
- assert.deepEqual(manifest.coverage,(await api('/api/hotels?page=1')).coverage);
+ // The collector's end-of-run read counts the same aggregate.
+ assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
  const live=await api('/api/collection-status');
  assert.deepEqual({...status,measuredAt:undefined},{...live,measuredAt:undefined});
  assert.equal(status.measuredAt,'2026-10-12T00:00:00.000Z','status describes the build time');

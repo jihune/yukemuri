@@ -23,5 +23,5 @@ export async function DELETE(request:Request){
  await hotelRepository.ready();const groups=await sourceGroupsFor([id]),group=groups.find(g=>g.hotel_id===id);if(!group)return Response.json({error:'Unknown source group'},{status:404});
  await favoritesDb().prepare('DELETE FROM hotel_source_groups WHERE hotel_id=?').bind(id).run();
  await refreshSourceGroupIndexes([id,group.trip_hotel_id,group.jalan_hotel_id].filter(Boolean) as string[],true);
- await favoritesDb().prepare('DELETE FROM hotel_result_sessions').run();invalidateSearch();return Response.json({removed:true});
+ invalidateSearch();return Response.json({removed:true});
 }

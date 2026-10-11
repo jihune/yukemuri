@@ -1,11 +1,12 @@
 'use client';
 import {Heart,MapPin,ShieldCheck,Waves,ArrowLeftRight} from 'lucide-react';
-import {FEATURE_LABELS,type Hotel,type FeatureKey,type RatingProvider} from '@/lib/hotel-types';
+import {FEATURE_LABELS,type FeatureKey,type RatingProvider} from '@/lib/hotel-types';
+import type {HotelSummary} from '@/lib/search-snapshot';
 import {hotelFeature} from '@/lib/hotel-bath-facts';
 import {providerRating,displayRating,meetsVerifiedCriteria} from '@/lib/hotel-ratings';
 import HotelLifecycleNote from './hotel-lifecycle-note';
 import HotelPhoto from './hotel-photo';
-export default function HotelCard({hotel:h,active,saved,pending,canSave,provider,onActive,onDetail,onFavorite,onMap,similar,unmetConditions,compared,onCompare}:{hotel:Hotel;active:boolean;saved:boolean;pending:boolean;canSave:boolean;provider:RatingProvider;onActive:(id:string|null)=>void;onDetail:(id:string)=>void;onFavorite:(id:string)=>void;onMap:(h:Hotel)=>void;similar?:boolean;unmetConditions?:string[];compared?:boolean;onCompare?:(id:string)=>void}){
+export default function HotelCard({hotel:h,active,saved,pending,canSave,provider,onActive,onDetail,onFavorite,onMap,similar,unmetConditions,compared,onCompare}:{hotel:HotelSummary;active:boolean;saved:boolean;pending:boolean;canSave:boolean;provider:RatingProvider;onActive:(id:string|null)=>void;onDetail:(id:string)=>void;onFavorite:(id:string)=>void;onMap:(h:HotelSummary)=>void;similar?:boolean;unmetConditions?:string[];compared?:boolean;onCompare?:(id:string)=>void}){
  const r=providerRating(h,provider)??displayRating(h),natural=hotelFeature(h,'natural');
  const available=(key:FeatureKey)=>hotelFeature(h,key).value===true;
  const tags=(Object.keys(FEATURE_LABELS) as FeatureKey[]).filter(key=>key!=='jalanHighClass'&&available(key)&&!(key==='outdoor'&&(available('communalOutdoor')||available('privateOutdoor')))&&!(key==='privateBath'&&available('privateOutdoor'))&&!(key==='roomOutdoor'&&available('roomOutdoorOnsen'))&&!(key==='roomOnsen'&&(available('roomIndoorOnsen')||available('roomOutdoorOnsen'))));
