@@ -98,6 +98,22 @@ async function run(page,context,touch){
  await adults.focus();await page.keyboard.press('Enter');await page.waitForTimeout(300);await page.keyboard.press('Escape');await page.waitForTimeout(400);
  check('인원 목록에서 Escape는 목록만 닫고 상세는 열린 채 인원 칸에 포커스',await page.getByRole('listbox').count()===0&&await detail.count()===1&&await focused()==='성인 인원',{focus:await focused()});
 
+ // List -> detail -> dates -> close -> another stay: closing goes back to the list's history
+ // entry, and the conditions must survive that and reach the next stay's links.
+ await page.goto(base+'/?q='+encodeURIComponent('노보리베츠'),{waitUntil:'networkidle'});
+ const openFromList=async name=>{const b=page.getByRole('button',{name:name+' 상세 보기'}).first();await b.scrollIntoViewIfNeeded();await press(b);await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400)};
+ await openFromList('다이이치 타키모토칸');
+ await checkIn.fill(IN);await checkOut.fill(OUT);await page.waitForTimeout(200);
+ await page.keyboard.press('Escape');await page.waitForTimeout(800);
+ const listUrl=new URL(page.url());
+ await openFromList('노보리베츠 온천향 타키노야');
+ const nextIn=page.locator('#detail-takinoya-in'),nextLinks=await links();
+ check('목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감',listUrl.searchParams.get('checkIn')===IN&&await nextIn.inputValue()===IN&&params(nextLinks['Jalan'].href).stayCount==='2'&&params(nextLinks['Trip.com'].href).checkIn===IN,{listUrl:listUrl.toString(),in:await nextIn.inputValue(),jalan:nextLinks['Jalan'].href,trip:nextLinks['Trip.com'].href});
+ // A Trip.com property link stored on the Korean host takes the same conditions.
+ await page.goto(base+'/?checkIn='+IN+'&checkOut='+OUT+'&adults=2#stay/toya-manseikaku',{waitUntil:'networkidle'});await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400);
+ const kr=(await links())['Trip.com'].href;
+ check('kr.trip.com 숙소 링크에도 날짜·인원이 들어감',kr.startsWith('https://kr.trip.com/hotels/toyako-hotel-detail-993419/')&&params(kr).checkIn===IN&&params(kr).checkOut===OUT&&params(kr).adult==='2',{kr});
+
  // D03: an untranslated description says there is no translation and none is scheduled.
  await page.goto(base+'/#stay/jalan-300001',{waitUntil:'networkidle'});await detail.locator('.description-caption').waitFor({timeout:15000});
  const caption=await detail.locator('.description-caption').innerText();
@@ -108,7 +124,7 @@ const chromiumVersion=browser.version();
 for(const [w,touch] of [[360,true],[390,true],[1280,false]]){
  width=w;
  const context=await browser.newContext(touch?{viewport:{width:w,height:780},isMobile:true,hasTouch:true,deviceScaleFactor:2,locale:'ko-KR',timezoneId:'Asia/Seoul'}:{viewport:{width:w,height:800},locale:'ko-KR',timezoneId:'Asia/Seoul'});
- await context.route('**/*',route=>{const host=new URL(route.request().url()).hostname;if(['127.0.0.1','localhost'].includes(host))return route.continue();if(['www.jalan.net','www.trip.com'].includes(host)&&route.request().resourceType()==='document')return route.fulfill({status:200,contentType:'text/html',body:'<title>stub</title>'});return route.abort()});
+ await context.route('**/*',route=>{const host=new URL(route.request().url()).hostname;if(['127.0.0.1','localhost'].includes(host))return route.continue();if(['www.jalan.net','www.trip.com','kr.trip.com'].includes(host)&&route.request().resourceType()==='document')return route.fulfill({status:200,contentType:'text/html',body:'<title>stub</title>'});return route.abort()});
  const page=await context.newPage();
  try{await run(page,context,touch)}catch(error){check('검사 중단',false,{error:String(error).slice(0,500)})}
  await context.close();

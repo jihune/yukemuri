@@ -33,6 +33,15 @@ try{
  const tripUrl=new URL(datedLink(trip,q,today));
  assert.equal(tripUrl.origin+tripUrl.pathname,trip.url);
  assert.deepEqual(Object.fromEntries(tripUrl.searchParams),{checkIn:'2026-11-10',checkOut:'2026-11-12',adult:'3',crn:'1',currency:'JPY'});
+ // Every Jalan and Trip.com property link in the checked-in catalogues takes the conditions,
+ // including the Trip.com links stored on kr.trip.com.
+ let catalogue=0;const hosts=new Set();
+ for(const file of ['lib/hotels.real.json','lib/hotels.verified.json','lib/hotels.crawled.json'])for(const h of JSON.parse(readFileSync(file,'utf8')))for(const link of h.links){
+  if(!['jalan','trip'].includes(link.provider)||link.kind!=='property'||!link.url)continue;
+  const dated=new URL(datedLink(link,q,today));catalogue++;hosts.add(dated.hostname);
+  assert(link.provider==='jalan'?dated.searchParams.get('stayCount')==='2'&&dated.searchParams.get('adultNum')==='3':dated.searchParams.get('checkIn')===q.checkIn&&dated.searchParams.get('adult')==='3',h.id+' '+link.url);
+ }
+ assert(hosts.has('kr.trip.com')&&hosts.has('www.trip.com')&&hosts.has('www.jalan.net'),[...hosts].join());
  // 3. Providers without a checked format never get dates.
  assert.equal(datedLink(official,q,today),official.url);assert.equal(datedLink(maps,q,today),maps.url);
  // 4. Missing or invalid input: the link opens without dates.
@@ -46,5 +55,5 @@ try{
  assert.deepEqual(parseBookingQuery(new URLSearchParams('checkIn=2026-11-10&checkOut=2026-11-12&adults=3')),q);
  assert.deepEqual(parseBookingQuery(new URLSearchParams('adults=9')),{checkIn:'',checkOut:'',adults:2});
  assert.deepEqual(parseBookingQuery(new URLSearchParams('')),{checkIn:'',checkOut:'',adults:2});
- console.log(`Booking link checks passed: ${fixtures.length} Jalan pages echo the dated conditions, Trip.com format, ${bad.length} bad inputs and 7 unsupported links open unchanged, official/maps never dated.`);
+ console.log(`Booking link checks passed: ${fixtures.length} Jalan pages echo the dated conditions, Trip.com format, ${catalogue} catalogue property links dated (${[...hosts].sort().join(', ')}), ${bad.length} bad inputs and 7 unsupported links open unchanged, official/maps never dated.`);
 }finally{rmSync(dir,{recursive:true,force:true})}

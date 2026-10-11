@@ -27,6 +27,8 @@ export function jalanPlanUrl(property:string,q:BookingQuery){
  url.search=new URLSearchParams({stayYear:year,stayMonth:String(Number(month)),stayDay:String(Number(day)),stayCount:String(nights(q)),adultNum:String(q.adults),roomCount:'1',roomCrack:q.adults+'00000',dateUndecided:'0'}).toString();
  return url.toString();
 }
+// Trip.com hosts the checked-in catalogue stores property links on.
+const TRIP_HOSTS=['www.trip.com','kr.trip.com'];
 // Only Jalan and Trip.com property pages take dates. Anything else, or a link
 // whose address is not the expected property page, opens unchanged.
 export function datedLink(link:ExternalLink,q:BookingQuery,today=japanToday()):string|null{
@@ -34,7 +36,7 @@ export function datedLink(link:ExternalLink,q:BookingQuery,today=japanToday()):s
  try{
   if(link.provider==='jalan')return jalanPlanUrl(link.url,q);
   if(link.provider==='trip'){
-   const url=new URL(link.url);if(url.protocol!=='https:'||url.hostname!=='www.trip.com')return link.url;
+   const url=new URL(link.url);if(url.protocol!=='https:'||!TRIP_HOSTS.includes(url.hostname))return link.url;
    for(const [key,value] of Object.entries({checkIn:q.checkIn,checkOut:q.checkOut,adult:String(q.adults),crn:'1',currency:'JPY'}))url.searchParams.set(key,value);
    return url.toString();
   }

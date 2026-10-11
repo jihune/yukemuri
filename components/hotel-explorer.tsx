@@ -27,6 +27,7 @@ import {useMapArea} from './use-map-area';
 import {openStayHistory,closeStayHistory,restoreListingPosition,type ListingPosition} from '@/lib/stay-detail-navigation';
 import { type SearchIndexHotel } from '@/lib/hotel-search-index';
 import {useHotelSearchIndex} from './use-hotel-search-index';
+function writeBookingUrl(q:BookingQuery){const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
 function Picker({value,onChange,options,label}:{value:string;onChange:(v:string)=>void;options:{value:string;label:string}[];label:string}){
  return <Select value={value} onValueChange={onChange}><SelectTrigger className="picker" aria-label={label}><SelectValue/></SelectTrigger><SelectContent position="popper">{options.map(o=><SelectItem value={o.value} key={o.value}>{o.label}</SelectItem>)}</SelectContent></Select>
 }
@@ -45,6 +46,7 @@ function Filters({filters,setFilters,counts,ryokanCount}:{filters:HotelFilters;s
 export default function HotelExplorer({initial,initialSearchIndex,initialQuery,initialView}:{initial:SearchResponse;initialSearchIndex:SearchIndexHotel[];initialQuery:HotelQuery;initialView:string}){
  const {prepared:preparedIndex,ready:indexReady,failed:indexFailed}=useHotelSearchIndex(initialSearchIndex);
  const [booking,setBooking]=useState<BookingQuery>(DEFAULT_BOOKING);
+ const bookingRef=useRef<BookingQuery>(DEFAULT_BOOKING);
  const [filters,setFilterState]=useState<HotelFilters>(initialQuery.filters),[draft,setDraft]=useState(initialQuery.filters.query),[sort,setSort]=useState<SortOrder>(initialQuery.sort);
  const [retry,setRetry]=useState(0);
  const [dismissSuggestions,setDismissSuggestions]=useState(0);
@@ -134,9 +136,11 @@ export default function HotelExplorer({initial,initialSearchIndex,initialQuery,i
    const params=new URLSearchParams(window.location.search),query=parseHotelQuery(params);
    if(query){setFilterState(query.filters);setDraft(query.filters.query);setSort(query.sort);setSavedOnly(query.savedOnly)}
    const view=params.get('view');if(view&&['split','list','map'].includes(view))setMode(view);
-   setBooking(parseBookingQuery(params));
+   // Closing a stay goes back to the list entry written before the dates were
+   // chosen; keep the chosen conditions and put them back into that entry.
+   writeBookingUrl(bookingRef.current);
   };
-  setBooking(parseBookingQuery(new URLSearchParams(window.location.search)));
+  const initial=parseBookingQuery(new URLSearchParams(window.location.search));bookingRef.current=initial;setBooking(initial);
   window.addEventListener('popstate',restore);return()=>window.removeEventListener('popstate',restore);
  },[]);
  useEffect(()=>{
@@ -145,7 +149,7 @@ export default function HotelExplorer({initial,initialSearchIndex,initialQuery,i
  },[filters,sort,savedOnly,mode]);
  // Booking dates live in the page URL (listingUrl keeps them) so a shared or
  // reloaded page opens the same dated booking links.
- function onBooking(q:BookingQuery){setBooking(q);const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
+ function onBooking(q:BookingQuery){bookingRef.current=q;setBooking(q);writeBookingUrl(q)}
  function refreshResults(){setRetry(r=>r+1);document.querySelector('.results-section')?.scrollIntoView({behavior:'instant',block:'start'})}
  useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(''),3500);return()=>clearTimeout(t)}},[toast]);
  // Optional browser-agent interface; no dependency on WebMCP for normal use.
