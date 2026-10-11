@@ -47,7 +47,7 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
  },[open,key,revision]);
  const byId=new Map(data?.hotels.map(hotel=>[hotel.id,hotel])??[]);
  const cells=(render:(hotel:Hotel)=>ReactNode)=>ids.map(id=><TableCell key={id}>{byId.has(id)?render(byId.get(id)!):<span className="comparison-unknown">기록 없음</span>}</TableCell>);
-// Rows in table order. value is the compared value; rows without one are reference rows.
+ // Rows in table order. value is the compared value; rows without one are reference rows.
  const rows:{key:string;head:ReactNode;render:(hotel:Hotel)=>ReactNode;value?:(hotel:Hotel)=>ComparisonValue}[]=[
   {key:'trip',head:'Trip.com · 10점',render:hotel=><Rating hotel={hotel} provider="trip"/>,value:hotel=>{const r=providerRating(hotel,'trip');return r?[r.score.toFixed(1)]:null}},
   {key:'maps',head:'Google Maps · 5점',render:hotel=>hotel.links.some(link=>link.provider==='maps'&&link.url)?<GooglePlaceRating hotel={hotel} data={null}/>:<span className="comparison-unknown">지도 연결 확인 필요</span>},
