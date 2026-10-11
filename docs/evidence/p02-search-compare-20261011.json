@@ -1,7 +1,7 @@
 {
- "comparedAt": "2026-10-11T14:25:20.032Z",
- "oldDist": "/tmp/claude-0/-home-user-yukemuri/709f1a30-1d77-5332-9775-02d695a28ee4/scratchpad/dist-main",
- "newDist": "dist",
+ "comparedAt": "2026-10-11T14:36:06.865Z",
+ "oldDist": "main 274f687 build (copied dist)",
+ "newDist": "720a2f2 build (dist)",
  "tables": {
   "hotels": 12271,
   "hotel_names": 14748,
