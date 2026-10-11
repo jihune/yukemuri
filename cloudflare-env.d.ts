@@ -3,6 +3,7 @@ declare namespace Cloudflare {
     DB?: D1Database;
     BUCKET?: R2Bucket;
     CRAWL_ACCESS_KEY?: string;
+    API_RATE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
     GOOGLE_PLACES_API_KEY?: string;
     GOOGLE_PLACES_ENABLED?: string;
     GOOGLE_PLACES_DAILY_REQUEST_LIMIT?: string;

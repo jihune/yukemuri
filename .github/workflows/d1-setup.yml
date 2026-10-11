@@ -1,0 +1,43 @@
+name: Cloudflare D1 setup
+# Stage 3, manual only: find or create the yukemuri D1 database (APAC hint),
+# print its database_id and apply drizzle migrations. Never deploys the Worker.
+# Record the printed id in cloudflare-deploy.json with a PR (docs/cloudflare-deploy.md).
+on:
+  workflow_dispatch:
+concurrency:
+  group: cloudflare-account
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  d1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: bash scripts/cloud-setup.sh
+      - run: node scripts/run-framework.mjs build
+      - id: d1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/cloudflare-d1-setup.mjs | tee -a "$GITHUB_OUTPUT"
+      - env:
+          DATABASE_ID: ${{ steps.d1.outputs.database_id }}
+          CREATED: ${{ steps.d1.outputs.created }}
+        run: |
+          echo "D1 \`yukemuri\` database_id: \`$DATABASE_ID\` (created in this run: $CREATED)" >> "$GITHUB_STEP_SUMMARY"
+      # Rebuild so dist/server/wrangler.json carries the real database_id.
+      - run: node scripts/run-framework.mjs build
+      - env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node node_modules/wrangler/bin/wrangler.js d1 migrations apply yukemuri --remote --config dist/server/wrangler.json
+          node node_modules/wrangler/bin/wrangler.js d1 migrations list yukemuri --remote --config dist/server/wrangler.json | tee -a "$GITHUB_STEP_SUMMARY"
