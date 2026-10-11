@@ -7,7 +7,7 @@
 | 2026-10-10 | `87372d64cf79eb452d9d8326791ff62c600aeeb9` (`claude/u02-search-gaps`) | 없음 | 없음 | U02 1차 검사 완료. main 병합(`f1c6982`)·Sites 미게시 |
 | 2026-10-11 | `d46fd8ba0fc9e2e2ab8e0b9a0f8f2783edf3404f` (`claude/u02-followups`) | 없음 | 없음 | U02 1차 후속 검사·검토 완료. main 병합(`1360856`)·Sites 미게시 |
 | 2026-10-11 | `6d2f133d4bfab761f1fdaf3bde7887e0a40cae00` (`claude/u02-map-bounds`) | 없음 | 없음 | U02 2차 지도 범위 검색 1단계 검사·검토 완료. Worker API 추가. main 병합(`30a73bf`)·Sites 미게시 |
-| 2026-10-11 | `f6dbef58d36b24b4887719672c6a5df2f49d580e` (`claude/u02-map-keyboard`) | 없음 | 없음 | U02 지도 지점 키보드 접근성 검사 완료. 검토·병합 전·Sites 미게시 |
+| 2026-10-11 | `ff4d6f202f39ec315d9848a9a94a01c12e8c4381` (`claude/u02-map-keyboard`) | 없음 | 없음 | U02 지도 지점 키보드 접근성 검사 완료. 검토·병합 전·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.

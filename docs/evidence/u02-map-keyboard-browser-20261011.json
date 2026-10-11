@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T03:22:02.025Z",
+ "measuredAt": "2026-10-11T03:42:56.942Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
@@ -46,7 +46,7 @@
      "opened": true,
      "onClose": true,
      "back": true,
-     "scrolled": 5904,
+     "scrolled": 5906,
      "focus": {
       "ids": [
        "jalan-300001"
@@ -57,6 +57,24 @@
       "card": true,
       "inside": true
      }
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "미리보기를 연 지점이 지도 밖으로 나간 뒤 닫으면 포커스는 그 지점이 아니라 지도로 감",
+   "pass": true,
+   "detail": {
+    "away": {
+     "again": true,
+     "gone": true,
+     "preview": 0,
+     "focus": {
+      "tag": "DIV",
+      "label": "숙소 위치 지도",
+      "text": "6곳8곳2곳2곳8.93곳4.54.74곳3곳2곳8.98.9 Leaflet "
+     },
+     "onMap": true
     }
    }
   },
