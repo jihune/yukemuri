@@ -1,0 +1,133 @@
+{
+ "measuredAt": "2026-10-11T22:00:54.575Z",
+ "node": "v24.21.0",
+ "tables": {
+  "hotels": 12271,
+  "crawl_jobs": 15417,
+  "visitor_favorites": 1
+ },
+ "limitMs": 5,
+ "results": [
+  {
+   "key": "detail",
+   "label": "상세",
+   "method": "GET",
+   "path": "/api/hotels/akan-tsuruga",
+   "status": 200,
+   "coldMs": 3.61,
+   "warmMs": 0.438,
+   "warmP95Ms": 1.116,
+   "coldDbMs": 1.85,
+   "coldMaxMs": 5.7
+  },
+  {
+   "key": "detailMissing",
+   "label": "상세(없는 숙소)",
+   "method": "GET",
+   "path": "/api/hotels/no-such-hotel",
+   "status": 404,
+   "coldMs": 1.09,
+   "warmMs": 0.075,
+   "warmP95Ms": 0.238,
+   "coldDbMs": 1.52,
+   "coldMaxMs": 1.45
+  },
+  {
+   "key": "compare4",
+   "label": "비교 4곳",
+   "method": "GET",
+   "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu,chalet-ivy-jozankei",
+   "status": 200,
+   "coldMs": 5.23,
+   "warmMs": 1,
+   "warmP95Ms": 2.122,
+   "coldDbMs": 2.24,
+   "coldMaxMs": 6.69
+  },
+  {
+   "key": "favoritesGet",
+   "label": "즐겨찾기 목록",
+   "method": "GET",
+   "path": "/api/favorites",
+   "status": 200,
+   "coldMs": 1.3,
+   "warmMs": 0.223,
+   "warmP95Ms": 0.576,
+   "coldDbMs": 1.75,
+   "coldMaxMs": 2.1
+  },
+  {
+   "key": "favoritesPut",
+   "label": "즐겨찾기 저장",
+   "method": "PUT",
+   "path": "/api/favorites",
+   "status": 200,
+   "coldMs": 1.21,
+   "warmMs": 0.204,
+   "warmP95Ms": 1.064,
+   "coldDbMs": 1.41,
+   "coldMaxMs": 1.5
+  },
+  {
+   "key": "photoCredits",
+   "label": "사진 출처 첫 쪽",
+   "method": "GET",
+   "path": "/api/photo-credits",
+   "status": 200,
+   "coldMs": 2.4,
+   "warmMs": 1.206,
+   "warmP95Ms": 2.178,
+   "coldDbMs": 2.75,
+   "coldMaxMs": 2.55
+  },
+  {
+   "key": "photoCreditsNext",
+   "label": "사진 출처 다음 쪽",
+   "method": "GET",
+   "path": "/api/photo-credits?after=…",
+   "status": 200,
+   "coldMs": 2.47,
+   "warmMs": 1.126,
+   "warmP95Ms": 2.028,
+   "coldDbMs": 2.76,
+   "coldMaxMs": 4.14
+  },
+  {
+   "key": "google",
+   "label": "Google 평점(설정 없음)",
+   "method": "GET",
+   "path": "/api/hotels/akan-tsuruga/google",
+   "status": 200,
+   "coldMs": 0.45,
+   "warmMs": 0.046,
+   "warmP95Ms": 0.691,
+   "coldDbMs": 0,
+   "coldMaxMs": 0.63
+  },
+  {
+   "key": "prices",
+   "label": "요금(폐지)",
+   "method": "GET",
+   "path": "/api/prices",
+   "status": 410,
+   "coldMs": 0.3,
+   "warmMs": 0.051,
+   "warmP95Ms": 1.127,
+   "coldDbMs": 0,
+   "coldMaxMs": 0.66
+  },
+  {
+   "key": "collectionStatus",
+   "label": "수집 현황(키 없음)",
+   "method": "GET",
+   "path": "/api/collection-status",
+   "status": 403,
+   "coldMs": 0.51,
+   "warmMs": 0.044,
+   "warmP95Ms": 0.766,
+   "coldDbMs": 0,
+   "coldMaxMs": 0.89
+  }
+ ],
+ "note": "JavaScript CPU (user+system) of the route handler in Node, minus CPU spent inside the node:sqlite D1 stand-in. cold = median (and max) of 9 first requests in new processes; warm = median (and p95) of 200 requests after 200 warm-up requests. Isolate start, script parse and workerd overhead are not included."
+}
