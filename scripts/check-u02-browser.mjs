@@ -112,6 +112,15 @@ async function run(page){
  check('스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼',(await error.innerText()).includes('새 버전')&&await error.getByRole('button',{name:'페이지 다시 열기'}).isVisible()&&await page.locator('.hotel-list .card-title').count()===0,{text:await error.innerText()});
  await page.unroute(manifestFile);
 
+ // A deploy replaced the version the page knows: its files answer 404 once, the
+ // page reads the manifest again and shows the list from it.
+ let gone404=0,manifestReads=0;const countRead=request=>{if(manifestFile(new URL(request.url())))manifestReads++};page.on('request',countRead);
+ await page.route(snapshotFiles,async route=>{if(gone404<2&&/\/(core|cards)\.json$/.test(route.request().url())){gone404++;return route.fulfill({status:404,contentType:'text/plain',body:'gone'})}await route.continue()});
+ await page.goto(base+'/?rating=8',{waitUntil:'networkidle'});
+ await page.locator('.hotel-list .card-title').first().waitFor({timeout:15000}).catch(()=>{});
+ check('옛 버전 파일이 404면 manifest를 다시 받아 목록을 보임',gone404===2&&manifestReads===1&&await page.locator('.hotel-list .card-title').count()>0&&await page.locator('.error-banner').count()===0,{gone404,manifestReads});
+ page.off('request',countRead);await page.unroute(snapshotFiles);
+
  // A hotel the snapshot still lists but the detail API no longer has: the sheet
  // closes with the API message and the page reads the manifest again.
  await page.goto(base+'/',{waitUntil:'networkidle'});
