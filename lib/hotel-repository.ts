@@ -98,7 +98,7 @@ async function searchScope(filters:HotelFilters,savedOnly:boolean,savedIds:strin
  if(q){const named=await nameMatches(filters.query,filters.region);scope.matches=named.matches;scope.indexKey=named.key;scope.found=new Set([...substringMatches(q,snapshot),...scope.matches.map(m=>m.id)])}
  return scope;
 }
-let orders:{generation:number;idRank:Int32Array|null;lists:Map<string,SnapshotRow[]>}|null=null;
+let orders:{generation:number;idRank:Int32Array|null;lists:Map<string,SnapshotRow[]>}|null=null,idRanks:{plain:boolean;rank:Map<string,number>}|null=null;
 // The former ORDER BY of each sort, on positions in snapshot.rows: numeric keys
 // in typed arrays (NULL as -Infinity, so DESC puts it last) and the id order
 // as a rank, computed once per generation.
@@ -107,11 +107,19 @@ function sortedRows(snapshot:Awaited<ReturnType<typeof searchSnapshot>>,sort:Sor
  const key=sort+':'+provider,cached=orders.lists.get(key);if(cached)return cached;
  const rows=snapshot.rows,n=rows.length;
  if(!orders.idRank){
-  // Native string order is SQLite's when no id holds a surrogate pair.
-  const ids=rows.map(r=>r.id),rank=new Map<string,number>(),idRank=new Int32Array(n);
-  if(rows.every(r=>r.plain))ids.sort();else ids.sort(compareText);
-  for(let i=0;i<n;i++)rank.set(ids[i],i);
-  for(let i=0;i<n;i++)idRank[i]=rank.get(rows[i].id)!;
+  // The id ranks of the previous generation still hold when the ids are the
+  // same (a write to existing hotels); else sort again. Native string order is
+  // SQLite's when no id holds a surrogate pair.
+  const plain=rows.every(r=>r.plain),idRank=new Int32Array(n);
+  let rank=idRanks?.plain===plain&&idRanks.rank.size===n?idRanks.rank:null;
+  if(rank)for(let i=0;i<n;i++){const v=rank.get(rows[i].id);if(v===undefined){rank=null;break}idRank[i]=v}
+  if(!rank){
+   const ids=rows.map(r=>r.id);rank=new Map();
+   if(plain)ids.sort();else ids.sort(compareText);
+   for(let i=0;i<n;i++)rank.set(ids[i],i);
+   for(let i=0;i<n;i++)idRank[i]=rank.get(rows[i].id)!;
+   idRanks={plain,rank};
+  }
   orders.idRank=idRank;
  }
  const idRank=orders.idRank,numbers=(k:number)=>{const a=new Float64Array(n);for(let i=0;i<n;i++){const v=rows[i].core[k] as number|null;a[i]=v===null?-Infinity:v}return a};
