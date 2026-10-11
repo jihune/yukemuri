@@ -9,12 +9,16 @@ const managedLinux = readExecutionProfile() === "managed-linux";
 // Regenerate from checked-in sources on every build. No secrets or DB exports.
 if (command === "build") await import("./build-collector-release.mjs");
 
-if (managedLinux && command === "build") {
-  const result = spawnSync("bash", [
-    fileURLToPath(new URL("./build-verified.sh", import.meta.url)), ...args,
-  ], { stdio: "inherit" });
+// A build ends with the static home page (scripts/build-static-page.mjs).
+if (command === "build") {
+  const result = managedLinux
+    ? spawnSync("bash", [fileURLToPath(new URL("./build-verified.sh", import.meta.url)), ...args], { stdio: "inherit" })
+    : spawnSync(process.execPath, [fileURLToPath(new URL("../node_modules/vinext/dist/cli.js", import.meta.url)), "build", ...args], { stdio: "inherit" });
   if (result.error) throw result.error;
-  process.exit(result.status ?? 1);
+  if (result.status) process.exit(result.status);
+  const { renderStaticPage } = await import("./build-static-page.mjs");
+  console.log(`Static page: dist/client/index.html (${((await renderStaticPage()) / 1024).toFixed(1)}KiB)`);
+  process.exit(0);
 }
 
 // Import in this process so the preview owner retains its PID and signals.

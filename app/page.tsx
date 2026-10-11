@@ -1,16 +1,17 @@
+import {env} from 'cloudflare:workers';
+import {preload} from 'react-dom';
 import HotelExplorer from '@/components/hotel-explorer';
-import Link from 'next/link';
-import {hotelRepository,type SearchResponse} from '@/lib/hotel-repository';
-import {parseHotelQuery,defaultHotelQuery} from '@/lib/hotel-query';
-import {searchIndexHotel} from '@/lib/hotel-search-index';
-export default async function Home({searchParams}: {searchParams?:Promise<Record<string,string|string[]|undefined>>}){
- const values=await searchParams??{},params=new URLSearchParams();
- for(const [key,value] of Object.entries(values))if(value!==undefined)params.set(key,Array.isArray(value)?value[0]:value);
- const initialQuery=parseHotelQuery(params)??defaultHotelQuery(),view=params.get('view')??'split';
- const initialView=['split','list','map'].includes(view)?view:'split';
- let initial:SearchResponse|null=null;
- try{initial=await hotelRepository.search(initialQuery.filters,initialQuery.sort,1,initialQuery.savedOnly,[],{stable:true})}
- catch(error){console.error('Catalog unavailable',error)}
- if(!initial)return <main className="catalog-unavailable"><h1>숙소 목록을 불러오지 못했습니다.</h1><p>잠시 후 새로고침해 주세요. 즐겨찾기는 보관되어 있습니다.</p><Link href="/">다시 시도</Link></main>;
- return <HotelExplorer initialQuery={initialQuery} initialView={initialView} initial={initial} initialSearchIndex={initial.hotels.map(searchIndexHotel)}/>;
+import type {FirstPage} from '@/lib/static-search';
+// The same HTML for every visitor: it is built once into a static asset
+// (scripts/build-static-page.mjs), so opening the site never calls the Worker.
+// The explorer reads the conditions from the address and the results from the
+// static search snapshot. The snapshot step renders the page again with the
+// default view's first page (FIRST_PAGE, a build-time binding only), so the
+// list is in the HTML before any script or snapshot file arrives, and the
+// page asks for that snapshot's list files while its scripts still load.
+export default function Home(){
+ const raw=(env as {FIRST_PAGE?:string}).FIRST_PAGE,firstPage=raw?JSON.parse(raw) as FirstPage:null;
+ // Same request as lib/snapshot-client.ts (same-origin credentials), so the fetch reuses it.
+ if(firstPage)for(const name of ['core','cards'])preload(`/snapshot/v/${firstPage.snapshot}/${name}.json`,{as:'fetch',crossOrigin:'anonymous',fetchPriority:'low'});
+ return <HotelExplorer firstPage={firstPage}/>;
 }

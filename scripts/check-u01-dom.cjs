@@ -30,8 +30,6 @@ function load(file){
 }
 const blank={__esModule:true,default:()=>null};
 for(const name of ['./stay-map','./retry-image','./hotel-photo','./hotel-lifecycle-note','./google-place-rating','./hotel-description','./hotel-autocomplete'])stubs.set(name,blank);
-stubs.set('./use-hotel-search-index',{useHotelSearchIndex:()=>({prepared:[],ready:true,failed:false})});
-stubs.set('./use-hotel-results',{useHotelResults:initial=>({response:initial,loading:false,loadingMore:false,searchError:'',moreError:'',hasMore:false,loadMore(){}})});
 const hotels=JSON.parse(fs.readFileSync('lib/hotels.real.json','utf8')).slice(0,4);
 let statusMode='success',held=[],comparisonMode='success',calls=[];
 const status={measuredAt:'2026-10-08T17:00:00Z',quality:{records:4,detailRecords:4,bathKnownRecords:2,naturalOnsenRecords:1,roomOnsenRecords:0},providers:['jalan','trip'].map(provider=>({provider,lastSuccessAt:null,completedDetailPages:0,pendingPages:0,retryPages:0,failedPages:0,activePages:0,waitingUntil:null,issues:[]})),google:{connected:false,mode:'on_demand'}};
@@ -50,11 +48,14 @@ stubs.set('@/lib/api-client',{apiJson:async(url,options={})=>{
  else throw new Error('Unexpected test request '+url);
  return value;
 }});
+// The list hooks return the fixed page below (the snapshot is not loaded here).
+stubs.set('./use-search-snapshot',{useSearchSnapshot:()=>({snapshot:{manifest:{coverage:initial.coverage},position:new Map(),cards:[]},loading:false,error:null,textReady:false,textError:null,wantText(){},refresh(){}})});
+stubs.set('./use-hotel-results',{useHotelResults:()=>({response:initial,loading:false,searchError:'',reopenSearch:false,hasMore:false,loadMore(){}})});
 const Explorer=load('components/hotel-explorer.tsx').default,{DEFAULT_FILTERS}=load('lib/hotel-types.ts');
 const initial={hotels,total:4,page:1,pageSize:24,featureCounts:{},ryokanCount:4,alternatives:[],coverage:{prefectures:1,records:4,discoveredDetailUrls:4,completedDetailPages:4,pending:0,failed:0,updatedAt:status.measuredAt}};
 const root=createRoot(document.getElementById('root'));
 const wait=()=>new Promise(resolve=>setTimeout(resolve,30));
-async function render(){await act(async()=>{root.render(React.createElement(Explorer,{initial,initialSearchIndex:[],initialQuery:{filters:DEFAULT_FILTERS,sort:'recommended',savedOnly:false},initialView:'list'}));await wait()})}
+async function render(){await act(async()=>{root.render(React.createElement(Explorer));await wait()})}
 async function click(element){assert(element,'Expected control');await act(async()=>{element.focus();element.click()});await act(async()=>{await wait()})}
 async function key(element,key,shift=false){await act(async()=>{element.dispatchEvent(new KeyboardEvent('keydown',{key,shiftKey:shift,bubbles:true}))});await act(async()=>{await wait()})}
 function button(label){return [...document.querySelectorAll('button')].find(el=>el.getAttribute('aria-label')===label)}

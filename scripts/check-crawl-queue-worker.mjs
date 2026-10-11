@@ -18,7 +18,7 @@ try{
   const r=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json',...(authorized?{'X-Yukemuri-Crawl-Key':'queue-test-only'}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await r.json();assert.equal(r.status,expected,JSON.stringify(body));return body;
  };
- await api('/api/hotels');
+ await api('/api/crawl-prepare','POST');
  await db.prepare('DELETE FROM crawl_jobs').run();
  const fixtures=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8'));
  const fixture=(provider,digits)=>{
@@ -167,7 +167,9 @@ try{
  await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.coverage.failed',-7) WHERE key='coverage-snapshot'").run();
  const fresh=new Miniflare(options);
  try{
-  const shown=await (await fresh.dispatchFetch('http://localhost/api/hotels?fresh=1')).json();
+  // A replayed PUT answers with the record counter over the stored aggregate.
+  const replay=randomUUID();await db.prepare('UPDATE crawl_jobs SET last_token=? WHERE url=?').bind(replay,url).run();
+  const shown=await (await fresh.dispatchFetch('http://localhost/api/crawl',{method:'PUT',headers:{'Content-Type':'application/json','X-Yukemuri-Crawl-Key':'queue-test-only'},body:JSON.stringify({...payload,claimToken:replay})})).json();assert.equal(shown.replayed,true,JSON.stringify(shown).slice(0,300));
   assert.equal(shown.coverage.failed,-7,'A new isolate reads the stored aggregate');
   assert.equal(shown.coverage.records,await hotelCount());assert.equal(shown.coverage.pending,full.pending);
  }finally{await fresh.dispose()}

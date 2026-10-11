@@ -12,7 +12,7 @@ const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatib
 try{
  const db=await runtime.getD1Database('DB');
  for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
- await runtime.dispatchFetch('http://localhost/api/hotels');
+ await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'private-maintenance-only'}});
  const baseline=await(await runtime.dispatchFetch('http://localhost/api/collection-status')).json();
  const row=await db.prepare('SELECT * FROM hotels LIMIT 1').first(),columns=Object.keys(row);
  for(const [id,known,natural,room,detail] of [
@@ -71,6 +71,7 @@ try{
  const bounded=await(await runtime.dispatchFetch('http://localhost/api/crawl?report=1',{headers:{'X-Yukemuri-Crawl-Key':'private-maintenance-only'}})).json();
  assert.equal(bounded.failureExamples.length,20,'Maintenance samples stay bounded');
  assert.equal(JSON.stringify((await db.prepare('SELECT * FROM crawl_jobs ORDER BY url').all()).results),expandedBefore,'Diagnostics never modify the queue');
- const page=await runtime.dispatchFetch('http://localhost/');assert.equal(page.status,200);assert((await page.text()).includes('전국 수집 현황'));
+ // The page is the same static shell for everyone (P03); the summary arrives with the snapshot.
+ const page=await runtime.dispatchFetch('http://localhost/');assert.equal(page.status,200);const html=await page.text();assert(html.includes('일본 온천, 나에게 맞는 곳')&&html.includes('숙소 정보를 불러오는 중'));
  console.log('Collection status passed: quality counts, source/robots reason categories, bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and existing page.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

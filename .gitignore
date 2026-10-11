@@ -78,3 +78,6 @@ __pycache__/
 /public/images/snow.jpg
 /scripts/crawler/fixtures/jalan-price-10.html
 /scripts/crawler/fixtures/jalan-price-multi.html
+
+# Local search snapshot for the dev server (scripts/prepare-local-site.mjs).
+/public/snapshot/

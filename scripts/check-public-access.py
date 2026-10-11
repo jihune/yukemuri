@@ -82,13 +82,13 @@ for h in filtered['hotels']:
 assert filtered['total']<=min(filtered['featureCounts']['natural'],filtered['featureCounts']['outdoor'])
 print('Search/name checks passed: verified Korean search and sources; missing-name queue; identity rejection; facts preserved; cache invalidation; original crawler cannot erase localized names; facility/rating counts.')
 
-# The full index stays out of the HTML; initial cards still render on the server.
+# The page is one static shell (P03): no catalogue in the HTML; the list and
+# the name index come from the static search snapshot.
 far=next(h['id'] for h in candidates if h['id'] not in {h['id'] for h in pages[0]['hotels']})
 with urllib.request.urlopen(base+'/',timeout=90) as response:html=response.read().decode()
-assert pages[0]['hotels'][0]['id'] in html
-assert far not in html,'First screen must not serialize the entire catalogue index'
+assert pages[0]['hotels'][0]['id'] not in html and far not in html,'The page must not carry catalogue rows'
 assert far in {h['id'] for h in api('/api/hotels/search-index')['hotels']}
-print('Initial-screen check passed: first cards rendered; full catalogue available through independent index API; HTML bytes',len(html.encode()))
+print('Initial-screen check passed: static shell without catalogue rows; full catalogue available through the snapshot index; HTML bytes',len(html.encode()))
 
 # Translations are source-bound data; anonymous visitors can read, never write.
 api('/api/hotel-descriptions',status=403)

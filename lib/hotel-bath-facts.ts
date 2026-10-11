@@ -6,7 +6,10 @@ export const BATH_FEATURE_MASK=FEATURE_KEYS.reduce((mask,key,index)=>key==='jala
 const propertyBathKeys:FeatureKey[]=['natural','largeBath','outdoor','privateBath','communalOutdoor','privateOutdoor','nigori','freeFlow'];
 export function externalBathDescription(text:string){return /温泉施設はリゾート内の施設|温泉施設は(?:館外|敷地外|別施設)|(?:館外|敷地外|外部)の温泉施設/.test(text)}
 export const externalBathNote='리조트 공용 또는 외부 온천 이용 안내입니다. 별도 입장료·이동 여부를 확인하세요. 이 안내만으로 숙소 내 온천·욕탕이 있다고 확정하지 않습니다.';
-export function hotelFeature(hotel:Hotel,key:FeatureKey):FeatureFact {
+// A snapshot card keeps value and scope only (lib/search-snapshot.ts).
+export function hotelFeature(hotel:Pick<Hotel,'features'>,key:FeatureKey):FeatureFact;
+export function hotelFeature(hotel:{features:Partial<Record<FeatureKey,Pick<FeatureFact,'value'|'scope'>>>},key:FeatureKey):Pick<FeatureFact,'value'|'scope'>;
+export function hotelFeature(hotel:{features:Partial<Record<FeatureKey,Pick<FeatureFact,'value'|'scope'>>>},key:FeatureKey){
  return hotel.features[key]??{value:null,sourceId:'',verifiedAt:null};
 }
 export function featureMasks(hotel:Hotel){

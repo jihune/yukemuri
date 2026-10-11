@@ -1,0 +1,1985 @@
+{
+ "comparedAt": "2026-10-11T20:53:44.065Z",
+ "oldDist": "/tmp/claude-0/-home-user-yukemuri/ee221c06-eaa5-5e49-9637-f4f172eafa64/scratchpad/main-dist",
+ "tables": {
+  "hotels": 12271,
+  "hotel_names": 14748,
+  "hotel_lifecycle": 1753,
+  "visitor_favorites": 40
+ },
+ "compared": 309,
+ "different": 0,
+ "nonEmpty": 219,
+ "mapGrids": 5,
+ "emptyLists": 55,
+ "results": [
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=recommended&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=recommended&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=recommended&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=rating&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=rating&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=rating&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=reviews&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=reviews&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=reviews&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&features=natural",
+   "status": 200,
+   "count": 180,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&features=natural,outdoor&rating=9&reviews=50",
+   "status": 200,
+   "count": 89,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&ryokan=1",
+   "status": 200,
+   "count": 458,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&region=pref-hokkaido",
+   "status": 200,
+   "count": 545,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&region=pref-oita&features=natural",
+   "status": 400,
+   "count": null,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&provider=jalan&rating=4",
+   "status": 200,
+   "count": 9575,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&reviews=100",
+   "status": 200,
+   "count": 240,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=1&sort=name&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=2&sort=name&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&page=7&sort=name&rating=10&reviews=5000",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=あいう",
+   "status": 200,
+   "count": 205,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=あいう&sort=rating&page=2",
+   "status": 200,
+   "count": 205,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=あいう&region=pref-kanagawa",
+   "status": 200,
+   "count": 205,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=あいう&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=あいう",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=あいう&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=あいう",
+   "status": 200,
+   "count": 205,
+   "cells": 0,
+   "points": 46,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=aliasx",
+   "status": 200,
+   "count": 2109,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=aliasx&sort=rating&page=2",
+   "status": 200,
+   "count": 2109,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=aliasx&region=pref-kanagawa",
+   "status": 200,
+   "count": 63,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=aliasx&features=natural&rating=9",
+   "status": 200,
+   "count": 25,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=aliasx",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=aliasx&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=aliasx",
+   "status": 200,
+   "count": 2109,
+   "cells": 0,
+   "points": 488,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=Alias trip",
+   "status": 200,
+   "count": 767,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=Alias trip&sort=rating&page=2",
+   "status": 200,
+   "count": 767,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=Alias trip&region=pref-kanagawa",
+   "status": 200,
+   "count": 10,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=Alias trip&features=natural&rating=9",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=Alias trip",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=Alias trip&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=Alias trip",
+   "status": 200,
+   "count": 767,
+   "cells": 0,
+   "points": 139,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=バーデ",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=バーデ&sort=rating&page=2",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=バーデ&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=バーデ&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデ",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデ&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=バーデ",
+   "status": 200,
+   "count": 8,
+   "cells": 0,
+   "points": 6,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=バーデン明日&sort=rating&page=2",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=バーデン明日&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=バーデン明日&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=バーデン明日&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=バーデン明日",
+   "status": 200,
+   "count": 8,
+   "cells": 0,
+   "points": 6,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=다이",
+   "status": 200,
+   "count": 442,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=다이&sort=rating&page=2",
+   "status": 200,
+   "count": 442,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=다이&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=다이&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=다이",
+   "status": 200,
+   "count": 442,
+   "cells": 0,
+   "points": 75,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 15,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=다이이치 타키모토칸&sort=rating&page=2",
+   "status": 200,
+   "count": 15,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=다이이치 타키모토칸&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=다이이치 타키모토칸&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=다이이치 타키모토칸&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=다이이치 타키모토칸",
+   "status": 200,
+   "count": 15,
+   "cells": 0,
+   "points": 13,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHOR&sort=rating&page=2",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHOR&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHOR&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHOR",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&sort=rating&page=2",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHOR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&sort=rating&page=2",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ANCHxR HOTEL FUKUYAMA（アンカーホテル福山）",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=온천",
+   "status": 200,
+   "count": 1640,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=온천&sort=rating&page=2",
+   "status": 200,
+   "count": 1640,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=온천&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=온천&features=natural&rating=9",
+   "status": 200,
+   "count": 74,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=온천",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=온천&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=온천",
+   "status": 200,
+   "count": 1640,
+   "cells": 0,
+   "points": 385,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ホテル",
+   "status": 200,
+   "count": 6423,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ホテル&sort=rating&page=2",
+   "status": 200,
+   "count": 6423,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ホテル&region=pref-kanagawa",
+   "status": 200,
+   "count": 184,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ホテル&features=natural&rating=9",
+   "status": 200,
+   "count": 2,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ホテル",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ホテル&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ホテル",
+   "status": 200,
+   "count": 6423,
+   "cells": 38,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=hotel",
+   "status": 200,
+   "count": 912,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=hotel&sort=rating&page=2",
+   "status": 200,
+   "count": 912,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=hotel&region=pref-kanagawa",
+   "status": 200,
+   "count": 32,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=hotel&features=natural&rating=9",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=hotel",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=hotel&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=hotel",
+   "status": 200,
+   "count": 912,
+   "cells": 0,
+   "points": 217,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=箱根",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=箱根&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=箱根&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=箱根&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=箱根",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=箱根&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=箱根",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=하코네",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=하코네&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=하코네&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=하코네&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=하코네",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=하코네&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=하코네",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=유후인",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=유후인&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=유후인&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=유후인&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=유후인",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=유후인&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=유후인",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=由布院",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=由布院&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=由布院&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=由布院&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=由布院",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=由布院&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=由布院",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=noboribetsu",
+   "status": 200,
+   "count": 30,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=noboribetsu&sort=rating&page=2",
+   "status": 200,
+   "count": 30,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=noboribetsu&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=noboribetsu&features=natural&rating=9",
+   "status": 200,
+   "count": 15,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=noboribetsu",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=noboribetsu&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=noboribetsu",
+   "status": 200,
+   "count": 30,
+   "cells": 0,
+   "points": 25,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=soznkyo&sort=rating&page=2",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=soznkyo&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=soznkyo&features=natural&rating=9",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=soznkyo&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=soznkyo",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=소잔쿄",
+   "status": 200,
+   "count": 23,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=소잔쿄&sort=rating&page=2",
+   "status": 200,
+   "count": 23,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=소잔쿄&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=소잔쿄&features=natural&rating=9",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=소잔쿄",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=소잔쿄&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=소잔쿄",
+   "status": 200,
+   "count": 23,
+   "cells": 0,
+   "points": 9,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=zzzzqqq&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=zzzzqqq&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=zzzzqqq&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=zzzzqqq&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=zzzzqqq",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=%' OR 1=1 --",
+   "status": 200,
+   "count": 224,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=%' OR 1=1 --&sort=rating&page=2",
+   "status": 200,
+   "count": 224,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=%' OR 1=1 --&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=%' OR 1=1 --&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=%' OR 1=1 --",
+   "status": 200,
+   "count": 8,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=%' OR 1=1 --&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=%' OR 1=1 --",
+   "status": 200,
+   "count": 224,
+   "cells": 0,
+   "points": 36,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&sort=rating&page=2",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?stable=1&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&region=pref-kanagawa",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&features=natural&rating=9",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ&features=natural&provider=jalan&rating=4",
+   "status": 200,
+   "count": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&q=ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+   "status": 200,
+   "count": 0,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?saved=1",
+   "status": 200,
+   "count": 40,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?saved=1&bbox=122,24,146,46",
+   "status": 200,
+   "count": 40,
+   "cells": 0,
+   "points": 25,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?saved=1&q=hotel",
+   "status": 200,
+   "count": 6,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?saved=1&bbox=122,24,146,46&q=hotel",
+   "status": 200,
+   "count": 6,
+   "cells": 0,
+   "points": 3,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?saved=1&features=natural",
+   "status": 200,
+   "count": 6,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?saved=1&bbox=122,24,146,46&features=natural",
+   "status": 200,
+   "count": 6,
+   "cells": 0,
+   "points": 4,
+   "same": true
+  },
+  {
+   "path": "/api/hotels?saved=1&sort=name&page=2",
+   "status": 200,
+   "count": 40,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?saved=1&bbox=122,24,146,46&sort=name&page=2",
+   "status": 200,
+   "count": 40,
+   "cells": 0,
+   "points": 25,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/suggestions?saved=1&q=hotel",
+   "status": 200,
+   "count": 1,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/search-index",
+   "status": 200,
+   "count": 11394,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46",
+   "status": 200,
+   "count": 11394,
+   "cells": 42,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 163,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 146,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 41,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=122,24,146,46&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 7,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=129,30,135,36",
+   "status": 200,
+   "count": 11394,
+   "cells": 83,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=129,30,135,36&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 16,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=129,30,135,36&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 20,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=129,30,135,36&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 80,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=129,30,135,36&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 6,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=130.1,31.2,130.9,31.9",
+   "status": 200,
+   "count": 11394,
+   "cells": 0,
+   "points": 30,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=130.1,31.2,130.9,31.9&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=130.1,31.2,130.9,31.9&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=130.1,31.2,130.9,31.9&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 0,
+   "points": 24,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=130.1,31.2,130.9,31.9&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46",
+   "status": 200,
+   "count": 11394,
+   "cells": 0,
+   "points": 388,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 114,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 69,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 0,
+   "points": 330,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=139,41,146,46&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=131.5,33,131.50001,33.00001",
+   "status": 200,
+   "count": 11394,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=131.5,33,131.50001,33.00001&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=131.5,33,131.50001,33.00001&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=131.5,33,131.50001,33.00001&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=131.5,33,131.50001,33.00001&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=100,0,110,10",
+   "status": 200,
+   "count": 11394,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=100,0,110,10&features=natural",
+   "status": 200,
+   "count": 180,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=100,0,110,10&rating=9",
+   "status": 200,
+   "count": 173,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=100,0,110,10&provider=jalan&rating=4&sort=rating",
+   "status": 200,
+   "count": 9575,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  },
+  {
+   "path": "/api/hotels/map?bbox=100,0,110,10&ryokan=1&region=pref-kumamoto",
+   "status": 200,
+   "count": 7,
+   "cells": 0,
+   "points": 0,
+   "same": true
+  }
+ ]
+}

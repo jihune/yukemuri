@@ -3,11 +3,11 @@ import {useEffect,useState} from 'react';
 import {RotateCcw} from 'lucide-react';
 import {apiJson} from '@/lib/api-client';
 import {COLLECTION_PROVIDER_LABELS,COLLECTION_ISSUE_LABELS,collectionState,formatCollectionTime,type CollectionStatus} from '@/lib/collection-status';
-import type {SearchResponse} from '@/lib/hotel-repository';
+import type {SnapshotCoverage} from '@/lib/search-snapshot';
 import {Table,TableHeader,TableBody,TableRow,TableHead,TableCell} from '@/components/ui/table';
 import TableScrollRegion from './table-scroll-region';
 
-export default function CollectionStatusPanel({coverage}:{coverage:SearchResponse['coverage']}){
+export default function CollectionStatusPanel({coverage}:{coverage:SnapshotCoverage}){
  const [open,setOpen]=useState(false),[revision,setRevision]=useState(0),[data,setData]=useState<CollectionStatus|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState('');
  useEffect(()=>{
   if(!open)return;

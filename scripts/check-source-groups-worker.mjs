@@ -4,18 +4,24 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
+import {formerSearchFor,FORMER_PATHS} from './former-search-api.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare'),temp=mkdtempSync(join(tmpdir(),'yukemuri-sources-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
+// List and search: the browser's code over a snapshot of this D1 (P03).
+let former;
 const runtime=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'sources-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:'sources-test-only'}});
 try{
+ former=formerSearchFor(runtime,'sources-test-only');
  const db=await runtime.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  const api=async(path,method='GET',data,expected=200,authorized=true,visitor='a'.repeat(64),origin)=>{
+  if(FORMER_PATHS.test(new URL(path,'http://localhost').pathname)){const r=await former.request(path,visitor);assert.equal(r.status,expected,JSON.stringify(r.body));return r.body}
   const response=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':visitor,...(authorized?{'X-Yukemuri-Crawl-Key':'sources-test-only'}:{}),...(origin?{Origin:origin}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await response.json();assert.equal(response.status,expected,JSON.stringify(body));return body;
  };
- await api('/api/hotels');
+ // A public read fills an empty catalogue (the maintenance backfills stay for crawl-prepare).
+ await api('/api/hotels/takinoya');
  const imported=await api('/api/hotel-source-groups');assert(imported.groups.length>=20);assert(imported.groups.some(g=>g.hotel_id==='jalan-327522'&&g.trip_hotel_id==='trip-1458363'));
  await api('/api/hotel-source-groups','GET',undefined,403,false);
  const row=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),columns=Object.keys(row),base=JSON.parse(row.payload),today=new Date().toISOString().slice(0,10),observedAt=new Date(Date.now()-10000).toISOString();
@@ -32,11 +38,9 @@ try{
  const insert=async h=>{const r={...row,id:h.id,region:h.regionId,prefecture:h.prefecture,name:h.names.ko,search_text:'sourceqahotel',kind:h.kind,trip_score:h.id.startsWith('trip-')?9.2:null,trip_reviews:h.id.startsWith('trip-')?123:null,jalan_score:h.id.startsWith('jalan-')?4.6:null,jalan_reviews:h.id.startsWith('jalan-')?123:null,natural:Number(h.features.natural.value),large_bath:null,outdoor:null,private_bath:null,room_onsen:h.features.roomOnsen.value?1:null,room_outdoor:null,bath_features:h.features.natural.value?1:0,bath_known:1,payload:JSON.stringify(h)};await db.prepare(`INSERT INTO hotels(${columns.join(',')}) VALUES (${columns.map(()=>'?').join(',')})`).bind(...columns.map(k=>r[k])).run()};
  await insert(trip);await insert(jalan);
  await api('/api/favorites','PUT',{hotelId:trip.id,saved:true},200,false);
- const snapshot=await api('/api/hotels?stable=1&fresh=1');assert(snapshot.snapshot);
  const patch={hotelId:trip.id,tripHotelId:trip.id,jalanHotelId:jalan.id,googlePlaceId:'ChIJSourceGroupTestOnly',matchedName:trip.names.ja,sourceUrl:'https://official.example/source-qa',sourceLabel:'QA identity evidence',identityEvidence:'Exact name, Hakone street address, and identical room inventory verified.',sameInventory:true,checkedAt:new Date().toISOString()};
  await api('/api/hotel-source-groups','PUT',patch,403,false);await api('/api/hotel-source-groups','PUT',patch,403,true,undefined,'https://other.example');await api('/api/hotel-source-groups','PUT',{...patch,rating:5},400);
  assert.equal((await api('/api/hotel-source-groups','PUT',patch)).result,'saved');
- await api('/api/hotels?snapshot='+snapshot.snapshot.token,'GET',undefined,410);
  assert.equal((await api('/api/hotel-source-groups','PUT',patch)).result,'replayed');
  await api('/api/hotel-source-groups','PUT',{...patch,checkedAt:'2020-01-01T00:00:00Z'},409);
  await api('/api/hotel-source-groups','PUT',{...patch,hotelId:jalan.id,matchedName:jalan.names.ja},409);
@@ -89,4 +93,4 @@ try{
  assert.deepEqual(JSON.parse((await db.prepare('SELECT payload FROM hotel_source_observations WHERE id=?').bind(peer.id).first()).payload),peer,'Older observations cannot replace fresh linked data');
  const peerExport=await api('/api/catalog-export?table=hotel_source_observations');assert(peerExport.rows.some(r=>r.id===peer.id));
  console.log('Source group Worker/D1 passed: verified import, authorized identity links, replay/stale/conflict, search/snapshot/detail consistency, source refresh, Google default off, export, raw observation and favorite preservation, reversible unlink.');
-}finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
+}finally{former?.close();await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

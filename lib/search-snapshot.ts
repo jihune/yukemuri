@@ -1,5 +1,6 @@
 import type {Hotel,FeatureKey,FeatureFact} from './hotel-types';
 import type {PhotoCandidate} from './source-policy';
+import type coverageJson from '../data/coverage.json';
 // The static search snapshot (P03): every hotel's search columns, list-card
 // fields and name-search text, made by scripts/build-search-snapshot.mjs from
 // D1 after each collection run and at deploy, and served as Worker static
@@ -41,5 +42,6 @@ export type SnapshotCore={
 // match (hotels.search_text, hotel_names.name_key). names, location, context:
 // the typo-tolerant index (SearchIndexHotel), null for closed hotels as before.
 export type SnapshotText={searchText:string[];nameKeys:string[][];names:(string[]|null)[];location:(string|null)[];context:(string|null)[]};
-export type SnapshotCoverage={records:number;prefectures:number;crawledRecords:number;discoveredDetailUrls:number;completedDetailPages:number;pending:number;failed:number;updatedAt:string;providers:Record<'jalan'|'trip',{discovered:number;completed:number}>}&Record<string,unknown>;
+// The list's collection summary (lib/hotel-repository.ts coverageFrom).
+export type SnapshotCoverage=typeof coverageJson;
 export type SnapshotManifest={format:typeof SNAPSHOT_FORMAT;id:string;generatedAt:string;hotels:number;coverage:SnapshotCoverage;files:{core:string;cards:string;text:string;status:string};bytes:Record<'core'|'cards'|'text'|'status',number>};

@@ -1,0 +1,97 @@
+{
+ "measuredAt": "2026-10-11T19:49:46.198Z",
+ "browser": "Chromium 141.0.7390.37",
+ "base": "http://127.0.0.1:8790",
+ "build": "before P03 (server-rendered list and search)",
+ "profile": "360x780 isMobile hasTouch, CDP CPU 4x, latency 150ms, 1.6 Mbps down, 750 Kbps up, cache disabled, gzip by a local proxy, external requests blocked",
+ "runs": 3,
+ "summary": {
+  "/": {
+   "firstCardMs": 1723,
+   "snapshotListMs": 2397,
+   "nameSearchAfterTypingMs": 4255,
+   "transferredKiB": 446
+  },
+  "/?rating=8": {
+   "firstCardMs": 1667,
+   "snapshotListMs": 2361,
+   "nameSearchAfterTypingMs": 4137,
+   "transferredKiB": 445
+  }
+ },
+ "results": [
+  {
+   "view": "조건 없는 주소",
+   "path": "/",
+   "run": 0,
+   "firstCardMs": 1730,
+   "snapshotListMs": 2406,
+   "nameSearchAfterTypingMs": 4255,
+   "transferredBytes": 456972
+  },
+  {
+   "view": "조건 없는 주소",
+   "path": "/",
+   "run": 1,
+   "firstCardMs": 1707,
+   "snapshotListMs": 2364,
+   "nameSearchAfterTypingMs": 4320,
+   "transferredBytes": 456971
+  },
+  {
+   "view": "조건 없는 주소",
+   "path": "/",
+   "run": 2,
+   "firstCardMs": 1723,
+   "snapshotListMs": 2397,
+   "nameSearchAfterTypingMs": 4086,
+   "transferredBytes": 456971
+  },
+  {
+   "view": "조건 있는 주소(Trip.com 8점 이상)",
+   "path": "/?rating=8",
+   "run": 0,
+   "firstCardMs": 1552,
+   "snapshotListMs": 2361,
+   "nameSearchAfterTypingMs": 4137,
+   "transferredBytes": 455803
+  },
+  {
+   "view": "조건 있는 주소(Trip.com 8점 이상)",
+   "path": "/?rating=8",
+   "run": 1,
+   "firstCardMs": 1667,
+   "snapshotListMs": 2336,
+   "nameSearchAfterTypingMs": 4199,
+   "transferredBytes": 455802
+  },
+  {
+   "view": "조건 있는 주소(Trip.com 8점 이상)",
+   "path": "/?rating=8",
+   "run": 2,
+   "firstCardMs": 1875,
+   "snapshotListMs": 2493,
+   "nameSearchAfterTypingMs": 4092,
+   "transferredBytes": 455802
+  }
+ ],
+ "gzipBytes": {
+  "/": 42965,
+  "/_next/static/chunks/framework-D_rUT4EX.js": 59092,
+  "/_next/static/chunks/rolldown-runtime-C60lm6uB.js": 694,
+  "/_next/static/chunks/hash-Cp347hhd.js": 256,
+  "/_next/static/chunks/app-elements-H_Dr48wG.js": 4223,
+  "/_next/static/chunks/record-uXSNv6cl.js": 79,
+  "/_next/static/chunks/app-rsc-cache-busting-CLtA4Zjn.js": 2047,
+  "/_next/static/chunks/app-rsc-render-mode-CvTCGruk.js": 668,
+  "/_next/static/chunks/headers-C_MtfdF4.js": 1285,
+  "/_next/static/chunks/protocol-headers-B9-bVeat.js": 327,
+  "/_next/static/chunks/deployment-id-DFhHa9wO.js": 97,
+  "/_next/static/chunks/navigation-errors-D5LMQqDL.js": 1625,
+  "/_next/static/chunks/layout-segment-context-BbHmFzj_.js": 534,
+  "/_next/static/chunks/hotel-explorer-DevQBqFB.js": 87872,
+  "/_next/static/chunks/index-j1O2m-0E.js": 53099,
+  "/_next/static/chunks/leaflet-src-DeAd7eD8.js": 43071
+ },
+ "note": "Times in ms from navigation start (name search: from tapping the search box). The local catalogue is the checked-in one; production-size files take longer in proportion to their size (P03-20261012.md)."
+}

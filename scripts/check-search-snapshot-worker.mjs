@@ -5,10 +5,10 @@
 // Usage: node scripts/check-search-snapshot-worker.mjs
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync} from 'node:fs';
+import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync,mkdirSync,writeFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE} from './build-search-snapshot.mjs';
+import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE,compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='snapshot-check-only';
@@ -35,7 +35,8 @@ try{
  const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
  const fingerprint=async()=>{const out={};for(const t of tables)out[t]=JSON.stringify((await db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results);return out};
  const before=await fingerprint();
- const local=join(temp,'local'),built=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
+ const local=join(temp,'local');mkdirSync(local,{recursive:true});writeFileSync(join(local,'index.html'),'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');
+ const built=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
  assert.deepEqual(await fingerprint(),before,'building the snapshot changed D1');
  const manifest=read(local,'manifest.json'),dir=join(local,'snapshot','v',manifest.id),file=name=>JSON.parse(readFileSync(join(dir,name+'.json'),'utf8'));
  const core=file('core'),cards=file('cards'),text=file('text'),status=file('status');
@@ -51,10 +52,18 @@ try{
  assert(core.lat.some(v=>v!==null)&&core.lat.filter(v=>v!==null).length<rows.length-1,'some, not all, coordinates');
  const states=new Set(core.state);for(const s of ['closed','temporarily_closed','operating','unverified',null])assert(states.has(s),'state '+s);
 
- // Name search: the substring columns and the former index (/api/hotels/search-index).
+ // Name search: the substring columns and the former index, as the Worker built
+ // it until P03 (lib/hotel-repository.ts catalogueSearchIndex): hotels not
+ // closed, in id order, names from the stored payload then the aliases.
  const names=(await db.prepare('SELECT hotel_id,name_key FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
  rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text);assert.deepEqual(text.nameKeys[i],names.filter(n=>n.hotel_id===row.id).map(n=>n.name_key))});
- const index=(await api('/api/hotels/search-index')).hotels,open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
+ const places=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'places-')),'lib/japan-place-labels.ts'));
+ const aliasRows=(await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
+ const index=(await db.prepare("SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id").all()).results.map(r=>{
+  const n=JSON.parse(r.names),place={prefecture:r.prefecture,regionId:r.region,location:JSON.parse(r.location),names:n};
+  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...aliasRows.filter(a=>a.hotel_id===r.id).map(a=>a.name)].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
+ });
+ const open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
  assert.deepEqual(open.map(i=>core.ids[i]),index.map(h=>h.id),'index rows: every hotel not closed, in id order');
  index.forEach((h,n)=>{const i=open[n];assert.deepEqual([text.names[i],text.location[i],text.context[i],core.region[i],core.prefecture[i],core.kind[i],core.features[i]??0,core.known[i]??0,core.tripScore[i],core.tripReviews[i],core.jalanScore[i],core.jalanReviews[i]],[h.names,h.location,h.context,h.region,h.prefecture,h.kind,h.features,h.knownFeatures,h.tripScore,h.tripReviews,h.jalanScore,h.jalanReviews],h.id)});
  core.ids.forEach((id,i)=>{if(text.names[i]===null){assert(['closed','temporarily_closed'].includes(core.state[i]),id);assert.equal(text.location[i],null);assert.equal(text.context[i],null)}});
@@ -74,16 +83,20 @@ try{
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
 
  // Coverage as the list showed it; collection status as its API returned it.
- assert.deepEqual(manifest.coverage,(await api('/api/hotels?page=1')).coverage);
+ // The collector's end-of-run read counts the same aggregate.
+ assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
  const live=await api('/api/collection-status');
  assert.deepEqual({...status,measuredAt:undefined},{...live,measuredAt:undefined});
  assert.equal(status.measuredAt,'2026-10-12T00:00:00.000Z','status describes the build time');
 
  // The guard refuses anything but a read before it reaches the database.
  const guard=readOnly(db).db;
- for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1','WITH x AS (SELECT 1) DELETE FROM hotels RETURNING id','with x as (select 1) insert into catalog_meta select 1,2','WITH x AS (SELECT 1) UPDATE hotels SET name=1','with/**/x as (select 1) replace into catalog_meta values (1,2)',"SELECT 'a' -- x\n; DELETE FROM hotels"])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
+ for(const sql of ['INSERT INTO catalog_meta VALUES (1,2)','DELETE FROM hotels','SELECT 1; DELETE FROM hotels','PRAGMA writable_schema=1',' UPDATE hotels SET name=1','WITH x AS (SELECT 1) DELETE FROM hotels RETURNING id','with x as (select 1) insert into catalog_meta select 1,2','WITH x AS (SELECT 1) UPDATE hotels SET name=1','with/**/x as (select 1) replace into catalog_meta values (1,2)',"SELECT 'a' -- x\n; DELETE FROM hotels",
+  // A quote inside a comment, or a comment marker inside a string, hides nothing.
+  "WITH x AS (SELECT 1) /* it's */ DELETE FROM hotels WHERE name<>'zz'","SELECT 1 -- it's\n; DELETE FROM hotels WHERE name='a'","SELECT 'a /* b' AS c, 1 DELETE FROM hotels"])assert.throws(()=>guard.prepare(sql),/read-only/,sql);
  // Words inside literals and comments are text, not writes.
  assert.doesNotThrow(()=>guard.prepare("SELECT 'DELETE FROM hotels' AS a -- UPDATE\n"));
+ for(const sql of ["SELECT 'it''s DELETE' AS a",'SELECT "UPDATE", [INSERT], `DROP` FROM hotels','SELECT 1 /* DELETE */ FROM hotels -- UPDATE','SELECT "a""DELETE" FROM hotels'])assert.doesNotThrow(()=>guard.prepare(sql),sql);
  await assert.rejects(guard.prepare('SELECT 1').run(),/read-only/);
 
  // The Cloudflare API source: same files from the same rows, string parameters,
@@ -113,12 +126,28 @@ try{
  await assert.rejects(limited.prepare('SELECT 1').all(),e=>/asks to wait 301s/.test(e.message)&&!/tok-secret|acct-secret/.test(e.message));assert.deepEqual(slept,[]);
  assert.throws(()=>remoteSource({token:'',account:'a',database:'128a3c5b-8e5f-470a-a901-d899d396cae1'}),/needs/);
 
+ // The static page, rendered again with its first page: the default view (no
+ // conditions, recommended order) of this snapshot, the former recommended
+ // ORDER BY over hotels not closed, as cards in the HTML.
+ const openRows=rows.filter(r=>r.state!=='closed'&&r.state!=='temporarily_closed');
+ const nat=r=>(r.natural===1?2:0)+(r.trip_score!==null&&r.trip_score>=9&&r.trip_reviews!==null&&r.trip_reviews>=50?1:0),num=v=>v===null?-Infinity:v;
+ const expectedOrder=[...openRows].sort((a,b)=>nat(b)-nat(a)||num(b.trip_score)-num(a.trip_score)||num(b.trip_reviews)-num(a.trip_reviews)||(a.id<b.id?-1:1)).slice(0,40).map(r=>r.id);
+ const first=built.data.first;
+ assert.equal(first.total,openRows.length);assert.equal(first.page,1);
+ assert.deepEqual(first.hotels.map(h=>h.id),expectedOrder);
+ assert.deepEqual(first.hotels,expectedOrder.map(id=>cards[core.ids.indexOf(id)]));assert.deepEqual(first.coverage,manifest.coverage);
+ const pageOf=()=>readFileSync(join(local,'index.html'),'utf8'),titles=html=>[...html.matchAll(/class="card-title"[^>]*><h3>([^<]*)<\/h3>/g)].map(m=>m[1].replaceAll('&amp;','&').replaceAll('&#x27;',"'").replaceAll('&quot;','"'));
+ const html=pageOf();
+ assert(html.includes(`data-first-page="${manifest.id}"`),'static page marks its snapshot');
+ assert.deepEqual(titles(html),first.hotels.map(h=>h.names.ko),'static page renders the first page cards in order');
+ assert(new RegExp(first.total.toLocaleString('ko-KR')+'(?:<!-- -->)?곳').test(html),'static page shows the total');
  // Rebuilding replaces the version folder and adds the cache rule once.
  const again=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
  assert.equal(again.manifest.id,manifest.id);
  assert.deepEqual(readdirSync(join(local,'snapshot','v')),[manifest.id]);
  assert.equal(readFileSync(join(local,'_headers'),'utf8').split(HEADERS_RULE).length,2);
  assert(existsSync(join(local,'snapshot','manifest.json')));
+ assert.equal(pageOf().split('data-first-page=').length,2,'rebuild renders one first page');
  const kb=n=>(n/1024).toFixed(0)+'KiB';
  console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}
