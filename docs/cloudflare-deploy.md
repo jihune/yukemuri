@@ -31,7 +31,7 @@
 2. GitHub Secret:
    - 앱 레포 `jihune/yukemuri`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `YUKEMURI_CRAWL_ACCESS_KEY`(새 Worker의 `CRAWL_ACCESS_KEY`로 올라간다).
    - 실행기 레포 `jihune/yukemuri-script-runner`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`(4단계 적재용, `hosting-review-20261011.md` 3.3절). `YUKEMURI_CLOUDFLARE_JSON`은 6단계에서 정한다. 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
-3. `workers.dev` 서브도메인: 사용자는 정하지 않았다. Workers & Pages 화면을 열 필요가 없다. 3단계 workflow가 계정에 서브도메인이 없을 때 입력값으로 등록한다(아래).
+3. `workers.dev` 서브도메인: 사용자는 정하지 않았다. 3단계 workflow가 `jihune`으로 등록했다(아래 ‘3단계 결과’).
 
 ## 3단계: D1 만들기(수동 실행, Worker 배포 없음)
 
@@ -49,6 +49,15 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 6. 에이전트가 요약의 ID를 `cloudflare-deploy.json`의 `databaseId`에 넣는 PR을 만든다. 이 PR은 `autoDeploy`를 켜지 않는다. 그래서 병합해도 배포는 계속 건너뛴다.
 
 다시 실행해도 안전하다. 이미 있는 서브도메인·D1은 바꾸거나 만들지 않고, 적용된 마이그레이션은 다시 적용하지 않는다.
+
+## 3단계 결과(2026-10-11)
+
+- run 38138420167(main `da47a7a`, 12:13:00Z–12:17:14Z, 성공, 상위 세션 실행). 값은 상위 세션이 로그에서 확인해 전달했다.
+- 서브도메인 `jihune`을 이번 실행에서 등록했다. 공개 주소는 `https://yukemuri.jihune.workers.dev`다. 이 주소는 배포 판정·수집기 release·`site_api()`의 허용 형식에 맞는다(로컬 확인).
+- D1 `yukemuri`를 이번 실행에서 만들었다. `database_id`는 `128a3c5b-8e5f-470a-a901-d899d396cae1`이고 `cloudflare-deploy.json`에 기록했다. 마이그레이션 0000–0012 13개를 적용했다.
+- 사용자 토큰으로 서브도메인 등록·D1 생성·마이그레이션이 됐다.
+- D1의 실제 위치(`--location apac` 힌트 반영 여부)는 미확인이다. 4단계 또는 첫 배포에서 `wrangler d1 info yukemuri --config dist/server/wrangler.json`으로 확인한다.
+- `publicOrigin`과 `autoDeploy`는 아직 켜지 않았다. 아래 ‘4단계 뒤’의 PR에서 켠다.
 
 ## 4단계 뒤: 자동 배포 켜기
 
@@ -108,4 +117,5 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 - 무료 플랜의 Rate Limiting 바인딩 사용 가능 여부.
 - `wrangler-action`이 pnpm으로 설치된 wrangler 4.92.0을 그대로 쓰는지. 실제 Secret으로 실행한 적이 없다.
-- 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올리고 서브도메인을 등록할 수 있는지.
+- 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올릴 수 있는지. 서브도메인 등록과 D1 생성·마이그레이션은 3단계에서 됐다.
+- D1의 실제 위치(`--location apac`).
