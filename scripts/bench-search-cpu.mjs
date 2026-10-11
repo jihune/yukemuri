@@ -45,8 +45,9 @@ if(process.env.BENCH_CHILD){
  if(mode==='warm')await scenarios[scenario](repo);
  for(let i=0;i<Number(count);i++){
   if(mode==='cold'){repo=load();await repo.hotelRepository.ready()}
-  sqliteMs=0;const c=process.cpuUsage();await scenarios[scenario](repo);const d=process.cpuUsage(c);
-  samples.push(+((d.user+d.system)/1000-sqliteMs).toFixed(2));
+  sqliteMs=0;const c=process.cpuUsage(),w=performance.now();await scenarios[scenario](repo);const wall=performance.now()-w,d=process.cpuUsage(c);
+  // cpu: whole process (includes GC and compiler threads); wall: this thread's elapsed time; both minus SQLite.
+  samples.push(process.env.BENCH_WALL?+(wall-sqliteMs).toFixed(2):+((d.user+d.system)/1000-sqliteMs).toFixed(2));
  }
  console.log(JSON.stringify(samples));
  process.exit(0);
