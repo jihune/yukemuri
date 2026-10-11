@@ -47,7 +47,9 @@ const wrangler=JSON.parse(readFileSync('dist/server/wrangler.json','utf8'));
 assert.equal(wrangler.name,committed.workerName);
 assert.equal(wrangler.workers_dev,true);assert.equal(wrangler.preview_urls,false);
 assert.equal(wrangler.observability?.enabled,true);
-assert.deepEqual(wrangler.ratelimits?.map(r=>r.name),['API_RATE_LIMITER']);
+// The whole limiter, not only its name: 120 requests per 60 s per IP, namespace 1001.
+assert.deepEqual(wrangler.ratelimits,[{name:'API_RATE_LIMITER',namespace_id:'1001',simple:{limit:120,period:60}}]);
+assert.deepEqual(wrangler.placement,{mode:'smart'});
 assert.equal(wrangler.d1_databases.length,1);
 const [d1]=wrangler.d1_databases;
 assert.equal(d1.binding,'DB');assert.equal(d1.database_name,committed.databaseName);
