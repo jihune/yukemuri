@@ -5,7 +5,8 @@
 //   node scripts/build-search-snapshot.mjs --remote [--out dist/client] [--report file]
 // --remote reads the D1 named in cloudflare-deploy.json through the Cloudflare
 // API (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID). Every source is read-only:
-// a statement other than SELECT/WITH is refused before it is sent.
+// a statement that does not start with SELECT/WITH, or holds a write word
+// anywhere outside literals, is refused before it is sent.
 // SNAPSHOT_TRACE=1 prints rows read per query on stderr.
 // The lib/ code runs compiled for Node, so the cards, search columns, coverage
 // and collection status are made by the same functions the Worker used.
@@ -21,12 +22,17 @@ import {fileURLToPath} from 'node:url';
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const HEADERS_RULE='/snapshot/v/*\n  Cache-Control: public, max-age=31536000, immutable\n';
 const READ_ONLY=/^\s*(?:SELECT|WITH)\b/i;
+// Words that make or end a write in SQLite. A CTE can lead a write
+// (WITH x AS (...) DELETE ...), so every word of the statement is checked,
+// outside string literals and comments. replace() is refused with REPLACE.
+const WRITES=/\b(?:INSERT|UPDATE|DELETE|REPLACE|UPSERT|CREATE|DROP|ALTER|ATTACH|DETACH|PRAGMA|VACUUM|REINDEX|ANALYZE|BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE|RETURNING)\b/i;
+const code=sql=>sql.replace(/'(?:[^']|'')*'/g,"''").replace(/--[^\n]*/g,' ').replace(/\/\*[\s\S]*?\*\//g,' ');
 
 // A D1 binding that only reads: every statement is checked before it runs.
 // rowsRead adds up meta.rows_read where the source reports it (D1, Miniflare).
 export function readOnly(db){
  const stats={rowsRead:0,queries:0};
- const check=sql=>{if(!READ_ONLY.test(sql)||/;\s*\S/.test(sql.trim().replace(/;$/,'')))throw new Error('Snapshot sources are read-only: '+sql.slice(0,60))};
+ const check=sql=>{const bare=code(sql);if(!READ_ONLY.test(bare)||WRITES.test(bare)||/;\s*\S/.test(bare.trim().replace(/;$/,'')))throw new Error('Snapshot sources are read-only: '+sql.slice(0,60))};
  const count=r=>{stats.queries++;stats.rowsRead+=Number(r?.meta?.rows_read??0);if(process.env.SNAPSHOT_TRACE)console.error('rows',r?.meta?.rows_read,r?.__sql);return r};
  const wrap=(stmt,sql)=>({bind:(...a)=>wrap(stmt.bind(...a),sql),all:async()=>count(Object.assign(await stmt.all(),{__sql:sql.replace(/\s+/g,' ').slice(0,90)})),first:async c=>{const r=count(await stmt.all()),row=r.results[0]??null;return c===undefined?row:row?row[c]??null:null},run:async()=>{throw new Error('Snapshot sources are read-only')},raw:async()=>{throw new Error('raw() is not used')},__inner:stmt});
  return{stats,db:{prepare:sql=>{check(sql);return wrap(db.prepare(sql),sql)},batch:async list=>{const out=[];for(const s of list)out.push(await s.all());return out},exec:async()=>{throw new Error('Snapshot sources are read-only')}}};

@@ -19,6 +19,10 @@ try{
  const db=await limited.getD1Database('DB');
  for(const migration of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const statement of readFileSync(join('drizzle',migration),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
 
+ // The limiter counts in fixed one-minute windows: a sequence that crosses a
+ // minute boundary starts again from zero (CI run 38155871697 at 16:35:55-16:36:02Z).
+ // Start the limited sequence early in a minute.
+ if(Date.now()%60000>40000)await new Promise(r=>setTimeout(r,60500-Date.now()%60000));
  // Limit: an IP gets LIMIT API responses per window, then 429 with guidance.
  const ip=freshIp(),probe='/api/collector-release';
  for(let i=0;i<LIMIT;i++){const r=await call(limited,probe,{'CF-Connecting-IP':ip});assert.equal(r.status,403);await r.body?.cancel()}
