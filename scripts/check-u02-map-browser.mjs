@@ -285,6 +285,17 @@ async function desktopHover(page){
  const single=await tabToMarker(page,m=>!m.cluster);
  const trip=single?await previewRoundTrip(page,single,'Enter'):null;
  check('데스크톱에서 Enter로 지점의 미리보기를 열면 포커스가 미리보기로 가고 닫으면 지점으로 돌아옴',!!trip?.pass,{trip});
+ // The opener may leave the map while its preview is open: closing must not focus it unseen.
+ let away=null;
+ if(single){
+  const again=await tabToMarker(page,m=>m.ids?.[0]===single.ids[0]);
+  if(again){await page.keyboard.press('Enter');await page.locator('.map-preview').waitFor({timeout:8000}).catch(()=>{})}
+  await canvas.focus();for(let i=0;i<8;i++)await page.keyboard.press('ArrowRight');await page.waitForTimeout(800);
+  const gone=await page.evaluate(id=>{const c=document.querySelector('.map-canvas').getBoundingClientRect(),m=[...document.querySelectorAll('.leaflet-marker-icon')].find(e=>e.dataset.stayIds?.split(' ').includes(id));if(!m)return null;const r=m.getBoundingClientRect();return !(r.left>=c.left&&r.right<=c.right&&r.top>=c.top&&r.bottom<=c.bottom)},single.ids[0]);
+  await page.getByRole('button',{name:'지도 숙소 선택 해제'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(300);
+  away={again:!!again,gone,preview:await page.locator('.map-preview').count(),focus:await focusedMarker(page),onMap:await page.evaluate(()=>document.activeElement===document.querySelector('.map-canvas'))};
+ }
+ check('미리보기를 연 지점이 지도 밖으로 나간 뒤 닫으면 포커스는 그 지점이 아니라 지도로 감',!!away&&away.again&&away.gone===true&&away.preview===0&&(away.onMap||(!!away.focus.ids&&away.focus.inside)),{away});
 }
 
 const chromiumVersion=browser.version();

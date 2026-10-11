@@ -82,7 +82,12 @@ export default function HotelExplorer({initial,initialSearchIndex,initialQuery,i
  const previewName=useRef<HTMLButtonElement>(null),previewPending=useRef<string|null>(null),previewOpener=useRef<string|null>(null),previewReturn=useRef<string|null>(null);
  useEffect(()=>{if(active&&previewPending.current===active.id){previewPending.current=null;previewName.current?.focus()}},[active]);
  // The map redraws its markers before this runs, so the marker for the hotel is already there.
- useEffect(()=>{const id=previewReturn.current;previewReturn.current=null;if(!activeId&&id)document.querySelector<HTMLElement>(`.leaflet-marker-icon[data-stay-ids~="${CSS.escape(id)}"]`)?.focus({preventScroll:true})},[activeId]);
+ // If the map moved it out of view meanwhile, the map itself takes focus so it stays visible.
+ useEffect(()=>{
+  const id=previewReturn.current;previewReturn.current=null;if(activeId||!id)return;
+  const marker=document.querySelector<HTMLElement>(`.leaflet-marker-icon[data-stay-ids~="${CSS.escape(id)}"]`);
+  (marker?.tabIndex===0?marker:document.querySelector<HTMLElement>('.map-canvas'))?.focus({preventScroll:true});
+ },[activeId]);
  function closePreview(){previewReturn.current=previewOpener.current;previewOpener.current=null;setActiveId(null)}
  const regionName=REGIONS.find(r=>r.id===filters.region)?.name??'일본 전국';
  const listEnd=useRef<HTMLDivElement>(null),listingPosition=useRef<ListingPosition|null>(null);
