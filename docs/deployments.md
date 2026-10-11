@@ -12,6 +12,7 @@
 | 2026-10-11 | `b6775744386820dd967813247f4f720b79910515` (`claude/u03-desktop-overlap`) | 없음 | 없음 | U03 PR A 데스크톱 필터 패널·지도 출처 가림 수정 검사·Codex 검토 완료. 앱 화면만 변경. main 병합(`53ee98b`)·Sites 미게시 |
 | 2026-10-11 | `4ab16029bf94b422a19b087542f1d492e80447b4` (`claude/u03-comparison-diff`) | 없음 | 없음 | U03 PR B 비교 차이 강조 검사·Codex 3회·Claude 1회 검토 완료. 앱 화면만 변경. main 병합(`1ff8f48`)·Sites 미게시 |
 | 2026-10-11 | `fa99371` (`claude/p01-d1-reads`) | 없음 | 없음 | P01 PR A 수집 저장 경로 D1 읽기 감소 검사 완료(Codex 1회째 P2 수정 포함). Worker API·카탈로그 저장소 변경(스키마·수집기 변경 없음). Codex 2회째 검토(`ea324a9`) 큰 문제 없음. main 병합(`264f3bb`)·Sites 미게시 |
+| 2026-10-11 | `3c613c4`·`ef8df77` (`claude/p01-search-scans`) | 없음 | 없음 | P01 PR B 검색 전체 스캔·첫 요청·seed 지연 로드 검사 완료. 검색 응답 193개 main과 같음. 스키마·수집기 변경 없음. 검토 전·main 미병합·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.

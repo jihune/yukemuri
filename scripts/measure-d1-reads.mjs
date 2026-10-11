@@ -1,8 +1,9 @@
 // Count D1 rows read/written and time representative requests against the built
 // Worker and a temporary Miniflare D1. Never touches the production database.
-// Usage: node scripts/measure-d1-reads.mjs [--grow] [--check] [--out evidence.json]
+// Usage: node scripts/measure-d1-reads.mjs [--grow] [--check] [--out evidence.json] [--dist dir --label commit]
 //  --grow   copy checked-in rows up to the 2026-10-08 production row counts
 //  --check  fail when a request reads more rows than its P01 upper bound
+//  --dist   build to measure (default dist) and --label, the commit it was built from
 // Row counts come from the meta that Miniflare's D1 returns per statement.
 // Whether Miniflare counts rows exactly like production D1 is unverified.
 import {createRequire} from 'node:module';
@@ -14,7 +15,7 @@ import {execSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
-const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null;
+const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null,dist=argv.includes('--dist')?argv[argv.indexOf('--dist')+1]:'dist',label=argv.includes('--label')?argv[argv.indexOf('--label')+1]:null;
 // INSERT statement counts in the 2026-10-08 account export (docs/hosting-review-20261011.md 1.2).
 const TARGET={hotels:12271,hotel_names:13849,crawl_jobs:15417};
 const KEY='measure-d1-only',VISITOR='d'.repeat(64);
@@ -22,7 +23,7 @@ const temp=mkdtempSync(join(tmpdir(),'yukemuri-d1-reads-'));
 // The app reads env.DB from cloudflare:workers. A test-only entry module wraps
 // that binding in place and serves the counters on /__d1meter. The copied build
 // is the one under test; dist/ itself is not modified.
-const server=join(temp,'server');cpSync(resolve('dist/server'),server,{recursive:true});
+const server=join(temp,'server');cpSync(resolve(dist,'server'),server,{recursive:true});
 writeFileSync(join(server,'__d1meter.js'),`import app from './index.js';
 import {env} from 'cloudflare:workers';
 const empty=()=>({statements:0,rowsRead:0,rowsWritten:0,heaviest:[]});
@@ -92,12 +93,15 @@ try{
  for(const body of puts){const {url,observations:[h]}=JSON.parse(body);await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail',?,'pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',lease_token=NULL,lease_until=0,last_token=NULL").bind(url,h.prefecture).run()}
  const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 3").all()).results.map(r=>r.id);
  const nameQuery=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).find(h=>h.names?.ja?.length>=4).names.ja.slice(0,3);
+ // A previous collector run ended with its full-count GET, as in production.
+ await call(runtime,'/api/crawl?provider=jalan&kind=list&limit=1');
  await runtime.dispose();runtime=null;
 
  const list='/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1';
  const scenarios=[
   // [key, label, path, init, expected, cold]
   ['listCold','목록 첫 쪽(새 isolate)',list.replace('&fresh=1',''),{},200,true],
+  ['detailCold','상세(새 isolate)','/api/hotels/'+sample[0],{},200,true],
   ['nameCold','이름 부분검색(새 isolate, 색인 생성 포함)','/api/hotels?stable=1&saved=0&page=1&q='+encodeURIComponent(nameQuery),{},200,true],
   ['list','목록 첫 쪽(fresh)',list],
   ['listFilters','목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)',list+'&features=natural&rating=9&reviews=50'],
@@ -107,7 +111,6 @@ try{
   ['suggest','검색어 예측','/api/hotels/suggestions?q='+encodeURIComponent(nameQuery)],
   ['detail','상세','/api/hotels/'+sample[0]],
   ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.join(',')],
-  // A previous run ended with this GET; the measured run follows it.
   ['crawlGet','수집 GET 집계(실행 끝)','/api/crawl?provider=jalan&kind=list&limit=1'],
   ['crawlClaim','수집 작업 선점(POST)','/api/crawl',{method:'POST',body:JSON.stringify({provider:'trip',phase:'detail',token:randomUUID()})}],
   ['crawlPut','수집 저장(PUT, 상세 1곳)','/api/crawl',{method:'PUT',body:puts[0]}],
@@ -131,15 +134,18 @@ try{
  }finally{await warm.dispose()}
  const byKey=Object.fromEntries(results.map(r=>[r.key,r]));
  if(check){
-  // P01 upper bounds, as a share of the hotels table so they hold at any scale.
-  // A PUT reads its own rows, not the catalogue, and a collector write does not
-  // make the next name search rebuild the fuzzy index.
-  const h=counts.hotels,bounds={crawlPut:0.02*h,nameAfterPut:byKey.name.rowsRead+0.02*h};
+  // Upper bounds as hotels-table multiples plus fixed per-request work (result
+  // sessions, lifecycle and source-group lookups), so they hold at any scale.
+  // A PUT reads its own rows, not the catalogue, even in a new isolate. A list
+  // or name search scans the catalogue two or three times, not five to ten, and
+  // a collector write does not make the next name search rebuild the index.
+  const h=counts.hotels,bound=(k,c)=>k*h+c;
+  const bounds={crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),listCold:bound(3.5,2000),list:bound(3.5,2000),listFilters:bound(1.1,2000),name:bound(3,2000),nameIndex:bound(6,2000),nameCold:bound(6,2000),nameAfterPut:byKey.name.rowsRead+0.02*h};
   const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }
- const report={measuredAt:new Date().toISOString(),gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!=='',environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ const report={measuredAt:new Date().toISOString(),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
 }finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
