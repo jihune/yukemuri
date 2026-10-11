@@ -1,6 +1,6 @@
 # Cloudflare 배포 절차(H01)
 
-기록: 2026-10-11T10:30Z / 2026-10-11 19:30 KST. H01 2단계 PR에서 만들었다.
+기록: 2026-10-11T10:08Z / 2026-10-11 19:08 KST(첫 커밋 `e426686`). H01 2단계 PR에서 만들었다. 갱신: 2026-10-11T10:30Z(상위 세션 전달에 맞춰 사용자 작업과 서브도메인 등록 반영).
 대상: Cloudflare Workers Free + D1 Free, 주소 `https://yukemuri.<계정 서브도메인>.workers.dev`. 사이트는 public이다. 유료 플랜·유료 도메인·Cloudflare Access는 쓰지 않는다(사용자 결정, 2026-10-11T08:25Z).
 전체 계획과 근거는 `hosting-review-20261011.md`의 ‘결정 반영’ 절과 3.2절이다. 전환(6단계)이 끝날 때까지 운영은 기존 Sites다(`sites-handoff.md`).
 
@@ -14,6 +14,7 @@
 | `.github/workflows/d1-setup.yml` | 수동 실행 전용. 아래 ‘3단계: D1 만들기’ |
 | `scripts/cloudflare-deploy-gate.mjs` | 배포 여부 판정 |
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
+| `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
 | `scripts/cloudflare-smoke.mjs` | 배포 뒤 점검 |
 | `lib/edge-guard.ts` | 공개 사이트 보호(속도 제한·검색 캐시) |
 | `public/robots.txt` | `/api/`와 알려진 AI 수집 봇 차단 요청 |
@@ -22,31 +23,32 @@
 
 모든 `wrangler d1` 명령은 데이터베이스 이름과 설정 경로를 준다. 예: `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`.
 
-## 사용자가 할 일
+## 사용자가 한 일
 
-`hosting-review-20261011.md` 3.3절과 같다. Secret 값은 채팅·PR·로그에 붙여 넣지 않고 GitHub Secret 입력란에만 넣는다.
+사용자가 아래를 등록했다(2026-10-11T09:5xZ 사용자 보고, 상위 세션 전달). 값은 확인하지 않았다. Secret 값은 채팅·PR·로그에 붙여 넣지 않고 GitHub Secret 입력란에만 넣는다.
 
-상태(상위 세션 전달, 2026-10-11T09:55Z): 사용자가 앱 레포에 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`·`YUKEMURI_CRAWL_ACCESS_KEY`를, 실행기 레포에 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`를 등록했다. 값은 확인하지 않았다. 토큰은 ‘Edit Cloudflare Workers’ 템플릿에 Account `D1: Edit`를 더한 것이다. `workers.dev` 서브도메인은 아직 없을 수 있다. 없으면 3단계에서 상위 세션이 등록한다.
-
-1. Cloudflare 가입과 Workers & Pages 첫 화면에서 `workers.dev` 계정 서브도메인을 정한다. 서브도메인을 에이전트에게 알려 준다. 비밀이 아니다. `publicOrigin`에 들어간다.
-2. API 토큰: 대시보드 → Account API tokens → Create Token → 템플릿 ‘Edit Cloudflare Workers’. 권한은 Account `Workers Scripts: Edit`, Account `D1: Edit`, Account `Account Settings: Read`다. 선택 권한은 Account `Account Analytics: Read`(CPU·D1 사용량 조회)다. Account Resources는 본인 계정 하나, Zone Resources는 비운다. 만료일을 정한다.
-3. `jihune/yukemuri`의 Settings → Secrets and variables → Actions → New repository secret:
-   - `CLOUDFLARE_API_TOKEN`: 2번의 토큰.
-   - `CLOUDFLARE_ACCOUNT_ID`: 대시보드의 Account ID.
-   - `YUKEMURI_CRAWL_ACCESS_KEY`: 새 임의값(예: 64자리 16진수). 기존 Sites 키와 다른 값을 권장한다. 새 Worker의 `CRAWL_ACCESS_KEY`로 올라간다.
-4. 실행기 레포 Secret(`YUKEMURI_CLOUDFLARE_JSON` 등)은 4·6단계 PR에서 정한다. 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
+1. API 토큰: 프로필의 API Tokens(사용자 토큰)에서 템플릿 ‘Edit Cloudflare Workers’에 Account `D1: Edit`를 더했다. Account Resources는 본인 계정, Zone Resources는 All zones, 만료 없음, IP 제한 없음이다. 템플릿의 다른 권한(KV·R2·Pages·Tail·Workers Routes 등)도 들어 있다. `Account Analytics: Read`는 없다. CPU·D1 사용량을 API로 읽어야 할 때 사용자에게 권한 추가를 요청한다.
+2. GitHub Secret:
+   - 앱 레포 `jihune/yukemuri`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `YUKEMURI_CRAWL_ACCESS_KEY`(새 Worker의 `CRAWL_ACCESS_KEY`로 올라간다).
+   - 실행기 레포 `jihune/yukemuri-script-runner`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`(4단계 적재용, `hosting-review-20261011.md` 3.3절). `YUKEMURI_CLOUDFLARE_JSON`은 6단계에서 정한다. 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
+3. `workers.dev` 서브도메인: 사용자는 정하지 않았다. Workers & Pages 화면을 열 필요가 없다. 3단계 workflow가 계정에 서브도메인이 없을 때 입력값으로 등록한다(아래).
 
 ## 3단계: D1 만들기(수동 실행, Worker 배포 없음)
 
 Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
-1. Actions → ‘Cloudflare D1 setup’ → Run workflow(main).
-2. workflow가 빌드한 뒤 `wrangler d1 list --json`으로 `yukemuri`를 찾는다. 없으면 `wrangler d1 create yukemuri --location apac --config dist/server/wrangler.json`으로 만든다. 같은 이름이 둘 이상이면 실패한다.
-3. 실행 요약에 `database_id`와 이번 실행에서 만들었는지가 나온다. 레포의 `databaseId`가 이미 다른 값이면 마이그레이션 전에 실패한다.
-4. 찾은 ID를 실행기 안의 `cloudflare-deploy.json`에만 넣고 다시 빌드한 뒤 `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`으로 0000–0012를 적용한다. 적용 목록을 요약에 남긴다. 이력 테이블은 wrangler 기본 `d1_migrations`다.
-5. 에이전트가 요약의 ID를 `cloudflare-deploy.json`의 `databaseId`에 넣는 PR을 만든다. 이 PR은 `autoDeploy`를 켜지 않는다. 그래서 병합해도 배포는 계속 건너뛴다.
+1. Actions → ‘Cloudflare D1 setup’ → Run workflow(main). 계정에 `workers.dev` 서브도메인이 없을 때만 쓸 값을 `workers_subdomain`에 넣는다(소문자·숫자·하이픈, 1–63자, 앞뒤 하이픈 금지). 비워도 된다.
+2. `scripts/cloudflare-workers-subdomain.mjs`가 Cloudflare API `GET /accounts/{account_id}/workers/subdomain`으로 현재 서브도메인을 읽는다.
+   - 있으면 입력을 무시하고 바꾸지 않는다(덮어쓰지 않음).
+   - 없고 입력이 있으면 같은 경로에 `PUT {"subdomain":"<입력>"}`으로 등록한다.
+   - 없고 입력도 없으면 경고만 남기고 D1 작업을 이어 간다.
+   - 요약에 서브도메인과 `publicOrigin`(`https://yukemuri.<서브도메인>.workers.dev`)을 쓴다. 이 형식은 `cloudflare-deploy-gate.mjs`·`build-collector-release.mjs`·`source_safety.py`의 허용 형식과 같다. 토큰은 환경 변수로만 넘기고, 출력은 서브도메인·주소·등록 여부뿐이다. 서브도메인 등록에 필요한 토큰 권한은 템플릿의 Workers 권한으로 충분하다고 보지만 실제 실행 전까지 미확인이다.
+3. workflow가 빌드한 뒤 `wrangler d1 list --json`으로 `yukemuri`를 찾는다. 없으면 `wrangler d1 create yukemuri --location apac --config dist/server/wrangler.json`으로 만든다. 같은 이름이 둘 이상이면 실패한다.
+4. 실행 요약에 `database_id`와 이번 실행에서 만들었는지가 나온다. 레포의 `databaseId`가 이미 다른 값이면 마이그레이션 전에 실패한다.
+5. 찾은 ID를 실행기 안의 `cloudflare-deploy.json`에만 넣고 다시 빌드한 뒤 `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`으로 0000–0012를 적용한다. 적용 목록을 요약에 남긴다. 이력 테이블은 wrangler 기본 `d1_migrations`다.
+6. 에이전트가 요약의 ID를 `cloudflare-deploy.json`의 `databaseId`에 넣는 PR을 만든다. 이 PR은 `autoDeploy`를 켜지 않는다. 그래서 병합해도 배포는 계속 건너뛴다.
 
-다시 실행해도 안전하다. 이미 있는 D1은 만들지 않고, 적용된 마이그레이션은 다시 적용하지 않는다.
+다시 실행해도 안전하다. 이미 있는 서브도메인·D1은 바꾸거나 만들지 않고, 적용된 마이그레이션은 다시 적용하지 않는다.
 
 ## 4단계 뒤: 자동 배포 켜기
 
@@ -101,4 +103,4 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - 무료 플랜의 Rate Limiting 바인딩 사용 가능 여부.
 - `workers.dev`에서 Cache API 저장 여부.
 - `wrangler-action`이 pnpm으로 설치된 wrangler 4.92.0을 그대로 쓰는지. 실제 Secret으로 실행한 적이 없다.
-- 토큰 권한 세 개로 Rate Limiting 바인딩이 있는 Worker를 올릴 수 있는지.
+- 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올리고 서브도메인을 등록할 수 있는지.

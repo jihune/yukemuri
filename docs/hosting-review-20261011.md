@@ -265,7 +265,7 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
    - 권한을 추가·확인한다: Account `Workers Scripts: Edit`, Account `D1: Edit`, Account `Account Settings: Read`. 선택: Account `Account Analytics: Read`(에이전트가 CPU·D1 사용량을 읽을 때).
    - Account Resources는 본인 계정 하나만 고른다. Zone Resources는 커스텀 도메인을 쓰지 않으면 비운다.
    - 만료일을 정하고 Account ID를 함께 메모한다.
-4. **GitHub Secret 등록**(Settings → Secrets and variables → Actions → New repository secret). 앱 레포의 세 이름은 2단계 PR에서 확정했다(`cloudflare-deploy.md`의 ‘사용자가 할 일’). 실행기 레포 이름은 4·6단계 PR에서 확정한다.
+4. **GitHub Secret 등록**(Settings → Secrets and variables → Actions → New repository secret). 앱 레포의 세 이름은 2단계 PR에서 확정했다(`cloudflare-deploy.md`의 ‘사용자가 한 일’). 실행기 레포 이름은 4·6단계 PR에서 확정한다.
    - `jihune/yukemuri`:
      - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
      - `YUKEMURI_CRAWL_ACCESS_KEY`: 비밀번호 관리자 등에서 만든 새 임의값, 예: 64자리 16진수. 기존 Sites 키와 다른 값을 권장한다.

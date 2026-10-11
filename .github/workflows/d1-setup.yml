@@ -1,9 +1,16 @@
 name: Cloudflare D1 setup
-# Stage 3, manual only: find or create the yukemuri D1 database (APAC hint),
+# Stage 3, manual only: read (or, when the account has none, register) the
+# workers.dev subdomain, find or create the yukemuri D1 database (APAC hint),
 # print its database_id and apply drizzle migrations. Never deploys the Worker.
 # Record the printed id in cloudflare-deploy.json with a PR (docs/cloudflare-deploy.md).
 on:
   workflow_dispatch:
+    inputs:
+      workers_subdomain:
+        description: 'workers.dev subdomain to register only if the account has none (never overwrites)'
+        type: string
+        required: false
+        default: ''
 concurrency:
   group: cloudflare-account
   cancel-in-progress: false
@@ -22,6 +29,25 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: bash scripts/cloud-setup.sh
+      - id: subdomain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WORKERS_SUBDOMAIN: ${{ inputs.workers_subdomain }}
+        run: node scripts/cloudflare-workers-subdomain.mjs | tee -a "$GITHUB_OUTPUT"
+      - env:
+          SUBDOMAIN: ${{ steps.subdomain.outputs.subdomain }}
+          ORIGIN: ${{ steps.subdomain.outputs.public_origin }}
+          REGISTERED: ${{ steps.subdomain.outputs.registered }}
+          IGNORED: ${{ steps.subdomain.outputs.ignored_input }}
+        run: |
+          if [ -z "$SUBDOMAIN" ]; then
+            echo "::warning::The account has no workers.dev subdomain. Re-run with workers_subdomain to register one."
+            echo "workers.dev subdomain: none (D1 setup continues)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "workers.dev subdomain: \`$SUBDOMAIN\` (registered in this run: $REGISTERED, input ignored because one exists: $IGNORED)" >> "$GITHUB_STEP_SUMMARY"
+            echo "publicOrigin for cloudflare-deploy.json: \`$ORIGIN\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - run: node scripts/run-framework.mjs build
       - id: d1
         env:
