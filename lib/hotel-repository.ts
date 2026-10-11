@@ -107,7 +107,7 @@ function coverageFrom(counts:CoverageCounts|undefined,jobs:CoverageJobs[]){
  for(const job of jobs){aggregate.providers[job.provider]={discovered:job.discovered,completed:job.completed};aggregate.discoveredDetailUrls+=job.discovered;aggregate.completedDetailPages+=job.details;aggregate.pending+=job.pending;aggregate.failed+=job.failed;if(job.updated&&job.updated>aggregate.updatedAt)aggregate.updatedAt=job.updated}
  return aggregate;
 }
-async function queryCoverage(){
+export async function queryCoverage(){
  const db=favoritesDb(),[counts,jobs]=await db.batch(coverageStatements(db));
  return coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
 }

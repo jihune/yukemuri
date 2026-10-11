@@ -295,3 +295,55 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 5. 브라우저 검사(check-u0x-browser) 준비 단계: 개발 서버를 연 뒤 `/api/hotels`를 먼저 요청하고 503이면 서버를 다시 연다(부가 조사의 후속, 이 PR 범위 밖).
 6. 완료: 결과 쪽의 출처 묶음·생애주기를 한 번만 붙인다(CPU 보강, 응답 비교 통과).
 7. 남은 비용(`P02-20261011.md`): Trip 선점 약 550–600행, refresh 선점은 done 작업 수에 비례, 수집 끝 GET 43,146행, catalog-export 목록 41,715행.
+
+## P03 — 정적 스냅숏 전환(목록·검색·지도)
+
+기록: 2026-10-11T16:30Z / 2026-10-12 01:30 KST(PR A). 검토 반영: 18:25Z / 03:25 KST. 상세는 `P03-20261012.md`다. 다른 작업(H01 4단계)이 병행 중이라 이 절만 더했다.
+
+### 기준과 상태
+
+- 작업 환경: Claude Code 웹 클라우드. 상위 세션이 맡긴 작업이다. 작성 세션 `session_01Y1JhjKANZbPiLfETCBdRns`.
+- 브랜치 `claude/p03-static-snapshot`. 시작 기준 main `df82f10`. 기록 직전에 main `4bd2311`(PR #39·#41·#42)을 merge했다. 충돌은 없었다.
+- 운영 D1·Secret·수집 예약·Cloudflare 계정·운영 사이트에 접속하지 않았다. 스키마(마이그레이션)를 바꾸지 않았다. 수집기 파일과 release는 그대로다. Sites에 게시하지 않았다.
+- 하네스(`jihune/agent-harness` `4ea019d`의 `claude/START.md`)를 읽기용으로 붙여 적용했다. 전역 규칙 155줄, 스킬 37개(SKILL.md가 있는 폴더)다. 하네스는 수정하지 않았다.
+
+### 환경 확인
+
+- Node 24.21.0(`nvm install 24`), pnpm 11.25.0, Python 3.13. `bash scripts/cloud-setup.sh` exit 0(15:55Z). 잠금 파일은 바뀌지 않았다.
+- `python3 scripts/cloud-check.py --full`: 시작 기준 `df82f10` 27개 통과(15:55:36Z–16:02:02Z, rc=0). PR A 작업 트리 28개 통과(16:23:35Z–16:30:51Z, rc=0). actionlint 1.7.7 rc=0.
+
+### PR A 결과
+
+- 스냅숏 형식(`lib/search-snapshot.ts`)과 생성기(`scripts/build-search-snapshot.mjs`, `lib/search-snapshot-build.ts`). Worker와 같은 함수를 Node로 컴파일해 core(검색 열)·cards(카드 필드)·text(이름 검색)·status(수집 현황)와 manifest를 `dist/client/snapshot/`에 쓴다. 원본은 로컬 SQLite 또는 Cloudflare API(`--remote`). 읽기 문장 밖은 보내기 전에 거절한다.
+- `deploy.yml`: 마이그레이션 뒤·배포 앞에 생성, `workflow_call`(6단계 수집 workflow가 수집 끝에 부름). smoke가 manifest id와 파일을 확인한다.
+- 운영 규모 복사본: 생성 1회 읽기 103,844행(처음 판 197,002행), 쓰기 0. 크기 추정(gzip) core 305KB, cards 933KB, text 1.0MB.
+
+### 미확인 사항
+
+- 실제 Cloudflare API `/query`의 응답·크기 한도와 토큰 권한, 정적 자산의 압축 전송과 `_headers` 적용. 첫 실제 배포에서 확인한다(상위 세션).
+- 재사용 workflow(`workflow_call`)로 불렸을 때 `deploy.yml`의 최상위 `concurrency`가 적용되는지, 수집 workflow가 계정 그룹을 먼저 잡지 않는지. 6단계 수집 workflow PR에서 확인한다.
+- 휴대폰 수준 CPU의 스냅숏 해석 시간·메모리(PR B에서 잰다).
+
+### 이번 세션의 결정
+
+1. 하네스와 충돌한 곳은 유케무리 지침과 요청을 따랐다. `START.md` 4단계의 ‘다음 메시지를 기다린다’는 상위 세션 요청이 작업을 지정해 따르지 않았다. `STATE.md`·요청 원장은 `AGENTS.md`의 ‘기록’이 별도 기록 폴더를 금지해 이 절과 `P03-20261012.md`에 기록했다. 하네스의 ‘push는 요청할 때만’은 이 요청이 PR을 지시해 push했다. Windows 경로·PowerShell·winget 지침은 Linux 클라우드라 적용하지 않았다.
+2. 스냅숏 생성은 Worker 경로가 아니라 Actions에서 한다. 생성에 숙소 1.2만 곳의 payload 해석이 들어 Worker 요청당 CPU 한도에 맞지 않기 때문이다. D1은 Cloudflare API로 읽는다. 배포 토큰을 그대로 쓰고 Worker 요청 수에 들어가지 않는다.
+3. 카드는 서버 목록과 같은 함수로 만든다(정제·출처 묶음·생애주기). 그래서 화면 카드가 지금과 같다는 근거를 Worker 응답과의 대조 검사로 얻는다.
+
+### 검토(PR A, #43)
+
+`cloud-development.md`의 ‘검토 요청’ 1번을 따른다. 병합은 `AGENTS.md`의 ‘상위 세션이 맡긴 작업’ 규칙대로 상위 세션이 한다.
+
+- CI 첫 실행이 `check-edge-guard-worker.mjs`에서 실패했다. Miniflare 속도 제한의 고정 1분 창이 검사 중간(16:36:00Z)에 바뀐 시간 의존 실패라 한 번 다시 실행해 통과했다. 검사가 분 앞쪽에서 시작하게 고쳤다.
+- Codex 1회째(`d898919`, 17:17Z 요청): P2 2건. (가) `WITH`로 시작하는 쓰기 문장이 읽기 전용 가드를 통과함 → 재현 뒤 문장 전체의 쓰기 단어를 거절하게 고침. (나) 배포 스냅숏이 수집 쓰기와 겹칠 수 있음 → 배포 job을 수집 동시 실행 그룹에서 기다리게 고침. 상세는 `P03-20261012.md`의 ‘검토(A)’.
+- Codex 2회째(`7732c03`, 18:29Z 요청): P2 1건. 배포(계정 → 카탈로그)와 6단계 수집 호출(카탈로그 → 계정)의 잠금 순서가 반대라 서로 기다릴 수 있음 → 카탈로그 그룹을 최상위, 계정 그룹을 job으로 옮겨 순서를 같게 고침. 
+- Codex 3회째(`5689bd9`, 18:44Z 요청): P2 1건. 429 재시도가 `Retry-After`를 무시함 → 그 시간만큼 기다리고 5분을 넘으면 바로 실패하게 고침. Codex 요청 세 번을 다 썼고 기록 파일 밖을 고쳤으므로 Claude 검토(최대 2회)를 상위 세션에 요청한다.
+- Claude 검토 1회째(이어 가는 검토, `977d748`, 상위 세션이 연 `session_015fBTaZJEjwTx8WrxEVvgKc`, 19:07Z 게시): P0~P2 없음, P3 1건(다음 작업 4번). Codex 지적 네 건의 수정을 확인했고 `cloud-check.py --full`·`check-search-snapshot-worker`·`check-deploy-config`·actionlint가 통과했다. 이 기록은 상위 세션이 PR 브랜치에 더했다(19:32Z).
+
+### 다음 작업
+
+1. PR A 재검토 뒤 병합(상위 세션).
+2. PR B: 브라우저 검색 전환(`lib/static-search.ts`), 첫 화면 정적 HTML, 서버 목록·검색·지도 경로 제거, 응답 비교(main 응답 대 브라우저 계산)·브라우저 검사(360/390/1280px, U01~U04), 휴대폰 CPU 해석 시간·메모리 측정, 스냅숏을 못 받았을 때와 버전이 어긋날 때의 화면 동작.
+3. PR C: `/api/collection-status` 정적화, `/api/photo-credits` 커서 방식, 공개 읽기 경로의 D1 쓰기 제거(상세 GET의 번역 요청 기록, `ensureCatalog`), 경로별 D1 읽기 상한·CPU 측정.
+4. P3(PR #43 Claude 검토 1회째): `scripts/build-search-snapshot.mjs` 29행 `code()`가 문자열 리터럴을 지운 뒤 주석을 지워, 주석 안 작은따옴표 하나로 읽기 전용 가드를 우회할 수 있다. 재현: `WITH x AS (SELECT 1) /* it's */ DELETE FROM hotels WHERE name<>'zz'`가 임시 sqlite에서 가드를 통과해 실행됐다. 문장은 `lib/` 코드에서만 오므로 실제 위험은 낮다. PR B 또는 C에서 리터럴과 주석을 왼쪽부터 한 번에 훑도록 고치고 검사에 이 경우를 넣는다.
+5. 참고(미확인, 같은 검토): 6단계 수집 workflow가 카탈로그 그룹을 최상위에서 잡으면, 대기 중인 수집 실행이 다음 push 배포로 취소될 수 있다(같은 그룹의 대기 실행은 하나만 남는다). 6단계 수집 workflow PR에서 확인한다.

@@ -10,8 +10,9 @@ function epochIso(seconds:number|null){
 }
 // Public summaries only. Queue URLs, claim tokens, raw errors, private metadata,
 // visitor favorites and Google content never enter this response.
-export async function readCollectionStatus():Promise<CollectionStatus>{
- const now=Date.now()/1000,db=favoritesDb();
+// at: the time the status describes (the snapshot builder passes its own).
+export async function readCollectionStatus(at=Date.now()):Promise<CollectionStatus>{
+ const now=at/1000,db=favoritesDb();
  const [providers,cooldowns,issues,quality]=await Promise.all([
   db.prepare(`SELECT provider,MAX(unixepoch(fetched_at)) AS last_success,
    SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS completed_details,
