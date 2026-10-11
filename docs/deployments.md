@@ -10,7 +10,7 @@
 | 2026-10-11 | `ff4d6f202f39ec315d9848a9a94a01c12e8c4381` (`claude/u02-map-keyboard`) | 없음 | 없음 | U02 지도 지점 키보드 접근성 검사·Codex 검토 완료. main 병합(`807dad9`)·Sites 미게시 |
 | 2026-10-11 | `eef4fc705841a7dcb39929abb917c495e0fe990c` (`claude/d01-trip-address`) | 없음 | 없음 | D01 Trip 주소 중복 수집기 수정 검사·Codex 검토 완료. 수집기 release `08ca3bfe81af5c33bb8273a59fefa5aa0d7cf9d245c2729d3d474cf71b541bda`. main 병합(`d0ecabe`)·Sites 미게시 |
 | 2026-10-11 | `b6775744386820dd967813247f4f720b79910515` (`claude/u03-desktop-overlap`) | 없음 | 없음 | U03 PR A 데스크톱 필터 패널·지도 출처 가림 수정 검사·Codex 검토 완료. 앱 화면만 변경. main 병합(`53ee98b`)·Sites 미게시 |
-| 2026-10-11 | `0b92e026e67ad992e0edd5e03b8ac45a3eaab22c` (`claude/u03-comparison-diff`) | 없음 | 없음 | U03 PR B 비교 차이 강조 검사 완료. 앱 화면만 변경. 검토 전·main 미병합·Sites 미게시 |
+| 2026-10-11 | `4ab16029bf94b422a19b087542f1d492e80447b4` (`claude/u03-comparison-diff`) | 없음 | 없음 | U03 PR B 비교 차이 강조 검사·Codex 3회·Claude 1회 검토 완료. 앱 화면만 변경. main 병합(`1ff8f48`)·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
