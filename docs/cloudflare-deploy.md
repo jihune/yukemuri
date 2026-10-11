@@ -72,9 +72,10 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다.
   2. `d1 time-travel info yukemuri --json`으로 복구 지점(bookmark)을 요약에 남긴다. JSON의 `bookmark` 필드는 wrangler 4.92.0 소스에서 확인했다. 값이 없으면 배포 전에 멈춘다.
   3. `d1 migrations apply yukemuri --remote`. 새 마이그레이션이 없으면 아무것도 하지 않는다.
-  3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다.
+  3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다. 이 단계는 `/`의 정적 페이지도 다시 그린다(기본 보기 첫 쪽과 manifest를 넣는다). 카탈로그가 이 릴리스의 seed로 준비되지 않았으면(`catalog_meta`의 준비 표시 5개) 그 목록을 `prepared=false`로 알린다.
   4. `deploy --config dist/server/wrangler.json`. 크롤 키는 `cloudflare/wrangler-action`의 `secrets` 입력으로 `CRAWL_ACCESS_KEY`에 올린다. 배포 버전 ID를 요약에 남긴다.
-  5. `scripts/cloudflare-smoke.mjs`: 공개 `/api/hotels`가 200이고 숙소가 있는지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일 네 개가 열리는지, 키 없는 `/api/crawl?report=1`이 403인지, 키를 쓴 같은 요청이 200인지, `robots.txt`가 `/api/`를 막는지 본다. 로그에는 상태와 개수만 남긴다.
+  5. `scripts/cloudflare-smoke.mjs`: `/`의 정적 페이지가 이번 스냅숏의 첫 쪽 카드를 담는지, core 첫 숙소의 상세가 200인지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일 네 개가 열리는지, 키 없는 `/api/crawl?report=1`이 403인지, 키를 쓴 같은 요청이 200인지, `robots.txt`가 `/api/`를 막는지 본다. 로그에는 상태와 개수만 남긴다.
+  6. 3-1이 `prepared=false`일 때만(seed를 바꾼 릴리스): 공개 읽기는 카탈로그를 채우지 않으므로(P03 PR C) `scripts/cloudflare-prepare.mjs`가 새 Worker의 `/api/crawl-prepare`를 완료까지 부르고, 스냅숏을 `--require-prepared`로 다시 만들어 같은 빌드를 한 번 더 배포하고 smoke를 다시 돌린다. 그 사이 사이트는 앞 스냅숏(준비 전 행)으로 온전히 열린다.
 - `cloudflare/wrangler-action`은 v4.1.3 커밋 `953926a2e2182532811c01a25e53647d93bf07c0`로 고정했다(2026-10-11 `git ls-remote` 확인). `wranglerVersion`은 잠금 파일과 같은 4.92.0이다.
 
 ## 공개 사이트 보호

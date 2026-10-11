@@ -1,0 +1,408 @@
+{
+ "measuredAt": "2026-10-11T22:13:05.539Z",
+ "schema": "0013_robust_reaper.sql",
+ "gitHead": "896f490",
+ "dirty": false,
+ "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.",
+ "grown": true,
+ "seedRequest": {
+  "rowsRead": 661553,
+  "rowsWritten": 43002
+ },
+ "tables": {
+  "hotels": 12271,
+  "hotel_names": 13849,
+  "crawl_jobs": 15417,
+  "hotel_lifecycle": 0
+ },
+ "results": [
+  {
+   "key": "detailCold",
+   "label": "상세(새 isolate)",
+   "path": "/api/hotels/akan-tsuruga",
+   "ms": 51.1,
+   "statements": 5,
+   "rowsRead": 25,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "detail",
+   "label": "상세",
+   "path": "/api/hotels/akan-tsuruga",
+   "ms": 18.9,
+   "statements": 5,
+   "rowsRead": 25,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "compare",
+   "label": "비교 3곳",
+   "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
+   "ms": 20.3,
+   "statements": 5,
+   "rowsRead": 75,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "compare4",
+   "label": "비교 4곳(최대)",
+   "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu,chalet-ivy-jozankei",
+   "ms": 22.3,
+   "statements": 5,
+   "rowsRead": 100,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "detailMissing",
+   "label": "상세(없는 숙소)",
+   "path": "/api/hotels/no-such-hotel",
+   "ms": 8.1,
+   "statements": 1,
+   "rowsRead": 2,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "favoritesPut",
+   "label": "즐겨찾기 저장(PUT)",
+   "path": "/api/favorites",
+   "ms": 24.6,
+   "statements": 2,
+   "rowsRead": 1,
+   "rowsWritten": 2,
+   "heaviest": []
+  },
+  {
+   "key": "favoritesGet",
+   "label": "즐겨찾기 목록",
+   "path": "/api/favorites",
+   "ms": 11,
+   "statements": 1,
+   "rowsRead": 3,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "photoCredits",
+   "label": "사진 출처 첫 쪽",
+   "path": "/api/photo-credits",
+   "ms": 23.1,
+   "statements": 2,
+   "rowsRead": 42,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 12271
+  },
+  {
+   "key": "photoCreditsNext",
+   "label": "사진 출처 다음 쪽(커서)",
+   "path": "/api/photo-credits?after=bourou-hakodate",
+   "ms": 16.9,
+   "statements": 2,
+   "rowsRead": 42,
+   "rowsWritten": 0,
+   "heaviest": [],
+   "total": 12271
+  },
+  {
+   "key": "google",
+   "label": "Google 평점(설정 없음)",
+   "path": "/api/hotels/akan-tsuruga/google",
+   "ms": 6,
+   "statements": 0,
+   "rowsRead": 0,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "prices",
+   "label": "요금(폐지)",
+   "path": "/api/prices",
+   "ms": 4.8,
+   "statements": 0,
+   "rowsRead": 0,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "collectionStatusPublic",
+   "label": "수집 현황(키 없음)",
+   "path": "/api/collection-status",
+   "ms": 5.9,
+   "statements": 0,
+   "rowsRead": 0,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "crawlGet",
+   "label": "수집 GET 집계(실행 끝)",
+   "path": "/api/crawl?provider=jalan&kind=list&limit=1",
+   "ms": 54.7,
+   "statements": 11,
+   "rowsRead": 43151,
+   "rowsWritten": 2,
+   "heaviest": [
+    {
+     "rowsRead": 3182,
+     "sql": "SELECT * FROM crawl_jobs WHERE provider=? AND kind=? AND status IN ('pending','retry') AND next_at<=? ORDER BY (prefecture IS NULL),attempts,url LIMIT ?"
+    },
+    {
+     "rowsRead": 12272,
+     "sql": "INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=exclude"
+    },
+    {
+     "rowsRead": 12271,
+     "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
+    },
+    {
+     "rowsRead": 15418,
+     "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+    }
+   ]
+  },
+  {
+   "key": "crawlClaim",
+   "label": "수집 작업 선점(POST)",
+   "path": "/api/crawl",
+   "ms": 15.2,
+   "statements": 2,
+   "rowsRead": 548,
+   "rowsWritten": 2,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:detail:priority",
+   "label": "수집 작업 선점(POST, jalan detail priority)",
+   "path": "/api/crawl",
+   "ms": 12.1,
+   "statements": 2,
+   "rowsRead": 45,
+   "rowsWritten": 2,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:detail:national",
+   "label": "수집 작업 선점(POST, jalan detail national)",
+   "path": "/api/crawl",
+   "ms": 13.1,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:baths:priority",
+   "label": "수집 작업 선점(POST, jalan baths priority)",
+   "path": "/api/crawl",
+   "ms": 14.5,
+   "statements": 3,
+   "rowsRead": 53,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:baths:national",
+   "label": "수집 작업 선점(POST, jalan baths national)",
+   "path": "/api/crawl",
+   "ms": 18.2,
+   "statements": 3,
+   "rowsRead": 17,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:detail:priority",
+   "label": "수집 작업 선점(POST, trip detail priority)",
+   "path": "/api/crawl",
+   "ms": 12.6,
+   "statements": 3,
+   "rowsRead": 550,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:detail:national",
+   "label": "수집 작업 선점(POST, trip detail national)",
+   "path": "/api/crawl",
+   "ms": 15.3,
+   "statements": 3,
+   "rowsRead": 8,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:refresh:priority",
+   "label": "수집 작업 선점(POST, jalan refresh priority)",
+   "path": "/api/crawl",
+   "ms": 14.2,
+   "statements": 3,
+   "rowsRead": 545,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:refresh:national",
+   "label": "수집 작업 선점(POST, jalan refresh national)",
+   "path": "/api/crawl",
+   "ms": 12.2,
+   "statements": 3,
+   "rowsRead": 521,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:refresh:priority",
+   "label": "수집 작업 선점(POST, trip refresh priority)",
+   "path": "/api/crawl",
+   "ms": 14.7,
+   "statements": 3,
+   "rowsRead": 593,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:refresh:national",
+   "label": "수집 작업 선점(POST, trip refresh national)",
+   "path": "/api/crawl",
+   "ms": 11.8,
+   "statements": 3,
+   "rowsRead": 72,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:list:priority",
+   "label": "수집 작업 선점(POST, jalan list priority)",
+   "path": "/api/crawl",
+   "ms": 15.7,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:jalan:list:national",
+   "label": "수집 작업 선점(POST, jalan list national)",
+   "path": "/api/crawl",
+   "ms": 14.6,
+   "statements": 3,
+   "rowsRead": 9,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:list:priority",
+   "label": "수집 작업 선점(POST, trip list priority)",
+   "path": "/api/crawl",
+   "ms": 15.2,
+   "statements": 3,
+   "rowsRead": 7,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:list:national",
+   "label": "수집 작업 선점(POST, trip list national)",
+   "path": "/api/crawl",
+   "ms": 15.7,
+   "statements": 3,
+   "rowsRead": 7,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:names:priority",
+   "label": "수집 작업 선점(POST, trip names priority)",
+   "path": "/api/crawl",
+   "ms": 12.3,
+   "statements": 3,
+   "rowsRead": 581,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "claim:trip:names:national",
+   "label": "수집 작업 선점(POST, trip names national)",
+   "path": "/api/crawl",
+   "ms": 11.8,
+   "statements": 3,
+   "rowsRead": 39,
+   "rowsWritten": 0,
+   "heaviest": []
+  },
+  {
+   "key": "crawlPut",
+   "label": "수집 저장(PUT, 상세 1곳)",
+   "path": "/api/crawl",
+   "ms": 46.5,
+   "statements": 12,
+   "rowsRead": 27,
+   "rowsWritten": 21,
+   "heaviest": [],
+   "coverageRecords": 12271,
+   "accepted": 1
+  },
+  {
+   "key": "crawlPutList",
+   "label": "수집 저장(PUT, 목록: 새 숙소 30·기존 15)",
+   "path": "/api/crawl",
+   "ms": 85.8,
+   "statements": 12,
+   "rowsRead": 698,
+   "rowsWritten": 701,
+   "heaviest": [],
+   "coverageRecords": 12301,
+   "accepted": 45
+  },
+  {
+   "key": "crawlPutCold",
+   "label": "수집 저장(PUT, 새 isolate)",
+   "path": "/api/crawl",
+   "ms": 77.4,
+   "statements": 17,
+   "rowsRead": 31,
+   "rowsWritten": 20,
+   "heaviest": [],
+   "coverageRecords": 12301,
+   "accepted": 1
+  },
+  {
+   "key": "exportManifest",
+   "label": "catalog-export 목록",
+   "path": "/api/catalog-export",
+   "ms": 54,
+   "statements": 26,
+   "rowsRead": 41719,
+   "rowsWritten": 0,
+   "heaviest": [
+    {
+     "rowsRead": 12301,
+     "sql": "SELECT COUNT(*) AS count FROM hotels"
+    },
+    {
+     "rowsRead": 13879,
+     "sql": "SELECT COUNT(*) AS count FROM hotel_names"
+    },
+    {
+     "rowsRead": 15448,
+     "sql": "SELECT COUNT(*) AS count FROM crawl_jobs"
+    }
+   ]
+  },
+  {
+   "key": "exportPage",
+   "label": "catalog-export hotels 한 쪽(250행)",
+   "path": "/api/catalog-export?table=hotels&limit=250",
+   "ms": 82.4,
+   "statements": 1,
+   "rowsRead": 251,
+   "rowsWritten": 0,
+   "heaviest": []
+  }
+ ]
+}
