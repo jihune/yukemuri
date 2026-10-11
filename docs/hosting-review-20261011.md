@@ -72,7 +72,7 @@
 | Sites 전용 요소 | 위치 | 이전 시 처리 |
 |---|---|---|
 | 게시 도구(ChatGPT 안의 Sites 도구만 가능) | `docs/sites-handoff.md` | GitHub Actions + wrangler 배포로 대체 |
-| 빌드 중 `.openai/hosting.json`·`drizzle/`을 `dist/.openai`로 복사하고 Sites가 게시 때 마이그레이션 적용 | `build/sites-vite-plugin.ts` `closeBundle` | `wrangler d1 migrations apply --remote` 단계를 배포 workflow에 둠. 복사 동작은 무해 |
+| 빌드 중 `.openai/hosting.json`·`drizzle/`을 `dist/.openai`로 복사하고 Sites가 게시 때 마이그레이션 적용 | `build/sites-vite-plugin.ts` `closeBundle` | `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json` 단계를 배포 workflow에 둠. 복사 동작은 무해 |
 | D1 `database_id` 자리표시자를 Sites가 실제 값으로 바꿈 | `vite.config.ts` `SITE_CREATOR_PLACEHOLDER_DATABASE_ID` | 실제 ID(비밀 아님)를 설정에 넣음. Worker 이름도 `site-creator-vinext-starter` 대신 명시 |
 | 마이그레이션 이력 테이블 `__appgarden_migrations` | 내보낸 D1 SQL | 새 D1은 wrangler 기본 `d1_migrations`로 스키마를 만들고 데이터만 옮김 |
 | Sites 접근 게이트와 `OAI-Sites-Authorization` 헤더 | 실행기 `bootstrap.py`, 앱 `scripts/crawler/*.py`, `scripts/catalog-checkpoint.py`, 실행기 `catalog-checkpoint.py` | Cloudflare Access + 서비스 토큰 헤더(`CF-Access-Client-Id`·`CF-Access-Client-Secret`)로 대체 |
@@ -149,6 +149,8 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 
 ### 3.2 단계별 계획
 
+이 계획은 사용자 결정을 돕는 초안이다. 각 단계의 실제 명령·workflow는 그 단계의 PR에서 확정하고 검토받는다. `wrangler d1` 명령은 데이터베이스 이름(`yukemuri`)을 첫 인자로 받는다. 앱 레포에서는 `--config dist/server/wrangler.json`을 함께 준다.
+
 각 단계는 별도 PR·별도 세션으로 진행한다. 검토 규칙은 `AGENTS.md`를 따른다. 지금 `AGENTS.md`·`docs/cloud-development.md`는 호스팅 이전과 Secret 회전을 위임 범위 밖으로 둔다. 사용자가 이 계획을 승인한다는 결정을 먼저 기록해야 한다.
 
 **0단계. 결정 기록(에이전트, 문서 PR)**
@@ -165,7 +167,7 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 - 새 workflow `deploy.yml`:
   - main push 때 checks와 같은 설치·빌드를 한다.
   - `wrangler d1 time-travel info yukemuri --config dist/server/wrangler.json`으로 복구 지점(bookmark)을 기록한다. 데이터베이스 이름은 필수 인자다(Codex 검토, 2026-10-11).
-  - `wrangler d1 migrations apply yukemuri --remote`(새 마이그레이션이 있을 때만) → `wrangler deploy --config dist/server/wrangler.json` 순서다.
+  - `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`(새 마이그레이션이 있을 때만) → `wrangler deploy --config dist/server/wrangler.json` 순서다.
   - 비밀 `CRAWL_ACCESS_KEY`는 wrangler-action `secrets` 입력으로 올린다.
   - 서비스 토큰으로 `/api/hotels`·`/api/crawl?report=1`을 점검한다.
   - 배포 버전 ID를 요약에 남긴다. 권한은 `contents: read`로 둔다.
@@ -176,11 +178,15 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 - D1 무료 한도 대응:
   - 수집 PUT·GET의 `coverage`를 가볍게 하거나 요청할 때만 계산한다(`update-site.py` 182·189행이 쓰는 값만).
   - 로컬 Miniflare에서 대표 요청의 `meta.rows_read`·`rows_written`을 재는 검사를 추가한다. Miniflare가 이 값을 운영과 같게 세는지는 미확인이다.
+- 기존 Sites용 쓰기 차단 스위치(Codex 검토, 2026-10-11):
+  - 보호된 유지보수 API(크롤 키)로 켜고 끄는 읽기 전용 표시를 둔다. 스키마를 바꾸지 않는 방법(기존 메타 행 등)을 쓴다.
+  - 켜지면 서버가 즐겨찾기 PUT과 수집 저장을 거절하고 화면에 이전 안내를 보인다.
+  - 이 코드는 전환 전에 S01(ChatGPT Work의 Sites 게시)로 기존 Sites에 먼저 올린다.
 - 문서: `sites-handoff.md`를 새 배포 절차 문서로 바꾸고 `deployments.md` 형식을 고친다. “GitHub merge ≠ 게시”를 “main 병합 = 자동 배포, 배포 결과는 Actions 기록으로 확인”으로 바꾼다.
 
 **3단계. D1 생성과 스키마(에이전트, 수동 실행 workflow)**
 - `wrangler d1 create yukemuri --location apac`를 실행한다. 출력된 `database_id`(비밀 아님)를 PR로 커밋한다.
-- `wrangler d1 migrations apply --remote`로 0000–0012를 적용한다.
+- `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`으로 0000–0012를 적용한다(Codex 검토, 2026-10-11).
 - 운영 DB를 개발 환경에 연결하지 않는다. 개발·CI는 계속 임시 Miniflare DB를 쓴다.
 
 **4단계. 백업에서 새 DB로 적재(에이전트, 실행기 레포의 수동 실행 workflow)**
@@ -206,10 +212,10 @@ Cloudflare Workers Free + D1 Free + Access Free, 주소는 `https://<Worker 이�
 
 **6단계. 전환(에이전트 PR + 사용자 확인)**
 1. 실행기 예약을 잠시 멈춘다. 예약을 끄는 PR을 병합하거나, 사용자가 `YUKEMURI_ENABLED`를 `false`로 바꾼다. 실행 중인 작업이 끝났는지 본다.
-2. 사용자 쓰기도 멈춘다. 수집기·백업 밖에서 기존 Sites에 쓰는 것은 즐겨찾기(`PUT /api/favorites`)다. 앱에는 쓰기를 막는 설정이 없다. 막으려면 Sites 게시가 필요하다. 그래서 사용자는 최종 체크포인트부터 전환이 끝날 때까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다(Codex 검토, 2026-10-11).
+2. 기존 Sites의 쓰기를 서버에서 막는다. 수집기·백업 밖에서 기존 Sites에 쓰는 것은 즐겨찾기(`PUT /api/favorites`)다. Sites는 public이라 방문자 토큰만 있으면 누구나 쓸 수 있다. 그래서 2단계의 쓰기 차단 스위치를 켜고 즐겨찾기 PUT이 거절되는지 확인한다. 스위치는 전환 뒤에도 켜 둔다. 스위치를 Sites에 게시할 수 없으면 전환을 멈추고, 오래된 탭·다른 방문자의 쓰기가 유실될 수 있다는 위험을 사용자에게 알려 결정을 받는다(Codex 검토, 2026-10-11).
 3. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
 4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
-5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영한다.
+5. 실행기 PR(6) 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인해 스위치가 동작했는지 본다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
 6. 실행기 PR:
    - 수집 workflow를 새 Secret `YUKEMURI_CF_ACCESS_JSON`과 새 주소로 바꾼다.
    - `bootstrap.py`의 `SITE_ORIGIN`, `run-updates.py` 허용 호스트, `run-backup.py` 허용 호스트, `catalog-checkpoint.py` 검사와 헤더를 바꾼다.
@@ -261,7 +267,8 @@ Secret 값은 채팅·PR·로그에 붙여 넣지 않는다. GitHub 화면의 Se
 6. **확인**:
    - 새 주소에서 이메일 코드로 로그인해 화면을 확인한다.
    - 집·휴대폰에서 `https://<새 주소>/cdn-cgi/trace`의 `colo`를 알려준다. 같은 방법으로 Sites 주소도 확인하면 비교할 수 있다.
-7. **선택**:
+7. **전환 전 Sites 게시**: ChatGPT Work에서 쓰기 차단 스위치가 들어간 main을 기존 Sites에 한 번 게시한다(6단계 2번의 전제, 로드맵 S01).
+8. **선택**:
    - 즐겨찾기·비교 목록을 이어 쓰려면 기존 주소의 localStorage `yukemuri-visitor-v1` 값을 새 주소에 옮긴다. 개발자 도구에서 하며, 에이전트가 안내문을 준비한다.
    - 한도 초과 시 Workers Paid 결제 여부를 정한다. Sites 삭제 여부와 시점을 정한다.
 
