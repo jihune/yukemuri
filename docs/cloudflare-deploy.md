@@ -16,7 +16,7 @@
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
 | `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
 | `scripts/cloudflare-smoke.mjs` | 배포 뒤 점검 |
-| `lib/edge-guard.ts` | 공개 사이트 보호(속도 제한·검색 캐시) |
+| `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한) |
 | `public/robots.txt` | `/api/`와 알려진 AI 수집 봇 차단 요청 |
 
 생성된 `dist/server/wrangler.json`의 설정: Worker 이름 `yukemuri`, `workers_dev: true`, `preview_urls: false`, `observability.enabled: true`, `placement.mode: smart`, D1 바인딩 `DB`(`database_name: yukemuri`, `migrations_dir: ../../drizzle`), Rate Limiting 바인딩 `API_RATE_LIMITER`(namespace `1001`, 60초에 120회). `migrations_dir`는 생성된 설정 파일 위치(`dist/server/`)에서 계산하므로 `../../drizzle`이 레포의 `drizzle/`을 가리킨다.
@@ -70,17 +70,17 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 - DDoS: Cloudflare가 L3·L4·L7 방어를 모든 플랜에 자동 적용한다(`hosting-review-20261011.md` 5절 출처).
 - 속도 제한(`lib/edge-guard.ts`, `build/sites-worker.ts`에서 앱 앞에 둔다):
-  - `/api/*` 요청을 `CF-Connecting-IP`별로 센다. 60초에 120회를 넘으면 429, `Retry-After: 60`, `Cache-Control: no-store`, JSON `{"error":"요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요."}`를 돌려준다. 화면은 기존 오류 표시 경로(`lib/api-client.ts`)로 이 문구를 보여 주고 자동 재시도하지 않는다.
+  - Worker에 닿는 모든 요청(페이지·RSC·`/api/*`)을 `CF-Connecting-IP`별로 센다. 정적 파일(`dist/client`)은 Worker 앞에서 바로 나가므로 세지 않는다. 첫 화면(`app/page.tsx`)도 요청마다 D1 검색을 하므로 `/?q=<매번 다른 값>`으로 제한을 피할 수 없게 했다(Codex 검토 P1, 2026-10-11).
+  - 60초에 120회를 넘으면 429, `Retry-After: 60`, `Cache-Control: no-store`를 돌려준다. `/api/*`에는 JSON `{"error":"요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요."}`를 보낸다. 화면은 기존 오류 표시 경로(`lib/api-client.ts`)로 이 문구를 보여 주고 자동 재시도하지 않는다. 페이지에는 같은 문구의 작은 HTML 화면을 보낸다.
   - 크롤 키가 맞는 요청(수집기·백업)은 세지 않는다. 틀린 키는 일반 요청처럼 센다.
-  - Cloudflare 문서상 카운터는 위치(데이터센터)마다 따로이고 근사값이다. 페이지·정적 파일은 제한하지 않는다.
+  - Cloudflare 문서상 카운터는 위치(데이터센터)마다 따로이고 근사값이다.
   - 바인딩이 없거나 `limit()`가 실패하면 제한 없이 통과시킨다. 로컬 검사·개발에서 앱이 그대로 동작한다.
   - 무료 플랜에서 Rate Limiting 바인딩을 쓸 수 있는지는 미확인이다. 문서(`workers/runtime-apis/bindings/rate-limit`, 2026-10-11 원본 `0d35c2c`)에 플랜 제한 문구는 없다. 첫 실제 배포에서 확인한다. 배포가 바인딩 때문에 거절되면 `vite.config.ts`의 `ratelimits`를 빼는 PR로 되돌린다. 코드는 바인딩 없이도 동작한다.
 - 검색 캐시:
-  - `GET /api/hotels` 가운데 `saved=1`·`fresh`·`snapshot`이 없는 요청만 Cache API(`caches.default`)에 30초 저장한다. 키는 URL뿐이다. 요청 헤더로 항목을 고르거나 오염시킬 수 없다. 200 응답만 저장한다.
-  - 브라우저에는 지금처럼 `Cache-Control: no-store`를 보낸다. 응답의 `X-Yukemuri-Cache`가 `HIT`/`MISS`를 알려 준다.
-  - `X-Yukemuri-Visitor`에 따라 달라지는 응답(`saved=1`)과 `fresh=1` 새로고침, 목록 이어 읽기(`snapshot`)는 저장하지 않는다(`catalog-operations.md`의 공유 캐시 규칙).
-  - Cloudflare 문서는 Cache API가 커스텀 도메인에서 동작한다고만 쓴다. `workers.dev`에서 실제로 저장되는지는 미확인이다. 저장되지 않으면 기존 isolate 안 30초 결과 캐시만 남고 동작은 같다. 5단계에서 `X-Yukemuri-Cache: HIT`로 확인한다.
-  - Workers Caching(`cache.enabled`)은 쓰지 않는다. 켜면 정적 파일 요청도 Worker 요청 수(하루 10만)에 들어가고, `Cache-Control`이 없는 응답도 기본 TTL로 저장된다(문서 `workers/cache/`).
+  - 익명 일반 검색의 짧은 캐시는 기존 isolate 안 30초 결과 캐시(`hotelRepository.search`)다. 키에 즐겨찾기 ID와 방문자 범위가 들어가고 `fresh`·`snapshot` 요청은 건너뛴다(`catalog-operations.md`). 브라우저에는 지금처럼 `Cache-Control: no-store`를 보낸다.
+  - Cloudflare 위치 사이에서 공유하는 캐시는 `workers.dev`에서 쓰지 않는다. Cache API(`caches.default`)는 `*.workers.dev` 배포에서 효과가 없다(문서 `r2/examples/cache-api`, 원본 `0d35c2c`: “any `*.workers.dev` deployments will have no impact”). 처음에는 Cache API를 넣었다가 Codex 검토 P2(2026-10-11)로 뺐다.
+  - Workers Caching(`cache.enabled`)도 쓰지 않는다. 켜면 정적 파일 요청도 Worker 요청 수(하루 10만)에 들어가고, `Cache-Control`이 없는 응답도 기본 TTL로 저장된다. 진입점별 설정은 wrangler 4.107.0 이상이 필요한데 잠금 파일은 4.92.0이다(문서 `workers/cache/`).
+  - 그래서 공개 검색의 D1 읽기는 속도 제한과 isolate 캐시로만 줄인다. 더 줄이려면 P01의 색인·쿼리 개선이 필요하다.
 - `robots.txt`: 모든 봇에 `/api/`를, 알려진 AI 수집 봇(GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, PerplexityBot 등)에 사이트 전체를 막아 달라고 요청한다. 규칙을 지키는 봇에만 효과가 있다.
 - Bot Fight Mode·WAF 규칙은 도메인 단위라 `workers.dev`에 쓸 수 없다. 하루 요청 10만 건을 넘으면 09:00 KST까지 1027 오류가 나지만 요금은 없다.
 
@@ -101,6 +101,5 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 ## 미확인
 
 - 무료 플랜의 Rate Limiting 바인딩 사용 가능 여부.
-- `workers.dev`에서 Cache API 저장 여부.
 - `wrangler-action`이 pnpm으로 설치된 wrangler 4.92.0을 그대로 쓰는지. 실제 Secret으로 실행한 적이 없다.
 - 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올리고 서브도메인을 등록할 수 있는지.

@@ -1,6 +1,6 @@
 import handler from "vinext/server/fetch-handler";
 import { runWithConnectorBinding } from "../lib/connector-context";
-import { guardApi } from "../lib/edge-guard";
+import { guardRequest } from "../lib/edge-guard";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 export default {
@@ -24,6 +24,6 @@ export default {
         },
       };
     }
-    return runWithConnectorBinding(binding, () => guardApi(request, env, ctx, () => handler.fetch(request, env, ctx)));
+    return runWithConnectorBinding(binding, () => guardRequest(request, env, () => handler.fetch(request, env, ctx)));
   },
 };

@@ -34,7 +34,7 @@ const localBindingConfig = {
   preview_urls: false,
   placement: { mode: "smart" as const },
   observability: { enabled: true },
-  // Per-IP limit for /api/* in each Cloudflare location (build/sites-worker.ts).
+  // Per-IP limit for Worker requests (pages and API) in each Cloudflare location (lib/edge-guard.ts).
   ratelimits: [
     {
       name: "API_RATE_LIMITER",
