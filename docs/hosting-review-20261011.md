@@ -191,8 +191,8 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
   - 로컬 Miniflare에서 대표 요청의 `meta.rows_read`·`rows_written`을 재는 검사를 추가한다. Miniflare가 이 값을 운영과 같게 세는지는 미확인이다.
 - 공개 사이트 보호(결정 반영):
   - Cloudflare는 L3·L4·L7 DDoS 방어를 모든 플랜에 자동으로, 사용량 제한 없이 적용한다(DDoS 문서).
-  - Worker의 Rate Limiting 바인딩으로 `/api/*` 요청을 접속 IP별로 제한한다. 제한은 Cloudflare 위치마다 따로 세고 근사값이다. 넘으면 429와 화면 안내를 보인다. 무료 플랜에서 쓸 수 있는지는 이 PR에서 실제 배포로 확인한다.
-  - 같은 검색 요청의 응답은 짧게 캐시해 D1 읽기를 줄인다.
+  - Worker의 Rate Limiting 바인딩으로 `/api/*` 요청을 접속 IP별로 제한한다. 크롤 키가 맞는 유지보수 요청(수집기·백업)은 이 제한에서 뺀다. GitHub Actions 실행기 IP가 일반 방문자처럼 제한되지 않게 하기 위해서다. 제한은 Cloudflare 위치마다 따로 세고 근사값이다. 넘으면 429와 화면 안내를 보인다. 무료 플랜에서 쓸 수 있는지는 이 PR에서 실제 배포로 확인한다.
+  - 익명 일반 검색 응답만 짧게 캐시해 D1 읽기를 줄인다. 즐겨찾기 결과(`saved=1`)처럼 `X-Yukemuri-Visitor`에 따라 달라지는 응답은 공용 캐시에 넣지 않는다. 지금처럼 `no-store`로 둔다(`catalog-operations.md`의 공유 캐시 규칙, Codex 검토 2026-10-11).
   - `robots.txt`로 `/api/`와 알려진 AI 수집 봇을 막는다. 규칙을 지키는 봇에만 효과가 있다.
   - Bot Fight Mode·WAF 사용자 규칙·속도 제한 규칙은 도메인(zone) 단위 기능이다. `workers.dev`에는 쓸 수 없다. 도메인은 유료라서 쓰지 않는다.
   - 무료 플랜은 하루 요청 10만 건을 넘으면 1027 오류로 거절한다. 공격을 받으면 09:00 KST까지 사이트가 멈출 수 있다. 요금은 나오지 않는다.
