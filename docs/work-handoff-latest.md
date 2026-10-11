@@ -9,7 +9,7 @@
 - 작업 환경: Claude Code 웹 클라우드. 상위 세션이 맡긴 작업이다.
 - PR A 브랜치: `claude/p01-d1-reads`. 시작 기준: main `1ff8f48`(PR #24 병합). 인수인계를 쓰기 직전에 main `8574830`(PR #27 병합)을 merge했다. 충돌은 없었다.
 - PR A(#28) 코드 커밋은 `da919d5`와 Codex 지적 수정 `fa99371`이다. 그 밖의 커밋은 main merge와 기록 문서·근거 파일뿐이다.
-- PR B 브랜치: `claude/p01-search-scans`. PR A 브랜치(`ef6c1e8`)에서 시작했고, A의 Codex 수정과 main `59b2dfe`(PR #29) merge가 든 A 브랜치(`ea324a9`)를 merge했다. 충돌은 `readCoverage()`와 수집 큐 검사 두 곳이었고 둘 다 합쳤다. 코드 커밋 `3c613c4`, merge `ef8df77`. A 병합 전이라 PR은 아직 열지 않았다.
+- PR B 브랜치: `claude/p01-search-scans`. PR A 브랜치(`ef6c1e8`)에서 시작했고, A의 Codex 수정과 main `59b2dfe`(PR #29) merge가 든 A 브랜치(`ea324a9`)를 merge했다. 충돌은 `readCoverage()`와 수집 큐 검사 두 곳이었고 둘 다 합쳤다. 코드 커밋 `3c613c4`, merge `ef8df77`. A 병합(`264f3bb`) 뒤 main을 merge하고 PR을 열었다.
 - 운영 D1·Secret·수집 예약·자동 백업·호스팅·공유 범위는 바꾸지 않았다. DB 스키마(마이그레이션)를 바꾸지 않았다. 운영 사이트에 접속하지 않았다. Google API·유료 서비스·새 계정 연결을 쓰지 않았다.
 - 수집기 파일(`scripts/crawler/*`)은 바꾸지 않았다. 수집기 release는 그대로다.
 
@@ -89,11 +89,11 @@
 
 ## 다음 작업
 
-1. PR A 검토와 병합 준비. 병합은 상위 세션이 맡는다.
-2. PR B: A 병합 뒤 main을 merge하고 PR을 연다. CI 통과 뒤 Codex 리뷰를 요청한다.
+1. 완료: 상위 세션이 PR #28(A)을 main에 병합했다(2026-10-11T09:00Z / 18:00 KST, `264f3bb`, head `ea324a9`). 병합 기록은 상위 세션이 맡는다.
+2. PR B: A 병합 뒤 main `264f3bb`를 merge했다(충돌 없음). PR을 열고 CI 통과 뒤 Codex 리뷰를 요청한다. 병합은 상위 세션이 맡는다.
 3. P01 남은 비용: 목록 첫 쪽의 정렬된 id 전체 읽기(정렬 열 색인 또는 H01의 익명 검색 캐시가 필요), 이름 부분일치의 `instr` 전체 스캔, 작업 선점 POST의 정렬. 색인 추가는 스키마 변경이라 상위 세션에 근거를 먼저 알린다.
 4. D01 2차: 운영 체크포인트 기준 지역 대조·공급자 간 연결 후보 판정. 감사 스크립트 두 개(`audit-region-labels.mjs`, `audit-trip-addresses.mjs`)가 입력 경로를 받도록 넓히고 Trip 주소도 함께 센다. (이전 인수인계에서 옮김)
 5. Shinagawa Prince Hotel(`trip-994895`)의 Trip 상품 범위 확인. 이 기록도 빈 주소라 상세 관측이 먼저 필요하다. (이전 인수인계에서 옮김)
 6. 운영 반영(H01 전환) 뒤 Trip 상세 재수집으로 중복 주소가 사라졌는지 확인한다. (이전 인수인계에서 옮김)
-7. P3(PR #27 Claude 검토): `hosting-review-20261011.md` 3.2절은 첫 배포를 적재 뒤로 옮겼다. 그래서 사용자가 Access를 켜기 전까지 실데이터 Worker가 `workers.dev`에 열린다. 첫 배포의 서비스 토큰 점검도 Access를 검증하지 못한다. H01을 시작할 때 둘 중 하나로 고친다. (가) Access 앱을 Worker 배포 전에 만들 수 있는지 확인하고, 되면 3.3절 5번을 첫 배포 전으로 옮긴다. (나) Access를 켤 때까지 5단계 검증을 시작하지 않고, Access를 켠 뒤 서비스 토큰 점검을 다시 실행한다. (이전 인수인계에서 옮김. 2026-10-11T08:25Z 사용자 결정으로 사이트를 public으로 두므로 이 항목이 아직 필요한지는 상위 세션이 정한다.)
+7. 해당 없음(사이트 public 결정, PR #29): PR #27 Claude 검토의 P3(Access를 켜기 전 `workers.dev` 노출). 사용자가 2026-10-11T08:25Z에 사이트를 public으로 두고 Cloudflare Access를 쓰지 않기로 했다. (이전 인수인계에서 옮김)
 8. Actions 사용 시간을 아끼기 위해 구현 작업은 한 번에 하나만 진행한다. (이전 인수인계에서 옮김)
