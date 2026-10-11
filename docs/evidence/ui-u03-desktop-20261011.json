@@ -1,0 +1,392 @@
+{
+ "measuredAt": "2026-10-11T05:04:00.013Z",
+ "base": "http://127.0.0.1:5173",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "1024x768, 1280x800, 1440x900 · desktop mouse",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 1024,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 없음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 664,
+     "footer": 704,
+     "vh": 768
+    },
+    "first": {
+     "found": true,
+     "top": 39,
+     "bottom": 57,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 427,
+     "bottom": 465,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1024,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 있음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 603,
+     "footer": 643,
+     "vh": 768
+    },
+    "first": {
+     "found": true,
+     "top": 39,
+     "bottom": 57,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 366,
+     "bottom": 404,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1024,
+   "name": "지도 미리보기가 지도 출처 표시와 겹치지 않고 출처 링크(Leaflet·OpenStreetMap)를 모두 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "attribution": {
+     "left": 831,
+     "top": 726,
+     "right": 999,
+     "bottom": 745,
+     "height": 19
+    },
+    "preview": {
+     "left": 662,
+     "top": 559,
+     "right": 985,
+     "bottom": 691,
+     "height": 132
+    },
+    "map": {
+     "left": 647,
+     "top": 118,
+     "right": 1000,
+     "bottom": 746,
+     "height": 628
+    },
+    "overlap": false,
+    "links": [
+     {
+      "text": "Leaflet",
+      "ok": true,
+      "hit": ""
+     },
+     {
+      "text": "OpenStreetMap",
+      "ok": true,
+      "hit": ""
+     }
+    ],
+    "text": "Leaflet | © OpenStreetMap"
+   }
+  },
+  {
+   "width": 1024,
+   "name": "지도 미리보기가 지도 안에 있음",
+   "pass": true,
+   "detail": {
+    "preview": {
+     "left": 662,
+     "top": 559,
+     "right": 985,
+     "bottom": 691,
+     "height": 132
+    },
+    "map": {
+     "left": 647,
+     "top": 118,
+     "right": 1000,
+     "bottom": 746,
+     "height": 628
+    },
+    "height": 768
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 없음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 696,
+     "footer": 736,
+     "vh": 800
+    },
+    "first": {
+     "found": true,
+     "top": 43,
+     "bottom": 61,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 476,
+     "bottom": 514,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 있음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 635,
+     "footer": 675,
+     "vh": 800
+    },
+    "first": {
+     "found": true,
+     "top": 43,
+     "bottom": 61,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 415,
+     "bottom": 453,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도 미리보기가 지도 출처 표시와 겹치지 않고 출처 링크(Leaflet·OpenStreetMap)를 모두 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "attribution": {
+     "left": 1079,
+     "top": 758,
+     "right": 1247,
+     "bottom": 777,
+     "height": 19
+    },
+    "preview": {
+     "left": 789,
+     "top": 629,
+     "right": 1233,
+     "bottom": 723,
+     "height": 94
+    },
+    "map": {
+     "left": 774,
+     "top": 118,
+     "right": 1248,
+     "bottom": 778,
+     "height": 660
+    },
+    "overlap": false,
+    "links": [
+     {
+      "text": "Leaflet",
+      "ok": true,
+      "hit": ""
+     },
+     {
+      "text": "OpenStreetMap",
+      "ok": true,
+      "hit": ""
+     }
+    ],
+    "text": "Leaflet | © OpenStreetMap"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도 미리보기가 지도 안에 있음",
+   "pass": true,
+   "detail": {
+    "preview": {
+     "left": 789,
+     "top": 629,
+     "right": 1233,
+     "bottom": 723,
+     "height": 94
+    },
+    "map": {
+     "left": 774,
+     "top": 118,
+     "right": 1248,
+     "bottom": 778,
+     "height": 660
+    },
+    "height": 800
+   }
+  },
+  {
+   "width": 1440,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 없음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 796,
+     "footer": 836,
+     "vh": 900
+    },
+    "first": {
+     "found": true,
+     "top": 43,
+     "bottom": 61,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 576,
+     "bottom": 614,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1440,
+   "name": "목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(비교 막대 있음)",
+   "pass": true,
+   "detail": {
+    "atEnd": true,
+    "box": {
+     "top": 20,
+     "bottom": 735,
+     "footer": 775,
+     "vh": 900
+    },
+    "first": {
+     "found": true,
+     "top": 43,
+     "bottom": 61,
+     "inView": true,
+     "hit": "",
+     "ok": true
+    },
+    "last": {
+     "found": true,
+     "top": 515,
+     "bottom": 553,
+     "inView": true,
+     "hit": "flex w-fit items-center justify-between ",
+     "ok": true
+    },
+    "controls": 19
+   }
+  },
+  {
+   "width": 1440,
+   "name": "지도 미리보기가 지도 출처 표시와 겹치지 않고 출처 링크(Leaflet·OpenStreetMap)를 모두 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "attribution": {
+     "left": 1239,
+     "top": 858,
+     "right": 1407,
+     "bottom": 877,
+     "height": 19
+    },
+    "preview": {
+     "left": 869,
+     "top": 729,
+     "right": 1393,
+     "bottom": 823,
+     "height": 94
+    },
+    "map": {
+     "left": 854,
+     "top": 118,
+     "right": 1408,
+     "bottom": 878,
+     "height": 760
+    },
+    "overlap": false,
+    "links": [
+     {
+      "text": "Leaflet",
+      "ok": true,
+      "hit": ""
+     },
+     {
+      "text": "OpenStreetMap",
+      "ok": true,
+      "hit": ""
+     }
+    ],
+    "text": "Leaflet | © OpenStreetMap"
+   }
+  },
+  {
+   "width": 1440,
+   "name": "지도 미리보기가 지도 안에 있음",
+   "pass": true,
+   "detail": {
+    "preview": {
+     "left": 869,
+     "top": 729,
+     "right": 1393,
+     "bottom": 823,
+     "height": 94
+    },
+    "map": {
+     "left": 854,
+     "top": 118,
+     "right": 1408,
+     "bottom": 878,
+     "height": 760
+    },
+    "height": 900
+   }
+  }
+ ],
+ "notCovered": [
+  "외부 지도 타일(검사는 외부 요청을 막음)",
+  "스크린리더 읽기 순서",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}
