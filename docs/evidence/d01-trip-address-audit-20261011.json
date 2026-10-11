@@ -1,0 +1,272 @@
+{
+ "generatedAt": "2026-10-11T04:14:23.650Z",
+ "files": [
+  "lib/hotels.real.json",
+  "lib/hotels.crawled.json",
+  "lib/hotels.verified.json"
+ ],
+ "hotels": 1655,
+ "counts": {
+  "curated-ok": 20,
+  "jalan-ok": 1611,
+  "trip-empty": 9,
+  "trip-doubled": 15
+ },
+ "records": [
+  {
+   "kind": "empty",
+   "id": "trip-1061004",
+   "file": "lib/hotels.crawled.json",
+   "name": "Agora Place Tokyo Asakusa",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-106526338",
+   "file": "lib/hotels.crawled.json",
+   "name": "OMO Kansai Airport by Hoshino Resorts",
+   "label": "Izumisano",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:02:17+00:00",
+   "address": "Izumisano1-833 Rinku Oraikita1-833 Rinku Oraikita, Izumisano City, Osaka Prefecture, 598-0048, Japan",
+   "streetAddress": "1-833 Rinku Oraikita, Izumisano City, Osaka Prefecture, 598-0048, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-114045806",
+   "file": "lib/hotels.crawled.json",
+   "name": "Nestay inn Tokyo Ryogoku",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-129054710",
+   "file": "lib/hotels.crawled.json",
+   "name": "KOKO HOTEL Yokohama Tsurumi",
+   "label": "Yokohama",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:04:41+00:00",
+   "address": "Yokohama4-chōme-29-1 Tsurumichūō4-chōme-29-1 Tsurumichūō, Tsurumi Ward, Yokohama City, Kanagawa Prefecture, 230-0051, Japan",
+   "streetAddress": "4-chōme-29-1 Tsurumichūō, Tsurumi Ward, Yokohama City, Kanagawa Prefecture, 230-0051, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-1679075",
+   "file": "lib/hotels.crawled.json",
+   "name": "Hotel Towadaso",
+   "label": "Towada",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:03:40+00:00",
+   "address": "TowadaTowadakohanyasumiya-340 OkuseTowadakohanyasumiya-340 Okuse, Towada City, Aomori Prefecture, 018-5501, Japan",
+   "streetAddress": "Towadakohanyasumiya-340 Okuse, Towada City, Aomori Prefecture, 018-5501, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-2100054",
+   "file": "lib/hotels.crawled.json",
+   "name": "GRAND HOSTEL LDK Sapporo",
+   "label": "Sapporo",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:04:30+00:00",
+   "address": "Sapporo9 Chome-1008-10 Minami 5 Jonishi9 Chome-1008-10 Minami 5 Jonishi, Chuo Ward, Sapporo City, Hokkaido, 064-0805, Japan",
+   "streetAddress": "9 Chome-1008-10 Minami 5 Jonishi, Chuo Ward, Sapporo City, Hokkaido, 064-0805, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-21145159",
+   "file": "lib/hotels.crawled.json",
+   "name": "APA Hotel Ginza Shintomicho Ekimae",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-23204180",
+   "file": "lib/hotels.crawled.json",
+   "name": "Little Island Okinawa Nago",
+   "label": "Nago",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:02:30+00:00",
+   "address": "Nago1219-376 Biimata1219-376 Biimata, Nago City, Okinawa Prefecture, 900-0005, Japan",
+   "streetAddress": "1219-376 Biimata, Nago City, Okinawa Prefecture, 900-0005, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-3095695",
+   "file": "lib/hotels.crawled.json",
+   "name": "Daiwa Roynet Hotel Ginza Premier (Renewal Opening on April, 2026)",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-49509069",
+   "file": "lib/hotels.crawled.json",
+   "name": "Hotel Villa Fontaine Grand Haneda Airport - Directly connected to Haneda Airport Terminal 3",
+   "label": "Tokyo",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:02:05+00:00",
+   "address": "Tokyo2 Chome-7-1 Hanedakuko2 Chome-7-1 Hanedakuko, Ota Ward, Tokyo, 144-0041, Japan",
+   "streetAddress": "2 Chome-7-1 Hanedakuko, Ota Ward, Tokyo, 144-0041, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-6070718",
+   "file": "lib/hotels.crawled.json",
+   "name": "SEKIYA RESORT Terrace Midoubaru",
+   "label": "Beppu",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:02:41+00:00",
+   "address": "BeppuHorita 5 KumiHorita 5 Kumi, Beppu City, Oita Prefecture, 874-0831, Japan",
+   "streetAddress": "Horita 5 Kumi, Beppu City, Oita Prefecture, 874-0831, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-6649943",
+   "file": "lib/hotels.crawled.json",
+   "name": "Plage Yuigahama",
+   "label": "Kamakura",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:03:55+00:00",
+   "address": "Kamakura4 Chome-4-6 Yuigahama4 Chome-4-6 Yuigahama, Kamakura City, Kanagawa Prefecture, 248-0014, Japan",
+   "streetAddress": "4 Chome-4-6 Yuigahama, Kamakura City, Kanagawa Prefecture, 248-0014, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-67309116",
+   "file": "lib/hotels.crawled.json",
+   "name": "Okinawa Hinode Resort and Hot Spring Hotel",
+   "label": "Naha",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:03:28+00:00",
+   "address": "Naha3 Chome-18-33 Makishi3 Chome-18-33 Makishi, Naha City, Okinawa Prefecture, 900-0013, Japan",
+   "streetAddress": "3 Chome-18-33 Makishi, Naha City, Okinawa Prefecture, 900-0013, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-687323",
+   "file": "lib/hotels.crawled.json",
+   "name": "HOTEL MYSTAYS Asakusa",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "empty",
+   "id": "trip-688168",
+   "file": "lib/hotels.crawled.json",
+   "name": "HOTEL MYSTAYS Ochanomizu Conference Center",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-688230",
+   "file": "lib/hotels.crawled.json",
+   "name": "HOTEL UNIVERSAL PORT",
+   "label": "Osaka",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:02:52+00:00",
+   "address": "Osaka1 Chome-1-111 Sakurajima1 Chome-1-111 Sakurajima, Konohana Ward, Osaka City, Osaka Prefecture, 554-0031, Japan",
+   "streetAddress": "1 Chome-1-111 Sakurajima, Konohana Ward, Osaka City, Osaka Prefecture, 554-0031, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-688630",
+   "file": "lib/hotels.crawled.json",
+   "name": "Sheraton Grande Tokyo Bay Hotel",
+   "label": "Urayasu",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:03:04+00:00",
+   "address": "Urayasu1-9 Maihama1-9 Maihama, Urayasu City, Chiba Prefecture, 279-0031, Japan",
+   "streetAddress": "1-9 Maihama, Urayasu City, Chiba Prefecture, 279-0031, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-703896",
+   "file": "lib/hotels.crawled.json",
+   "name": "Narita Tobu Hotel Airport",
+   "label": "Narita",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:04:06+00:00",
+   "address": "Narita320-1 Tokko320-1 Tokko, Narita City, Chiba Prefecture, 286-0106, Japan",
+   "streetAddress": "320-1 Tokko, Narita City, Chiba Prefecture, 286-0106, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-705045",
+   "file": "lib/hotels.crawled.json",
+   "name": "Toyoko Inn Narita Airport Honkan",
+   "label": "지바",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-705327",
+   "file": "lib/hotels.crawled.json",
+   "name": "Nishitetsu Hotel Croom Hakata",
+   "label": "Fukuoka",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:03:15+00:00",
+   "address": "FukuokaHakata Ekimae, 1 Chome−17−6 西鉄ホテルクルーム博多Hakata Ekimae, 1 Chome−17−6 西鉄ホテルクルーム博多, Hakata Ward, Fukuoka City, Fukuoka Prefecture, 812-0011, Japan",
+   "streetAddress": "Hakata Ekimae, 1 Chome−17−6 西鉄ホテルクルーム博多, Hakata Ward, Fukuoka City, Fukuoka Prefecture, 812-0011, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-705561",
+   "file": "lib/hotels.crawled.json",
+   "name": "Vessel Hotel Campana Okinawa",
+   "label": "Chatan",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:04:18+00:00",
+   "address": "ChatanMihama 9-22Mihama 9-22, 904-0115 Chatan Town, Nakagami District, Okinawa Prefecture, Japan",
+   "streetAddress": "Mihama 9-22, 904-0115 Chatan Town, Nakagami District, Okinawa Prefecture, Japan"
+  },
+  {
+   "kind": "doubled",
+   "id": "trip-737157",
+   "file": "lib/hotels.crawled.json",
+   "name": "Miyako Hotel Kyoto Hachijo",
+   "label": "Kyoto",
+   "page": "Trip.com 숙소 상세",
+   "retrievedAt": "2026-10-03T14:01:53+00:00",
+   "address": "Kyoto17 Nishikujo Inmachi17 Nishikujo Inmachi, Minami Ward, Kyoto City, Kyoto Prefecture, 601-8412, Japan",
+   "streetAddress": "17 Nishikujo Inmachi, Minami Ward, Kyoto City, Kyoto Prefecture, 601-8412, Japan"
+  },
+  {
+   "kind": "empty",
+   "id": "trip-91275931",
+   "file": "lib/hotels.crawled.json",
+   "name": "Hotaku HOTEL Akihabara",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  },
+  {
+   "kind": "empty",
+   "id": "trip-994895",
+   "file": "lib/hotels.crawled.json",
+   "name": "Shinagawa Prince Hotel",
+   "label": "도쿄",
+   "page": "Trip.com 숙소 목록",
+   "retrievedAt": "2026-10-03T13:44:12+00:00",
+   "address": ""
+  }
+ ]
+}

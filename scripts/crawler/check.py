@@ -80,6 +80,17 @@ kr_doc=next(json_hotels(korean))
 kr=normalize(kr_doc,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/','2026-10-04T01:00:00Z',korean,'pref-kumamoto',True)
 assert kr['names']==dict(ko='소잔쿄',ja='阿蘇内牧温泉 蘇山郷',en='Sozankyo')
 assert '소잔쿄(Sozankyo)' in kr['aliases']
+# Trip's streetAddress is already the whole formatted address and repeats its
+# addressLocality and addressRegion; joining all three doubled them (D01).
+assert kr['location']['address']=='145-1 Uchinomaki, 869-2301 아소, 구마모토 현, 일본',kr['location']['address']
+# Jalan sends separate parts, which are still joined, even when the street
+# happens to contain both other parts (a 東京都道 road name).
+assert soz_record['location']['address']=='熊本県阿蘇市内牧温泉145-1',soz_record['location']['address']
+road_doc=dict(soz_doc,address=dict(soz_doc['address'],addressRegion='東京都',addressLocality='府中市',streetAddress='府中市東京都道15号1-2'))
+road=normalize(road_doc,'jalan','https://www.jalan.net/yad327522/','2026-10-04T05:30:00Z',soz,detail=True)['location']['address']
+assert road=='東京都府中市府中市東京都道15号1-2',road
+# A Trip list item has no address; it stays empty instead of being guessed.
+assert trip['location']['address']=='',trip['location']['address']
 # Diagnosis must validate observations, not just count a Hotel document.
 stamp='2026-10-08T16:00:00Z'
 listed=(fixtures/'jalan-list.html').read_text()
