@@ -16,7 +16,8 @@
 | 2026-10-11 | `4ce95cf` (`claude/u04-booking-dates`, 코드 `7992d78`·Codex 지적 수정 `4ce95cf`) | 없음 | 없음 | U04 예약 링크 날짜·인원·설명 번역 문구 검사 완료(cloud-check 23개, 브라우저 U04 57개·U01~U03 통과). Codex 1회째 P2 2건 수정, 2회째(`bb1b7d9`) 큰 문제 없음. 앱 화면·검사 변경. 수집기 release 그대로. main 병합(`16cb2ec`)·Sites 미게시 |
 
 | 2026-10-11 | `6be425d` (`claude/p02-d1-reads`) | 없음 | 없음 | P02 PR A 수집 작업 선점 식 색인 2개(마이그레이션 0013)·선택 질의 재작성 검사·Codex 검토 완료. Worker 수집 선점 변경. 화면·수집기 release 변경 없음. main 병합(`734c26b`)·Sites 미게시 |
-| 2026-10-11 | `720a2f2` (`claude/p02-search-snapshot`) | 없음 | 없음 | P02 PR B 검색 스냅숏(마이그레이션 0014: 표·뷰·trigger 9개)으로 목록·이름 검색·지도 계산. 응답 422개 main과 같음. 상위 세션 요청 보강(선점 비교·gentle 합계·실행기 백업 재현·CPU 측정) 포함. 화면·응답 형식·수집기 release 변경 없음. 검토 대기·Sites 미게시 |
+| 2026-10-11 | `720a2f2` (`claude/p02-search-snapshot`) | 없음 | 없음 | P02 PR B 검색 스냅숏(마이그레이션 0014: 표·뷰·trigger 9개)으로 목록·이름 검색·지도 계산. 응답 422개 main과 같음. 상위 세션 요청 보강(선점 비교·gentle 합계·실행기 백업 재현·CPU 측정) 포함. 화면·응답 형식·수집기 release 변경 없음. 검토 대기 |
+| 2026-10-11 | `dfa1a69` (`claude/p02-search-snapshot`) | 없음 | 없음 | P02 PR B CPU 보강(상위 세션 결정 (A)): 마이그레이션 0015 세대별 검색·지도 결과 저장, 정렬 typed 키·id 순위 재사용, 점수 짧은 표기, 출처 묶음 한 번. 응답 422개 main과 같음(새 빌드는 계산·재사용 두 번). 화면·응답 형식·수집기 release 변경 없음. 검토 대기·Sites 미게시 |
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
 
