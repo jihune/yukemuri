@@ -15,7 +15,7 @@
 - 검사: 시작 기준 `cloud-check.py --full` 22개 통과(09:34Z–09:37Z). 변경 뒤 25개 통과(10:05Z–10:08Z). `wrangler deploy --dry-run` rc=0(업로드 5,968.40KiB, gzip 886.73KiB). 로컬 `d1 migrations apply yukemuri` 13개 적용. actionlint 통과. 새 검사 3개(`check-edge-guard-worker.mjs`, `check-deploy-config.mjs`, `crawler/check_site_access.py`)는 변형 13종(Worker 5, 설정·workflow 6, 수집기 2)에서 실패하는 것을 확인했다. main merge 뒤에도 25개 통과(10:10:30Z–10:14:03Z), dry-run rc=0.
 - workers.dev에서는 Cache API가 효과 없다(Cloudflare 문서). 위치 간 공유 검색 캐시는 없고 기존 isolate 30초 캐시만 있다. 위 P01 다음 작업 3번의 ‘H01의 익명 검색 캐시’는 기대할 수 없으므로 색인·쿼리 개선으로 줄여야 한다.
 - 미확인: 무료 플랜의 Rate Limiting 바인딩, `wrangler-action`의 실제 실행, 429 화면의 실제 브라우저 확인. 첫 실제 배포와 5단계에서 확인한다.
-- 다음 작업: Codex 검토와 상위 세션 병합 → (Secret은 사용자 등록 완료, 값 미확인, 2026-10-11T09:55Z 상위 세션 전달) → 이 PR 병합 뒤 상위 세션이 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다.
+- 다음 작업: Codex 검토와 상위 세션 병합 → (Secret은 사용자 등록 완료, 값 미확인, 2026-10-11T09:55Z 상위 세션 전달) → 이 PR 병합 뒤 상위 세션이 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다. **P02(목록·검색 요청당 D1 읽기 감소) 완료 전에는 6단계 전환을 하지 않는다.** 공유 캐시가 없어 목록 첫 쪽 요청 약 115회면 그날 D1 무료 읽기가 바닥나고, 속도 제한(60초 120회)으로는 막지 못한다(`H01-20261011.md`).
 - 검토: Codex 1회째(`d608401`, 10:28Z 요청)에서 P1 1건(첫 화면 `/?q=`가 `/api/*` 속도 제한을 우회)과 P2 1건(Cache API는 workers.dev에서 효과 없음)이 나왔다. P1은 변형 검사로 재현했고 Cloudflare 문서로 P2를 확인했다. 둘 다 고쳤다(`H01-20261011.md`의 ‘검토’). 검토 요청은 1회 썼다.
 
 ## 기준과 상태
