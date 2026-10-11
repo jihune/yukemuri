@@ -1,6 +1,7 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
+import deployConfig from "./cloudflare-deploy.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 import { connectorPreview } from "./build/connector-preview-plugin.mjs";
@@ -10,19 +11,46 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 
 const { d1, r2 } = hostingConfig;
 
+// Non-secret Cloudflare deployment values. Until the D1 database exists the
+// placeholder keeps CI, local development and builds independent of an account.
+const configuredDatabaseId: string | null = deployConfig.databaseId;
+if (
+  configuredDatabaseId !== null &&
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(configuredDatabaseId)
+) {
+  throw new Error("cloudflare-deploy.json databaseId must be null or a D1 UUID.");
+}
+const databaseId = configuredDatabaseId ?? SITE_CREATOR_PLACEHOLDER_DATABASE_ID;
+
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 const localBindingConfig = {
+  name: deployConfig.workerName,
   main: "./build/sites-worker.ts",
   compatibility_flags: ["nodejs_compat"],
+  workers_dev: true,
+  preview_urls: false,
+  placement: { mode: "smart" as const },
+  observability: { enabled: true },
+  // Per-IP limit for Worker requests (pages and API) in each Cloudflare location (lib/edge-guard.ts).
+  ratelimits: [
+    {
+      name: "API_RATE_LIMITER",
+      namespace_id: "1001",
+      simple: { limit: 120, period: 60 as const },
+    },
+  ],
   d1_databases: d1
     ? [
         {
           binding: d1,
-          database_name: "site-creator-d1",
-          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
+          database_name: deployConfig.databaseName,
+          database_id: databaseId,
+          // Wrangler resolves this from the generated dist/server/wrangler.json,
+          // which every `wrangler d1 ... --config` command uses.
+          migrations_dir: "../../drizzle",
         },
       ]
     : [],

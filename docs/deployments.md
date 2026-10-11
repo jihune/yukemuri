@@ -13,6 +13,16 @@
 | 2026-10-11 | `4ab16029bf94b422a19b087542f1d492e80447b4` (`claude/u03-comparison-diff`) | 없음 | 없음 | U03 PR B 비교 차이 강조 검사·Codex 3회·Claude 1회 검토 완료. 앱 화면만 변경. main 병합(`1ff8f48`)·Sites 미게시 |
 | 2026-10-11 | `fa99371` (`claude/p01-d1-reads`) | 없음 | 없음 | P01 PR A 수집 저장 경로 D1 읽기 감소 검사 완료(Codex 1회째 P2 수정 포함). Worker API·카탈로그 저장소 변경(스키마·수집기 변경 없음). Codex 2회째 검토(`ea324a9`) 큰 문제 없음. main 병합(`264f3bb`)·Sites 미게시 |
 | 2026-10-11 | `1ea607308bb6bf9b1b2fbc5bc52081428843c5e5` (`claude/p01-search-scans`) | 없음 | 없음 | P01 PR B 검색 전체 스캔·첫 요청·seed 지연 로드 검사·Codex 2회 검토 완료(P2 1건 수정, 2회째 `1ea6073` 큰 문제 없음). 검색 응답 193개 main과 같음. 스키마·수집기 변경 없음. main 병합(`4b98c26`)·Sites 미게시 |
+| 2026-10-11 | `4ce95cf` (`claude/u04-booking-dates`, 코드 `7992d78`·Codex 지적 수정 `4ce95cf`) | 없음 | 없음 | U04 예약 링크 날짜·인원·설명 번역 문구 검사 완료(cloud-check 23개, 브라우저 U04 57개·U01~U03 통과). Codex 1회째 P2 2건 수정, 2회째(`bb1b7d9`) 큰 문제 없음. 앱 화면·검사 변경. 수집기 release 그대로. main 병합(`16cb2ec`)·Sites 미게시 |
 
 과거 근거는 `docs/evidence/`와 과거 인수인계에 있다.
 GitHub merge·소스 push·실제 운영 게시를 각각 확인한 뒤 기록한다.
+
+## Cloudflare(H01)
+
+기록: 2026-10-11. 절차는 `cloudflare-deploy.md`다. main 병합은 `cloudflare-deploy.json`의 `databaseId`와 `autoDeploy`가 모두 설정된 뒤에만 자동 배포가 된다. 그 전에는 `deploy.yml`이 배포를 건너뛴다. 배포 결과는 Actions 실행 요약(Worker 버전 ID·D1 bookmark·점검 결과)으로 확인하고 아래에 옮긴다.
+
+| 확인 날짜 | 앱 커밋 | Worker 버전 ID | D1 bookmark | 상태 |
+|---|---|---|---|---|
+| 2026-10-11 | H01 2단계 PR | 없음 | 없음 | 배포 설정·workflow 준비. D1 미생성·자동 배포 꺼짐. 실제 Cloudflare 계정 미접속 |
+| 2026-10-11 | `da47a7a`(PR #33 병합, 12:12:47Z) | 없음 | 없음 | main push의 `deploy.yml`은 배포를 건너뜀(D1 ID 없음). 3단계 run 38138420167(12:13–12:17Z): 서브도메인 `jihune` 등록, D1 `yukemuri`(`128a3c5b-8e5f-470a-a901-d899d396cae1`) 생성, 마이그레이션 13개 적용. Worker 미배포 |

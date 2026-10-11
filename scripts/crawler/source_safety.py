@@ -6,6 +6,19 @@ from retry_policy import retry_after
 AGENT='YukemuriCatalogUpdater'
 USER_AGENT=AGENT+'/1.0 (+https://yukemuri.jihun7891.chatgpt.site)'
 HOSTS={'www.jalan.net','www.trip.com','kr.trip.com'}
+SITE_HOSTS={'yukemuri.jihun7891.chatgpt.site','yukemuri-hokkaido.jihun7891.chatgpt.site'}
+WORKER_HOST=re.compile(r'yukemuri\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.workers\.dev')
+
+def site_api(url,token):
+ """Return the Yukemuri API base and headers. The key goes only to these hosts."""
+ site=urllib.parse.urlsplit(url);host=site.hostname or ''
+ sites=host in SITE_HOSTS
+ if site.scheme!='https' or not(sites or WORKER_HOST.fullmatch(host)) or site.username or site.password:
+  raise ValueError('Expected the Yukemuri Site URL')
+ headers={'X-Yukemuri-Crawl-Key':token}
+ # Only the Sites access gateway reads this header; the Cloudflare Worker is public.
+ if sites:headers['OAI-Sites-Authorization']='Bearer '+token
+ return urllib.parse.urlunsplit((site.scheme,site.netloc,'','','')),headers
 
 class SourcePolicyDenied(ValueError):
  def __init__(self,reason,wait=60,provider_wait=0,diagnostic=None,stop_run=False,wait_reason=None):

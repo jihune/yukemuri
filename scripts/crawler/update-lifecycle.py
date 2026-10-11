@@ -4,6 +4,7 @@ Hidden stdin: {url,token,patches?:[...],seeds?:[{url,prefecture}]}.
 Public research must confirm identity and operational dates before submission.
 """
 import json,sys,urllib.parse,urllib.request
+from source_safety import site_api
 if sys.stdin.isatty():
  import termios
  previous=termios.tcgetattr(sys.stdin);hidden=termios.tcgetattr(sys.stdin)
@@ -13,15 +14,13 @@ if sys.stdin.isatty():
  try:access=json.loads(sys.stdin.readline())
  finally:termios.tcsetattr(sys.stdin,termios.TCSANOW,previous)
 else:access=json.loads(sys.stdin.readline())
-site=urllib.parse.urlsplit(access['url'])
-if site.scheme!='https' or site.hostname not in ['yukemuri.jihun7891.chatgpt.site','yukemuri-hokkaido.jihun7891.chatgpt.site'] or site.username or site.password:raise ValueError('Expected the Yukemuri Site URL')
-base=urllib.parse.urlunsplit((site.scheme,site.netloc,'','',''))
+base,site_headers=site_api(access['url'],access['token'])
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise RuntimeError('Site redirected; credential was not forwarded')
 opener=urllib.request.build_opener(NoRedirect())
 def api(path,payload=None):
  body=json.dumps(payload,ensure_ascii=False).encode() if payload is not None else None
- headers={'OAI-Sites-Authorization':'Bearer '+access['token'],'X-Yukemuri-Crawl-Key':access['token'],'Content-Type':'application/json'}
+ headers={**site_headers,'Content-Type':'application/json'}
  with opener.open(urllib.request.Request(base+path,data=body,headers=headers,method='PUT' if body else 'GET'),timeout=90) as response:return json.loads(response.read())
 for seed in access.get('seeds',[]):print(json.dumps(api('/api/crawl-seeds',seed),ensure_ascii=False),flush=True)
 for patch in access.get('patches',[]):

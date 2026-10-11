@@ -23,6 +23,9 @@ try{
  await assert.rejects(readApiJson(login),error=>friendly(error)&&error.reopen&&!error.retryable);
  await assert.rejects(readApiJson(new Response('<!DOCTYPE html>',{headers:{'Content-Type':'application/json'}})),friendly);
  await assert.rejects(readApiJson(json({error:'선택한 날짜의 요금을 확인하지 못했습니다.'},502)),error=>error.message==='선택한 날짜의 요금을 확인하지 못했습니다.');
+ // The Worker's per-IP limit (lib/edge-guard.ts) shows its guidance, without an automatic retry.
+ const rateLimited='요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요.';
+ await assert.rejects(readApiJson(json({error:rateLimited},429)),error=>error.message===rateLimited&&error.status===429&&!error.retryable);
  let calls=0;
  globalThis.fetch=async(path,init)=>{assert(init.headers.get('Accept')==='application/json');assert.equal(init.credentials,'same-origin');calls++;return calls===1?html(503):json({total:1})};
  assert.deepEqual(await apiJson('/api/hotels?q='+encodeURIComponent('소잔쿄')),{total:1});assert.equal(calls,2);

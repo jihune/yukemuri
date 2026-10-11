@@ -8,7 +8,7 @@ export default function HotelDescription({hotel}:{hotel:Hotel}){
    <p className="hotel-intro" lang="ko">{translation.text}</p>
    <details className="description-original"><summary>원문 보기</summary><p className="hotel-intro" lang="" dir="auto">{hotel.description}</p></details>
   </>:<>
-   {needsKoreanDescription(hotel.description)&&<p className="description-caption">원문 · 한국어 번역은 자동으로 순차 반영됩니다.</p>}
+   {needsKoreanDescription(hotel.description)&&<p className="description-caption">원문 · 이 숙소의 한국어 번역은 없습니다. 새 번역은 지금 정기적으로 추가되지 않습니다.</p>}
    <p className="hotel-intro">{hotel.description}</p>
   </>}
  </div>;

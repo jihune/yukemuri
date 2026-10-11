@@ -17,12 +17,14 @@ commands = [
     [sys.executable, 'scripts/crawler/check.py'],
     [sys.executable, 'scripts/crawler/check_diagnostics.py'],
     [sys.executable, 'scripts/crawler/check_retry_policy.py'],
+    [sys.executable, 'scripts/crawler/check_site_access.py'],
     ['node', 'scripts/build-collector-release.mjs'],
     [sys.executable, 'scripts/runner/check_bootstrap.py'],
     [sys.executable, 'scripts/check-checkpoint.py'],
     [sys.executable, 'scripts/check-chat-export.py'],
     ['node', 'node_modules/typescript/bin/tsc', '--noEmit'],
     ['node', 'scripts/check-listing-query.mjs'],
+    ['node', 'scripts/check-booking-links.mjs'],
     ['node', 'scripts/check-api-client.mjs'],
     ['node', 'scripts/check-local-search.mjs'],
     ['node', 'scripts/check-map-bounds.mjs'],
@@ -38,6 +40,8 @@ if args.full:
         ['node', 'scripts/check-comparison-worker.mjs'],
         ['node', 'scripts/check-catalog-worker.mjs'],
         ['node', 'scripts/check-map-area-worker.mjs'],
+        ['node', 'scripts/check-edge-guard-worker.mjs'],
+        ['node', 'scripts/check-deploy-config.mjs'],
         ['node', 'scripts/measure-d1-reads.mjs', '--check'],
     ]
 for command in commands:

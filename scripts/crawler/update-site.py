@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Resume the hosted queue and write observations without rebuilding the Site.
 
-Supply {url, token} once on stdin. Token is sent ONLY to this private Site in
-the Sites-supported OAI-Sites-Authorization header, never to source websites.
+Supply {url, token} once on stdin. Token is sent ONLY to the approved Yukemuri
+Site (source_safety.site_api), never to source websites.
 """
 import argparse
 import json
@@ -14,7 +14,7 @@ import random
 import hashlib
 from pathlib import Path
 from retry_policy import source_failure
-from source_safety import SourceGuard,SourcePolicyDenied,policy_failure,check_source_body
+from source_safety import SourceGuard,SourcePolicyDenied,policy_failure,check_source_body,site_api
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -47,10 +47,7 @@ if sys.stdin.isatty():
  try:access=json.loads(sys.stdin.readline())
  finally:termios.tcsetattr(sys.stdin,termios.TCSANOW,previous)
 else:access=json.loads(sys.stdin.readline())
-site=urllib.parse.urlsplit(access['url'])
-if site.scheme!='https' or not site.hostname.endswith('.chatgpt.site') or site.username or site.password:
- raise ValueError('Expected this private Sites URL')
-base=urllib.parse.urlunsplit((site.scheme,site.netloc,'','',''))
+base,site_headers=site_api(access['url'],access['token'])
 class NoSiteRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):
   raise RuntimeError('Private Site redirected; credential was not forwarded')
@@ -58,8 +55,7 @@ site_opener=urllib.request.build_opener(NoSiteRedirect())
 
 def api(path,payload=None,method=None):
  body=json.dumps(payload,ensure_ascii=False).encode() if payload is not None else None
- headers={'OAI-Sites-Authorization':'Bearer '+access['token'],'Content-Type':'application/json'}
- headers['X-Yukemuri-Crawl-Key']=access['token']
+ headers={**site_headers,'Content-Type':'application/json'}
  request=urllib.request.Request(base+path,data=body,headers=headers,method=method or ('PUT' if payload is not None else 'GET'))
  # Observation and acknowledgement writes are idempotent. Retry transient
  # network/service failures briefly; access failures stop the run.

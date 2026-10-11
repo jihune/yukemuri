@@ -1,0 +1,86 @@
+name: Cloudflare deploy
+# main push and manual runs only. The repository is public, so secrets are never
+# exposed to pull_request events. Nothing touches Cloudflare until
+# cloudflare-deploy.json records the D1 database_id and autoDeploy is true
+# (docs/cloudflare-deploy.md).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: cloudflare-account
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - id: gate
+        run: node scripts/cloudflare-deploy-gate.mjs >> "$GITHUB_OUTPUT"
+      - if: steps.gate.outputs.enabled != 'true'
+        env:
+          REASON: ${{ steps.gate.outputs.reason }}
+        run: |
+          echo "Cloudflare deploy skipped: $REASON" | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: steps.gate.outputs.enabled == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - if: steps.gate.outputs.enabled == 'true'
+        run: bash scripts/cloud-setup.sh
+      # The same checks as CI, on this exact commit. Its build is what gets deployed,
+      # with the collector release pointing at the public Worker.
+      - if: steps.gate.outputs.enabled == 'true'
+        env:
+          YUKEMURI_SITE_ORIGIN: ${{ steps.gate.outputs.public_origin }}
+        run: python3 scripts/cloud-check.py --full
+      - if: steps.gate.outputs.enabled == 'true'
+        id: bookmark
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.92.0'
+          command: d1 time-travel info yukemuri --json --config dist/server/wrangler.json
+      - if: steps.gate.outputs.enabled == 'true'
+        env:
+          OUTPUT: ${{ steps.bookmark.outputs.command-output }}
+        run: |
+          bookmark=$(printf '%s' "$OUTPUT" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s.slice(s.indexOf("{")));if(!j.bookmark)process.exit(1);console.log(j.bookmark)})')
+          echo "D1 restore bookmark before this deploy: \`$bookmark\`" >> "$GITHUB_STEP_SUMMARY"
+      - if: steps.gate.outputs.enabled == 'true'
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.92.0'
+          command: d1 migrations apply yukemuri --remote --config dist/server/wrangler.json
+      - if: steps.gate.outputs.enabled == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        env:
+          CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.92.0'
+          secrets: |
+            CRAWL_ACCESS_KEY
+          command: deploy --config dist/server/wrangler.json
+      - if: steps.gate.outputs.enabled == 'true'
+        env:
+          OUTPUT: ${{ steps.deploy.outputs.command-output }}
+        run: |
+          version=$(printf '%s' "$OUTPUT" | grep -oE 'Current Version ID: [0-9a-f-]+' | head -1 | cut -d' ' -f4)
+          echo "Deployed Worker version: \`${version:-not found in wrangler output}\` from ${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
+      - if: steps.gate.outputs.enabled == 'true'
+        env:
+          YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
+          ORIGIN: ${{ steps.gate.outputs.public_origin }}
+        run: node scripts/cloudflare-smoke.mjs "$ORIGIN" | tee -a "$GITHUB_STEP_SUMMARY"
