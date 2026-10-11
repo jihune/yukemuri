@@ -62,7 +62,6 @@ function addConstraints(filters:HotelFilters,clauses:string[],args:(string|numbe
 async function indexNames(hotels:Hotel[]){
  const rows=hotels.flatMap(h=>hotelNames(h).map(name=>({hotelId:h.id,key:normalizeSearch(name),name}))).filter(r=>r.key);
  for(let offset=0;offset<rows.length;offset+=400)await favoritesDb().prepare("INSERT INTO hotel_names (hotel_id,name_key,name) SELECT json_extract(value,'$.hotelId'),json_extract(value,'$.key'),json_extract(value,'$.name') FROM json_each(?) WHERE 1 ON CONFLICT(hotel_id,name_key) DO NOTHING").bind(JSON.stringify(rows.slice(offset,offset+400))).run();
- invalidateSearch();
 }
 export async function writeHotels(observations:Hotel[]){
  const patches=await favoritesDb().prepare("SELECT payload FROM hotel_name_localizations WHERE payload IS NOT NULL AND hotel_id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(observations.map(h=>h.id))).all<{payload:string}>();
@@ -79,13 +78,20 @@ export async function writeHotels(observations:Hotel[]){
    const mask=featureMasks(h);
    return [h.id,h.regionId,h.prefecture??null,h.names.ko,search,h.kind,trip?.score??null,trip?.reviewCount??null,jalan?.score??null,jalan?.reviewCount??null,...Object.keys(coreColumns).map(k=>hotelFeature(h,k as FeatureKey).value===null?null:Number(hotelFeature(h,k as FeatureKey).value)),mask.features,mask.knownFeatures,JSON.stringify(h)];
   });
-  const accepted=await db.prepare(sql).bind(JSON.stringify(rows)).all<{id:string;payload:string}>();
+  // One transaction: add the ids this upsert inserts to the record counter
+  // (a primary-key lookup per row), then write.
+  const json=JSON.stringify(rows);
+  const [,accepted]=await db.batch<{id:string;payload:string}>([db.prepare("UPDATE catalog_meta SET value=CAST(value AS INTEGER)+(SELECT COUNT(DISTINCT json_extract(j.value,'$[0]')) FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM hotels h WHERE h.id=json_extract(j.value,'$[0]'))) WHERE key=?").bind(json,RECORD_COUNTER),db.prepare(sql).bind(json)]);
   written+=accepted.results.length;
   // Index only committed records. Stale/list observations rejected by the
   // UPSERT must not inject their aliases into search.
   await indexNames(accepted.results.map(row=>JSON.parse(row.payload) as Hotel));
   if(accepted.results.length)await refreshSourceGroupIndexes(accepted.results.map(row=>row.id));
  }
+ // Substring search reads hotels and hotel_names directly, so new names are
+ // found at once. The fuzzy index and the coverage aggregate expire on their
+ // timers, as they already do in every isolate that did not take this write.
+ resultCache.clear();
  return written;
 }
 async function queryCoverage(){
@@ -96,14 +102,31 @@ async function queryCoverage(){
  for(const job of jobs.results){aggregate.providers[job.provider]={discovered:job.discovered,completed:job.completed};aggregate.discoveredDetailUrls+=job.discovered;aggregate.completedDetailPages+=job.details;aggregate.pending+=job.pending;aggregate.failed+=job.failed;if(job.updated&&job.updated>aggregate.updatedAt)aggregate.updatedAt=job.updated}
  return aggregate;
 }
+// Hotel rows are only ever inserted by writeHotels, which keeps this counter.
+const RECORD_COUNTER='hotel-records';
 let coverageCache:{expires:number;promise:ReturnType<typeof queryCoverage>}|null=null;
-export function readCoverage(cached=false){
- if(!cached)return queryCoverage();
- if(!coverageCache||coverageCache.expires<Date.now()){
-  const promise=queryCoverage();coverageCache={expires:Date.now()+30000,promise};
-  promise.catch(()=>{if(coverageCache?.promise===promise)coverageCache=null});
- }
- return coverageCache.promise;
+function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
+ coverageCache={expires:Date.now()+300000,promise};
+ promise.catch(()=>{if(coverageCache?.promise===promise)coverageCache=null});
+ return promise;
+}
+// Full count, read by the collector at the end of each run. It also resets the
+// record counter to the true count (first run, restored backups).
+export async function readCoverage(){
+ const coverage=await cacheCoverage(queryCoverage());
+ await favoritesDb().prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER,String(coverage.records)).run();
+ return coverage;
+}
+// Exact record count over an aggregate up to five minutes old. Without a
+// counter yet, the collector (sync) takes the full count and starts it.
+export async function readCachedCoverage(sync=false){
+ const [coverage,counter]=await Promise.all([
+  coverageCache&&coverageCache.expires>=Date.now()?coverageCache.promise:cacheCoverage(queryCoverage()),
+  favoritesDb().prepare('SELECT value FROM catalog_meta WHERE key=?').bind(RECORD_COUNTER).first<{value:string}>(),
+ ]);
+ if(!counter)return sync?readCoverage():coverage;
+ const records=Number(counter.value);
+ return{...coverage,records,crawledRecords:records-20};
 }
 const resultCache=new Map<string,{expires:number;promise:Promise<SearchResponse>}>();
 export function invalidateSearch(){searchIndex=null;resultCache.clear();coverageCache=null}
@@ -187,6 +210,7 @@ async function reindexNames(){
   await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(key,cursor).run();
  }
  await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(key,'done').run();
+ invalidateSearch();
 }
 // Maintenance advances one small, resumable page. Public reads never wait
 // for a full catalog scan, and historical source payloads stay untouched.
@@ -302,7 +326,7 @@ async function searchHotels(filters:HotelFilters,sort:SortOrder,page:number,save
   if(filters.minRating){unknownClauses.push(`(${rating}_score>=? OR ${rating}_score IS NULL)`);unknownArgs.push(filters.minRating)}
   if(filters.minReviews){unknownClauses.push(`(${rating}_reviews>=? OR ${rating}_reviews IS NULL)`);unknownArgs.push(filters.minReviews)}
   const unknownOnly=unknownClauses.length?unknownClauses.join(' AND '):'0';
-  const coveragePromise=readCoverage(true);
+  const coveragePromise=readCachedCoverage();
   const facetsPromise=db.prepare(`SELECT ${Object.entries(featureColumns).map(([k,c])=>`SUM(CASE WHEN ${c}=1 THEN 1 ELSE 0 END) AS ${k}`).join(',')},SUM(CASE WHEN kind='ryokan' THEN 1 ELSE 0 END) AS ryokan,COUNT(CASE WHEN ${eligible} THEN 1 END) AS count,COALESCE(SUM(CASE WHEN (${eligible}) AND id IN (SELECT value FROM json_each(?)) THEN 1 ELSE 0 END),0) AS similar,COALESCE(SUM(CASE WHEN COALESCE((${eligible}),0)=0 AND (${unknownOnly}) THEN 1 ELSE 0 END),0) AS unknown FROM hotels ${scope}`).bind(...facilityArgs,...facilityArgs,similarJson,...facilityArgs,...unknownArgs,...scopeArgs).first<Record<string,number>>();
   clauses.push(...facilityClauses);args.push(...facilityArgs);
   const where=clauses.length?'WHERE '+clauses.join(' AND '):'';

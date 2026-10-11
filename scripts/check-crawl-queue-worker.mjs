@@ -44,6 +44,9 @@ try{
  const other=fixture('jalan','999102');other.sources[0].url=url;
  await api('/api/crawl','PUT',{...payload,observations:[other]},400);
  const result=await api('/api/crawl','PUT',payload);assert.equal(result.accepted,1);
+ // P01: the PUT reports the exact record count (the collector prints it).
+ const hotelCount=async()=>(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
+ assert.equal(result.coverage.records,await hotelCount());assert.equal(result.coverage.crawledRecords,result.coverage.records-20);
  const job=await db.prepare('SELECT * FROM crawl_jobs WHERE url=?').bind(url).first();assert.equal(job.attempts,1);assert.equal(job.lease_until,0);
  assert.equal((await api('/api/crawl','PUT',payload)).replayed,true);
  assert.equal((await db.prepare('SELECT attempts FROM crawl_jobs WHERE url=?').bind(url).first()).attempts,1,'Ack retry must not increase attempts');
@@ -121,7 +124,19 @@ try{
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").run();
  const baths=await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()});assert.equal(baths.jobs[0].url,url);
  const trip=fixture('trip','999110');await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail','pref-tokyo','pending',0,0)").bind(trip.sources[0].url).run();
- await api('/api/crawl','PUT',{url:trip.sources[0].url,status:'done',observations:[trip],links:[]});
+ const tripPut=await api('/api/crawl','PUT',{url:trip.sources[0].url,status:'done',observations:[trip],links:[]});
+ assert.equal(tripPut.coverage.records,result.coverage.records+1,'Only the new property is counted; updates and rejected observations are not');
+ assert.equal(tripPut.coverage.records,await hotelCount());
+ // A list page can repeat a property; it is inserted and counted once.
+ const listUrl='https://www.jalan.net/010000/LRG_010200/',repeated=fixture('jalan','999190');repeated.sources[0]={...repeated.sources[0],url:listUrl,label:'Jalan 숙소 목록'};
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','list','pref-hokkaido','pending',0,0)").bind(listUrl).run();
+ const listPut=await api('/api/crawl','PUT',{url:listUrl,status:'done',observations:[repeated,repeated],links:[]});
+ assert.equal(listPut.coverage.records,tripPut.coverage.records+1);assert.equal(listPut.coverage.records,await hotelCount());
+ // A wrong counter (for example after a restore) is reset by the full count
+ // the collector reads at the end of each run.
+ await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
+ assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
+ assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:trip'").run();
  assert.equal((await api('/api/crawl','POST',{provider:'trip',phase:'names',token:randomUUID()})).jobs[0].url,trip.sources[0].url);
  await api('/api/crawl?report=1','GET',undefined,403,false);
