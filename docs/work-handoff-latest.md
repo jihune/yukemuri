@@ -4,6 +4,19 @@
 기록: 2026-10-11T07:50:00Z / 2026-10-11 16:50:00 KST(PR A). PR B 갱신: 2026-10-11T09:05:00Z / 18:05:00 KST.
 이전 인수인계(U03, PR #23·#24와 상위 세션 기록 포함)는 `history/work-handoff-U03-20261011.md`에 보존했다.
 
+## H01 2단계(앱 레포 Cloudflare 배포 준비)
+
+기록: 2026-10-11T10:15Z / 2026-10-11 19:15 KST. 상위 세션이 맡긴 작업이다. 위 P01 기록은 그대로 두고 이 절을 더했다. 상세는 `H01-20261011.md`, 절차는 `cloudflare-deploy.md`다.
+
+- 브랜치 `claude/h01-cloudflare-deploy`. 시작 기준 main `6f09287`. 이 절을 쓰기 직전에 main `274f687`(PR #31·#32 병합)을 merge했다. 충돌은 없었다. 코드 커밋은 `e426686`이다.
+- 바꾼 것: `cloudflare-deploy.json`(비밀 아닌 배포 값, `databaseId`·`publicOrigin`은 `null`, `autoDeploy` false), `vite.config.ts`(Worker 이름·workers.dev·미리보기 끔·observability·smart placement·D1 이름과 `migrations_dir`·Rate Limiting 바인딩), `deploy.yml`(설정이 켜질 때까지 모두 건너뜀), `d1-setup.yml`(수동, D1 생성·마이그레이션, 배포 없음), `lib/edge-guard.ts`(`/api/*` IP별 제한, 크롤 키 면제, 익명 검색 30초 Cache API), `public/robots.txt`, 수집기 `siteOrigin` 빌드 변수와 `source_safety.py`의 주소 허용 목록.
+- 수집기 release가 `08ca3bfe…`에서 `ab24b621…`로 바뀌었다. 파일 목록과 `siteOrigin` 기본값은 그대로다. Sites에 게시하지 않으므로 예약 실행에는 반영되지 않는다.
+- 실제 Cloudflare 계정·운영 Sites·운영 D1에 접속하지 않았다. 실행기 레포·DB 스키마·수집 상한은 바꾸지 않았다.
+- 검사: 시작 기준 `cloud-check.py --full` 22개 통과(09:34Z–09:37Z). 변경 뒤 25개 통과(10:05Z–10:08Z). `wrangler deploy --dry-run` rc=0(업로드 5,968.40KiB, gzip 886.73KiB). 로컬 `d1 migrations apply yukemuri` 13개 적용. actionlint 통과. 새 검사 3개(`check-edge-guard-worker.mjs`, `check-deploy-config.mjs`, `crawler/check_site_access.py`)는 변형 13종(Worker 5, 설정·workflow 6, 수집기 2)에서 실패하는 것을 확인했다. main merge 뒤에도 25개 통과(10:10:30Z–10:14:03Z), dry-run rc=0.
+- 미확인: 무료 플랜의 Rate Limiting 바인딩, workers.dev의 Cache API 저장, `wrangler-action`의 실제 실행, 429 화면의 실제 브라우저 확인. 첫 실제 배포와 5단계에서 확인한다.
+- 다음 작업: Codex 검토와 상위 세션 병합 → 사용자의 계정 서브도메인·API 토큰·Secret 세 개 → 상위 세션이 맡기면 3단계(‘Cloudflare D1 setup’ 실행과 `databaseId` 기록 PR). 4단계 적재 완료 PR에서 `publicOrigin`과 `autoDeploy`를 켠다.
+- 검토: 결과는 아래 H01 검토 줄에 적는다.
+
 ## 기준과 상태
 
 - 작업 환경: Claude Code 웹 클라우드. 상위 세션이 맡긴 작업이다.
