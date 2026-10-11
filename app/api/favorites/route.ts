@@ -4,7 +4,6 @@ import {visitorFavoriteIds,visitorKey} from '@/lib/visitor-favorites';
 import {hasCrawlAccess} from '@/lib/crawl-access';
 export async function GET(request:Request){
  try{
-  await hotelRepository.ready();
   // Keep the legacy owner collection readable to the maintenance service only.
   const ids=hasCrawlAccess(request)?(await favoritesDb().prepare('SELECT favorites.hotel_id FROM favorites INNER JOIN hotels ON hotels.id=favorites.hotel_id ORDER BY favorites.created_at DESC').all<{hotel_id:string}>()).results.map(r=>r.hotel_id):await visitorFavoriteIds(request);
   return Response.json({ids},{headers:{'Cache-Control':'no-store'}});

@@ -4,7 +4,7 @@ import {attachSourceGroups} from './hotel-source-groups';
 import {composePreferredHotel} from './source-policy';
 import {attachLifecycle} from './hotel-lifecycle';
 import {formatHotelLocation,hotelPlaceSearchText} from './japan-place-labels';
-import {queryCoverage} from './hotel-repository';
+import {queryCoverage,catalogPreparation} from './hotel-repository';
 import {readCollectionStatus} from './read-collection-status';
 import {hotelSummary,type HotelSummary,type SnapshotCore,type SnapshotText} from './search-snapshot';
 import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
@@ -52,8 +52,10 @@ export async function buildSearchSnapshot(now:Date){
   });
   if(rows.length<PAGE)break;cursor=rows.at(-1)!.id;
  }
- const [coverage,status]=await Promise.all([queryCoverage(),readCollectionStatus(now.getTime())]);
- return{core,text,cards,coverage,status,first:firstPage(core,cards,coverage)};
+ const [coverage,status,unprepared]=await Promise.all([queryCoverage(),readCollectionStatus(now.getTime()),catalogPreparation()]);
+ // unprepared: seed steps crawl-prepare has not run on this database (a
+ // deploy that changes the seed prepares it and builds again, deploy.yml).
+ return{core,text,cards,coverage,status,unprepared,first:firstPage(core,cards,coverage)};
 }
 // The first page of the default view (no conditions, recommended order): put
 // in the static page so the list shows before core and cards arrive.

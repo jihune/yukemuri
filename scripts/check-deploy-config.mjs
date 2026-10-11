@@ -85,6 +85,14 @@ for(const file of ['.github/workflows/deploy.yml','.github/workflows/d1-setup.ym
 const deploy=readFileSync('.github/workflows/deploy.yml','utf8');
 const steps=['cloudflare-deploy-gate.mjs','d1 time-travel info yukemuri','d1 migrations apply yukemuri --remote','build-search-snapshot.mjs --remote','command: deploy --config','cloudflare-smoke.mjs'].map(s=>deploy.indexOf(s));
 assert(steps.every((v,i)=>v>0&&(i===0||v>steps[i-1])),'deploy order: gate, time travel, migrations, search snapshot, deploy, smoke');
+// A release whose seed D1 lacks (public reads no longer seed, P03): after the
+// first smoke the new Worker prepares the catalogue, then snapshot, deploy and
+// smoke again, only when the first snapshot reported it unprepared.
+const prepared=['cloudflare-smoke.mjs','cloudflare-prepare.mjs','build-search-snapshot.mjs --remote --require-prepared'].map(s=>deploy.indexOf(s));
+const afterPrepare=deploy.slice(prepared[2]);
+assert(prepared.every((v,i)=>v>0&&(i===0||v>prepared[i-1]))&&afterPrepare.indexOf('command: deploy --config')>0&&afterPrepare.indexOf('cloudflare-smoke.mjs')>afterPrepare.indexOf('command: deploy --config'),'unprepared catalogue: prepare, snapshot, deploy, smoke after the first smoke');
+assert.equal((deploy.match(/^ {6}- if: steps\.gate\.outputs\.enabled == 'true' && steps\.snapshot\.outputs\.prepared != 'true'$/gm)??[]).length,4,'the four preparation steps run only for an unprepared catalogue');
+assert.match(deploy,/echo "prepared=.*unprepared\.length===0/,'the snapshot step reports whether the catalogue is prepared');
 assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_call:$/m,'the collection workflow refreshes the snapshot through workflow_call');
 // The deploy job (and its snapshot) waits for a collection run (P03, Codex review on PR #43).
 // Lock order: catalogue group at the top, account inside the job, so a push

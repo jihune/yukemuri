@@ -139,7 +139,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
   }
   const headers=join(out,'_headers'),current=existsSync(headers)?readFileSync(headers,'utf8'):'';
   if(!current.includes(HEADERS_RULE))writeFileSync(headers,current+(current&&!current.endsWith('\n')?'\n':'')+HEADERS_RULE);
-  return{manifest,sizes,data,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
+  return{manifest,sizes,data,unprepared:data.unprepared,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
  }finally{delete globalThis.__SNAPSHOT_ENV;rmSync(temp,{recursive:true,force:true})}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
@@ -150,12 +150,14 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const config=JSON.parse(readFileSync(join(ROOT,'cloudflare-deploy.json'),'utf8'));
   db=remoteSource({token:process.env.CLOUDFLARE_API_TOKEN,account:process.env.CLOUDFLARE_ACCOUNT_ID,database:config.databaseId});
  }else if(arg('--sqlite')){const s=await sqliteSource(resolve(arg('--sqlite')));db=s;close=s.close}
- else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file]');
+ else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file] [--require-prepared]');
  try{
   const result=await buildSnapshot({db,out});
   const kb=n=>(n/1024).toFixed(1)+'KiB';
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
+  console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
   if(report)writeFileSync(report,JSON.stringify({...result,data:undefined,manifest:{...result.manifest,coverage:undefined}},null,1)+'\n');
+  if(argv.includes('--require-prepared')&&result.unprepared.length)throw new Error('Catalogue still not prepared: '+result.unprepared.join(', '));
  }finally{close()}
 }

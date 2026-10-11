@@ -21,7 +21,9 @@ try{
   const body=await response.json();assert.equal(response.status,expected,JSON.stringify(body));return body;
  };
  // A public read fills an empty catalogue (the maintenance backfills stay for crawl-prepare).
- await api('/api/hotels/takinoya');
+ // Seed through the maintenance path, as the collector does before a run
+ // (public reads no longer prepare the catalogue, P03).
+ await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'sources-test-only'}});
  const imported=await api('/api/hotel-source-groups');assert(imported.groups.length>=20);assert(imported.groups.some(g=>g.hotel_id==='jalan-327522'&&g.trip_hotel_id==='trip-1458363'));
  await api('/api/hotel-source-groups','GET',undefined,403,false);
  const row=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),columns=Object.keys(row),base=JSON.parse(row.payload),today=new Date().toISOString().slice(0,10),observedAt=new Date(Date.now()-10000).toISOString();

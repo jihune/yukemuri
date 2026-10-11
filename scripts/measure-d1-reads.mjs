@@ -102,7 +102,7 @@ try{
   const fresh=bases.slice(0,30).map((b,i)=>observe(b,'jalan-'+(9000000+i))),known=bases.slice(30,45).map(b=>observe(b,b.id));
   return JSON.stringify({url:listUrl,status:'done',observations:[...fresh,...known],links:fresh.map(h=>({url:'https://www.jalan.net/yad'+h.id.slice(6)+'/',kind:'detail',prefecture:h.prefecture}))});
  })();
- const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 3").all()).results.map(r=>r.id);
+ const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 4").all()).results.map(r=>r.id);
  // A previous collector run ended with its full-count GET, as in production.
  await call(runtime,'/api/crawl?provider=jalan&kind=list&limit=1');
  await runtime.dispose();runtime=null;
@@ -112,7 +112,17 @@ try{
   // longer reach the Worker (P03: static snapshot).
   ['detailCold','상세(새 isolate)','/api/hotels/'+sample[0],{},200,true],
   ['detail','상세','/api/hotels/'+sample[0]],
-  ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.join(',')],
+  ['compare','비교 3곳','/api/hotel-comparison?ids='+sample.slice(0,3).join(',')],
+  // Every other public route (no maintenance key), P03 PR C.
+  ['compare4','비교 4곳(최대)','/api/hotel-comparison?ids='+sample.join(',')],
+  ['detailMissing','상세(없는 숙소)','/api/hotels/no-such-hotel',{},404],
+  ['favoritesPut','즐겨찾기 저장(PUT)','/api/favorites',{method:'PUT',body:JSON.stringify({hotelId:sample[0],saved:true})}],
+  ['favoritesGet','즐겨찾기 목록','/api/favorites'],
+  ['photoCredits','사진 출처 첫 쪽','/api/photo-credits'],
+  ['photoCreditsNext','사진 출처 다음 쪽(커서)','/api/photo-credits?after='+sample[1]],
+  ['google','Google 평점(설정 없음)','/api/hotels/'+sample[0]+'/google'],
+  ['prices','요금(폐지)','/api/prices',{},410],
+  ['collectionStatusPublic','수집 현황(키 없음)','/api/collection-status',{},403],
   ['crawlGet','수집 GET 집계(실행 끝)','/api/crawl?provider=jalan&kind=list&limit=1'],
   ['crawlClaim','수집 작업 선점(POST)','/api/crawl',{method:'POST',body:JSON.stringify({provider:'trip',phase:'detail',token:randomUUID()})}],
   // Every phase and lane a gentle run claims (scripts/crawler/update-site.py).
@@ -150,8 +160,12 @@ try{
   // P02: a claim reads the first eligible job of each kind and status in its
   // lane's index order and the jobs verified links name, not the whole queue.
   const claims=Object.fromEntries(results.filter(r=>r.key==='crawlClaim'||r.key.startsWith('claim:')).map(r=>[r.key,bound(0.05,200)]));
-  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200)};
+  // Public routes (P03 PR C): fixed caps that hold at any catalogue size, and
+  // no D1 write on a read. A favourite save writes its one row.
+  const publicCaps={detailCold:50,detail:50,detailMissing:50,compare:120,compare4:160,favoritesPut:50,favoritesGet:50,photoCredits:60,photoCreditsNext:60,google:0,prices:0,collectionStatusPublic:0};
+  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),...publicCaps};
   const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
+  for(const k of Object.keys(publicCaps))if(k!=='favoritesPut'&&byKey[k].rowsWritten!==0)failures.push(`${k}: a public read wrote ${byKey[k].rowsWritten} rows`);
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }

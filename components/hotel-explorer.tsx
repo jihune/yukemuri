@@ -1,12 +1,12 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Heart, Waves, Search, MapPin, SlidersHorizontal, ShieldCheck, X, List, Map, RotateCcw, Info, AlertCircle, ArrowLeftRight } from 'lucide-react';
 import { Hotel, HotelFilters, DEFAULT_FILTERS, FEATURE_LABELS, FEATURE_GROUPS, FeatureKey, REGIONS, RegionId, isVerifiedCriteria } from '@/lib/hotel-types';
 import { SortOrder } from '@/lib/hotel-search';
 import { providerRating, displayRating, meetsVerifiedCriteria } from '@/lib/hotel-ratings';
 import type { HotelSummary } from '@/lib/search-snapshot';
 import {searchSnapshot,needsText,PAGE_SIZE,type FirstPage,type SearchResponse} from '@/lib/static-search';
-import {loadSnapshot,loadSnapshotText} from '@/lib/snapshot-client';
+import {loadSnapshot,loadSnapshotText,loadSnapshotStatus} from '@/lib/snapshot-client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
@@ -51,6 +51,8 @@ function Filters({filters,setFilters,counts,ryokanCount}:{filters:HotelFilters;s
 // and every list, search and map result from the static search snapshot.
 export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|null}){
  const snap=useSearchSnapshot(firstPage?.manifest);
+ // The deployed snapshot's collection status (the manifest is read again, so a newer deploy shows its own).
+ const loadStatus=useCallback((signal:AbortSignal)=>loadSnapshot(signal).then(s=>loadSnapshotStatus(s,signal)),[]);
  const preparedIndex=snap.textReady?snap.snapshot!.index!.prepared:NO_INDEX,indexReady=snap.textReady,indexFailed=!!snap.textError;
  const [booking,setBooking]=useState<BookingQuery>(DEFAULT_BOOKING);
  const bookingRef=useRef<BookingQuery>(DEFAULT_BOOKING);
@@ -193,7 +195,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  <div className="search-zone"><div className="search-inner"><div className="search-title"><h1>일본 온천, 나에게 맞는 곳</h1><p>전통 온천마을부터 섬의 온천 숙소까지, 탕과 온천수 조건으로 찾아보세요.</p></div><form className="search-form" onSubmit={e=>{e.preventDefault();setFilters(f=>({...f,query:draft}));setActiveId(null);setDismissSuggestions(n=>n+1)}}><div className="region-picker"><MapPin size={19}/><Picker label="검색 지역" value={filters.region} onChange={v=>chooseRegion(v as RegionId)} options={REGIONS.map(r=>({value:r.id,label:r.name}))}/></div><HotelAutocomplete value={draft} onChange={setDraft} filters={filters} savedOnly={savedOnly} favorites={favorites} searchIndex={preparedIndex} indexReady={indexReady} indexFailed={indexFailed} dismissKey={dismissSuggestions} onSelect={hotel=>{setDraft(hotel.name);setFilters(f=>({...f,query:hotel.name}));setActiveId(null);setDismissSuggestions(n=>n+1)}} onClear={()=>{setDraft('');setFilters(f=>({...f,query:''}))}}/><button type="submit" className="search-button">검색</button></form></div></div>
  <div className="onsen-town-nav" aria-label="온천마을 바로 찾기"><span><Waves size={16}/>온천마을</span>{collectionPlan.towns.filter(t=>['하코네','유후인','구로카와','벳푸','노보리베츠','조잔케이','아리마','기노사키'].includes(t.name)).map(t=><button key={t.name} className={filters.query===t.query&&filters.region===t.prefecture?'active':''} onClick={()=>{setFilters(f=>({...f,region:t.prefecture,query:t.query}));setDraft(t.query);setSavedOnly(false);setActiveId(null)}}>{t.name}</button>)}</div>
  <div className="region-nav" aria-label="빠른 지역 검색">{['all','pref-fukuoka','pref-kumamoto','pref-ooita','pref-hokkaido','pref-okinawa','pref-oosaka','pref-hyogo','pref-tokyo','pref-kanagawa'].map(id=>REGIONS.find(r=>r.id===id)!).map(r=><button key={r.id} className={filters.region===r.id?'active':''} aria-pressed={filters.region===r.id} onClick={()=>chooseRegion(r.id)}>{r.name}</button>)}</div>
- {snap.snapshot||preview?<><div className="demo-banner"><Info size={15}/><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p></div><CollectionStatusPanel coverage={response.coverage}/></>:<div className="demo-banner"><Info size={15}/><p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p></div>}
+ {snap.snapshot||preview?<><div className="demo-banner"><Info size={15}/><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p></div><CollectionStatusPanel coverage={response.coverage} load={loadStatus}/></>:<div className="demo-banner"><Info size={15}/><p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p></div>}
  {searchError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{searchError}</span><button onClick={snap.refresh}>다시 시도</button>{reopenSearch&&<button onClick={()=>window.location.reload()}>페이지 다시 열기</button>}</div>}
  {favoritesError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{favoritesError}</span><button onClick={loadFavorites}>다시 시도</button></div>}
  <main className={`workspace view-${mode}`} data-first-page={preview?firstPage?.snapshot:undefined}>
