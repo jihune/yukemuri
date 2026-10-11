@@ -76,6 +76,25 @@ async function run(page){
  const cardsAfterRetry=await page.locator('.hotel-list .card-title').count();
  check('Enter로 다시 시도하면 목록과 그 조건의 안내가 돌아옴',cardsAfterRetry>0&&(await notice.innerText().catch(()=>'')).includes(count((await api('rating=8')).unknownExcluded)),{cardsAfterRetry});
 
+ // A page older than the deployed snapshot format asks to be opened again.
+ await page.route(manifestFile,async route=>{const r=await route.fetch();await route.fulfill({response:r,json:{...await r.json(),format:999}})});
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ await error.waitFor();
+ check('스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼',(await error.innerText()).includes('새 버전')&&await error.getByRole('button',{name:'페이지 다시 열기'}).isVisible()&&await page.locator('.hotel-list .card-title').count()===0,{text:await error.innerText()});
+ await page.unroute(manifestFile);
+
+ // A hotel the snapshot still lists but the detail API no longer has: the sheet
+ // closes with the API message and the page reads the manifest again.
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ const detailApi=url=>/^\/api\/hotels\/[^/]+$/.test(url.pathname);
+ await page.route(detailApi,route=>route.fulfill({status:404,contentType:'application/json',body:JSON.stringify({error:'숙소를 찾을 수 없습니다.'})}));
+ let manifests=0;const countManifest=request=>{if(manifestFile(new URL(request.url())))manifests++};page.on('request',countManifest);
+ await page.locator('.hotel-list .card-title').first().tap();
+ await page.locator('.toast-message',{hasText:'숙소를 찾을 수 없습니다.'}).waitFor({timeout:5000}).catch(()=>{});
+ await page.waitForLoadState('networkidle');
+ check('상세가 404면 안내 후 시트를 닫고 스냅숏 목록을 다시 확인',await page.locator('.toast-message',{hasText:'숙소를 찾을 수 없습니다.'}).count()>0&&manifests===1&&await page.locator('.hotel-list .card-title').count()>0&&!new URL(page.url()).hash.startsWith('#stay/'),{manifests,url:page.url()});
+ page.off('request',countManifest);await page.unroute(detailApi);
+
  // Map view on a phone: the caption explains the gap between the result and the markers.
  // The unfiltered list has enough pages for loading, failure and retry.
  await page.goto(base+'/',{waitUntil:'networkidle'});

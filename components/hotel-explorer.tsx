@@ -18,7 +18,7 @@ import RetryImage from './retry-image';
 import collectionPlan from '@/data/collection-priorities.json';
 import {parseHotelQuery,listingUrl} from '@/lib/hotel-query';
 import {DEFAULT_BOOKING,parseBookingQuery,type BookingQuery} from '@/lib/booking-query';
-import { apiJson } from '@/lib/api-client';
+import { apiJson, ApiError } from '@/lib/api-client';
 import HotelAutocomplete from './hotel-autocomplete';
 import HotelCard from './hotel-card';
 import CollectionStatusPanel from './collection-status-panel';
@@ -114,7 +114,7 @@ export default function HotelExplorer(){
   // Cards carry list fields only; the sheet opens with the hotel the API returns.
   setDetail(null);if(!detailId){setDetailLoading(false);return}
   const controller=new AbortController();setDetailLoading(true);
-  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(e=>{if(!controller.signal.aborted){setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail()}}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
+  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(e=>{if(!controller.signal.aborted){setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail();if(e instanceof ApiError&&e.status===404)snap.refresh()}}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
   return()=>controller.abort();
  },[detailId]);
 
