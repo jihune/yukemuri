@@ -1,6 +1,6 @@
 {
- "measuredAt": "2026-10-11T07:41:06.147Z",
- "gitHead": "da919d5",
+ "measuredAt": "2026-10-11T08:47:05.129Z",
+ "gitHead": "fa99371",
  "dirty": false,
  "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.",
  "grown": false,
@@ -19,7 +19,7 @@
    "key": "listCold",
    "label": "목록 첫 쪽(새 isolate)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1",
-   "ms": 152.1,
+   "ms": 148.8,
    "statements": 22,
    "rowsRead": 16444,
    "rowsWritten": 3,
@@ -33,12 +33,12 @@
      "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
     },
     {
-     "rowsRead": 3312,
-     "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
-    },
-    {
      "rowsRead": 3505,
      "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+    },
+    {
+     "rowsRead": 3312,
+     "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
     },
     {
      "rowsRead": 4967,
@@ -50,7 +50,7 @@
    "key": "nameCold",
    "label": "이름 부분검색(새 isolate, 색인 생성 포함)",
    "path": "/api/hotels?stable=1&saved=0&page=1&q=…",
-   "ms": 240.2,
+   "ms": 225.4,
    "statements": 17,
    "rowsRead": 23582,
    "rowsWritten": 0,
@@ -68,12 +68,12 @@
      "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
     },
     {
-     "rowsRead": 5031,
-     "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
-    },
-    {
      "rowsRead": 3505,
      "sql": "SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='d"
+    },
+    {
+     "rowsRead": 5031,
+     "sql": "SELECT SUM(CASE WHEN ((bath_features & 1) != 0)=1 THEN 1 ELSE 0 END) AS natural,SUM(CASE WHEN ((bath_features & 2) != 0)=1 THEN 1 ELSE 0 END) AS largeBath,SUM(C"
     },
     {
      "rowsRead": 5034,
@@ -85,7 +85,7 @@
    "key": "list",
    "label": "목록 첫 쪽(fresh)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1",
-   "ms": 50,
+   "ms": 56.1,
    "statements": 15,
    "rowsRead": 9627,
    "rowsWritten": 3,
@@ -104,7 +104,7 @@
    "key": "listFilters",
    "label": "목록: 천연온천+Trip 9.0+ 리뷰 50+(fresh)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&features=natural&rating=9&reviews=50",
-   "ms": 32,
+   "ms": 32.7,
    "statements": 12,
    "rowsRead": 3982,
    "rowsWritten": 0,
@@ -119,7 +119,7 @@
    "key": "listRegion",
    "label": "목록: 홋카이도(fresh)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&region=pref-hokkaido",
-   "ms": 35.7,
+   "ms": 43.2,
    "statements": 15,
    "rowsRead": 1723,
    "rowsWritten": 3,
@@ -129,7 +129,7 @@
    "key": "nameIndex",
    "label": "이름 부분검색(fresh, 이 isolate의 첫 색인 생성 포함)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
-   "ms": 136.1,
+   "ms": 148.9,
    "statements": 10,
    "rowsRead": 16763,
    "rowsWritten": 0,
@@ -152,7 +152,7 @@
    "key": "name",
    "label": "이름 부분검색(fresh, 색인 있음)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
-   "ms": 29.4,
+   "ms": 22.7,
    "statements": 8,
    "rowsRead": 10084,
    "rowsWritten": 0,
@@ -171,7 +171,7 @@
    "key": "suggest",
    "label": "검색어 예측",
    "path": "/api/hotels/suggestions?q=…",
-   "ms": 10.6,
+   "ms": 10.2,
    "statements": 0,
    "rowsRead": 0,
    "rowsWritten": 0,
@@ -181,7 +181,7 @@
    "key": "detail",
    "label": "상세",
    "path": "/api/hotels/akan-tsuruga",
-   "ms": 12.5,
+   "ms": 11.6,
    "statements": 5,
    "rowsRead": 25,
    "rowsWritten": 0,
@@ -191,7 +191,7 @@
    "key": "compare",
    "label": "비교 3곳",
    "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu",
-   "ms": 13,
+   "ms": 11.3,
    "statements": 5,
    "rowsRead": 75,
    "rowsWritten": 0,
@@ -201,11 +201,15 @@
    "key": "crawlGet",
    "label": "수집 GET 집계(실행 끝)",
    "path": "/api/crawl?provider=jalan&kind=list&limit=1",
-   "ms": 17.8,
+   "ms": 9.9,
    "statements": 4,
-   "rowsRead": 5958,
+   "rowsRead": 7613,
    "rowsWritten": 2,
    "heaviest": [
+    {
+     "rowsRead": 1655,
+     "sql": "INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=exclude"
+    },
     {
      "rowsRead": 1655,
      "sql": "SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels"
@@ -220,7 +224,7 @@
    "key": "crawlClaim",
    "label": "수집 작업 선점(POST)",
    "path": "/api/crawl",
-   "ms": 18.9,
+   "ms": 15.6,
    "statements": 2,
    "rowsRead": 1630,
    "rowsWritten": 2,
@@ -235,7 +239,7 @@
    "key": "crawlPut",
    "label": "수집 저장(PUT, 상세 1곳)",
    "path": "/api/crawl",
-   "ms": 26.8,
+   "ms": 23.1,
    "statements": 12,
    "rowsRead": 24,
    "rowsWritten": 18,
@@ -247,7 +251,7 @@
    "key": "nameAfterPut",
    "label": "PUT 뒤 이름 부분검색(fresh)",
    "path": "/api/hotels?stable=1&sort=recommended&saved=0&page=1&fresh=1&q=…",
-   "ms": 31.2,
+   "ms": 27.2,
    "statements": 8,
    "rowsRead": 10085,
    "rowsWritten": 0,
@@ -266,7 +270,7 @@
    "key": "crawlPutCold",
    "label": "수집 저장(PUT, 새 isolate)",
    "path": "/api/crawl",
-   "ms": 135.2,
+   "ms": 128,
    "statements": 19,
    "rowsRead": 6842,
    "rowsWritten": 17,
@@ -289,7 +293,7 @@
    "key": "exportManifest",
    "label": "catalog-export 목록",
    "path": "/api/catalog-export",
-   "ms": 35.5,
+   "ms": 28.6,
    "statements": 26,
    "rowsRead": 6909,
    "rowsWritten": 0,
@@ -312,7 +316,7 @@
    "key": "exportPage",
    "label": "catalog-export hotels 한 쪽(250행)",
    "path": "/api/catalog-export?table=hotels&limit=250",
-   "ms": 52.2,
+   "ms": 43.5,
    "statements": 1,
    "rowsRead": 251,
    "rowsWritten": 0,

@@ -97,13 +97,19 @@ export async function writeHotels(observations:Hotel[]){
  resultCache.clear();
  return written;
 }
-async function queryCoverage(){
- const db=favoritesDb();
- const counts=await db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels').first<{records:number;prefectures:number}>();
- const jobs=await db.prepare("SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS details,SUM(CASE WHEN status IN ('pending','retry','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,MAX(fetched_at) AS updated FROM crawl_jobs WHERE status!='skipped' GROUP BY provider").all<{provider:'trip'|'jalan';discovered:number;completed:number;details:number;pending:number;failed:number;updated:string|null}>();
+type CoverageCounts={records:number;prefectures:number};
+type CoverageJobs={provider:'trip'|'jalan';discovered:number;completed:number;details:number;pending:number;failed:number;updated:string|null};
+function coverageStatements(db:D1Database){
+ return [db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels'),db.prepare("SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS details,SUM(CASE WHEN status IN ('pending','retry','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,MAX(fetched_at) AS updated FROM crawl_jobs WHERE status!='skipped' GROUP BY provider")];
+}
+function coverageFrom(counts:CoverageCounts|undefined,jobs:CoverageJobs[]){
  const aggregate={...catalogCoverage,records:counts?.records??0,prefectures:counts?.prefectures??0,crawledRecords:(counts?.records??0)-20,discoveredDetailUrls:0,completedDetailPages:0,pending:0,failed:0,providers:{jalan:{discovered:0,completed:0},trip:{discovered:0,completed:0}}};
- for(const job of jobs.results){aggregate.providers[job.provider]={discovered:job.discovered,completed:job.completed};aggregate.discoveredDetailUrls+=job.discovered;aggregate.completedDetailPages+=job.details;aggregate.pending+=job.pending;aggregate.failed+=job.failed;if(job.updated&&job.updated>aggregate.updatedAt)aggregate.updatedAt=job.updated}
+ for(const job of jobs){aggregate.providers[job.provider]={discovered:job.discovered,completed:job.completed};aggregate.discoveredDetailUrls+=job.discovered;aggregate.completedDetailPages+=job.details;aggregate.pending+=job.pending;aggregate.failed+=job.failed;if(job.updated&&job.updated>aggregate.updatedAt)aggregate.updatedAt=job.updated}
  return aggregate;
+}
+async function queryCoverage(){
+ const db=favoritesDb(),[counts,jobs]=await db.batch(coverageStatements(db));
+ return coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
 }
 // Hotel rows are only ever inserted by writeHotels, which keeps this counter.
 const RECORD_COUNTER='hotel-records';
@@ -114,13 +120,17 @@ function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  return promise;
 }
 const COVERAGE_SNAPSHOT='coverage-snapshot';
-// Full count, read by the collector at the end of each run. It resets the
-// record counter to the true count (first run, restored backups) and stores
-// the aggregate so other isolates need not count it again.
+// Full count, read by the collector at the end of each run. It also resets
+// the record counter (first run, restored backups) from the true count in the
+// same transaction, so a write either lands before it and is counted, or after
+// it and adds to the corrected value (overlapping collector runs). The
+// aggregate is stored so other isolates need not count it again.
 export async function readCoverage(){
- const coverage=await cacheCoverage(queryCoverage()),db=favoritesDb(),upsert='INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value';
- await db.batch([db.prepare(upsert).bind(RECORD_COUNTER,String(coverage.records)),db.prepare(upsert).bind(COVERAGE_SNAPSHOT,JSON.stringify(coverage))]);
- return coverage;
+ const db=favoritesDb();
+ const [,counts,jobs]=await db.batch([db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
+ const coverage=coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
+ await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(COVERAGE_SNAPSHOT,JSON.stringify(coverage)).run();
+ return cacheCoverage(Promise.resolve(coverage));
 }
 // Exact record count over the aggregate of the last full count: from this
 // isolate's memory for five minutes, else as stored by the collector's GET.
