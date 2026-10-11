@@ -143,3 +143,15 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 /* U02 map-bounds search. */
 .map-area-search{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:5;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1px solid #087e8b;border-radius:22px;background:#fff;color:#087e8b;font-size:13px;font-weight:650;white-space:nowrap;box-shadow:0 4px 14px #17455322}
 .map-area-search[aria-disabled=true]{opacity:.75;cursor:wait}
+/* U03: rows whose known values differ carry a text tag; the tint and the bar only support it. */
+.comparison-diff-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;font-size:.875rem;color:var(--foreground)}
+.comparison-diff-bar p{flex:1;min-width:180px;margin:0}
+.comparison-diff-bar button{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;color:var(--primary);background:var(--background);min-height:44px;font-size:.875rem}
+.comparison-diff-bar button[aria-pressed=true]{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground)}
+.comparison-diff-bar button:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.comparison-table .comparison-row-diff td{background:#fff7ec}
+.comparison-table .comparison-row-diff th:first-child{background:#fdeedd;box-shadow:inset 4px 0 0 #b45f06}
+.comparison-diff-tag{display:flex;width:fit-content;align-items:center;gap:4px;margin-top:6px;padding:1px 7px;border:1px solid #b45f06;border-radius:4px;color:#7a3f00;background:#fff;font-size:.8125rem;font-weight:700;line-height:1.6}
+.comparison-undecided{display:block;margin-top:4px;font-size:.8125rem;font-weight:400;color:var(--muted-foreground);line-height:1.5}
+.comparison-diff-none,.comparison-diff-hidden{color:var(--muted-foreground);font-size:.875rem}
+.comparison-diff-hidden{margin:10px 0 0}

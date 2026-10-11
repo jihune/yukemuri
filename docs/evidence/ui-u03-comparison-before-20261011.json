@@ -1,0 +1,545 @@
+{
+ "measuredAt": "2026-10-11T05:22:47.291Z",
+ "base": "http://127.0.0.1:5173",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop mouse",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 360,
+   "name": "비교를 열면 닫기 버튼에 포커스(U01 유지)",
+   "pass": true,
+   "detail": {
+    "focus": "숙소 비교 닫기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "후보 4곳: 확인된 값이 다른 행에만 ‘다름’ 글자 표지(Trip.com·자란넷·내 검증 기준·객실 온천)",
+   "pass": false,
+   "detail": {
+    "differing": [],
+    "rows": [
+     [
+      "Trip.com · 10점",
+      "",
+      ""
+     ],
+     [
+      "Google Maps · 5점",
+      "",
+      ""
+     ],
+     [
+      "자란넷 · 5점",
+      "",
+      ""
+     ],
+     [
+      "내 검증 기준",
+      "",
+      ""
+     ],
+     [
+      "천연온천",
+      "",
+      ""
+     ],
+     [
+      "니고리유 · 탁한 온천",
+      "",
+      ""
+     ],
+     [
+      "카케나가시 · 흘려보내는 온천",
+      "",
+      ""
+     ],
+     [
+      "대욕장",
+      "",
+      ""
+     ],
+     [
+      "노천탕",
+      "",
+      ""
+     ],
+     [
+      "공용 대욕장 노천탕",
+      "",
+      ""
+     ],
+     [
+      "전세탕 / 가족탕",
+      "",
+      ""
+     ],
+     [
+      "전세·가족 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 온천",
+      "",
+      ""
+     ],
+     [
+      "객실 실내 온천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천 온천탕",
+      "",
+      ""
+     ],
+     [
+      "자란 하이클래스",
+      "",
+      ""
+     ],
+     [
+      "주소",
+      "",
+      ""
+     ],
+     [
+      "온천수 안내",
+      "",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "없음 2곳과 미확인 2곳은 다름이 아니라 판단 보류 · 미확인 2곳",
+   "pass": false,
+   "detail": {
+    "privateBath": {
+     "name": "전세탕 / 가족탕",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "전세탕 / 가족탕\t\n확인 필요\n시설 출처\n근거 보기\n\t\n없음\n확인 2026-10-03\n시설 출처\n근거 보기\n\t\n확인 필요\n시설 출처\n근거 보기\n"
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "모두 확인되고 같은 행(천연온천)과 참고 행(Google Maps·주소·온천수 안내)은 표지 없음",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "천연온천\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t"
+    },
+    "reference": [
+     {
+      "name": "Google Maps · 5점",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "Google Maps · 5점\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogl"
+     },
+     {
+      "name": "주소",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "주소\t\n154 Noboribetsuonsencho, Noboribetsu City, Hokkaido, 059-0551, Japan\n\t\nNobor"
+     },
+     {
+      "name": "온천수 안내",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "온천수 안내\t\n공식 안내에서 세 종류의 온천과 로마식 대욕장, 정원 노천탕을 소개합니다.\n\t\n관광협회 안내에서 여러 종류의 온천과 숲을 바라보는"
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.innerText: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-comparison').locator('.comparison-diff-bar p')\u001b[22m\n"
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교를 열면 닫기 버튼에 포커스(U01 유지)",
+   "pass": true,
+   "detail": {
+    "focus": "숙소 비교 닫기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "후보 4곳: 확인된 값이 다른 행에만 ‘다름’ 글자 표지(Trip.com·자란넷·내 검증 기준·객실 온천)",
+   "pass": false,
+   "detail": {
+    "differing": [],
+    "rows": [
+     [
+      "Trip.com · 10점",
+      "",
+      ""
+     ],
+     [
+      "Google Maps · 5점",
+      "",
+      ""
+     ],
+     [
+      "자란넷 · 5점",
+      "",
+      ""
+     ],
+     [
+      "내 검증 기준",
+      "",
+      ""
+     ],
+     [
+      "천연온천",
+      "",
+      ""
+     ],
+     [
+      "니고리유 · 탁한 온천",
+      "",
+      ""
+     ],
+     [
+      "카케나가시 · 흘려보내는 온천",
+      "",
+      ""
+     ],
+     [
+      "대욕장",
+      "",
+      ""
+     ],
+     [
+      "노천탕",
+      "",
+      ""
+     ],
+     [
+      "공용 대욕장 노천탕",
+      "",
+      ""
+     ],
+     [
+      "전세탕 / 가족탕",
+      "",
+      ""
+     ],
+     [
+      "전세·가족 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 온천",
+      "",
+      ""
+     ],
+     [
+      "객실 실내 온천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천 온천탕",
+      "",
+      ""
+     ],
+     [
+      "자란 하이클래스",
+      "",
+      ""
+     ],
+     [
+      "주소",
+      "",
+      ""
+     ],
+     [
+      "온천수 안내",
+      "",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "없음 2곳과 미확인 2곳은 다름이 아니라 판단 보류 · 미확인 2곳",
+   "pass": false,
+   "detail": {
+    "privateBath": {
+     "name": "전세탕 / 가족탕",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "전세탕 / 가족탕\t\n확인 필요\n시설 출처\n근거 보기\n\t\n없음\n확인 2026-10-03\n시설 출처\n근거 보기\n\t\n확인 필요\n시설 출처\n근거 보기\n"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "모두 확인되고 같은 행(천연온천)과 참고 행(Google Maps·주소·온천수 안내)은 표지 없음",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "천연온천\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t"
+    },
+    "reference": [
+     {
+      "name": "Google Maps · 5점",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "Google Maps · 5점\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogl"
+     },
+     {
+      "name": "주소",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "주소\t\n154 Noboribetsuonsencho, Noboribetsu City, Hokkaido, 059-0551, Japan\n\t\nNobor"
+     },
+     {
+      "name": "온천수 안내",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "온천수 안내\t\n공식 안내에서 세 종류의 온천과 로마식 대욕장, 정원 노천탕을 소개합니다.\n\t\n관광협회 안내에서 여러 종류의 온천과 숲을 바라보는"
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.innerText: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-comparison').locator('.comparison-diff-bar p')\u001b[22m\n"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "비교를 열면 닫기 버튼에 포커스(U01 유지)",
+   "pass": true,
+   "detail": {
+    "focus": "숙소 비교 닫기"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "후보 4곳: 확인된 값이 다른 행에만 ‘다름’ 글자 표지(Trip.com·자란넷·내 검증 기준·객실 온천)",
+   "pass": false,
+   "detail": {
+    "differing": [],
+    "rows": [
+     [
+      "Trip.com · 10점",
+      "",
+      ""
+     ],
+     [
+      "Google Maps · 5점",
+      "",
+      ""
+     ],
+     [
+      "자란넷 · 5점",
+      "",
+      ""
+     ],
+     [
+      "내 검증 기준",
+      "",
+      ""
+     ],
+     [
+      "천연온천",
+      "",
+      ""
+     ],
+     [
+      "니고리유 · 탁한 온천",
+      "",
+      ""
+     ],
+     [
+      "카케나가시 · 흘려보내는 온천",
+      "",
+      ""
+     ],
+     [
+      "대욕장",
+      "",
+      ""
+     ],
+     [
+      "노천탕",
+      "",
+      ""
+     ],
+     [
+      "공용 대욕장 노천탕",
+      "",
+      ""
+     ],
+     [
+      "전세탕 / 가족탕",
+      "",
+      ""
+     ],
+     [
+      "전세·가족 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 온천",
+      "",
+      ""
+     ],
+     [
+      "객실 실내 온천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천탕",
+      "",
+      ""
+     ],
+     [
+      "객실 노천 온천탕",
+      "",
+      ""
+     ],
+     [
+      "자란 하이클래스",
+      "",
+      ""
+     ],
+     [
+      "주소",
+      "",
+      ""
+     ],
+     [
+      "온천수 안내",
+      "",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "없음 2곳과 미확인 2곳은 다름이 아니라 판단 보류 · 미확인 2곳",
+   "pass": false,
+   "detail": {
+    "privateBath": {
+     "name": "전세탕 / 가족탕",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "전세탕 / 가족탕\t\n확인 필요\n시설 출처\n근거 보기\n\t\n없음\n확인 2026-10-03\n시설 출처\n근거 보기\n\t\n확인 필요\n시설 출처\n근거 보기\n"
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "모두 확인되고 같은 행(천연온천)과 참고 행(Google Maps·주소·온천수 안내)은 표지 없음",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "diff": false,
+     "tag": "",
+     "undecided": "",
+     "marked": false,
+     "text": "천연온천\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t\n있음\n확인 2026-10-03\n시설 출처\n\t"
+    },
+    "reference": [
+     {
+      "name": "Google Maps · 5점",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "Google Maps · 5점\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogle Maps에서 평점과 사진 확인\n\n\t\n\nGoogl"
+     },
+     {
+      "name": "주소",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "주소\t\n154 Noboribetsuonsencho, Noboribetsu City, Hokkaido, 059-0551, Japan\n\t\nNobor"
+     },
+     {
+      "name": "온천수 안내",
+      "diff": false,
+      "tag": "",
+      "undecided": "",
+      "marked": false,
+      "text": "온천수 안내\t\n공식 안내에서 세 종류의 온천과 로마식 대욕장, 정원 노천탕을 소개합니다.\n\t\n관광협회 안내에서 여러 종류의 온천과 숲을 바라보는"
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: locator.innerText: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.hotel-comparison').locator('.comparison-diff-bar p')\u001b[22m\n"
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기",
+  "스크린리더 읽기 순서(표지는 행 머리 글자로 확인)",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}
