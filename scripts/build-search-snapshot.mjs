@@ -97,6 +97,14 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
   }
   const manifest={format:1,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw]))};
   writeFileSync(join(folder,'manifest.json'),JSON.stringify(manifest));
+  // The default view's first page goes into the static page (lib/search-snapshot.ts FIRST_PAGE).
+  const page=join(out,'index.html');
+  if(existsSync(page)){
+   const body=JSON.stringify({snapshot:id,response:data.first}).replaceAll('<','\\u003c'),html=readFileSync(page,'utf8').replace(/<script id="yukemuri-first-page"[^>]*>[^<]*<\/script>/,'');
+   if(!html.includes('</head>'))throw new Error('Static page without </head>');
+   writeFileSync(page,html.replace('</head>',`<script id="yukemuri-first-page" type="application/json">${body}</script></head>`));
+   sizes.first={raw:Buffer.byteLength(body),gzip:gzipSync(body,{level:9}).length,brotli:brotliCompressSync(body).length};
+  }
   const headers=join(out,'_headers'),current=existsSync(headers)?readFileSync(headers,'utf8'):'';
   if(!current.includes(HEADERS_RULE))writeFileSync(headers,current+(current&&!current.endsWith('\n')?'\n':'')+HEADERS_RULE);
   return{manifest,sizes,data,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};

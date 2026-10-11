@@ -1,11 +1,15 @@
 'use client';
-import {useCallback,useEffect,useMemo,useState} from 'react';
-import type {HotelFilters} from '@/lib/hotel-types';
+import {useCallback,useEffect,useMemo,useState,useSyncExternalStore} from 'react';
+import {DEFAULT_FILTERS,type HotelFilters} from '@/lib/hotel-types';
+import {readFirstPage} from '@/lib/snapshot-client';
 import type {SortOrder} from '@/lib/hotel-search';
 import {searchSnapshot,resultPage,pageSimilar,needsText,mayNeedAlternatives,PAGE_SIZE,type SearchResponse,type SearchResult} from '@/lib/static-search';
 import type {SnapshotCoverage} from '@/lib/search-snapshot';
 import type {SnapshotState} from './use-search-snapshot';
 
+const noMore=()=>{};
+const still=()=>()=>{};
+const DEFAULT_KEY=JSON.stringify(Object.entries(DEFAULT_FILTERS).sort());
 const EMPTY_COVERAGE:SnapshotCoverage={records:0,prefectures:0,crawledRecords:0,curatedRecords:0,inventoryComplete:false,discoveredDetailUrls:0,completedDetailPages:0,pending:0,failed:0,updatedAt:'',providers:{jalan:{discovered:0,completed:0},trip:{discovered:0,completed:0}}};
 // The list of the current conditions, computed in the browser from the
 // snapshot. More pages are slices of the same order, so they never fail or
@@ -32,8 +36,13 @@ export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:Sor
   const hotels=result.order.slice(0,last.page*PAGE_SIZE).map(i=>s.cards[i]);
   return{...last,hotels,similarHotelIds:pageSimilar(result,hotels)};
  },[s,result,pages]);
+ // Until the snapshot arrives, the default view shows the first page the static
+ // page carries (built with the same snapshot); the server render has none.
+ const first=useSyncExternalStore(still,readFirstPage,()=>null);
+ const preview=!s&&!!first&&sort==='recommended'&&!savedOnly&&JSON.stringify(Object.entries(filters).sort())===DEFAULT_KEY?first.response:null;
  const hasMore=response.page*response.pageSize<response.total;
  const loadMore=useCallback(()=>{if(hasMore)setPaging({list,pages:pages+1})},[hasMore,list,pages]);
  const error=snap.error??(textNeeded||result==='text'?snap.textError:null);
- return{response,loading:!error&&(!result||result==='text'),searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
+ if(preview)return{response:preview,preview:true,loading:false,searchError:snap.error?.message??'',reopenSearch:!!snap.error?.reload,loadMore:noMore,hasMore:false};
+ return{response,preview:false,loading:!error&&(!result||result==='text'),searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
 }

@@ -6,6 +6,9 @@ import type coverageJson from '../data/coverage.json';
 // D1 after each collection run and at deploy, and served as Worker static
 // assets. The browser filters, sorts, pages and maps from it; no list, search
 // or map request reaches the Worker. Bump SNAPSHOT_FORMAT when a file changes shape.
+// The script element of the static page holding the default view's first page
+// (written by scripts/build-search-snapshot.mjs).
+export const FIRST_PAGE='yukemuri-first-page';
 export const SNAPSHOT_FORMAT=1;
 export const SNAPSHOT_MANIFEST='/snapshot/manifest.json';
 // The card fields of a hotel: what a list card, a map marker and the map

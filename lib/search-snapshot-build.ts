@@ -7,7 +7,8 @@ import {formatHotelLocation,hotelPlaceSearchText} from './japan-place-labels';
 import {queryCoverage} from './hotel-repository';
 import {readCollectionStatus} from './read-collection-status';
 import {hotelSummary,type HotelSummary,type SnapshotCore,type SnapshotText} from './search-snapshot';
-import type {Hotel} from './hotel-types';
+import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
+import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
 // enrichHotel, then the linked source rows, then the lifecycle. Both lookups
@@ -52,5 +53,11 @@ export async function buildSearchSnapshot(now:Date){
   if(rows.length<PAGE)break;cursor=rows.at(-1)!.id;
  }
  const [coverage,status]=await Promise.all([queryCoverage(),readCollectionStatus(now.getTime())]);
- return{core,text,cards,coverage,status};
+ return{core,text,cards,coverage,status,first:firstPage(core,cards,coverage)};
+}
+// The first page of the default view (no conditions, recommended order): put
+// in the static page so the list shows before core and cards arrive.
+export function firstPage(core:SnapshotCore,cards:HotelSummary[],coverage:Awaited<ReturnType<typeof queryCoverage>>):SearchResponse{
+ const s=openSnapshot({coverage} as Parameters<typeof openSnapshot>[0],core,cards);
+ return resultPage(s,searchSnapshot(s,DEFAULT_FILTERS,'recommended'),1);
 }

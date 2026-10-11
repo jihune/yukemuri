@@ -5,7 +5,7 @@
 // Usage: node scripts/check-search-snapshot-worker.mjs
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync} from 'node:fs';
+import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync,mkdirSync,writeFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {buildSnapshot,readOnly,remoteSource,HEADERS_RULE,compileLib} from './build-search-snapshot.mjs';
@@ -35,7 +35,8 @@ try{
  const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
  const fingerprint=async()=>{const out={};for(const t of tables)out[t]=JSON.stringify((await db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results);return out};
  const before=await fingerprint();
- const local=join(temp,'local'),built=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
+ const local=join(temp,'local');mkdirSync(local,{recursive:true});writeFileSync(join(local,'index.html'),'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');
+ const built=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
  assert.deepEqual(await fingerprint(),before,'building the snapshot changed D1');
  const manifest=read(local,'manifest.json'),dir=join(local,'snapshot','v',manifest.id),file=name=>JSON.parse(readFileSync(join(dir,name+'.json'),'utf8'));
  const core=file('core'),cards=file('cards'),text=file('text'),status=file('status');
@@ -114,12 +115,22 @@ try{
  await assert.rejects(denied.prepare('SELECT 1').all(),e=>/HTTP 403/.test(e.message)&&!/tok-secret|acct-secret/.test(e.message));
  assert.throws(()=>remoteSource({token:'',account:'a',database:'128a3c5b-8e5f-470a-a901-d899d396cae1'}),/needs/);
 
+ // The static page's first page: the default view (no conditions, recommended
+ // order) of this snapshot, the former recommended ORDER BY over hotels not closed.
+ const firstOf=()=>{const html=readFileSync(join(local,'index.html'),'utf8'),m=[...html.matchAll(/<script id="yukemuri-first-page" type="application\/json">([^<]*)<\/script>/g)];assert.equal(m.length,1,'one first page');assert(html.indexOf(m[0][0])<html.indexOf('</head>'));return JSON.parse(m[0][1])};
+ const firstPage=firstOf(),openRows=rows.filter(r=>r.state!=='closed'&&r.state!=='temporarily_closed');
+ const nat=r=>(r.natural===1?2:0)+(r.trip_score!==null&&r.trip_score>=9&&r.trip_reviews!==null&&r.trip_reviews>=50?1:0),num=v=>v===null?-Infinity:v;
+ const expectedOrder=[...openRows].sort((a,b)=>nat(b)-nat(a)||num(b.trip_score)-num(a.trip_score)||num(b.trip_reviews)-num(a.trip_reviews)||(a.id<b.id?-1:1)).slice(0,40).map(r=>r.id);
+ assert.equal(firstPage.snapshot,manifest.id);assert.equal(firstPage.response.total,openRows.length);assert.equal(firstPage.response.page,1);
+ assert.deepEqual(firstPage.response.hotels.map(h=>h.id),expectedOrder);
+ assert.deepEqual(firstPage.response.hotels,expectedOrder.map(id=>cards[core.ids.indexOf(id)]));assert.deepEqual(firstPage.response.coverage,manifest.coverage);
  // Rebuilding replaces the version folder and adds the cache rule once.
  const again=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});
  assert.equal(again.manifest.id,manifest.id);
  assert.deepEqual(readdirSync(join(local,'snapshot','v')),[manifest.id]);
  assert.equal(readFileSync(join(local,'_headers'),'utf8').split(HEADERS_RULE).length,2);
  assert(existsSync(join(local,'snapshot','manifest.json')));
+ assert.equal(firstOf().snapshot,manifest.id,'rebuild replaces the first page');
  const kb=n=>(n/1024).toFixed(0)+'KiB';
  console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}

@@ -47,6 +47,18 @@ async function run(page){
  const plain=await api('q='+encodeURIComponent('노보리베츠'));
  check('시설·평점 조건이 없으면 안내 없음',plain.unknownExcluded===0&&await notice.count()===0,{unknownExcluded:plain.unknownExcluded});
 
+ // The address without conditions shows the static page's first page before the
+ // snapshot arrives, then the same cards from the snapshot.
+ await page.route(snapshotFiles,async route=>{await new Promise(r=>setTimeout(r,3000));await route.continue()});
+ await page.goto(base+'/',{waitUntil:'commit'});
+ const titles=()=>page.locator('.hotel-list .card-title').allInnerTexts();
+ await page.locator('.hotel-list .card-title').first().waitFor({timeout:2500}).catch(()=>{});
+ const early=await titles(),expectedFirst=(await api('stable=1')).hotels.map(h=>h.names.ko);
+ const earlyBanner=await page.locator('.demo-banner').innerText();
+ check('스냅숏을 받기 전에 정적 첫 쪽 40곳이 기본 결과와 같은 순서로 보이고 로딩 안내 없음',early.length===40&&JSON.stringify(early)===JSON.stringify(expectedFirst.slice(0,40))&&await page.locator('.catalog-loading').count()===0&&!earlyBanner.includes('불러오는 중'),{early:early.length,earlyBanner});
+ await page.waitForLoadState('networkidle');await page.unroute(snapshotFiles);
+ check('스냅숏을 받은 뒤에도 같은 첫 쪽',JSON.stringify(await titles())===JSON.stringify(early));
+
  // Loading: until the snapshot arrives only the loading notice shows; no old count.
  await page.route(snapshotFiles,async route=>{await new Promise(r=>setTimeout(r,1500));await route.continue()});
  await page.goto(base+'/?provider=trip&rating=9&reviews=50',{waitUntil:'commit'});
