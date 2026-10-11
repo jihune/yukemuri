@@ -30,7 +30,7 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
  const [revision,setRevision]=useState(0),[loading,setLoading]=useState(false),[error,setError]=useState('');
  const [result,setResult]=useState<{key:string;data:HotelComparisonResult}|null>(null);
  // The choice outlives closing the sheet; it applies only while two or more candidates are compared.
- const [diffOnlyChosen,setDiffOnlyChosen]=useState(false),[diffAnnouncement,setDiffAnnouncement]=useState('');
+ const [diffOnlyChosen,setDiffOnlyChosen]=useState(false),[diffAnnounced,setDiffAnnounced]=useState(false);
  // Removing columns keeps the remaining evidence and controls while refreshing.
  // Newly added IDs still wait for their own response.
  const data=result&&ids.every(id=>result.key.split(',').includes(id))?result.data:null;
@@ -61,7 +61,9 @@ export default function HotelComparison({open,ids,onClose,onRemove,onClear,onDet
  const states=new Map(rows.flatMap(row=>{const value=row.value;if(!value)return [];const state=comparisonRowState(ids.map(id=>byId.has(id)?value(byId.get(id)!):null));return state?[[row.key,state] as const]:[]}));
  const differing=[...states.values()].filter(state=>state.kind==='differs').length,undecided=[...states.values()].filter(state=>state.kind==='undecided').length;
  const diffOnly=diffOnlyChosen&&states.size>0;
- function toggleDiffOnly(){const next=!diffOnlyChosen;setDiffOnlyChosen(next);setDiffAnnouncement(next?`다른 항목 ${differing}개만 표시 중`:'모든 항목 표시 중')}
+ function toggleDiffOnly(){setDiffOnlyChosen(!diffOnlyChosen);setDiffAnnounced(true)}
+ // Said from the current rows, so a changed candidate set never leaves an old count behind.
+ const diffAnnouncement=diffAnnounced?diffOnly?`다른 항목 ${differing}개만 표시 중`:'모든 항목 표시 중':'';
  function remove(id:string){const index=ids.indexOf(id);focusAfterRemoval.current=ids[index+1]??ids[index-1]??'';onRemove(id)}
  function clear(){closeButton.current?.focus({preventScroll:true});onClear()}
  return <Sheet open={open} onOpenChange={value=>{if(!value)onClose()}}><SheetContent showCloseButton={false} onOpenAutoFocus={event=>{event.preventDefault();closeButton.current?.focus({preventScroll:true})}} onCloseAutoFocus={event=>{event.preventDefault();onRestoreFocus()}} className="hotel-comparison !w-full sm:!max-w-[min(96vw,1200px)] !gap-0">

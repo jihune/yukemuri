@@ -63,13 +63,16 @@ async function run(page,touch){
  // U01: Tab stays inside the sheet with the new control in it.
  let inside=true;for(let i=0;i<25;i++){await page.keyboard.press('Tab');if(!await page.evaluate(()=>!!document.activeElement?.closest('.hotel-comparison'))){inside=false;break}}
  check('Tab 포커스가 시트 안에서 순환(U01 유지)',inside);
- // Removing a candidate while the toggle is on: focus moves to the next remove button and the rows are judged again.
- const removeFirst=sheet.locator('.comparison-remove').first();await removeFirst.focus();await page.keyboard.press('Enter');
- await page.waitForTimeout(800);
+ // Removing candidates while the toggle is on: focus moves to the next remove button, the rows are
+ // judged again and the live sentence follows the new count, not the count of the last press.
+ const removeAt=async index=>{await sheet.locator('.comparison-remove').nth(index).focus();await page.keyboard.press('Enter');await page.waitForTimeout(800)};
+ await removeAt(1);
  const afterRemove=await focused(),threeRows=await rows();
  check('켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정',/비교에서 빼기$/.test(afterRemove)&&(await sheet.locator('.comparison-remove').count())===3&&threeRows.every(r=>r.diff),{focus:afterRemove,rows:threeRows.map(r=>r.name)});
- await sheet.locator('.comparison-remove').first().focus();await page.keyboard.press('Enter');await page.waitForTimeout(500);
- await sheet.locator('.comparison-remove').first().focus();await page.keyboard.press('Enter');await page.waitForTimeout(500);
+ await removeAt(2);
+ const pairRows=await rows(),pairLive=await live();
+ check('켠 채로 2곳(같은 Trip.com 점수)만 남으면 다름 1행(자란넷)만 보이고 알림 문장이 지난 개수를 말하지 않음',same(pairRows.map(r=>r.name),['자란넷 · 5점'])&&!pairLive.includes('4개')&&['','다른 항목 1개만 표시 중'].includes(pairLive),{rows:pairRows.map(r=>r.name),live:pairLive});
+ await removeAt(0);
  const oneRows=await rows();
  check('후보가 1곳이 되면 전환 버튼과 표지가 사라지고 모든 행이 보임',await toggle.count()===0&&oneRows.length===19&&oneRows.every(r=>!r.diff&&!r.undecided),{toggle:await toggle.count(),rows:oneRows.length});
  await page.keyboard.press('Escape');await page.waitForTimeout(600);
