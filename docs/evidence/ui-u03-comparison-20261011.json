@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-11T06:05:59.333Z",
+ "measuredAt": "2026-10-11T06:18:09.487Z",
  "base": "http://127.0.0.1:5173",
  "browser": "Chromium 141.0.7390.37",
  "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop mouse",
@@ -246,13 +246,17 @@
   },
   {
    "width": 360,
-   "name": "Tab 포커스가 시트 안에서 순환(U01 유지)",
+   "name": "Tab이 시트 안에서만 움직여 끝에서 닫기 버튼으로 돌아옴(U01 유지)",
    "pass": true,
-   "detail": {}
+   "detail": {
+    "inside": true,
+    "wrapped": true,
+    "presses": 26
+   }
   },
   {
    "width": 360,
-   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정",
+   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정해 다름 4행(Trip.com·자란넷·내 검증 기준·객실 온천)",
    "pass": true,
    "detail": {
     "focus": "보로 노구치 노보리베츠 비교에서 빼기",
@@ -647,13 +651,17 @@
   },
   {
    "width": 390,
-   "name": "Tab 포커스가 시트 안에서 순환(U01 유지)",
+   "name": "Tab이 시트 안에서만 움직여 끝에서 닫기 버튼으로 돌아옴(U01 유지)",
    "pass": true,
-   "detail": {}
+   "detail": {
+    "inside": true,
+    "wrapped": true,
+    "presses": 26
+   }
   },
   {
    "width": 390,
-   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정",
+   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정해 다름 4행(Trip.com·자란넷·내 검증 기준·객실 온천)",
    "pass": true,
    "detail": {
     "focus": "보로 노구치 노보리베츠 비교에서 빼기",
@@ -1048,13 +1056,17 @@
   },
   {
    "width": 1280,
-   "name": "Tab 포커스가 시트 안에서 순환(U01 유지)",
+   "name": "Tab이 시트 안에서만 움직여 끝에서 닫기 버튼으로 돌아옴(U01 유지)",
    "pass": true,
-   "detail": {}
+   "detail": {
+    "inside": true,
+    "wrapped": true,
+    "presses": 26
+   }
   },
   {
    "width": 1280,
-   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정",
+   "name": "켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정해 다름 4행(Trip.com·자란넷·내 검증 기준·객실 온천)",
    "pass": true,
    "detail": {
     "focus": "보로 노구치 노보리베츠 비교에서 빼기",

@@ -61,14 +61,16 @@ async function run(page,touch){
  await page.keyboard.press('Enter');await page.waitForTimeout(300);
  check('Enter로 다시 켬',await toggle.getAttribute('aria-pressed')==='true'&&(await rows()).length===4,{rows:(await rows()).length});
  // U01: Tab stays inside the sheet with the new control in it.
- let inside=true;for(let i=0;i<25;i++){await page.keyboard.press('Tab');if(!await page.evaluate(()=>!!document.activeElement?.closest('.hotel-comparison'))){inside=false;break}}
- check('Tab 포커스가 시트 안에서 순환(U01 유지)',inside);
+ // Tab from the toggle until focus wraps round to the close button, the sheet's first control.
+ let inside=true,wrapped=false,presses=0;
+ for(;presses<80&&inside&&!wrapped;presses++){await page.keyboard.press('Tab');inside=await page.evaluate(()=>!!document.activeElement?.closest('.hotel-comparison'));wrapped=inside&&await focused()==='숙소 비교 닫기'}
+ check('Tab이 시트 안에서만 움직여 끝에서 닫기 버튼으로 돌아옴(U01 유지)',inside&&wrapped,{inside,wrapped,presses});
  // Removing candidates while the toggle is on: focus moves to the next remove button, the rows are
  // judged again and the live sentence follows the new count, not the count of the last press.
  const removeAt=async index=>{await sheet.locator('.comparison-remove').nth(index).focus();await page.keyboard.press('Enter');await page.waitForTimeout(800)};
  await removeAt(1);
  const afterRemove=await focused(),threeRows=await rows();
- check('켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정',/비교에서 빼기$/.test(afterRemove)&&(await sheet.locator('.comparison-remove').count())===3&&threeRows.every(r=>r.diff),{focus:afterRemove,rows:threeRows.map(r=>r.name)});
+ check('켠 채로 후보를 빼면 다음 제거 버튼에 포커스(U01 유지)·남은 3곳으로 다시 판정해 다름 4행(Trip.com·자란넷·내 검증 기준·객실 온천)',/비교에서 빼기$/.test(afterRemove)&&(await sheet.locator('.comparison-remove').count())===3&&same(threeRows.map(r=>r.name),['Trip.com · 10점','자란넷 · 5점','내 검증 기준','객실 온천'])&&threeRows.every(r=>r.diff),{focus:afterRemove,rows:threeRows.map(r=>r.name)});
  await removeAt(2);
  const pairRows=await rows(),pairLive=await live();
  check('켠 채로 2곳(같은 Trip.com 점수)만 남으면 다름 1행(자란넷)만 보이고 알림 문장이 새 개수(1개)를 말함',same(pairRows.map(r=>r.name),['자란넷 · 5점'])&&pairLive==='다른 항목 1개만 표시 중',{rows:pairRows.map(r=>r.name),live:pairLive});
