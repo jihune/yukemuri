@@ -473,3 +473,69 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 실행기 PR #5(draft): Codex 1회째(`9ccf22f`, 09:29Z 완료) ‘큰 문제 없음’. 그 뒤 `679b062`에서 workflow 주석·`docs/runner.md`·`project-files.json`만 바꿨다(앱의 `queue: max` 반영 설명). 6단계에서 ready로 바꿀 때 상위 세션이 재검토 여부를 정한다.
 - 다음 작업: 실행기 수동 모드 `backlog`·`refresh`·`diagnose-jalan`은 앱 `collect.yml`로 옮기지 않았다(예약은 gentle만 씀). 필요하면 별도 PR로 옮긴다.
 
+
+## H01 6단계 도구(앱 레포: 롤백·사용량·유지보수 경로 CPU)
+
+기록: 2026-10-12T12:10Z / 2026-10-12 21:10 KST. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이다. 작성 세션 `session_015ge493n1x3SUdwcM1xK6Ko`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값·운영 사이트에 접속하지 않았고 운영 workflow를 실행하지 않았다. `deploy.yml`은 건드리지 않았다.
+
+### 기준과 상태
+
+- 브랜치 `claude/h01-step6-tools`. 시작 기준 main `4b55aaa`(PR #50).
+- 환경: Node 22.22.0(컨테이너 기본, `/opt/nvm` 없음), pnpm 11.25.0, Python 3.13.16. `cloud-setup.sh` rc=0, 잠금 파일 무변경. actionlint 1.7.7.
+- 실행기 레포 차이 반영(A1+A3)은 상위 세션이 다른 세션(`session_01S5AqfcBRKDeqZBzxzvu3gv`)에 맡겼다. 이 세션이 먼저 실행기 클론의 로컬 브랜치에 만든 검사 통과본은 push하지 않았고, 코드 전문을 그 세션에 한 번 보냈다(11:58Z). 앱 레포 문서에는 ‘실행기 레포의 새 수동 workflow(작업 중)’로만 적었다.
+
+### 바꾼 것
+
+- A4 `rollback.yml` + `scripts/cloudflare-rollback.mjs`: 수동 실행, `worker-rollback`(이전 Worker 버전)·`d1-restore`(Time Travel bookmark), `confirm`=`rollback` 필수. 두 동작 모두 먼저 현재 bookmark를 요약에 남긴다. 잠금은 `deploy.yml`과 같은 순서(최상위 `yukemuri-catalog-updates` → job `cloudflare-account`, 둘 다 `queue: max`). 롤백 표(`cloudflare-deploy.md`·`hosting-review` 3.2절)에 ‘Worker 되돌림만으로는 다음 수집 때 main HEAD가 다시 배포된다, main revert를 함께 한다’와 ‘`autoDeploy=false`는 수집도 멈춘다’(`run-collection.py`가 요청 전에 실패)를 적었다. Time Travel 보존은 무료 플랜 7일이다.
+- A6 `usage.yml` + `scripts/cloudflare-usage.mjs`: GraphQL Analytics로 UTC 날짜별 Worker 요청·오류·`cpuTimeP50`/`P99`·상태(`exceededResources`=1102·1027)와 D1 `rowsRead`·`rowsWritten`을 읽는다. 권한 오류·빈 계정 목록은 실패로 끝나고 ‘사용량 0이 아니다’라고 적는다. 행이 없는 날은 ‘기록 없음’.
+- A2: 위 ‘H01 6단계 준비’ 절의 6단계 순서를 `hosting-review` 3.2절 6단계 1~7번에 맞췄다. `hosting-review` 4·5번에 C4(새 D1에만 있는 즐겨찾기는 지우지 않음)를 더했다.
+- C1 `scripts/measure-route-cpu.mjs`: 유지보수 경로 11개를 더했다(crawl report=1·GET·POST 2종·PUT 상세·PUT 목록, crawl-prepare 준비됨·seed 바뀜, catalog-export 목록·hotels 1,000행·crawl_jobs 1,000행). 크롤 키 헤더, 요청마다 새 claim token, DB 대역의 `run()`이 실제 변경 행 수를 돌려주게 고쳤다(PUT의 임대 확인이 이 값을 본다). 유지보수 경로는 상태 200이 아니면 측정을 멈춘다. 판정 한도는 공개 5ms, 유지보수 10ms(Workers Free CPU).
+
+### C1 측정 결과(운영 규모 복사본, Node 22.22.0, `docs/evidence/h01-route-cpu-maintenance-20261012.json`)
+
+JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개 중앙·최대, warm은 200회 뒤 200회 중앙·p95. Node 측정이며 workerd의 isolate 시작·파싱은 빠졌다.
+
+| 경로 | cold 중앙 ms | cold 최대 | warm 중앙 | warm p95 |
+|---|---:|---:|---:|---:|
+| 수집 보고(report=1) | 3.00 | 3.39 | 0.73 | 1.58 |
+| 수집 GET 집계 | 2.45 | 3.56 | 0.36 | 0.54 |
+| 선점 POST(trip detail) | 3.72 | 4.80 | 0.32 | 0.39 |
+| 선점 POST(jalan list national) | 4.25 | 4.96 | 0.28 | 0.41 |
+| **PUT 상세 1곳** | **10.42** | 14.80 | 0.82 | 1.83 |
+| **PUT 목록(새 30·기존 15)** | **53.25** | 74.86 | **9.58** | **17.55** |
+| **crawl-prepare(준비됨)** | **22.18** | 24.87 | 0.05 | 0.11 |
+| **crawl-prepare(seed 바뀜 첫 요청)** | **409.25** | 530.10 | 0.06 | 0.17 |
+| catalog-export 목록 | 3.12 | 3.42 | 0.18 | 0.35 |
+| **catalog-export hotels 1,000행** | **19.97** | 26.19 | **13.29** | **17.78** |
+| catalog-export crawl_jobs 1,000행 | 9.38 | 13.12 | 3.56 | 7.72 |
+
+- 공개 경로 10개도 같은 실행에서 쟀다. 비교 4곳 cold 6.59ms, 사진 출처 6.4ms로 P03 기록(5.23ms 등)보다 높다. 측정 초반에 기본 `cloud-check.py`를 함께 돌려 경쟁이 있었을 수 있다(미확인). 공개 경로 판단은 P03 기록을 유지한다.
+- 위험(상위 세션 판단 필요, 이 PR에서 고치지 않음):
+  1. 백업 `catalog-checkpoint.py`가 `limit=1000`으로 hotels를 읽는다. 한 쪽 warm 13ms·cold 20ms로 10ms를 넘는다. 6단계 뒤 새 주소 백업에서 1102 위험. 실행기의 `limit`을 250 정도로 낮추는 변경이 후보다(쪽 수는 4배, D1 읽기 행은 같음).
+  2. 수집 목록 PUT은 warm 중앙도 9.6ms, p95 17.5ms, cold 53ms다. 목록 페이지마다 1102 위험. 쪼개 보내기(관측 수 상한) 또는 저장 경로 최적화가 후보다.
+  3. crawl-prepare는 새 isolate 첫 요청에서 22ms(대부분 seed 모듈 평가·준비 확인), seed 바뀐 첫 요청은 409ms다. 수집 시작마다 부르므로 cold 초과가 잦을 수 있다. Cloudflare 문서는 ‘가끔 넘는 것은 허용’이라고만 한다.
+  4. PUT 상세 1곳 cold 10.4ms는 경계다.
+- 5단계 Workers Logs·`usage.yml`의 `exceededResources`로 실제 값을 확인하는 것이 먼저다. 이 측정은 Node 기준이라 workerd와 다를 수 있다.
+
+### 검사
+
+- `python3 scripts/cloud-check.py --full` 33개 통과(11:51Z–12:00Z, rc=0, `check-rollback-workflow.mjs` 포함). 그 뒤 더한 `check-cloudflare-usage.mjs`를 넣어 기본 `cloud-check.py` 통과(12:01Z).
+- `check-rollback-workflow.mjs`: 워크플로 규칙, bookmark 기록 순서, 거부 입력, 가짜 wrangler로 끝까지 env 전달. 변형 9종(confirm 검사 삭제, bookmark 없음 무시, 순서, 복구 확인 삭제, 같은 배포 허용, 주의 문구 삭제, 잠금 그룹, `queue: single`, push 트리거)이 모두 실패.
+- `check-cloudflare-usage.mjs`: 가짜 GraphQL 응답. 변형 7종(빈 계정 목록을 0으로, 403을 권한 오류로 안 봄, 빈 날을 0으로, 마이크로초 그대로, 상태 이름 틀림, ‘기록 없음’ 대신 0, 날짜 필터 틀림)이 모두 실패.
+- actionlint 1.7.7 통과(8개 workflow). `check-deploy-config.mjs`가 새 workflow 둘을 포함해 통과.
+
+### 미확인
+
+- 실제 Cloudflare에서 `rollback`·`deployments status --json`·`time-travel restore --json`의 동작과 응답 형식(wrangler 4.92.0 소스로만 확인). Secret이 그 버전 뒤에 바뀌었을 때 `rollback`의 비대화형 확인.
+- GraphQL 스키마가 이 쿼리를 받는지(필드 이름은 `cloudflare/cloudflare-docs` 원본 예시와 같음). 권한 없는 토큰의 실제 응답 형태.
+- C1 값의 workerd 대비 차이.
+
+### 사용자 조치
+
+1. Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`의 토큰 → Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더한다. 토큰 값은 바뀌지 않는다. 없으면 `usage.yml`이 실패한다.
+2. 실행기 Secret `YUKEMURI_APP_DISPATCH_TOKEN`·`YUKEMURI_CLOUDFLARE_JSON`(위 ‘H01 6단계 준비’ 절, 변경 없음).
+
+### 검토와 다음 작업
+
+- 이 PR은 코드·검사를 바꾸므로 Codex 검토(CI 통과 뒤 요청)를 받는다.
+- 다음 작업: 위 C1 위험 1~3의 대응 여부를 상위 세션이 정한다.
