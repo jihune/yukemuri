@@ -1,0 +1,54 @@
+name: Yukemuri collection
+# H01 step 6: collection runs here against the Cloudflare Worker. No cron: a
+# public repository's schedule turns off after 60 days without activity, so the
+# private runner repository keeps the cron ('53 */3 * * *') and dispatches this
+# workflow with mode gentle. Until cloudflare-deploy.json records publicOrigin
+# (and autoDeploy), a run fails before any request.
+run-name: Yukemuri collection (${{ inputs.mode }})
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Operation
+        type: choice
+        required: true
+        default: check-access
+        options:
+          - check-access
+          - gentle
+permissions:
+  contents: read
+# The catalogue lock for the whole run, collection and the snapshot deploy it
+# calls (P03): runs queue behind each other and behind push deploys, so source
+# hosts still see one sequential collector. The called deploy takes its own top
+# group and then the Cloudflare account lock; this workflow never takes the
+# account lock itself, so both deploy paths take the locks in the same order.
+# A group keeps one pending run: a run still waiting when a newer push deploy
+# queues is cancelled before it starts. The runner's next cron dispatch starts a
+# new one, and the 12-hour freshness checks count successful gentle runs only
+# (docs/cloudflare-deploy.md).
+concurrency:
+  group: yukemuri-catalog-updates
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify the launcher without credentials
+        run: python3 scripts/runner/check_collection.py
+      - name: Run the Python collector against the Worker
+        env:
+          YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
+          MODE: ${{ inputs.mode }}
+        run: python3 scripts/runner/run-collection.py --mode "$MODE"
+  snapshot:
+    needs: collect
+    if: inputs.mode == 'gentle'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      after_collection: true
+    secrets: inherit

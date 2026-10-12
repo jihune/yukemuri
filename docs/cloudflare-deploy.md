@@ -108,6 +108,24 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - `scripts/crawler/source_safety.py`의 `site_api()`가 수집기 스크립트 다섯 개(`update-site.py`, `update-names.py`, `update-descriptions.py`, `update-lifecycle.py`, `update-source-groups.py`)의 주소 허용 목록이다. Sites 두 주소에는 지금처럼 `OAI-Sites-Authorization`과 `X-Yukemuri-Crawl-Key`를 보낸다. workers.dev 주소에는 `X-Yukemuri-Crawl-Key`만 보낸다.
 - 실행기의 `bootstrap.py`는 Sites 주소만 받는다. 6단계에서 수집 실행은 앱 레포 workflow(`workflow_dispatch`만)로 옮기고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 쓴다. 그때 수집기는 위 허용 목록의 workers.dev 주소로 바로 실행한다. 예약은 실행기 레포에 남아 그 workflow를 부른다. 백업도 실행기 레포에 남는다(`hosting-review-20261011.md`의 ‘2차 검토’ 절과 3.2절 6단계, PR #32·#39).
 
+## 수집 workflow(H01 6단계 준비, 2026-10-12)
+
+병합해도 운영 동작은 바뀌지 않는다. `collect.yml`은 cron이 없고 아무도 부르지 않는다. 실행기 레포의 부르기 PR(draft)은 6단계에서 상위 세션이 병합한다.
+
+- `collect.yml`: `workflow_dispatch`만, 입력 `mode`는 `check-access`(수동 기본값)·`gentle`. 실행 이름은 `Yukemuri collection (<mode>)`이다. 감시는 이 이름으로 gentle 실행만 센다.
+  - 대상은 `cloudflare-deploy.json`의 `publicOrigin`이다. `null`이거나 `autoDeploy`·`databaseId`가 꺼져 있으면 요청 전에 실패한다(`scripts/runner/run-collection.py`).
+  - 크롤 키는 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 env로 받아 수집기 표준입력으로만 넘긴다. 자식 환경·인자·로그에 넣지 않는다.
+  - 상한은 실행기(`jihune/yukemuri-script-runner` `b7f9c64`의 `run-updates.py`·`yukemuri-catalog.yml`)와 같다. gentle은 `--gentle --max-pages 16`, 모든 단계에 `--interval 8 --jitter 4`, 전체 240초, job 6분이다. check-access는 `--health-only`다. `check_collection.py`가 이 값을 단언한다.
+  - 수집기는 Sites release를 받지 않고 이 커밋의 `scripts/crawler/update-site.py`를 실행한다. 주소 허용은 `source_safety.site_api()`가 한다(workers.dev에는 `X-Yukemuri-Crawl-Key`만).
+  - gentle 수집이 성공하면 `uses: ./.github/workflows/deploy.yml`(`after_collection: true`, `secrets: inherit`)로 같은 커밋의 스냅숏을 다시 만들어 배포한다. 배포가 실패하면 그 수집 실행도 실패로 끝난다.
+- 동시 실행 잠금(P03 규칙): `collect.yml`은 최상위에서 `yukemuri-catalog-updates`를 실행 전체 동안 잡는다(`cancel-in-progress: false`). 수집끼리, 그리고 push·수동 배포와 겹치지 않는다. job 단위 잠금은 두지 않는다. 계정 잠금(`cloudflare-account`)은 불린 배포 job 안에서만 잡으므로 잠금 순서가 push 배포와 같다. 불린 배포의 최상위 그룹은 `yukemuri-snapshot-after-collection`이다.
+- 대기 실행 취소(P03 다음 작업 5번): GitHub 동시 실행 그룹은 실행 중 하나와 대기 하나만 둔다. 새 실행이 대기에 들어오면 앞의 대기 실행은 시작 전에 취소된다(`cancel-in-progress`와 무관). 그래서 두 경우가 있다.
+  - push 배포가 도는 동안 수집이 대기 중이고 또 push가 오면, 대기 수집이 취소된다. 실행기의 다음 cron 부르기(3시간 뒤)가 새 수집을 시작한다. 실행 중인 수집은 취소되지 않는다. 12시간 확인(실행기 `check`, 앱 감시)은 성공한 gentle 실행만 세므로, 부르기가 네 번 연속 사라지면(약 12시간) 실패로 알린다.
+  - 수집이 도는 동안 push 배포가 대기 중이고 수집 부르기가 오면, 대기 배포가 취소된다. 그 수집은 부른 시점의 main(취소된 push 이후)에서 돌고 끝에 같은 커밋을 배포한다. check-access 실행이거나 수집이 실패하면 배포가 빠지고 다음 성공 gentle 수집(3시간 안팎) 또는 다음 push가 배포한다.
+  - 대기 실행이 아예 취소되지 않게 하는 방법은 찾지 못했다. 같은 그룹을 공유하는 한 잠금을 어디(최상위·job·계정 그룹)에 두어도 같은 규칙이 적용된다. 수집을 그룹에서 빼면 스냅숏이 수집 쓰기와 겹친다(P03 Codex 검토 P2). 회복 근거는 위 두 경로이고, `check-collect-workflow.mjs`와 실행기 `check-dispatch-app-collection.py`가 취소·실패·check-access 실행을 성공으로 세지 않는다는 것을 단언한다. 실제 GitHub 큐 동작은 6단계 수동 실행(gentle 중 실행 하나 더 넣기)에서 확인한다.
+- `collect-watch.yml`: 6시간마다(`41 */6 * * *`) `GITHUB_TOKEN`(`actions: read`)으로 `collect.yml`의 성공 실행을 읽는다(`scripts/check-collection-freshness.mjs`). 마지막 성공 gentle이 12시간을 넘으면 실패한다. 성공이 하나도 없으면 통과하고, `publicOrigin`이 `null`이면 API를 부르지 않고 건너뛴다. 4단계 완료 PR에서 `publicOrigin`이 채워진 뒤 6단계 전까지는 성공이 없어 통과한다.
+- 검사: `check-collect-workflow.mjs`(두 workflow 설정, 이 레포에 다른 cron 없음, 감시 규칙과 로컬 GitHub API 대역), `runner/check_collection.py`(상한·대상·키 전달), `run-actionlint.py`(actionlint 1.7.7, 해시 고정 내려받기, shellcheck·pyflakes 끔). 모두 `cloud-check.py`에 들어 있다.
+
 ## 롤백
 
 | 상황 | 방법 |
