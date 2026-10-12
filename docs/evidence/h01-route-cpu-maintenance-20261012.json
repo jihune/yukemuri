@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-12T12:03:03.146Z",
+ "measuredAt": "2026-10-12T12:25:48.400Z",
  "node": "v22.22.0",
  "tables": {
   "hotels": 12271,
@@ -15,11 +15,11 @@
    "method": "GET",
    "path": "/api/hotels/akan-tsuruga",
    "status": 200,
-   "coldMs": 4.68,
-   "warmMs": 0.474,
-   "warmP95Ms": 1.355,
-   "coldDbMs": 2.8,
-   "coldMaxMs": 5.06
+   "coldMs": 3.58,
+   "warmMs": 0.372,
+   "warmP95Ms": 1.829,
+   "coldDbMs": 0.91,
+   "coldMaxMs": 3.96
   },
   {
    "key": "detailMissing",
@@ -27,11 +27,11 @@
    "method": "GET",
    "path": "/api/hotels/no-such-hotel",
    "status": 404,
-   "coldMs": 1.1,
-   "warmMs": 0.055,
-   "warmP95Ms": 0.16,
-   "coldDbMs": 1.76,
-   "coldMaxMs": 1.33
+   "coldMs": 1.28,
+   "warmMs": 0.151,
+   "warmP95Ms": 0.231,
+   "coldDbMs": 0.41,
+   "coldMaxMs": 2.51
   },
   {
    "key": "compare4",
@@ -39,11 +39,11 @@
    "method": "GET",
    "path": "/api/hotel-comparison?ids=akan-tsuruga,bourou-hakodate,bourou-noboribetsu,chalet-ivy-jozankei",
    "status": 200,
-   "coldMs": 6.59,
-   "warmMs": 1.102,
-   "warmP95Ms": 4.598,
-   "coldDbMs": 3.21,
-   "coldMaxMs": 10.16
+   "coldMs": 7.32,
+   "warmMs": 1.213,
+   "warmP95Ms": 3.012,
+   "coldDbMs": 1,
+   "coldMaxMs": 9.58
   },
   {
    "key": "favoritesGet",
@@ -51,11 +51,11 @@
    "method": "GET",
    "path": "/api/favorites",
    "status": 200,
-   "coldMs": 2.02,
-   "warmMs": 0.229,
-   "warmP95Ms": 0.396,
-   "coldDbMs": 1.85,
-   "coldMaxMs": 5.5
+   "coldMs": 4.77,
+   "warmMs": 0.286,
+   "warmP95Ms": 0.469,
+   "coldDbMs": 0.15,
+   "coldMaxMs": 5.97
   },
   {
    "key": "favoritesPut",
@@ -63,11 +63,11 @@
    "method": "PUT",
    "path": "/api/favorites",
    "status": 200,
-   "coldMs": 2.28,
-   "warmMs": 0.249,
-   "warmP95Ms": 0.56,
-   "coldDbMs": 2.39,
-   "coldMaxMs": 5.82
+   "coldMs": 4.86,
+   "warmMs": 0.209,
+   "warmP95Ms": 0.338,
+   "coldDbMs": 0.35,
+   "coldMaxMs": 8.35
   },
   {
    "key": "photoCredits",
@@ -75,11 +75,11 @@
    "method": "GET",
    "path": "/api/photo-credits",
    "status": 200,
-   "coldMs": 6.44,
-   "warmMs": 0.94,
-   "warmP95Ms": 1.358,
-   "coldDbMs": 3.43,
-   "coldMaxMs": 6.97
+   "coldMs": 4.78,
+   "warmMs": 0.908,
+   "warmP95Ms": 1.225,
+   "coldDbMs": 1.36,
+   "coldMaxMs": 6.87
   },
   {
    "key": "photoCreditsNext",
@@ -87,11 +87,11 @@
    "method": "GET",
    "path": "/api/photo-credits?after=…",
    "status": 200,
-   "coldMs": 6.43,
-   "warmMs": 1.383,
-   "warmP95Ms": 1.879,
-   "coldDbMs": 2.77,
-   "coldMaxMs": 7.28
+   "coldMs": 6.62,
+   "warmMs": 0.85,
+   "warmP95Ms": 1.426,
+   "coldDbMs": 2.15,
+   "coldMaxMs": 8.32
   },
   {
    "key": "google",
@@ -100,10 +100,10 @@
    "path": "/api/hotels/akan-tsuruga/google",
    "status": 200,
    "coldMs": 0.75,
-   "warmMs": 0.036,
-   "warmP95Ms": 0.095,
+   "warmMs": 0.045,
+   "warmP95Ms": 0.116,
    "coldDbMs": 0,
-   "coldMaxMs": 0.9
+   "coldMaxMs": 1.08
   },
   {
    "key": "prices",
@@ -111,11 +111,11 @@
    "method": "GET",
    "path": "/api/prices",
    "status": 410,
-   "coldMs": 0.35,
-   "warmMs": 0.042,
-   "warmP95Ms": 0.277,
+   "coldMs": 0.37,
+   "warmMs": 0.053,
+   "warmP95Ms": 0.113,
    "coldDbMs": 0,
-   "coldMaxMs": 0.44
+   "coldMaxMs": 0.57
   },
   {
    "key": "collectionStatus",
@@ -123,11 +123,11 @@
    "method": "GET",
    "path": "/api/collection-status",
    "status": 403,
-   "coldMs": 0.8,
-   "warmMs": 0.042,
-   "warmP95Ms": 0.135,
+   "coldMs": 0.81,
+   "warmMs": 0.04,
+   "warmP95Ms": 0.08,
    "coldDbMs": 0,
-   "coldMaxMs": 0.96
+   "coldMaxMs": 0.95
   },
   {
    "key": "crawlReport",
@@ -135,11 +135,11 @@
    "method": "GET",
    "path": "/api/crawl?report=1",
    "status": 200,
-   "coldMs": 3,
-   "warmMs": 0.729,
-   "warmP95Ms": 1.58,
-   "coldDbMs": 148.69,
-   "coldMaxMs": 3.39,
+   "coldMs": 3.38,
+   "warmMs": 0.691,
+   "warmP95Ms": 0.942,
+   "coldDbMs": 108.41,
+   "coldMaxMs": 7.3,
    "maintenance": true
   },
   {
@@ -148,11 +148,11 @@
    "method": "GET",
    "path": "/api/crawl?provider=jalan&kind=list&limit=1",
    "status": 200,
-   "coldMs": 2.45,
-   "warmMs": 0.358,
-   "warmP95Ms": 0.543,
-   "coldDbMs": 10.66,
-   "coldMaxMs": 3.56,
+   "coldMs": 2.39,
+   "warmMs": 0.407,
+   "warmP95Ms": 0.769,
+   "coldDbMs": 8.79,
+   "coldMaxMs": 3.49,
    "maintenance": true
   },
   {
@@ -161,11 +161,11 @@
    "method": "POST",
    "path": "/api/crawl",
    "status": 200,
-   "coldMs": 3.72,
-   "warmMs": 0.318,
-   "warmP95Ms": 0.392,
-   "coldDbMs": 2.63,
-   "coldMaxMs": 4.8,
+   "coldMs": 3.34,
+   "warmMs": 0.345,
+   "warmP95Ms": 0.423,
+   "coldDbMs": 1.25,
+   "coldMaxMs": 5.24,
    "maintenance": true
   },
   {
@@ -174,11 +174,11 @@
    "method": "POST",
    "path": "/api/crawl",
    "status": 200,
-   "coldMs": 4.25,
-   "warmMs": 0.277,
-   "warmP95Ms": 0.407,
-   "coldDbMs": 2.14,
-   "coldMaxMs": 4.96,
+   "coldMs": 4.73,
+   "warmMs": 0.303,
+   "warmP95Ms": 0.603,
+   "coldDbMs": 0.93,
+   "coldMaxMs": 5.25,
    "maintenance": true
   },
   {
@@ -187,11 +187,11 @@
    "method": "PUT",
    "path": "/api/crawl",
    "status": 200,
-   "coldMs": 10.42,
-   "warmMs": 0.821,
-   "warmP95Ms": 1.827,
-   "coldDbMs": 4.26,
-   "coldMaxMs": 14.8,
+   "coldMs": 11.71,
+   "warmMs": 1.008,
+   "warmP95Ms": 2.873,
+   "coldDbMs": 3.23,
+   "coldMaxMs": 14.63,
    "maintenance": true
   },
   {
@@ -200,11 +200,11 @@
    "method": "PUT",
    "path": "/api/crawl",
    "status": 200,
-   "coldMs": 53.25,
-   "warmMs": 9.58,
-   "warmP95Ms": 17.549,
-   "coldDbMs": 17.5,
-   "coldMaxMs": 74.86,
+   "coldMs": 56.03,
+   "warmMs": 6.655,
+   "warmP95Ms": 16.39,
+   "coldDbMs": 9.32,
+   "coldMaxMs": 74.31,
    "maintenance": true
   },
   {
@@ -213,11 +213,11 @@
    "method": "POST",
    "path": "/api/crawl-prepare",
    "status": 200,
-   "coldMs": 22.18,
-   "warmMs": 0.045,
-   "warmP95Ms": 0.11,
-   "coldDbMs": 439.42,
-   "coldMaxMs": 24.87,
+   "coldMs": 17.31,
+   "warmMs": 6.503,
+   "warmP95Ms": 10.136,
+   "coldDbMs": 468.87,
+   "coldMaxMs": 18.85,
    "maintenance": true
   },
   {
@@ -226,11 +226,11 @@
    "method": "POST",
    "path": "/api/crawl-prepare",
    "status": 200,
-   "coldMs": 409.25,
-   "warmMs": 0.059,
-   "warmP95Ms": 0.166,
-   "coldDbMs": 710.92,
-   "coldMaxMs": 530.1,
+   "coldMs": 397.94,
+   "warmMs": 6.983,
+   "warmP95Ms": 10.022,
+   "coldDbMs": 640.59,
+   "coldMaxMs": 461.82,
    "maintenance": true
   },
   {
@@ -239,11 +239,11 @@
    "method": "GET",
    "path": "/api/catalog-export",
    "status": 200,
-   "coldMs": 3.12,
-   "warmMs": 0.183,
-   "warmP95Ms": 0.353,
-   "coldDbMs": 4.06,
-   "coldMaxMs": 3.42,
+   "coldMs": 2.73,
+   "warmMs": 0.203,
+   "warmP95Ms": 0.363,
+   "coldDbMs": 1.15,
+   "coldMaxMs": 3.29,
    "maintenance": true
   },
   {
@@ -252,11 +252,11 @@
    "method": "GET",
    "path": "/api/catalog-export?table=hotels&limit=1000",
    "status": 200,
-   "coldMs": 19.97,
-   "warmMs": 13.291,
-   "warmP95Ms": 17.781,
-   "coldDbMs": 10,
-   "coldMaxMs": 26.19,
+   "coldMs": 20.95,
+   "warmMs": 16.279,
+   "warmP95Ms": 19.005,
+   "coldDbMs": 9.61,
+   "coldMaxMs": 24.69,
    "maintenance": true
   },
   {
@@ -265,11 +265,11 @@
    "method": "GET",
    "path": "/api/catalog-export?table=crawl_jobs&limit=1000",
    "status": 200,
-   "coldMs": 9.38,
-   "warmMs": 3.556,
-   "warmP95Ms": 7.718,
-   "coldDbMs": 7.47,
-   "coldMaxMs": 13.12,
+   "coldMs": 9.86,
+   "warmMs": 4.05,
+   "warmP95Ms": 7.513,
+   "coldDbMs": 5.65,
+   "coldMaxMs": 13.2,
    "maintenance": true
   }
  ],
