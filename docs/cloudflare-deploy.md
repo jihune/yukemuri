@@ -67,16 +67,19 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 ## 자동 배포(deploy.yml)
 
 - 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. 동시 실행 잠금은 둘이고 언제나 같은 순서로 잡는다. 바깥은 workflow 최상위의 카탈로그 그룹(`yukemuri-catalog-updates`)이다. 6단계 수집 workflow도 이 그룹을 쓰므로 스냅숏 생성이 수집 쓰기와 겹치지 않는다. 수집 끝 호출은 `yukemuri-snapshot-after-collection`을 쓴다. 안쪽은 배포 job의 계정 그룹(`cloudflare-account`)이고 D1 setup과 같다. 수집 workflow는 계정 그룹을 먼저 잡으면 안 된다(순서가 엇갈리면 서로 기다린다, P03).
-- 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다.
+- 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다. 수동 실행에서 `preflight`를 켜면 판정은 `preflight` 모드가 되고(아래), `databaseId`가 없으면 실패한다.
 - 켜졌을 때 순서:
-  1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다.
+  1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다. 수집 끝 호출(`after_collection`)은 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사(`Cloud app checks` 또는 push 배포) 성공을 찾으면 빌드만 한다(C3). 수집은 부른 시점의 main에서 돌므로 그 커밋은 push 때 이미 `--full`을 통과했다. 성공 기록이 없거나 API가 답하지 않으면 `--full`을 다시 돌린다. 이를 위해 `deploy.yml`과 `collect.yml`에 `actions: read`를 더했다.
   2. `d1 time-travel info yukemuri --json`으로 복구 지점(bookmark)을 요약에 남긴다. JSON의 `bookmark` 필드는 wrangler 4.92.0 소스에서 확인했다. 값이 없으면 배포 전에 멈춘다.
   3. `d1 migrations apply yukemuri --remote`. 새 마이그레이션이 없으면 아무것도 하지 않는다.
   3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다. 이 단계는 `/`의 정적 페이지도 다시 그린다(기본 보기 첫 쪽과 manifest를 넣는다). 카탈로그가 이 릴리스의 seed로 준비되지 않았으면(`catalog_meta`의 준비 표시 5개) 그 목록을 `prepared=false`로 알린다.
-  4. `deploy --config dist/server/wrangler.json`. 크롤 키는 `cloudflare/wrangler-action`의 `secrets` 입력으로 `CRAWL_ACCESS_KEY`에 올린다. 배포 버전 ID를 요약에 남긴다.
-  5. `scripts/cloudflare-smoke.mjs`: `/`의 정적 페이지가 이번 스냅숏의 첫 쪽 카드를 담는지, core 첫 숙소의 상세가 200인지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일 네 개가 열리는지, 키 없는 `/api/crawl?report=1`이 403인지, 키를 쓴 같은 요청이 200인지, `robots.txt`가 `/api/`를 막는지 본다. 로그에는 상태와 개수만 남긴다.
+  4. `bash scripts/cloudflare-deploy-worker.sh`: `deploy --config dist/server/wrangler.json --secrets-file <0600 임시 파일>`. 크롤 키는 env에서 그 파일로만 가고 스크립트가 끝나면 지운다(실패해도). 배포 버전 ID를 요약에 남긴다.
+  5. `scripts/cloudflare-smoke.mjs`: `/`의 정적 페이지가 이번 스냅숏의 첫 쪽 카드를 담는지, core 첫 숙소의 상세가 200인지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일들이 열리는지, `/api/collector-release`가 키 없이 403·키로 200이고 `siteOrigin`이 이 주소인지, `robots.txt`가 `/api/`를 막는지 본다. manifest와 `/`는 새 버전이 퍼질 때까지 5초 간격으로 6번까지 다시 본다. 예전의 키 있는 `/api/crawl?report=1`은 뺐다. 운영 규모 복사본에서 요청 하나가 71,592행을 읽고, 준비 안 된 카탈로그면 `ensureCatalog`로 쓰기를 하기 때문이다(B6·C2, `evidence/h01-deploy-preflight-20261012.json`). 이제 smoke의 D1 읽기는 상세 한 건(약 25행)뿐이다. 수집 끝 배포도 같은 smoke를 쓴다. 로그에는 상태와 개수만 남긴다.
   6. 3-1이 `prepared=false`일 때만(seed를 바꾼 릴리스): 공개 읽기는 카탈로그를 채우지 않으므로(P03 PR C) `scripts/cloudflare-prepare.mjs`가 새 Worker의 `/api/crawl-prepare`를 완료까지 부르고, 스냅숏을 `--require-prepared`로 다시 만들어 같은 빌드를 한 번 더 배포하고 smoke를 다시 돌린다. 그 사이 사이트는 앞 스냅숏(준비 전 행)으로 온전히 열린다.
-- `cloudflare/wrangler-action`은 v4.1.3 커밋 `953926a2e2182532811c01a25e53647d93bf07c0`로 고정했다(2026-10-11 `git ls-remote` 확인). `wranglerVersion`은 잠금 파일과 같은 4.92.0이다.
+- Wrangler 실행(B1·B2, 2026-10-12): 모든 wrangler 명령을 잠금 파일의 `node node_modules/wrangler/bin/wrangler.js`(4.92.0)로 `--config dist/server/wrangler.json`과 함께 직접 실행한다. `cloudflare/wrangler-action`은 더 쓰지 않는다. 그 `secrets:` 입력은 `wrangler secret bulk`를 `--config` 없이 레포 루트에서 돌린다(`src/wranglerAction.ts` `953926a`). 로컬에서 같은 명령을 돌리면 빌드가 남긴 `.wrangler/deploy/config.json`이 있어도 `Required Worker name missing`으로 실패했다. 이 명령은 redirect 설정을 쓰지 않는다. 또 이 action은 `pnpm-lock.yaml`을 보고 pnpm으로 wrangler를 찾는다. job의 `defaults.run.shell: bash`로 pipefail을 켜서 `| tee`로 이은 명령의 실패가 단계 실패가 되게 했다(전에는 기본 `bash -e`라 smoke 실패가 가려질 수 있었다).
+- 사전 점검(`preflight`, B5): 수동 실행에서 `preflight`를 켜면 `databaseId`만 있으면 돈다. `autoDeploy`·`publicOrigin`이 꺼져 있어도 된다. 쓰기는 하지 않는다. 순서는 빌드, time travel 정보, `d1 migrations list`(적용 안 함), 원격 스냅숏 생성(읽기, 크기·행 수·준비 안 된 키), `catalog_meta`의 키와 값 읽기, `scripts/preflight-report.mjs`(아래 쓰기 추정), `cloudflare-deploy-worker.sh --dry-run`(자리표시 Secret, 업로드 없음)이다. 쓰기 명령(마이그레이션 적용·배포·prepare·smoke·secret)은 `mode == 'deploy'` 단계에만 있다. `check-deploy-config.mjs`가 이것을 단언한다.
+- 준비 쓰기 추정(B3): `measure-d1-reads.mjs --grow --prepare-steps`로 운영 규모 복사본(숙소 12,271, 이름 13,849, 작업 15,417)에서 seed 단계마다 그 키를 지우고 `crawl-prepare`를 끝까지 불렀다(2026-10-12T11:38Z, `evidence/h01-deploy-preflight-20261012.json`). 쓰기 행 수: `snapshot` 8,622, `multilingual-index-v1` 45,406(읽기 1,913,222), `bath-facts-backfill-v1` 2, `korean-names-20261004` 20, `verified-source-groups-v1` 65, 다섯 모두 21,136(읽기 1,956,431), 아무것도 안 지웠을 때 0이다. 행별 유지보수 커서(`onsen-place-search-v1`·`external-bath-scope-v1`·`collection-priority:*`)가 뒤처져 있으면 따라잡는 데 27번 불러 읽기 7,569,096·쓰기 35,252행이었다(settle). 사전 점검은 빠진 키와 뒤처진 커서를 보고하고 이 값으로 쓰기를 추정한다. 운영의 `hotel_names`는 복사본보다 많다(약 4.2만, 상위 세션 전달). 그래서 `multilingual-index-v1`의 실제 값은 더 클 수 있다. Miniflare의 행 수 집계가 운영 D1과 같은지는 미확인이다.
+- 위험(B3, 측정에서 나옴): `multilingual-index-v1` 재색인은 요청 하나에서 숙소 전체를 다시 쓴다(로컬 24초, 읽기 약 191만 행). 무료 플랜 Worker CPU 한도(요청당 10ms)와 D1 하루 읽기 500만 행을 생각하면, 이 키가 빠진 채 첫 배포를 하면 prepare가 실패하거나 그날 읽기를 크게 쓸 수 있다. 사전 점검에서 이 키가 빠졌다고 나오면 첫 배포 전에 상위 세션이 판단한다.
 
 ## 공개 사이트 보호
 
@@ -137,6 +140,6 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 ## 미확인
 
 - 무료 플랜의 Rate Limiting 바인딩 사용 가능 여부.
-- `wrangler-action`이 pnpm으로 설치된 wrangler 4.92.0을 그대로 쓰는지. 실제 Secret으로 실행한 적이 없다.
+- 직접 실행한 wrangler 4.92.0의 `deploy --secrets-file`이 실제 계정에서 Secret을 올리는지. 로컬 `--dry-run`은 통과했다(파일을 받고 `CRAWL_ACCESS_KEY`를 숨긴 값으로 표시). 사전 점검과 첫 배포에서 확인한다.
 - 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올릴 수 있는지. 서브도메인 등록과 D1 생성·마이그레이션은 3단계에서 됐다.
 - D1의 실제 위치(`--location apac`).

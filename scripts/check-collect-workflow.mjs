@@ -48,7 +48,7 @@ assert(collect.indexOf('check_collection.py')<collect.indexOf('run-collection.py
 assert.equal(collect.slice(collect.indexOf('  snapshot:\n')),[
  '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
  'a successful gentle run refreshes the snapshot through deploy.yml at the same commit');
-assert.match(collect,/^permissions:\n  contents: read\n(?! )/m,'read-only token');
+assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
 
 // Watch: every 6 hours, read-only Actions access, the freshness script.
 const watch=read('collect-watch.yml');

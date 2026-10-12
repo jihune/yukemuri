@@ -467,3 +467,29 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 실행기 PR #5(draft): Codex 1회째(`9ccf22f`, 09:29Z 완료) ‘큰 문제 없음’. 그 뒤 `679b062`에서 workflow 주석·`docs/runner.md`·`project-files.json`만 바꿨다(앱의 `queue: max` 반영 설명). 6단계에서 ready로 바꿀 때 상위 세션이 재검토 여부를 정한다.
 - 다음 작업: 실행기 수동 모드 `backlog`·`refresh`·`diagnose-jalan`은 앱 `collect.yml`로 옮기지 않았다(예약은 gentle만 씀). 필요하면 별도 PR로 옮긴다.
 
+
+## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
+
+기록: 2026-10-12T11:39Z / 2026-10-12 20:39 KST. 상위 세션이 맡긴 작업이다(10:35Z 요청, 사전 검토 B1·B2·B3·B5·B6·C2·C3·A5). 작성 세션 `session_01DPWccvrTAVG5jay8KLJYLT`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값에 접속하지 않았다.
+
+### 기준과 상태
+
+- 앱 브랜치 `claude/h01-deploy-preflight`. 시작 기준 main `4b55aaa`(PR #50).
+- 실행기 PR #5(A5): main `9fb6e1d`(PR #4)을 merge했다(`ef88659`). `project-files.json` 충돌은 main 쪽을 기준으로 다시 계산했다. 코드 변경은 없어 재검토는 필요 없다고 본다. 실행기 검사(`check-project-files.py` 350개, `check-dispatch-app-collection.py`, `check-checkpoint.py`, `check-cloudflare-load.py --no-d1`)가 통과했다.
+
+### 바꾼 것
+
+- B1·B2: `deploy.yml`에서 `cloudflare/wrangler-action`을 뺐다. 모든 wrangler 명령을 `node node_modules/wrangler/bin/wrangler.js`(4.92.0)와 `--config dist/server/wrangler.json`으로 직접 실행한다. 근거: action의 `secrets:` 입력은 `wrangler secret bulk`를 `--config` 없이 돌린다. 로컬에서 같은 명령이 빌드 뒤에도 `Required Worker name missing`으로 실패했다(재현). Worker 배포는 새 `scripts/cloudflare-deploy-worker.sh`가 한다. 크롤 키를 0600 임시 파일에 써 `deploy --secrets-file`로 넘기고, 끝나면(실패해도) 지운다. job에 `defaults.run.shell: bash`를 둬서 `| tee`로 이은 단계도 pipefail로 실패하게 했다.
+- B5: `workflow_dispatch` 입력 `preflight`. `databaseId`만 있으면 돌고 쓰기를 하지 않는다. 빌드, time travel 정보, `d1 migrations list`, 원격 스냅숏(읽기), `catalog_meta` 읽기와 `preflight-report.mjs` 추정, `deploy --dry-run`(자리표시 Secret)을 한다. 게이트는 `deployMode()`(`skip`·`deploy`·`preflight`)다.
+- B3: `measure-d1-reads.mjs --prepare-steps`로 운영 규모 복사본에서 seed 단계별 `crawl-prepare` 쓰기를 쟀다(`evidence/h01-deploy-preflight-20261012.json`). `multilingual-index-v1` 45,406행(읽기 191만), 다섯 모두 21,136행, 나머지는 수십 행 이하. 유지보수 커서가 뒤처지면 27번 불러 읽기 757만·쓰기 3.5만 행이었다. 사전 점검이 빠진 키와 뒤처진 커서를 보고하고 쓰기를 추정한다.
+- B6·C2: smoke의 키 있는 `/api/crawl?report=1`(복사본에서 요청 하나가 71,592행 읽음, 준비 안 된 카탈로그를 씀)을 `/api/collector-release`(D1 0행, `siteOrigin`이 이 주소인지 확인)로 바꿨다. manifest와 `/`는 5초 간격 6번까지 다시 본다. smoke의 D1 읽기는 상세 한 건뿐이라 수집 끝 배포도 같은 smoke를 쓴다.
+- C3: 수집 끝 배포는 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사 성공(`Cloud app checks` 또는 push 배포)을 찾으면 `cloud-check --full` 대신 빌드만 한다. 못 찾거나 API가 답하지 않으면 `--full`을 돌린다. 이를 위해 `deploy.yml`·`collect.yml`에 `actions: read`를 더했다.
+- 검사: `check-deploy-config.mjs`가 쓰기 명령이 `mode == 'deploy'` 단계에만 있는지, preflight 단계에 쓰기가 없는지, wrangler-action이 없는지, pipefail, C3 조건, 게이트 모드, 배포 스크립트(가짜 wrangler로 0600 파일·삭제·키 비노출·실패 전파), 추정 함수를 단언한다. 새 `check-cloudflare-smoke.mjs`는 로컬 대역 서버로 smoke를 돌린다.
+
+### 확인한 것과 미확인
+
+- 로컬 `cloudflare-deploy-worker.sh --dry-run`(네트워크 차단): 빌드 업로드 5,874.18KiB(gzip 866.89KiB), 바인딩에 `CRAWL_ACCESS_KEY`(숨김) 표시, rc=0, 임시 파일 남지 않음.
+- 변형 11종 중 10종에서 `check-deploy-config.mjs`가 실패했다. `umask 022` 변형은 살아남았다. `mktemp`가 언제나 0600 파일을 만들기 때문이고, 검사는 파일 권한 600을 직접 확인한다.
+- 미확인: 실제 계정에서 `--secrets-file` 업로드, `preflight`의 실제 결과. 병합 뒤 상위 세션이 `preflight`를 수동 실행한다.
+- 위험: `multilingual-index-v1`이 빠진 채 첫 배포를 하면 prepare가 요청 하나에서 숙소 전체를 재색인한다(로컬 24초). 무료 플랜 CPU 한도(요청당 10ms)로 실패하거나 그날 D1 읽기를 크게 쓸 수 있다. 사전 점검 결과로 상위 세션이 판단한다.
+- `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). `run-actionlint.py` 포함.

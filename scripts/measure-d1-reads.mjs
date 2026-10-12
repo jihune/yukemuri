@@ -5,6 +5,8 @@
 //  --check  fail when a request reads more rows than its P01 upper bound
 //  --dist   build to measure (default dist) and --label, the commit it was built from
 //  --schema last migration to apply (e.g. 0012 for a build from before 0013)
+//  --prepare-steps  also measure /api/crawl-prepare (until done) with each one-time
+//           seed step undone in turn, then all of them, on the measured catalogue
 // Row counts come from the meta that Miniflare's D1 returns per statement.
 // Whether Miniflare counts rows exactly like production D1 is unverified.
 import {createRequire} from 'node:module';
@@ -16,7 +18,7 @@ import {execSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
-const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null,dist=argv.includes('--dist')?argv[argv.indexOf('--dist')+1]:'dist',label=argv.includes('--label')?argv[argv.indexOf('--label')+1]:null,schema=argv.includes('--schema')?argv[argv.indexOf('--schema')+1]:'9999';
+const argv=process.argv.slice(2),grow=argv.includes('--grow'),check=argv.includes('--check'),out=argv.includes('--out')?argv[argv.indexOf('--out')+1]:null,dist=argv.includes('--dist')?argv[argv.indexOf('--dist')+1]:'dist',label=argv.includes('--label')?argv[argv.indexOf('--label')+1]:null,prepareSteps=argv.includes('--prepare-steps'),schema=argv.includes('--schema')?argv[argv.indexOf('--schema')+1]:'9999';
 // INSERT statement counts in the 2026-10-08 account export (docs/hosting-review-20261011.md 1.2).
 const TARGET={hotels:12271,hotel_names:13849,crawl_jobs:15417};
 const KEY='measure-d1-only',VISITOR='d'.repeat(64);
@@ -54,7 +56,7 @@ const start=()=>new Miniflare({modules,modulesRoot:server,compatibilityDate:'202
 const call=async(runtime,path,init={},expected=200)=>{
  await runtime.dispatchFetch('http://localhost/__d1meter');
  const t=performance.now();
- const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(path.startsWith('/api/crawl')||path.startsWith('/api/catalog-export')?{'X-Yukemuri-Crawl-Key':KEY}:{}),...init.headers}});
+ const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(path.startsWith('/api/crawl')||path.startsWith('/api/catalog-export')||path.startsWith('/api/collector-release')?{'X-Yukemuri-Crawl-Key':KEY}:{}),...init.headers}});
  const body=await r.json(),ms=performance.now()-t;
  assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));
  const meter=await (await runtime.dispatchFetch('http://localhost/__d1meter')).json();
@@ -132,6 +134,10 @@ try{
   ['crawlPutList','수집 저장(PUT, 목록: 새 숙소 30·기존 15)','/api/crawl',{method:'PUT',body:listPut}],
   ['crawlPutCold','수집 저장(PUT, 새 isolate)','/api/crawl',{method:'PUT',body:puts[1]},200,true],
   ['exportManifest','catalog-export 목록','/api/catalog-export'],
+  // Keyed checks a deploy smoke can use: the health report (/api/crawl?report=1,
+  // which also prepares an unprepared catalogue) and the collector release.
+  ['crawlReport','수집 보고(report=1, 키)','/api/crawl?report=1'],
+  ['collectorRelease','수집기 release(키)','/api/collector-release'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
  ];
  const results=[];
@@ -149,6 +155,26 @@ try{
    results.push(row);byKey[key]={...row,snapshot:r.body.snapshot?.token};console.log(JSON.stringify(row));
   }
  }finally{await warm.dispose()}
+ // What crawl-prepare writes when this release's one-time seed steps are not done
+// (catalogPreparation keys), each alone and all together. A fresh isolate per
+// case: ensureCatalog caches its promise per isolate.
+ const prepare={};
+ if(prepareSteps){
+  const once=['snapshot','multilingual-index-v1','bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1'];
+  const undo=async(db,keys)=>{for(const k of keys)await (k==='snapshot'?db.prepare("UPDATE catalog_meta SET value='previous-release' WHERE key='snapshot'"):db.prepare('DELETE FROM catalog_meta WHERE key=?').bind(k)).run()};
+  // settle: the first call after growing also runs the per-row maintenance
+  // (place search, collection priorities, external bath scope) over the copied
+  // rows; recorded apart, since a loaded database carries those cursors done.
+  for(const [name,keys] of [['settle',[]],['none',[]],...once.map(k=>[k,[k]]),['all',once]]){
+   const fresh=start();
+   try{
+    await undo(await fresh.getD1Database('DB'),keys);
+    const total={calls:0,rowsRead:0,rowsWritten:0,ms:0};
+    for(;;){const r=await call(fresh,'/api/crawl-prepare',{method:'POST'});total.calls++;total.rowsRead+=r.meter.rowsRead;total.rowsWritten+=r.meter.rowsWritten;total.ms+=Math.round(r.ms);if(r.body.done)break;assert(total.calls<60,name+': crawl-prepare did not finish')}
+    prepare[name]=total;console.log(JSON.stringify({prepare:name,...total}));
+   }finally{await fresh.dispose()}
+  }
+ }
  const byKey=Object.fromEntries(results.map(r=>[r.key,r]));
  if(check){
   // Upper bounds as hotels-table multiples plus fixed per-request work (result
@@ -169,7 +195,7 @@ try{
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }
- const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results};
+ const report={measuredAt:new Date().toISOString(),schema:readdirSync('drizzle').filter(f=>f.endsWith('.sql')&&f.slice(0,4)<=schema).sort().at(-1),...(label?{build:label}:{gitHead:execSync('git rev-parse --short HEAD').toString().trim(),dirty:execSync('git status --porcelain -- lib app build').toString().trim()!==''}),environment:'Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_read like production D1 is unverified. Times are wall-clock including local SQLite, single run.',grown:grow,seedRequest:{rowsRead:seeding.meter.rowsRead,rowsWritten:seeding.meter.rowsWritten},tables:counts,results,...(prepareSteps?{prepareSteps:prepare}:{})};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log('tables='+JSON.stringify(counts)+' scenarios='+results.length);
 }finally{if(runtime)await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
