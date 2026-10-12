@@ -441,12 +441,12 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 6단계에서 상위 세션이 할 일(순서)
 
-2026-10-12 UTC에 `hosting-review-20261011.md` 3.2절 6단계 1~7번과 맞췄다(H01 6단계 도구 하위 세션 A2). 시작 조건: 4단계 완료 PR로 `publicOrigin`·`autoDeploy`가 켜져 있고, 실행기 차이 반영 PR(`cloudflare-sync.yml`)이 병합돼 있다. 앱 PR #48은 이미 병합됐다(병합 시점과 무관하게 무해).
+2026-10-12 UTC에 `hosting-review-20261011.md` 3.2절 6단계 1~7번과 맞췄다(H01 6단계 도구 하위 세션 A2). 시작 조건: 4단계 완료 PR로 `publicOrigin`·`autoDeploy`가 켜져 있고, 차이 반영 도구(실행기 레포의 새 수동 workflow, 작업 중)가 병합돼 있다. 앱 PR #48은 이미 병합됐다(병합 시점과 무관하게 무해).
 
 1. 실행기 `YUKEMURI_ENABLED`를 `false`로 바꾸고 실행 중인 수집이 끝났는지 본다(3.2절 6단계 1번). 바꾼 시각과 재개 조건을 인수인계에 적는다. 이때부터 7번까지 사용자는 기존 Sites에서 즐겨찾기를 바꾸지 않는다(2번).
 2. Sites 최종 백업: 실행기 `Yukemuri private database backups`를 수동 실행하고 run id를 적는다(3번).
-3. 차이 반영: 실행기 `Yukemuri Cloudflare D1 sync`를 2번 run으로 `mode=sync`, `dry_run=true` → 표별 차이·예상 쓰기 확인 → `dry_run=false`. 요약의 bookmark를 적는다(4번). 예상 쓰기가 9만 행을 넘으면 거부되므로 표를 나눠 날짜를 달리하거나 `cloudflare-load`의 `replace_tables`를 쓴다.
-4. Sites 재백업과 즐겨찾기 대조: 실행기 백업을 한 번 더 수동 실행하고, 그 run으로 `mode=favorites`, `compare_run_id`=2번 run, `dry_run=true`. 다르면 원인을 적고 `dry_run=false`로 다시 실행한다(5번). 새 D1에만 있는 즐겨찾기는 지우지 않는다(C4).
+3. 차이 반영: 실행기 레포의 새 수동 workflow(작업 중)로 2번 체크포인트와 새 D1의 차이를 반영한다(4번). 쓰기 전 bookmark를 적는다.
+4. Sites 재백업과 즐겨찾기 대조: 실행기 백업을 한 번 더 수동 실행하고, 같은 workflow로 즐겨찾기 표를 2번 체크포인트와 대조한다. 다르면 원인을 적고 반영한다(5번). 새 D1에만 있는 즐겨찾기는 지우지 않는다(C4).
 5. 사용자 Secret 두 개 등록 확인 → 실행기 PR #5를 ready로 바꾸고 검토·병합(6번). 이 병합으로 백업 대상이 새 주소로 바뀌므로 Sites 백업(2·4번)은 반드시 그 전에 한다.
 6. 앱 레포 `Yukemuri collection`을 `check-access` → `gentle` 수동 실행. gentle 실행 중 하나를 더 넣어 대기 후 이어 도는지 본다. 실행기 `Yukemuri catalog updates`를 `check`로 수동 실행해 성공 시각을 읽는지 본다(6번 끝).
 7. 새 주소 백업: 실행기 백업을 수동 실행해 새 주소에서 성공하는지 본다(7번).
