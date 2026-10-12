@@ -1,6 +1,8 @@
 // Cloudflare usage per UTC day (H01 steps 5 and 7): Worker CPU time (p50, p99),
 // invocation statuses (exceededResources = errors 1102/1027) and D1 rows read and
-// written, from the GraphQL Analytics API. Read only. The API token needs the
+// written, from the GraphQL Analytics API. The free limits apply to the whole
+// account, so the percentages use account totals (every Worker and D1 database);
+// the Worker and the database of this app are shown beside them (PR #53 Codex review). Read only. The API token needs the
 // Account > Account Analytics > Read permission; without it the API answers with
 // an authorization error, which this script reports as a failure and never as zero.
 import {readFileSync,appendFileSync} from 'node:fs';
@@ -29,6 +31,13 @@ export const QUERY=`query YukemuriUsage($accountTag: string!, $scriptName: strin
       d1: d1AnalyticsAdaptiveGroups(limit: 10, filter: {databaseId: $databaseId, date_geq: $date, date_leq: $date}) {
         sum { rowsRead rowsWritten readQueries writeQueries }
         dimensions { date databaseId }
+      }
+      accountWorkers: workersInvocationsAdaptive(limit: 10, filter: {datetime_geq: $start, datetime_leq: $end}) {
+        sum { requests }
+      }
+      accountD1: d1AnalyticsAdaptiveGroups(limit: 10, filter: {date_geq: $date, date_leq: $date}) {
+        sum { rowsRead rowsWritten }
+        dimensions { date }
       }
     }
   }
@@ -59,37 +68,41 @@ export async function queryDay({fetch,token,accountId,scriptName,databaseId,date
  // An account the token cannot see comes back as an empty list, not as zero usage.
  if(!Array.isArray(accounts)||accounts.length!==1)throw new UsageError(PERMISSION_HELP+' (accounts 결과가 비어 있음)');
  const [a]=accounts;
- for(const key of ['total','byStatus','d1'])if(!Array.isArray(a[key]))throw new UsageError('GraphQL response lacks '+key);
+ for(const key of ['total','byStatus','d1','accountWorkers','accountD1'])if(!Array.isArray(a[key]))throw new UsageError('GraphQL response lacks '+key);
  const total=a.total[0]??null,d1=a.d1[0]??null;
+ const sum=(rows,key)=>rows.reduce((n,r)=>n+(r.sum?.[key]??0),0);
  const statuses={};
  for(const row of a.byStatus)statuses[row.dimensions?.status??'unknown']=(statuses[row.dimensions?.status??'unknown']??0)+(row.sum?.requests??0);
  return {date,
   worker:total?{requests:total.sum.requests,errors:total.sum.errors,subrequests:total.sum.subrequests,
    cpuP50Ms:total.quantiles.cpuTimeP50/1000,cpuP99Ms:total.quantiles.cpuTimeP99/1000}:null,
   statuses,exceeded:Object.entries(statuses).filter(([s])=>/^exceeded/i.test(s)).reduce((n,[,v])=>n+v,0),
-  d1:d1?{...d1.sum}:null};
+  d1:d1?{...d1.sum}:null,
+  account:{requests:a.accountWorkers.length?sum(a.accountWorkers,'requests'):null,
+   rowsRead:a.accountD1.length?sum(a.accountD1,'rowsRead'):null,rowsWritten:a.accountD1.length?sum(a.accountD1,'rowsWritten'):null}};
 }
 
 const num=n=>n.toLocaleString('en-US');
 const pct=(n,limit)=>`${num(n)} (${(100*n/limit).toFixed(1)}%)`;
 export function report(days){
  const lines=['## Cloudflare 사용량(UTC 날짜별)','',
-  '| UTC 날짜 | Worker 요청 | 오류 | CPU p50 ms | CPU p99 ms | exceededResources(1102·1027) | 그 밖의 상태 | D1 rowsRead | D1 rowsWritten | 70% 초과 |',
-  '|---|---:|---:|---:|---:|---:|---|---:|---:|---|'];
+  '| UTC 날짜 | 계정 Worker 요청(한도 대비) | 이 Worker 요청 | 오류 | CPU p50 ms | CPU p99 ms | exceededResources(1102·1027) | 그 밖의 상태 | 계정 D1 rowsRead(한도 대비) | 계정 D1 rowsWritten(한도 대비) | 이 D1 rowsRead | 이 D1 rowsWritten | 계정 70% 이상 |',
+  '|---|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|---|'];
  const warnings=[];
  for(const d of days){
-  const w=d.worker,db=d.d1;
+  const w=d.worker,db=d.d1,acc=d.account,none='기록 없음';
   const others=Object.entries(d.statuses).filter(([s])=>s!=='success'&&!/^exceeded/i.test(s)).map(([s,n])=>`${s} ${n}`).join(', ')||'-';
   const over=[];
-  if(w&&w.requests>=WARN*LIMITS.requests)over.push('요청');
-  if(db&&db.rowsRead>=WARN*LIMITS.rowsRead)over.push('읽기');
-  if(db&&db.rowsWritten>=WARN*LIMITS.rowsWritten)over.push('쓰기');
-  if(over.length)warnings.push(`${d.date}: ${over.join('·')}가 무료 한도의 70% 이상`);
+  if(acc.requests!==null&&acc.requests>=WARN*LIMITS.requests)over.push('요청');
+  if(acc.rowsRead!==null&&acc.rowsRead>=WARN*LIMITS.rowsRead)over.push('읽기');
+  if(acc.rowsWritten!==null&&acc.rowsWritten>=WARN*LIMITS.rowsWritten)over.push('쓰기');
+  if(over.length)warnings.push(`${d.date}: 계정 ${over.join('·')}가 무료 한도의 70% 이상`);
   if(d.exceeded)warnings.push(`${d.date}: exceededResources ${d.exceeded}건(1102·1027, CPU 초과가 가장 흔한 원인)`);
-  lines.push(`| ${d.date} | ${w?pct(w.requests,LIMITS.requests):'기록 없음'} | ${w?num(w.errors):'-'} | ${w?w.cpuP50Ms.toFixed(2):'-'} | ${w?w.cpuP99Ms.toFixed(2):'-'} `
-   +`| ${w?num(d.exceeded):'-'} | ${others} | ${db?pct(db.rowsRead,LIMITS.rowsRead):'기록 없음'} | ${db?pct(db.rowsWritten,LIMITS.rowsWritten):'기록 없음'} | ${over.join('·')||'-'} |`);
+  const share=(n,limit)=>n===null?none:pct(n,limit);
+  lines.push(`| ${d.date} | ${share(acc.requests,LIMITS.requests)} | ${w?num(w.requests):none} | ${w?num(w.errors):'-'} | ${w?w.cpuP50Ms.toFixed(2):'-'} | ${w?w.cpuP99Ms.toFixed(2):'-'} `
+   +`| ${w?num(d.exceeded):'-'} | ${others} | ${share(acc.rowsRead,LIMITS.rowsRead)} | ${share(acc.rowsWritten,LIMITS.rowsWritten)} | ${db?num(db.rowsRead):none} | ${db?num(db.rowsWritten):none} | ${over.join('·')||'-'} |`);
  }
- lines.push('','- 한도: Workers Free 요청 10만/일, D1 Free 읽기 500만 행·쓰기 10만 행/일(00:00 UTC 초기화). ‘기록 없음’은 권한이 있는 조회에서 그날 행이 없다는 뜻이다. 권한이 없으면 이 표를 쓰지 않고 실패한다.',
+ lines.push('','- 한도: Workers Free 요청 10만/일, D1 Free 읽기 500만 행·쓰기 10만 행/일(00:00 UTC 초기화). 한도는 계정 단위라 비율과 70% 경고는 계정 전체(모든 Worker·D1) 합계로 계산한다. ‘이 Worker’·‘이 D1’은 이 앱의 값이다. ‘기록 없음’은 권한이 있는 조회에서 그날 행이 없다는 뜻이다. 권한이 없으면 이 표를 쓰지 않고 실패한다.',
   '- CPU 분위수는 GraphQL `workersInvocationsAdaptive`의 표본(reservoir sampling) 값이고 마이크로초를 ms로 바꿨다. 오늘 날짜는 진행 중인 값이다.');
  for(const w of warnings)lines.push('- 주의: '+w);
  return {lines,warnings};

@@ -73,10 +73,19 @@ if(process.argv[2]==='--child'){
    run:async()=>{const r=write();return{results:r.results,meta:{changes:r.changes}}},
    raw:async()=>run().map(r=>Object.values(r))};
  };
- globalThis.__ROUTE_ENV={DB:{prepare:sql=>stmt(sql),batch:async list=>{const out=[];timed(()=>sqlite.exec('BEGIN'));try{for(const s of list)out.push(await s.all());timed(()=>sqlite.exec('COMMIT'))}catch(e){timed(()=>sqlite.exec('ROLLBACK'));throw e}return out},exec:async sql=>timed(()=>sqlite.exec(sql))},CRAWL_ACCESS_KEY:KEY};
+ globalThis.__ROUTE_ENV={DB:{prepare:sql=>stmt(sql),batch:async list=>{const out=[];timed(()=>sqlite.exec('SAVEPOINT batch'));try{for(const s of list)out.push(await s.all());timed(()=>sqlite.exec('RELEASE batch'))}catch(e){timed(()=>sqlite.exec('ROLLBACK TO batch;RELEASE batch'));throw e}return out},exec:async sql=>timed(()=>sqlite.exec(sql))},CRAWL_ACCESS_KEY:KEY};
  const routes=await import(bundle);
  const handler=routes[mod][method];
+ // Writing requests run inside a transaction rolled back after the timing, so every
+ // cold and warm request starts from the same database (PR #53 Codex review): a
+ // list PUT always meets 30 new and 15 known properties. Batches use savepoints.
+ const writes=method!=='GET';
+ const state=()=>JSON.stringify(sqlite.prepare('SELECT (SELECT COUNT(*) FROM hotels) AS h,(SELECT COUNT(*) FROM crawl_jobs) AS j,(SELECT COUNT(*) FROM catalog_meta) AS m').get());
  const call=async()=>{
+  const start=state();if(writes)sqlite.exec('BEGIN');
+  try{return {...await timedCall(),start}}finally{if(writes)sqlite.exec('ROLLBACK')}
+ };
+ const timedCall=async()=>{
   const headers={'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(options.keyed?{'X-Yukemuri-Crawl-Key':KEY}:{})};
   const request=new Request('http://localhost'+path,{method,headers,body:body?.replaceAll('__TOKEN__',crypto.randomUUID())??undefined});
   inDb=0;const t=process.cpuUsage();if(process.env.PHASES){let last=process.cpuUsage(),lastDb=0;globalThis.__phase=n=>{const d=process.cpuUsage(last);console.error(n,((d.user+d.system-(inDb-lastDb))/1000).toFixed(2));last=process.cpuUsage();lastDb=inDb}}
@@ -98,8 +107,9 @@ if(process.argv[2]==='--child'){
  if(mode==='cold'){console.log(JSON.stringify(await call()));process.exit(0)}
  for(let i=0;i<200;i++)await call();
  const runs=[];for(let i=0;i<200;i++)runs.push(await call());
+ if(new Set(runs.map(r=>r.start)).size!==1)throw new Error(k+': warm requests started from different database states');
  const ms=runs.map(r=>r.ms).sort((a,b)=>a-b);
- console.log(JSON.stringify({status:runs[0].status,ms:ms[100],p95:ms[190],dbMs:runs.map(r=>r.dbMs).sort((a,b)=>a-b)[100]}));
+ console.log(JSON.stringify({status:runs[0].status,start:runs[0].start,ms:ms[100],p95:ms[190],dbMs:runs.map(r=>r.dbMs).sort((a,b)=>a-b)[100]}));
  process.exit(0);
 }
 
@@ -157,6 +167,7 @@ try{
   const run=mode=>{const r=spawnSync(process.execPath,[fileURLToPath(import.meta.url),'--child',bundle,dbFile,JSON.stringify(spec),mode],{encoding:'utf8',cwd:ROOT});if(r.status!==0)throw new Error(spec[0]+' '+mode+': '+r.stderr.slice(-800));return JSON.parse(r.stdout.trim().split('\n').at(-1))};
   // Cold: the median of nine (--cold-runs) new processes.
   const colds=Array.from({length:coldRuns},()=>run('cold')).sort((a,b)=>a.ms-b.ms),mid=colds[colds.length>>1],cold=mid.ms,warm=run('warm');
+  if(new Set([...colds,warm].map(r=>r.start)).size!==1)throw new Error(spec[0]+': cold and warm runs started from different database states');
   const row={key:spec[0],label:spec[1],method:spec[3],path:spec[4].replace(/after=[^&]+/,'after=…'),status:warm.status,coldMs:+cold.toFixed(2),warmMs:+warm.ms.toFixed(3),warmP95Ms:+warm.p95.toFixed(3),coldDbMs:+mid.dbMs.toFixed(2),coldMaxMs:+colds.at(-1).ms.toFixed(2)};
   if(spec[7]?.keyed){row.maintenance=true;if(warm.status!==200||mid.status!==200)throw new Error(spec[0]+': expected 200, got '+mid.status+'/'+warm.status)}
   results.push(row);console.log(JSON.stringify(row));

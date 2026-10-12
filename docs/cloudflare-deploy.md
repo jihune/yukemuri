@@ -138,7 +138,8 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - `scripts/cloudflare-usage.mjs`가 GraphQL Analytics API(`https://api.cloudflare.com/client/v4/graphql`)에 UTC 날짜마다 한 번 묻는다.
   - Worker(`cloudflare-deploy.json`의 `workerName`): `workersInvocationsAdaptive`의 요청·오류 합계와 `cpuTimeP50`·`cpuTimeP99`(마이크로초 → ms), 상태별 요청 수. `exceededResources`는 오류 1102·1027이다(Workers 문서, 가장 흔한 원인은 CPU 초과). Workers Logs의 `exceededCpu`와 같은 사건을 이 상태로 센다.
   - D1(`databaseId`): `d1AnalyticsAdaptiveGroups`의 `rowsRead`·`rowsWritten`·`readQueries`·`writeQueries`, `date` 필터는 그 UTC 날짜 하나다. D1 무료 한도가 초기화되는 단위와 같다.
-  - 요약 표에 한도 대비 비율을 쓰고 70% 이상이거나 `exceededResources`가 있으면 ‘주의’ 줄을 더한다. 분석 자료는 31일 보관이고 오늘 날짜는 진행 중인 값이다.
+  - 계정 전체: 같은 두 데이터셋을 `scriptName`·`databaseId` 필터 없이 한 번 더 읽어 모든 Worker 요청과 모든 D1의 `rowsRead`·`rowsWritten` 합계를 낸다. 무료 한도는 계정 단위라 한도 대비 비율과 70% 경고는 이 합계로 계산하고, 이 앱의 Worker·D1 값은 옆 열에 참고로 쓴다(PR #53 Codex 검토).
+  - 계정 합계가 70% 이상이거나 `exceededResources`가 있으면 ‘주의’ 줄을 더한다. 분석 자료는 31일 보관이고 오늘 날짜는 진행 중인 값이다.
 - 권한: API 토큰에 **Account > Account Analytics > Read**가 필요하다(Cloudflare 문서 ‘Configure an Analytics API token’). 지금 토큰에는 없다(‘사용자가 한 일’ 1번). 권한이 없으면 API가 401·403 또는 권한 오류 메시지를 돌려주거나 계정 목록이 비어 온다. 스크립트는 이 경우 표를 쓰지 않고 실패하며, ‘이 오류는 사용량 0이 아니다’라고 적는다. 권한이 있는 조회에서 그날 행이 없으면 0이 아니라 ‘기록 없음’으로 쓴다.
 - 사용자 조치(실행 전에 한 번): Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`으로 쓰는 토큰의 Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더하고 저장한다. 토큰 값은 바뀌지 않으므로 GitHub Secret은 그대로 둔다. 실행기 레포의 같은 이름 Secret이 다른 토큰이면 그 토큰은 바꿀 필요 없다.
 - 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 4종이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
