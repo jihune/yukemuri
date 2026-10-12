@@ -542,7 +542,10 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - main `0420e4e`(PR #51) merge(`d1a235f`, 충돌 2곳: 인수인계·`cloud-check.py`, 둘 다 양쪽 유지). #51의 규칙에 따라 `rollback.yml`·`usage.yml`에 `defaults.run.shell: bash`를 넣었다. `cloud-check.py --full` 35개 통과.
 - Codex 2회째(`d1a235f`, 12:44Z 요청, 12:52Z 완료): P2 1건. 측정 fixture가 crawl-prepare를 한 번만 불러 ‘준비됨’ 값이 미완료 쪽을 쟀음 → `6c56c8d`에서 `done:true`까지 준비, 다시 측정(위 표).
 - Codex 3회째(`b029905`, 13:06Z 요청, 13:10Z 완료): P2 1건. `usage.yml`의 `date`에 없는 날짜(`2026-02-31`)를 넣으면 `Date.parse`가 다음 달로 넘겨 다른 날을 조회함 → 파싱한 날짜가 입력과 같은지 확인해 거부, 검사에 2·4월 말과 윤일을 더함(가드를 뺀 변형은 실패). Codex 요청 3회를 다 썼고 그 뒤 기록 파일 밖(스크립트·검사)이 바뀌었으므로 ‘이어 가는 Claude 검토’가 필요하다(상위 세션이 연다).
+- 이어 가는 Claude 검토 1회째(세션 `session_01MnG6VhzbLmECs5o9SPjNjo`, `0b12c5f`, 13:25Z): P0–P2 없음, P3 2건. 병합 조건(마지막 검토 뒤 기록 파일만 변경)을 지키려고 절차 문서는 고치지 않고 아래 다음 작업에 적었다. CI는 `0b12c5f`에서 통과했다.
 - 다음 작업: 위 C1 위험 1~3의 대응 여부를 상위 세션이 정한다.
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘롤백’의 ‘Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인)’는 틀렸다. wrangler 4.92.0은 오류 10220을 받으면 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `deployments?force=true`로 강제로 되돌린다(검토 세션이 가짜 API로 재현). 되돌린 버전은 그때의 Secret(예: 바꾸기 전 `CRAWL_ACCESS_KEY`)을 쓸 수 있고 요약에는 표시가 없다. 문서를 고치고, 키를 바꾼 적이 있으면 롤백 뒤 수집 키를 확인하라는 주의와, 필요하면 출력의 `secrets have changed`를 요약 경고로 남기는 처리를 더한다. 이 절의 ‘미확인’ 첫 항목도 같은 내용으로 바꾼다.
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘사용량 측정’의 ‘그 밖의 실패 4종’은 5종이다(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음).
 
 ## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
 
