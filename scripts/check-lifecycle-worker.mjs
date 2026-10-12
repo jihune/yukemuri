@@ -20,9 +20,13 @@ try{
   const response=await runtime.dispatchFetch('http://localhost'+path,{method,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':visitor,...(authorized?{'X-Yukemuri-Crawl-Key':'life-test-only'}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const body=await response.json();assert.equal(response.status,expected,JSON.stringify(body));return body;
  };
- // A public read fills an empty catalogue (the maintenance backfills stay for crawl-prepare).
- await api('/api/hotels/takinoya');
- assert.equal(await db.prepare("SELECT value FROM catalog_meta WHERE key='onsen-place-search-v1'").first(),null,'Public reads must not scan the whole catalog for a new maintenance backfill');
+ // A public read never writes (P03): on an unprepared catalogue it finds
+ // nothing and leaves the seed and the maintenance backfills to crawl-prepare.
+ await api('/api/hotels/takinoya','GET',undefined,404,false);
+ assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n,0,'A public read must not seed the catalogue');
+ assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM catalog_meta').first()).n,0,'A public read must not start a backfill');
+ // Seed through the maintenance path, as the collector does before a run.
+ await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'life-test-only'}});
  const historical=await db.prepare('SELECT id,payload FROM hotels ORDER BY id LIMIT 1').first();
  await api('/api/crawl-prepare','POST',undefined,403,false);
  await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'Origin':'https://other.example','X-Yukemuri-Crawl-Key':'life-test-only'}}).then(r=>assert.equal(r.status,403));

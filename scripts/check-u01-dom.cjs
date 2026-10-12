@@ -50,6 +50,8 @@ stubs.set('@/lib/api-client',{apiJson:async(url,options={})=>{
 }});
 // The list hooks return the fixed page below (the snapshot is not loaded here).
 stubs.set('./use-search-snapshot',{useSearchSnapshot:()=>({snapshot:{manifest:{coverage:initial.coverage},position:new Map(),cards:[]},loading:false,error:null,textReady:false,textError:null,wantText(){},refresh(){}})});
+// The panel reads the snapshot's status.json (P03); the same controlled modes answer it.
+stubs.set('@/lib/snapshot-client',{loadSnapshot:async()=>({}),loadSnapshotText:async s=>s,loadSnapshotStatus:(_s,signal)=>stubs.get('@/lib/api-client').apiJson('/api/collection-status',{signal})});
 stubs.set('./use-hotel-results',{useHotelResults:()=>({response:initial,loading:false,searchError:'',reopenSearch:false,hasMore:false,loadMore(){}})});
 const Explorer=load('components/hotel-explorer.tsx').default,{DEFAULT_FILTERS}=load('lib/hotel-types.ts');
 const initial={hotels,total:4,page:1,pageSize:24,featureCounts:{},ryokanCount:4,alternatives:[],coverage:{prefectures:1,records:4,discoveredDetailUrls:4,completedDetailPages:4,pending:0,failed:0,updatedAt:status.measuredAt}};
@@ -128,7 +130,7 @@ async function check(name,fn){console.error('Checking: '+name);try{await fn();re
  await act(async()=>{root.unmount();await wait()});
  // Initial failure must not show a successful result; retry recovers it.
  statusMode='error';const second=createRoot(document.getElementById('root'));
- await act(async()=>{second.render(React.createElement(load('components/collection-status-panel.tsx').default,{coverage:initial.coverage}));await wait()});
+ await act(async()=>{second.render(React.createElement(load('components/collection-status-panel.tsx').default,{coverage:initial.coverage,load:signal=>stubs.get('@/lib/api-client').apiJson('/api/collection-status',{signal})}));await wait()});
  const fresh=document.querySelector('details');await act(async()=>{fresh.open=true;fresh.dispatchEvent(new Event('toggle'));await wait()});
  await check('initial collection failure and explicit retry recovery',async()=>{
   assert(document.querySelector('[role="alert"]'));assert(!document.querySelector('.collection-table'));statusMode='success';await click(button('출처별 수집 현황 새로고침'));assert(document.querySelector('.collection-table'));assert(!document.querySelector('[role="alert"]'));

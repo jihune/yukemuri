@@ -51,8 +51,8 @@ export async function formerSearchApi({db,favorites}){
  }
  return{request,current,close:()=>rmSync(temp,{recursive:true,force:true})};
 }
-// For a Worker check on Miniflare: on first use seeds the catalogue as the
-// first list request did (and prepares it if still empty), then answers
+// For a Worker check on Miniflare: on first use prepares the catalogue through
+// the maintenance path, then answers
 // the former endpoints with the visitor's favorites from the Worker.
 export function formerSearchFor(runtime,key){
  let api=null;
@@ -61,14 +61,11 @@ export function formerSearchFor(runtime,key){
   async request(path,visitor){
    if(!api){
     const db=await runtime.getD1Database('DB');
-    // A detail read seeds the catalogue (ensureCatalog) the way the first list
-    // read did before P03, also when a check inserted rows of its own first.
-    const seeded=await runtime.dispatchFetch('http://localhost/api/hotels/former-search-seed');
-    if(seeded.status!==404)throw new Error('Catalogue seeding read failed: '+seeded.status);
-    if(!(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n){
-     const prepared=await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':key}});
-     if(!prepared.ok)throw new Error('Catalogue preparation failed: '+prepared.status);
-    }
+    // The catalogue is prepared by the maintenance path (the first list read
+    // did it before P03; public reads no longer write), also when a check
+    // inserted rows of its own first.
+    const prepared=await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':key}});
+    if(!prepared.ok)throw new Error('Catalogue preparation failed: '+prepared.status);
     api=await formerSearchApi({db,favorites});
    }
    return api.request(path,{visitor});

@@ -43,6 +43,7 @@ if args.full:
         ['node', 'scripts/check-edge-guard-worker.mjs'],
         ['node', 'scripts/check-deploy-config.mjs'],
         ['node', 'scripts/check-search-snapshot-worker.mjs'],
+        ['node', 'scripts/check-public-reads-worker.mjs'],
         ['node', 'scripts/measure-d1-reads.mjs', '--check'],
     ]
 for command in commands:
