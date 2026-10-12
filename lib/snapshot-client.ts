@@ -49,4 +49,5 @@ export function loadSnapshotText(s:SearchSnapshot):Promise<SearchSnapshot>{
  }
  return pending;
 }
-export function loadSnapshotStatus(s:SearchSnapshot,signal?:AbortSignal){return json<CollectionStatus>(s.manifest.files.status,'default',signal)}
+// The collection status computed with a given snapshot: the one the page shows.
+export function loadSnapshotStatus(manifest:SnapshotManifest,signal?:AbortSignal){return json<CollectionStatus>(manifest.files.status,'default',signal)}

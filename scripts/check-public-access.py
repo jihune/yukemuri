@@ -105,7 +105,7 @@ for ident,source_text in zip(fixture_ids,source_texts):
  url=next(link['url'] for link in fixture['links'] if link['provider']=='trip')
  for source in fixture['sources']:source.update({'retrievedAt':'2026-10-05T08:00:00Z','label':'Trip.com 숙소 상세','url':url})
  api('/api/crawl','PUT',{'url':url,'status':'done','observations':[fixture],'links':[]},maintenance=True)
- api('/api/hotels/'+ident) # Request translation priority as an anonymous visitor.
+ api('/api/hotels/'+ident) # A detail read records no translation request (P03 PR C).
 translations=api('/api/hotel-descriptions',maintenance=True)
 assert translations['hotels'] and len(translations['hotels'])<=40 and translations['sourceCharacters']<=60000
 assert set(fixture_ids).issubset({h['id'] for h in translations['hotels']}),'All source languages must be queued'
@@ -116,7 +116,7 @@ for ident,text_ko in zip(fixture_ids[1:],['노천탕이 있습니다.','호텔�
  assert detail['description']==source_text and detail['descriptionTranslation']['text']==text_ko
 candidate=next(h for h in translations['hotels'] if h['id']==fixture_ids[0])
 before=api('/api/hotels/'+candidate['id'])
-assert next(h for h in api('/api/hotel-descriptions',maintenance=True)['hotels'] if h['id']==candidate['id'])['requestedAt']
+assert not next(h for h in api('/api/hotel-descriptions',maintenance=True)['hotels'] if h['id']==candidate['id'])['requestedAt'],'A public detail read must not write a translation request (P03 PR C)'
 translated={'id':candidate['id'],'sourceText':candidate['sourceText'],'textKo':'이 호텔은 도쿄의 역 근처에 있습니다. 브리란테 레스토랑에서 오전 7시부터 오전 10시까지 조식을 유료로 제공합니다. 일부 객실에서 무료 무선 인터넷을 이용할 수 있습니다.'}
 api('/api/hotel-descriptions','PUT',{'patches':[{**translated,'textKo':'English only text'}]},maintenance=True,status=400)
 api('/api/hotel-descriptions','PUT',{'patches':[{**translated,'features':{}}]},maintenance=True,status=400)
@@ -144,4 +144,4 @@ assert next(h for h in api('/api/hotel-descriptions',maintenance=True)['hotels']
 api('/api/hotel-descriptions','PUT',{'patches':[translated]},maintenance=True,status=409)
 assert api('/api/hotel-descriptions','PUT',{'patches':[{**translated,'sourceText':original['description']}]},maintenance=True)['accepted']==1
 assert api('/api/hotels/'+candidate['id'])['descriptionTranslation']['text']==translated['textKo']
-print('Description checks passed: protected writes; prioritized view queue; no partial stale batches; original/facts preserved; re-crawl retention; changed-source invalidation and retranslation.')
+print('Description checks passed: protected writes; detail reads queue nothing (P03); no partial stale batches; original/facts preserved; re-crawl retention; changed-source invalidation and retranslation.')

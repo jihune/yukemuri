@@ -12,7 +12,7 @@ const EMPTY_COVERAGE:SnapshotCoverage={records:0,prefectures:0,crawledRecords:0,
 // The list of the current conditions, computed in the browser from the
 // snapshot. More pages are slices of the same order, so they never fail or
 // change while the snapshot stays the same.
-export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:SortOrder,savedOnly:boolean,favorites:string[],favoritesReady:boolean,first:FirstPage|null){
+export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:SortOrder,savedOnly:boolean,favorites:string[],favoritesReady:boolean,favoritesFailed:boolean,first:FirstPage|null){
  const s=snap.snapshot,favoriteKey=[...favorites].sort().join(',');
  const textNeeded=needsText(filters);
  useEffect(()=>{if(textNeeded)snap.wantText()},[textNeeded,snap.wantText]);
@@ -41,5 +41,8 @@ export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:Sor
  const loadMore=useCallback(()=>{if(hasMore)setPaging({list,pages:pages+1})},[hasMore,list,pages]);
  const error=snap.error??(textNeeded||result==='text'?snap.textError:null);
  if(preview)return{response:preview,preview:true,loading:false,searchError:snap.error?.message??'',reopenSearch:!!snap.error?.reload,loadMore:noMore,hasMore:false};
- return{response,preview:false,loading:!error&&(!result||result==='text'),searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
+ // The saved list waits for the favourites; when they cannot be read it stops
+ // waiting (the page shows that error and its retry).
+ const waitsForFailedFavorites=savedOnly&&!favoritesReady&&favoritesFailed;
+ return{response,preview:false,loading:!error&&(!result||result==='text')&&!waitsForFailedFavorites,searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
 }

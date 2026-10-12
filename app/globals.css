@@ -157,3 +157,4 @@ body:has(.comparison-dock) .site-footer{padding-bottom:86px}
 .comparison-diff-hidden{margin:10px 0 0}
 html[data-conditions] main[data-first-page],html[data-conditions] .mobile-map-toggle span{visibility:hidden}
 .conditions-pending{display:none}html[data-conditions] main[data-first-page] .conditions-pending{display:block;visibility:visible;text-align:center;padding:24px 10px;color:#436871;font-size:15px}
+.autocomplete-retry{border:0;background:none;color:#087e8b;text-decoration:underline;font:inherit;padding:6px 4px;cursor:pointer}

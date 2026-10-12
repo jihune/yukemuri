@@ -8,7 +8,10 @@ from pathlib import Path
 root='http://127.0.0.1:8787'
 def call(method,path,payload=None,headers=None,raw=None):
  body=raw if raw is not None else json.dumps(payload).encode() if payload is not None else None
- hs={'Content-Type':'application/json'};hs.update(headers or {})
+ # The browser key a visitor's page sends with every API request (lib/api-client.ts).
+ hs={'Content-Type':'application/json','X-Yukemuri-Visitor':'f'*64};hs.update(headers or {})
+ # The collector's routes need the maintenance key (the runner binds this one).
+ if path.startswith(('/api/crawl','/api/catalog-export')):hs.setdefault('X-Yukemuri-Crawl-Key','local-runtime-maintenance-test')
  try:
   with urllib.request.urlopen(urllib.request.Request(root+path,data=body,headers=hs,method=method),timeout=90) as r:return r.status,r.read().decode()
  except urllib.error.HTTPError as e:return e.code,e.read().decode()

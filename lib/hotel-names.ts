@@ -2,7 +2,9 @@ import type { Hotel } from './hotel-types';
 import { REGIONS } from './hotel-types';
 
 export function normalizeSearch(value: string): string {
-  return value.normalize('NFKC').toLocaleLowerCase().replace(/[\u30a1-\u30f6]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60)).replace(/[\s\p{P}\p{S}]/gu, '');
+  // Locale-independent: the stored search text and name keys were lower-cased
+  // this way, so a Turkish browser must not turn "I" into a dotless "ı".
+  return value.normalize('NFKC').toLowerCase().replace(/[\u30a1-\u30f6]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60)).replace(/[\s\p{P}\p{S}]/gu, '');
 }
 
 export function hotelNames(hotel: Pick<Hotel,'names'|'aliases'>): string[] {

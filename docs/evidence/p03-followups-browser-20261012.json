@@ -1,0 +1,98 @@
+{
+ "measuredAt": "2026-10-12T11:43:39.364Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium",
+ "viewport": "390x780 · isMobile · hasTouch · deviceScaleFactor 2",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "name": "예상 숙소 정보를 받는 중·실패일 때 Enter 검색을 약속하지 않음",
+   "pass": true,
+   "detail": {
+    "loadingText": "예상 숙소 정보를 불러오는 중…",
+    "failedText": "예상 숙소 정보를 불러오지 못했어요. 이름 검색도 이 정보가 있어야 해요.\n다시 시도"
+   }
+  },
+  {
+   "name": "예상 숙소 다시 시도로 이름 검색 정보를 다시 받아 후보를 보임",
+   "pass": true,
+   "detail": {
+    "suggestions": 1
+   }
+  },
+  {
+   "name": "즐겨찾기를 못 읽으면 저장 목록이 찾는 중에 머물지 않고 오류와 다시 시도를 보임",
+   "pass": true,
+   "detail": {
+    "loading": 0,
+    "retry": 1,
+    "empty": 0,
+    "subtitle": "온천 특징을 비교하고, 마음에 드는 곳을 저장하세요.\n최신 자료 확인"
+   }
+  },
+  {
+   "name": "다시 시도하면 저장 목록으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "loading": 0,
+    "banner": 0,
+    "empty": 1
+   }
+  },
+  {
+   "name": "다른 경로로 이름 검색 파일을 받은 뒤 다시 시도하면 이름 검색 오류가 사라짐",
+   "pass": true,
+   "detail": {
+    "shown": 1,
+    "left": 0,
+    "cards": 4,
+    "expected": 4
+   }
+  },
+  {
+   "name": "수집 현황은 화면이 쥔 스냅숏의 status.json만 받고 core·cards를 다시 받지 않음",
+   "pass": true,
+   "detail": {
+    "seen": [
+     "/snapshot/v/0b6890027aa5fc04/core.json",
+     "/snapshot/v/0b6890027aa5fc04/cards.json",
+     "/snapshot/v/0b6890027aa5fc04/status.json"
+    ],
+    "first": "0b6890027aa5fc04"
+   }
+  },
+  {
+   "name": "WebMCP search_stays: 검색어 없는 조건이 0건이면 오류 대신 count 0",
+   "pass": true,
+   "detail": {
+    "empty": "hakodate",
+    "outcome": {
+     "ok": true,
+     "r": {
+      "count": 0,
+      "pageSize": 40
+     }
+    }
+   }
+  },
+  {
+   "name": "터키어 브라우저에서도 대문자 I 검색이 소문자와 같은 결과",
+   "pass": true,
+   "detail": {
+    "browserLower": "ınn",
+    "upper": 41,
+    "plain": 41,
+    "expected": 41
+   }
+  },
+  {
+   "name": "새로고침 단추와 WebMCP 설명이 지금 동작(배포된 숙소 자료 다시 확인, 브라우저 계산)과 맞음",
+   "pass": true,
+   "detail": {
+    "label": "새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영",
+    "text": "최신 자료 확인",
+    "description": "Search the real Japan hotel catalogue with the same filters as the visible interface (computed in the browser from the published catalogue snapshot)."
+   }
+  }
+ ]
+}
