@@ -476,7 +476,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ## H01 6단계 도구(앱 레포: 롤백·사용량·유지보수 경로 CPU)
 
-기록: 2026-10-12T12:10Z / 2026-10-12 21:10 KST. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이다. 작성 세션 `session_015ge493n1x3SUdwcM1xK6Ko`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값·운영 사이트에 접속하지 않았고 운영 workflow를 실행하지 않았다. `deploy.yml`은 건드리지 않았다.
+기록: 2026-10-12T12:03Z / 2026-10-12 21:03 KST. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이다. 작성 세션 `session_015ge493n1x3SUdwcM1xK6Ko`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값·운영 사이트에 접속하지 않았고 운영 workflow를 실행하지 않았다. `deploy.yml`은 건드리지 않았다.
 
 ### 기준과 상태
 
@@ -522,7 +522,7 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - `python3 scripts/cloud-check.py --full` 33개 통과(11:51Z–12:00Z, rc=0, `check-rollback-workflow.mjs` 포함). 그 뒤 더한 `check-cloudflare-usage.mjs`를 넣어 기본 `cloud-check.py` 통과(12:01Z).
 - `check-rollback-workflow.mjs`: 워크플로 규칙, bookmark 기록 순서, 거부 입력, 가짜 wrangler로 끝까지 env 전달. 변형 9종(confirm 검사 삭제, bookmark 없음 무시, 순서, 복구 확인 삭제, 같은 배포 허용, 주의 문구 삭제, 잠금 그룹, `queue: single`, push 트리거)이 모두 실패.
 - `check-cloudflare-usage.mjs`: 가짜 GraphQL 응답. 변형 7종(빈 계정 목록을 0으로, 403을 권한 오류로 안 봄, 빈 날을 0으로, 마이크로초 그대로, 상태 이름 틀림, ‘기록 없음’ 대신 0, 날짜 필터 틀림)이 모두 실패.
-- actionlint 1.7.7 통과(8개 workflow). `check-deploy-config.mjs`가 새 workflow 둘을 포함해 통과.
+- actionlint 1.7.7 통과(7개 workflow). `check-deploy-config.mjs`가 새 workflow 둘을 포함해 통과.
 
 ### 미확인
 
