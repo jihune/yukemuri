@@ -66,7 +66,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 ## 4단계 뒤: 자동 배포 켜기
 
-4단계 적재(`catalog_meta` 포함)가 끝났다는 기록 PR이 `publicOrigin`을 채우고 `autoDeploy`를 `true`로 바꾼다. 적재 전 `/api/hotels` 호출은 빈 DB에 seed를 쓰기 때문에 이 순서를 지킨다. 적재 전 상태 확인은 `wrangler d1 execute yukemuri --remote --config dist/server/wrangler.json --command "SELECT COUNT(*) FROM hotels"`처럼 DB를 바꾸지 않는 조회로만 한다.
+4단계 적재(`catalog_meta` 포함)가 끝났다는 기록 PR이 `publicOrigin`을 채우고 `autoDeploy`를 `true`로 바꾼다. 이 PR의 병합이 첫 배포다. P03 뒤 공개 읽기는 D1에 쓰지 않고(seed 없음), 목록 API(`/api/hotels`)도 없다. 그래도 적재 전에 배포하면 빈 카탈로그로 만든 검색 스냅숏이 공개되므로 이 순서를 지킨다. 병합 전에 `deploy.yml`을 `preflight: true`로 수동 실행해 남은 마이그레이션·준비 안 된 키·쓰기 추정을 확인하고, 그날 UTC 쓰기(적재분 + 마이그레이션 + 준비) 합계가 9만 행 이하인지 PR에 적는다. 적재 전 상태 확인은 `wrangler d1 execute yukemuri --remote --config dist/server/wrangler.json --command "SELECT COUNT(*) FROM hotels"`처럼 DB를 바꾸지 않는 조회로만 한다.
 
 ## 자동 배포(deploy.yml)
 
@@ -146,7 +146,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - 계정 합계가 70% 이상이거나 `exceededResources`가 있으면 ‘주의’ 줄을 더한다. 분석 자료는 31일 보관이고 오늘 날짜는 진행 중인 값이다.
 - 권한: API 토큰에 **Account > Account Analytics > Read**가 필요하다(Cloudflare 문서 ‘Configure an Analytics API token’). 지금 토큰에는 없다(‘사용자가 한 일’ 1번). 권한이 없으면 API가 401·403 또는 권한 오류 메시지를 돌려주거나 계정 목록이 비어 온다. 스크립트는 이 경우 표를 쓰지 않고 실패하며, ‘이 오류는 사용량 0이 아니다’라고 적는다. 권한이 있는 조회에서 그날 행이 없으면 0이 아니라 ‘기록 없음’으로 쓴다.
 - 사용자 조치(실행 전에 한 번): Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`으로 쓰는 토큰의 Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더하고 저장한다. 토큰 값은 바뀌지 않으므로 GitHub Secret은 그대로 둔다. 실행기 레포의 같은 이름 Secret이 다른 토큰이면 그 토큰은 바꿀 필요 없다.
-- 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 4종이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
+- 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 5종(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음)이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
 
 ## 롤백
 
@@ -160,7 +160,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 - 입력: `action`(`worker-rollback`·`d1-restore`), `version_id`(Worker 버전 UUID, 선택), `bookmark`(`d1-restore`에 필수), `confirm`(`rollback`이라고 써야 진행). 값은 env로만 넘긴다.
 - 순서: `cloudflare-deploy.json`의 `databaseId`가 없으면 아무것도 하지 않는다. 먼저 `d1 time-travel info yukemuri --json`으로 현재 bookmark를 요약에 남긴다(두 동작 모두. 롤백 자체를 되돌릴 때 쓴다). 값이 없으면 멈춘다.
-  - `worker-rollback`: `deployments status --json`(전) → `rollback [version_id] --name yukemuri --message rollback.yml --yes` → `deployments status --json`(뒤). 활성 배포가 바뀌지 않았거나 요청한 버전이 100%가 아니면 실패한다. Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인).
+  - `worker-rollback`: `deployments status --json`(전) → `rollback [version_id] --name yukemuri --message rollback.yml --yes` → `deployments status --json`(뒤). 활성 배포가 바뀌지 않았거나 요청한 버전이 100%가 아니면 실패한다. Secret이 그 버전 뒤에 바뀌었으면 wrangler 4.92.0은 API 오류 10220을 받은 뒤 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `force=true`로 되돌린다(PR #53 Claude 검토가 가짜 API로 재현). 되돌린 버전은 그 버전의 Secret 값을 쓴다. 아래 주의 4.
   - `d1-restore`: `d1 time-travel restore yukemuri --bookmark <값> --json`. `--json`은 확인 질문을 건너뛴다(wrangler 4.92.0 소스). 응답의 `bookmark`가 입력과 다르면 실패한다. 응답의 `previous_bookmark`도 요약에 남긴다.
 - 설정은 실행 중 임시 파일에 Worker 이름과 D1 바인딩만 쓴다. 빌드하지 않는다.
 - 동시 실행: `deploy.yml`과 같은 순서로 최상위 `yukemuri-catalog-updates`, job `cloudflare-account`를 잡는다. 둘 다 `queue: max`, `cancel-in-progress: false`다. 수집·스냅숏 배포와 겹치지 않는다.
@@ -171,10 +171,11 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈춘 뒤 revert를 병합하고 다시 켠다.
 2. `autoDeploy`를 `false`로 바꾸면 배포만이 아니라 수집도 멈춘다. `collect.yml`(`run-collection.py`)이 `autoDeploy`가 꺼져 있으면 요청 전에 실패하기 때문이다. 앱 감시 workflow가 12시간 뒤 실패로 알린다.
 3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 실행기 `YUKEMURI_ENABLED`를 `false`로 두고, 복구 뒤 스냅숏을 다시 만든 다음 켠다.
+4. 크롤 키(`YUKEMURI_CRAWL_ACCESS_KEY`)를 바꾼 뒤 그 전 버전으로 `worker-rollback`하면, 되돌린 Worker는 바꾸기 전 키를 쓴다. 요약에는 따로 표시되지 않는다. 롤백 뒤 수집 부르기가 403으로 실패하면 이 경우다. main revert를 병합해 새 배포가 지금 키를 다시 올리게 하거나, 키를 바꾼 적이 있으면 롤백 대상 버전을 키 변경 뒤의 것으로 고른다.
 
 ## 미확인
 
 - 무료 플랜의 Rate Limiting 바인딩 사용 가능 여부.
-- 직접 실행한 wrangler 4.92.0의 `deploy --secrets-file`이 실제 계정에서 Secret을 올리는지. 로컬 `--dry-run`은 통과했다(파일을 받고 `CRAWL_ACCESS_KEY`를 숨긴 값으로 표시). 사전 점검과 첫 배포에서 확인한다.
+- 직접 실행한 wrangler 4.92.0의 `deploy --secrets-file`이 실제 계정에서 Secret을 올리는지. 로컬 `--dry-run`은 통과했다(파일을 받고 `CRAWL_ACCESS_KEY`를 숨긴 값으로 표시). Actions의 사전 점검(run 38249215867, 2026-10-12T12:28–12:31Z)에서도 `--dry-run`이 통과했다. 실제 업로드는 첫 배포에서 확인한다.
 - 사용자 토큰(템플릿 + D1 Edit)으로 Rate Limiting 바인딩이 있는 Worker를 올릴 수 있는지. 서브도메인 등록과 D1 생성·마이그레이션은 3단계에서 됐다.
 - D1의 실제 위치(`--location apac`).
