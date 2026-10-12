@@ -493,29 +493,29 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### C1 측정 결과(운영 규모 복사본, Node 22.22.0, `docs/evidence/h01-route-cpu-maintenance-20261012.json`)
 
-JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개 중앙·최대, warm은 200회 뒤 200회 중앙·p95. Node 측정이며 workerd의 isolate 시작·파싱은 빠졌다. 쓰기 요청은 측정 뒤 트랜잭션을 되돌려 모든 cold·warm 요청이 같은 DB에서 시작한다(PR #53 Codex 1회째 P2, `c0ce785`). 시작 행 수가 하나라도 다르면 측정이 멈춘다. 되돌림을 끈 변형(`--only crawlPutList --cold-runs 3`)은 ‘cold and warm runs started from different database states’로 멈췄다. 아래는 이 수정 뒤 다시 잰 값이다(측정 끝 2026-10-12T12:25Z).
+JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개 중앙·최대, warm은 200회 뒤 200회 중앙·p95. Node 측정이며 workerd의 isolate 시작·파싱은 빠졌다. 쓰기 요청은 측정 뒤 트랜잭션을 되돌려 모든 cold·warm 요청이 같은 DB에서 시작한다(PR #53 Codex 1회째 P2, `c0ce785`). 시작 행 수가 하나라도 다르면 측정이 멈춘다. 되돌림을 끈 변형(`--only crawlPutList --cold-runs 3`)은 ‘cold and warm runs started from different database states’로 멈췄다. 아래는 두 수정 뒤 다시 잰 값이다(측정 끝 2026-10-12T12:55Z).
 
 | 경로 | cold 중앙 ms | cold 최대 | warm 중앙 | warm p95 |
 |---|---:|---:|---:|---:|
-| 수집 보고(report=1) | 3.38 | 7.30 | 0.69 | 0.94 |
-| 수집 GET 집계 | 2.39 | 3.49 | 0.41 | 0.77 |
-| 선점 POST(trip detail) | 3.34 | 5.24 | 0.35 | 0.42 |
-| 선점 POST(jalan list national) | 4.73 | 5.25 | 0.30 | 0.60 |
-| **PUT 상세 1곳** | **11.71** | 14.63 | 1.01 | 2.87 |
-| **PUT 목록(새 30·기존 15)** | **56.03** | 74.31 | 6.66 | **16.39** |
-| **crawl-prepare(준비됨)** | **17.31** | 18.85 | 6.50 | 10.14 |
-| **crawl-prepare(seed 바뀜 첫 요청)** | **397.94** | 461.82 | 6.98 | 10.02 |
-| catalog-export 목록 | 2.73 | 3.29 | 0.20 | 0.36 |
-| **catalog-export hotels 1,000행** | **20.95** | 24.69 | **16.28** | **19.01** |
-| catalog-export crawl_jobs 1,000행 | 9.86 | 13.20 | 4.05 | 7.51 |
+| 수집 보고(report=1) | 2.74 | 3.10 | 0.68 | 1.43 |
+| 수집 GET 집계 | 2.27 | 3.31 | 0.38 | 0.55 |
+| 선점 POST(trip detail) | 3.90 | 4.92 | 0.34 | 0.48 |
+| 선점 POST(jalan list national) | 4.73 | 5.22 | 0.31 | 0.42 |
+| PUT 상세 1곳 | 8.60 | 12.21 | 0.76 | 1.57 |
+| **PUT 목록(새 30·기존 15)** | **57.27** | 68.69 | 6.59 | **16.01** |
+| crawl-prepare(준비 끝남) | 1.81 | 2.66 | 0.10 | 0.31 |
+| **crawl-prepare(seed 바뀜 첫 요청)** | **399.54** | 462.26 | 0.09 | 0.19 |
+| catalog-export 목록 | 2.80 | 3.20 | 0.16 | 0.30 |
+| **catalog-export hotels 1,000행** | **21.00** | 23.60 | **13.87** | **18.63** |
+| catalog-export crawl_jobs 1,000행 | **11.30** | 13.79 | 3.75 | 7.31 |
 
-- crawl-prepare의 warm은 수정 전 0.05ms에서 6.5ms가 됐다. 수정 전에는 첫 요청이 남긴 준비 기록 때문에 뒤 요청이 할 일이 없었다. 지금은 매 요청이 수집 시작 때와 같은 상태에서 돈다.
+- crawl-prepare(준비 끝남)는 Codex 2회째 P2로 고친 값이다. 처음 두 측정은 준비 요청을 한 번만 불러 `done:false`인 채로, 아직 남은 준비 한 쪽(최대 500행)을 매번 처리했다(cold 17–22ms). 지금은 측정 전에 `done:true`가 될 때까지 준비하고(운영 규모로 늘린 뒤에도 다시), 준비 끝남 측정에서 응답이 `done:true`가 아니면 멈춘다. 한 번만 부르는 변형은 ‘the catalogue was not fully prepared’로 멈췄다. 수집 실행이 처음 부르는 준비 확인은 cold 1.8ms다.
 - 공개 경로 10개도 같은 실행에서 쟀다. 비교 4곳·사진 출처 다음 쪽 cold가 5ms를 넘어 P03 기록(5.23ms 등)보다 높다. 컨테이너가 달라 생긴 차이일 수 있다(미확인). 공개 경로 판단은 P03 기록을 유지한다.
 - 위험(상위 세션 판단 필요, 이 PR에서 고치지 않음):
-  1. 백업 `catalog-checkpoint.py`가 `limit=1000`으로 hotels를 읽는다. 한 쪽 warm 16ms·cold 21ms로 10ms를 넘는다. 6단계 뒤 새 주소 백업에서 1102 위험. 실행기의 `limit`을 250 정도로 낮추는 변경이 후보다(쪽 수는 4배, D1 읽기 행은 같음).
-  2. 수집 목록 PUT은 warm 중앙 6.7ms, p95 16.4ms, cold 56ms다. 목록 페이지마다 1102 위험. 쪼개 보내기(관측 수 상한) 또는 저장 경로 최적화가 후보다.
-  3. crawl-prepare는 새 isolate 첫 요청에서 17ms, 같은 isolate에서도 6.5ms(p95 10ms), seed 바뀐 첫 요청은 398ms다. 수집 시작마다 부르므로 cold 초과가 잦을 수 있다. Cloudflare 문서는 ‘가끔 넘는 것은 허용’이라고만 한다.
-  4. PUT 상세 1곳 cold 11.7ms는 경계다.
+  1. 백업 `catalog-checkpoint.py`가 `limit=1000`으로 hotels를 읽는다. 한 쪽 warm 14ms·cold 21ms로 10ms를 넘는다. crawl_jobs 1,000행도 cold 11ms다. 6단계 뒤 새 주소 백업에서 1102 위험. 실행기의 `limit`을 250 정도로 낮추는 변경이 후보다(쪽 수는 4배, D1 읽기 행은 같음).
+  2. 수집 목록 PUT은 warm 중앙 6.6ms, p95 16.0ms, cold 57ms다. 목록 페이지마다 1102 위험. 쪼개 보내기(관측 수 상한) 또는 저장 경로 최적화가 후보다.
+  3. crawl-prepare는 준비가 끝난 카탈로그에서는 cold 1.8ms로 문제없다. seed가 바뀐 릴리스의 첫 준비 요청은 400ms다. 그 요청은 배포 workflow의 준비 단계(`cloudflare-prepare.mjs`)가 부른다. 실제 1102가 나는지는 seed를 바꾸는 첫 배포에서 본다. Cloudflare 문서는 ‘가끔 넘는 것은 허용’이라고만 한다.
+  4. PUT 상세 1곳은 cold 8.6ms(최대 12.2ms)로 경계다.
 - 5단계 Workers Logs·`usage.yml`의 `exceededResources`로 실제 값을 확인하는 것이 먼저다. 이 측정은 Node 기준이라 workerd와 다를 수 있다.
 
 ### 검사
@@ -539,6 +539,8 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 ### 검토와 다음 작업
 
 - Codex 1회째(`5fcd681`, 12:11Z 요청, 12:15Z 완료): P2 2건. (1) 쓰기 경로 CPU 측정이 같은 DB를 이어 바꿔 ‘새 숙소 30·기존 15’를 실제로 재지 않음 → 요청마다 되돌림과 시작 상태 검사, 다시 측정. (2) 사용량 비율을 이 Worker·D1 값으로 계정 한도에 나눔 → 계정 전체 합계를 따로 읽어 비율·경고에 씀, 변형 4종 실패 확인. 둘 다 `c0ce785`에서 고치고 스레드에 답했다.
+- main `0420e4e`(PR #51) merge(`d1a235f`, 충돌 2곳: 인수인계·`cloud-check.py`, 둘 다 양쪽 유지). #51의 규칙에 따라 `rollback.yml`·`usage.yml`에 `defaults.run.shell: bash`를 넣었다. `cloud-check.py --full` 35개 통과.
+- Codex 2회째(`d1a235f`, 12:44Z 요청, 12:52Z 완료): P2 1건. 측정 fixture가 crawl-prepare를 한 번만 불러 ‘준비됨’ 값이 미완료 쪽을 쟀음 → `6c56c8d`에서 `done:true`까지 준비, 다시 측정(위 표).
 - 다음 작업: 위 C1 위험 1~3의 대응 여부를 상위 세션이 정한다.
 
 ## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
