@@ -6,9 +6,9 @@ import type { HotelFilters } from '@/lib/hotel-types';
 import type { HotelSuggestion } from '@/lib/hotel-suggestions';
 import { localHotelSuggestions, type PreparedSearchIndex } from '@/lib/hotel-search-index';
 
-export default function HotelAutocomplete({ value, onChange, onSelect, onClear, filters, savedOnly, favorites, searchIndex, indexReady, indexFailed, dismissKey }: {
+export default function HotelAutocomplete({ value, onChange, onSelect, onClear, filters, savedOnly, favorites, searchIndex, indexReady, indexFailed, onRetry, dismissKey }: {
   value: string; onChange: (value: string) => void; onSelect: (hotel: HotelSuggestion) => void; onClear: () => void;
-  filters: HotelFilters; savedOnly: boolean; favorites: string[]; searchIndex:PreparedSearchIndex; indexReady:boolean; indexFailed:boolean; dismissKey: number;
+  filters: HotelFilters; savedOnly: boolean; favorites: string[]; searchIndex:PreparedSearchIndex; indexReady:boolean; indexFailed:boolean; onRetry:()=>void; dismissKey: number;
 }) {
   const id = useId(), root = useRef<HTMLDivElement>(null), input = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false), [open, setOpen] = useState(false), [composing, setComposing] = useState(false);
@@ -54,7 +54,7 @@ export default function HotelAutocomplete({ value, onChange, onSelect, onClear, 
         </button>)}
       </div>
       <div className="autocomplete-status" role="status" aria-live="polite">
-        {stale ? '예상 숙소를 찾는 중…' : !indexReady ? indexFailed?'예상 숙소 정보를 표시하지 못했어요. Enter로 바로 검색할 수 있어요.':'예상 숙소 정보를 불러오는 중… Enter로 바로 검색할 수 있어요.' : (items.length ? '↑ ↓ 선택 · Enter 검색 · Esc 닫기' : '조건에 맞는 예상 숙소가 없어요. 검색어를 조금 바꿔 보세요.')}
+        {stale ? '예상 숙소를 찾는 중…' : !indexReady ? indexFailed?<>예상 숙소 정보를 불러오지 못했어요. 이름 검색도 이 정보가 있어야 해요. <button type="button" className="autocomplete-retry" onPointerDown={e=>e.preventDefault()} onClick={onRetry}>다시 시도</button></>:'예상 숙소 정보를 불러오는 중…' : (items.length ? '↑ ↓ 선택 · Enter 검색 · Esc 닫기' : '조건에 맞는 예상 숙소가 없어요. 검색어를 조금 바꿔 보세요.')}
       </div>
     </div>}
   </div>;

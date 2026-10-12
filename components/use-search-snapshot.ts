@@ -19,7 +19,8 @@ export function useSearchSnapshot(known?:SnapshotManifest){
  },[revision]);
  useEffect(()=>{
   if(!snapshot||!textWanted)return;
-  if(snapshot.index){setTextReady(snapshot);return}
+  // Another path (the map, an agent tool) may have loaded it: clear an earlier failure too.
+  if(snapshot.index){setTextReady(snapshot);setTextError(null);return}
   let active=true;setTextError(null);
   loadSnapshotText(snapshot).then(s=>{if(active)setTextReady(s)}).catch(e=>{if(active)setTextError(e instanceof SnapshotError?e:new SnapshotError('숙소 이름 검색 정보를 불러오지 못했습니다. 다시 시도해 주세요.'))});
   return()=>{active=false};

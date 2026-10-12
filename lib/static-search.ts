@@ -116,7 +116,9 @@ function sorted(s:SearchSnapshot,sort:SortOrder,provider:HotelFilters['ratingPro
  }
  const order=Array.from({length:n},(_,i)=>i).sort(compare);cache.set(key,order);return order;
 }
-export function searchSnapshot(s:SearchSnapshot,f:HotelFilters,sort:SortOrder,savedOnly=false,savedIds:string[]=[]):SearchResult{
+// alternatives=false skips ranking other candidates for an empty result (they
+// need the name-search file); a count alone does not use them.
+export function searchSnapshot(s:SearchSnapshot,f:HotelFilters,sort:SortOrder,savedOnly=false,savedIds:string[]=[],alternatives=true):SearchResult{
  const c=s.core,scope=scopeOf(s,f,savedOnly,savedIds);
  const counts=new Array<number>(32).fill(0),matched=new Uint8Array(s.size);
  let ryokanCount=0,unknownExcluded=0,total=0;
@@ -131,14 +133,14 @@ export function searchSnapshot(s:SearchSnapshot,f:HotelFilters,sort:SortOrder,sa
  // Broad substring hits rank below the shared name/place relevance (score 20).
  if(sort==='recommended'&&scope.q){const score=new Map(scope.matches.map(m=>[s.position.get(m.id)!,m.score]));order=order.map(i=>({i,score:score.get(i)??20})).sort((a,b)=>b.score-a.score).map(r=>r.i)}
  const featureCounts=Object.fromEntries(FEATURE_KEYS.map(key=>[key,counts[Math.log2(BITS[key])]])) as Record<FeatureKey,number>;
- let alternatives:HotelAlternative[]=[];
- if(!order.length&&(scope.q||f.region!=='all'||f.features.length||f.ryokanOnly||f.minRating||f.minReviews)){
+ let others:HotelAlternative[]=[];
+ if(alternatives&&!order.length&&(scope.q||f.region!=='all'||f.features.length||f.ryokanOnly||f.minRating||f.minReviews)){
   if(!s.index)throw new Error('Alternatives need the snapshot text');
-  alternatives=rankHotelAlternatives(s.index.prepared,f,scope.saved??undefined).map(a=>({hotel:s.cards[s.position.get(a.id)!],unmetConditions:a.unmetConditions,queryMatched:a.queryMatched}));
+  others=rankHotelAlternatives(s.index.prepared,f,scope.saved??undefined).map(a=>({hotel:s.cards[s.position.get(a.id)!],unmetConditions:a.unmetConditions,queryMatched:a.queryMatched}));
  }
  // Similar names in match order (the former result session kept that order).
  const similarIds=scope.matches.filter(m=>m.similar&&matched[s.position.get(m.id)!]).map(m=>m.id);
- return{order,total,unknownExcluded,featureCounts,ryokanCount,similarCount:similarIds.length,similar:similarIds,alternatives};
+ return{order,total,unknownExcluded,featureCounts,ryokanCount,similarCount:similarIds.length,similar:similarIds,alternatives:others};
 }
 // Whether a search with no matches will rank alternatives (and so needs the text).
 export const mayNeedAlternatives=(f:HotelFilters)=>!!(normalizeSearch(f.query)||f.region!=='all'||f.features.length||f.ryokanOnly||f.minRating||f.minReviews);
