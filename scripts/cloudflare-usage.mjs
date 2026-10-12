@@ -48,7 +48,8 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const ACCOUNT=/^[0-9a-f]{32}$/;
 
 export function utcDays(end,count){
- if(!DATE.test(end)||Number.isNaN(Date.parse(end+'T00:00:00Z')))throw new UsageError('date must be YYYY-MM-DD (UTC)');
+ // Date.parse rolls impossible dates over (2026-02-31 becomes 03-03), so the parsed day must read back the same.
+ if(!DATE.test(end)||Number.isNaN(Date.parse(end+'T00:00:00Z'))||new Date(end+'T00:00:00Z').toISOString().slice(0,10)!==end)throw new UsageError('date must be a real UTC calendar date, YYYY-MM-DD');
  if(!Number.isInteger(count)||count<1||count>31)throw new UsageError('days must be 1-31 (analytics keep 31 days)');
  const last=Date.parse(end+'T00:00:00Z');
  return Array.from({length:count},(_,i)=>new Date(last-(count-1-i)*86_400_000).toISOString().slice(0,10));

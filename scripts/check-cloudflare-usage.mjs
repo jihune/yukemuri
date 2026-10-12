@@ -76,7 +76,8 @@ for(const [response,raw,label,pattern] of [
 }
 // UTC days.
 assert.deepEqual(utcDays('2026-10-01',3),['2026-09-29','2026-09-30','2026-10-01']);
-for(const [date,count] of [['2026-13-01',1],['12-10-2026',1],['2026-10-12',0],['2026-10-12',32],['2026-10-12',1.5]])assert.throws(()=>utcDays(date,count),UsageError);
+assert.deepEqual(utcDays('2028-02-29',2),['2028-02-28','2028-02-29'],'leap day accepted');
+for(const [date,count] of [['2026-02-31',1],['2026-02-29',1],['2026-04-31',1],['2026-02-30',1],['2026-13-01',1],['12-10-2026',1],['2026-10-12',0],['2026-10-12',32],['2026-10-12',1.5]])assert.throws(()=>utcDays(date,count),UsageError);
 // The token never reaches the report.
 assert(!report([result,empty]).lines.join('\n').includes(TOKEN));
 console.log('Usage checks passed: manual read-only workflow, query variables, CPU and D1 values per UTC day, 70% warnings, empty days shown as no record, account totals (not this app alone) decide the percentages and 70% warnings, 5 permission failures and 5 other failures never read as zero.');
