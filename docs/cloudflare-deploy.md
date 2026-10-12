@@ -12,10 +12,14 @@
 | `vite.config.ts` | 위 값으로 `dist/server/wrangler.json`을 만든다. `databaseId`가 `null`이면 지금까지 쓰던 자리표시자 `00000000-0000-4000-8000-000000000000`을 쓴다. 그래서 CI·로컬 개발·빌드는 계정 없이 동작한다 |
 | `.github/workflows/deploy.yml` | main push·수동 실행. 아래 ‘자동 배포’ |
 | `.github/workflows/d1-setup.yml` | 수동 실행 전용. 아래 ‘3단계: D1 만들기’ |
+| `.github/workflows/rollback.yml` | 수동 실행 전용. 아래 ‘롤백’ |
+| `.github/workflows/usage.yml` | 수동 실행 전용. 아래 ‘사용량 측정’ |
 | `scripts/cloudflare-deploy-gate.mjs` | 배포 여부 판정 |
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
 | `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
 | `scripts/cloudflare-smoke.mjs` | 배포 뒤 점검 |
+| `scripts/cloudflare-rollback.mjs` | Worker 되돌림·D1 Time Travel 복구(`rollback.yml`) |
+| `scripts/cloudflare-usage.mjs` | Worker CPU·D1 일일 행 수 읽기(`usage.yml`) |
 | `scripts/build-search-snapshot.mjs` | 검색 스냅숏 생성(D1 읽기 전용, 정적 자산 `/snapshot/`). P03, `P03-20261012.md` |
 | `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한) |
 | `public/robots.txt` | `/api/`와 알려진 AI 수집 봇 차단 요청 |
@@ -28,7 +32,7 @@
 
 사용자가 아래를 등록했다(2026-10-11T09:5xZ 사용자 보고, 상위 세션 전달). 값은 확인하지 않았다. Secret 값은 채팅·PR·로그에 붙여 넣지 않고 GitHub Secret 입력란에만 넣는다.
 
-1. API 토큰: 프로필의 API Tokens(사용자 토큰)에서 템플릿 ‘Edit Cloudflare Workers’에 Account `D1: Edit`를 더했다. Account Resources는 본인 계정, Zone Resources는 All zones, 만료 없음, IP 제한 없음이다. 템플릿의 다른 권한(KV·R2·Pages·Tail·Workers Routes 등)도 들어 있다. `Account Analytics: Read`는 없다. CPU·D1 사용량을 API로 읽어야 할 때 사용자에게 권한 추가를 요청한다.
+1. API 토큰: 프로필의 API Tokens(사용자 토큰)에서 템플릿 ‘Edit Cloudflare Workers’에 Account `D1: Edit`를 더했다. Account Resources는 본인 계정, Zone Resources는 All zones, 만료 없음, IP 제한 없음이다. 템플릿의 다른 권한(KV·R2·Pages·Tail·Workers Routes 등)도 들어 있다. `Account Analytics: Read`는 없다. CPU·D1 사용량을 API로 읽는 `usage.yml`에 필요하다(아래 ‘사용량 측정’의 사용자 조치).
 2. GitHub Secret:
    - 앱 레포 `jihune/yukemuri`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `YUKEMURI_CRAWL_ACCESS_KEY`(새 Worker의 `CRAWL_ACCESS_KEY`로 올라간다).
    - 실행기 레포 `jihune/yukemuri-script-runner`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`(4단계 적재용, `hosting-review-20261011.md` 3.3절). `YUKEMURI_CLOUDFLARE_JSON`은 6단계에서 정한다. 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
@@ -130,13 +134,43 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - `collect-watch.yml`: 6시간마다(`41 */6 * * *`) `GITHUB_TOKEN`(`actions: read`)으로 `collect.yml`의 성공 실행을 읽는다(`scripts/check-collection-freshness.mjs`). 마지막 성공 gentle이 12시간을 넘으면 실패한다. 성공이 하나도 없으면 통과하고, `publicOrigin`이 `null`이면 API를 부르지 않고 건너뛴다. 4단계 완료 PR에서 `publicOrigin`이 채워진 뒤 6단계 전까지는 성공이 없어 통과한다.
 - 검사: `check-collect-workflow.mjs`(두 workflow 설정, 이 레포에 다른 cron 없음, 감시 규칙과 로컬 GitHub API 대역), `runner/check_collection.py`(상한·대상·키 전달), `run-actionlint.py`(actionlint 1.7.7, 해시 고정 내려받기, shellcheck·pyflakes 끔). 모두 `cloud-check.py`에 들어 있다.
 
+## 사용량 측정
+
+기록: 2026-10-12 UTC(H01 6단계 도구 A6). 5단계 통과 조건(`exceededCpu` 없음, D1 일일 읽기·쓰기 70% 미만)과 7단계 매일 기록에 쓴다.
+
+- 수동 workflow `usage.yml`(‘Cloudflare usage’). 입력 `date`(마지막 UTC 날짜, 비우면 오늘)와 `days`(1–31, 기본 2). 읽기 전용이고 잠금 그룹을 잡지 않는다.
+- `scripts/cloudflare-usage.mjs`가 GraphQL Analytics API(`https://api.cloudflare.com/client/v4/graphql`)에 UTC 날짜마다 한 번 묻는다.
+  - Worker(`cloudflare-deploy.json`의 `workerName`): `workersInvocationsAdaptive`의 요청·오류 합계와 `cpuTimeP50`·`cpuTimeP99`(마이크로초 → ms), 상태별 요청 수. `exceededResources`는 오류 1102·1027이다(Workers 문서, 가장 흔한 원인은 CPU 초과). Workers Logs의 `exceededCpu`와 같은 사건을 이 상태로 센다.
+  - D1(`databaseId`): `d1AnalyticsAdaptiveGroups`의 `rowsRead`·`rowsWritten`·`readQueries`·`writeQueries`, `date` 필터는 그 UTC 날짜 하나다. D1 무료 한도가 초기화되는 단위와 같다.
+  - 계정 전체: 같은 두 데이터셋을 `scriptName`·`databaseId` 필터 없이 한 번 더 읽어 모든 Worker 요청과 모든 D1의 `rowsRead`·`rowsWritten` 합계를 낸다. 무료 한도는 계정 단위라 한도 대비 비율과 70% 경고는 이 합계로 계산하고, 이 앱의 Worker·D1 값은 옆 열에 참고로 쓴다(PR #53 Codex 검토).
+  - 계정 합계가 70% 이상이거나 `exceededResources`가 있으면 ‘주의’ 줄을 더한다. 분석 자료는 31일 보관이고 오늘 날짜는 진행 중인 값이다.
+- 권한: API 토큰에 **Account > Account Analytics > Read**가 필요하다(Cloudflare 문서 ‘Configure an Analytics API token’). 지금 토큰에는 없다(‘사용자가 한 일’ 1번). 권한이 없으면 API가 401·403 또는 권한 오류 메시지를 돌려주거나 계정 목록이 비어 온다. 스크립트는 이 경우 표를 쓰지 않고 실패하며, ‘이 오류는 사용량 0이 아니다’라고 적는다. 권한이 있는 조회에서 그날 행이 없으면 0이 아니라 ‘기록 없음’으로 쓴다.
+- 사용자 조치(실행 전에 한 번): Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`으로 쓰는 토큰의 Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더하고 저장한다. 토큰 값은 바뀌지 않으므로 GitHub Secret은 그대로 둔다. 실행기 레포의 같은 이름 Secret이 다른 토큰이면 그 토큰은 바꿀 필요 없다.
+- 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 4종이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
+
 ## 롤백
+
+기록: 2026-10-12 UTC(H01 6단계 도구 A4). 수동 workflow `rollback.yml`(‘Cloudflare rollback’)로 한다.
 
 | 상황 | 방법 |
 |---|---|
-| 배포한 코드 결함 | `wrangler rollback`(이전 Worker 버전) 또는 이전 커밋을 main에 되돌려 재배포 |
-| DB 손상 | `wrangler d1 time-travel restore yukemuri --bookmark <요약의 값> --config dist/server/wrangler.json`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 |
-| 자동 배포 중지 | `cloudflare-deploy.json`의 `autoDeploy`를 `false`로 바꾸는 PR |
+| 배포한 코드 결함 | `rollback.yml`의 `worker-rollback`(`version_id`를 비우면 wrangler가 고르는 직전 안정 버전) **과 함께** 결함 커밋을 되돌리는 main revert PR을 병합한다. 아래 주의 1 |
+| DB 손상 | `rollback.yml`의 `d1-restore`에 배포·차이 반영 요약의 bookmark를 넣는다(무료 플랜 7일 이내, 덮어쓰기). 또는 최신 백업 재적재. 복구 뒤 `Cloudflare deploy`를 수동 실행해 검색 스냅숏을 다시 만든다 |
+| 자동 배포 중지 | `cloudflare-deploy.json`의 `autoDeploy`를 `false`로 바꾸는 PR. 아래 주의 2 |
+
+- 입력: `action`(`worker-rollback`·`d1-restore`), `version_id`(Worker 버전 UUID, 선택), `bookmark`(`d1-restore`에 필수), `confirm`(`rollback`이라고 써야 진행). 값은 env로만 넘긴다.
+- 순서: `cloudflare-deploy.json`의 `databaseId`가 없으면 아무것도 하지 않는다. 먼저 `d1 time-travel info yukemuri --json`으로 현재 bookmark를 요약에 남긴다(두 동작 모두. 롤백 자체를 되돌릴 때 쓴다). 값이 없으면 멈춘다.
+  - `worker-rollback`: `deployments status --json`(전) → `rollback [version_id] --name yukemuri --message rollback.yml --yes` → `deployments status --json`(뒤). 활성 배포가 바뀌지 않았거나 요청한 버전이 100%가 아니면 실패한다. Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인).
+  - `d1-restore`: `d1 time-travel restore yukemuri --bookmark <값> --json`. `--json`은 확인 질문을 건너뛴다(wrangler 4.92.0 소스). 응답의 `bookmark`가 입력과 다르면 실패한다. 응답의 `previous_bookmark`도 요약에 남긴다.
+- 설정은 실행 중 임시 파일에 Worker 이름과 D1 바인딩만 쓴다. 빌드하지 않는다.
+- 동시 실행: `deploy.yml`과 같은 순서로 최상위 `yukemuri-catalog-updates`, job `cloudflare-account`를 잡는다. 둘 다 `queue: max`, `cancel-in-progress: false`다. 수집·스냅숏 배포와 겹치지 않는다.
+- 검사: `scripts/check-rollback-workflow.mjs`(`cloud-check.py` 기본 목록). 가짜 wrangler로 bookmark 기록 순서, 거부 입력, 끝까지의 env 전달을 본다. 실제 Cloudflare 실행은 하지 않았다.
+
+주의(6단계 전환 뒤):
+
+1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈춘 뒤 revert를 병합하고 다시 켠다.
+2. `autoDeploy`를 `false`로 바꾸면 배포만이 아니라 수집도 멈춘다. `collect.yml`(`run-collection.py`)이 `autoDeploy`가 꺼져 있으면 요청 전에 실패하기 때문이다. 앱 감시 workflow가 12시간 뒤 실패로 알린다.
+3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 실행기 `YUKEMURI_ENABLED`를 `false`로 두고, 복구 뒤 스냅숏을 다시 만든 다음 켠다.
 
 ## 미확인
 
