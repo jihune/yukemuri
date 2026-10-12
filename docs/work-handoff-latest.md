@@ -397,7 +397,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 2. PR B 검토와 병합(상위 세션). 범위: 브라우저 검색 전환(`lib/static-search.ts`), 첫 화면 정적 HTML, 서버 목록·검색·지도 경로 제거, 응답 비교(main 응답 대 브라우저 계산)·브라우저 검사(360/390/1280px, U01~U04), 휴대폰 CPU 해석 시간·메모리 측정, 스냅숏을 못 받았을 때와 버전이 어긋날 때의 화면 동작.
 3. PR C 검토와 병합(상위 세션). B 병합 뒤 main 기준으로 바꾼다.
 4. (PR B에서 고침) P3(PR #43 Claude 검토 1회째): `scripts/build-search-snapshot.mjs` 29행 `code()`가 문자열 리터럴을 지운 뒤 주석을 지워, 주석 안 작은따옴표 하나로 읽기 전용 가드를 우회할 수 있다. 재현: `WITH x AS (SELECT 1) /* it's */ DELETE FROM hotels WHERE name<>'zz'`가 임시 sqlite에서 가드를 통과해 실행됐다. 문장은 `lib/` 코드에서만 오므로 실제 위험은 낮다. PR B 또는 C에서 리터럴과 주석을 왼쪽부터 한 번에 훑도록 고치고 검사에 이 경우를 넣는다.
-5. 참고(미확인, 같은 검토): 6단계 수집 workflow가 카탈로그 그룹을 최상위에서 잡으면, 대기 중인 수집 실행이 다음 push 배포로 취소될 수 있다(같은 그룹의 대기 실행은 하나만 남는다). 6단계 수집 workflow PR에서 확인한다. → H01 6단계 준비 PR에서 다뤘다. 취소는 막지 못하고 다음 cron 부르기로 회복한다(아래 ‘H01 6단계 준비’ 절, `cloudflare-deploy.md`의 ‘수집 workflow’).
+5. 참고(미확인, 같은 검토): 6단계 수집 workflow가 카탈로그 그룹을 최상위에서 잡으면, 대기 중인 수집 실행이 다음 push 배포로 취소될 수 있다(같은 그룹의 대기 실행은 하나만 남는다). 6단계 수집 workflow PR에서 확인한다. → H01 6단계 준비 PR(#48)에서 `queue: max`로 대기 실행을 보존하게 했다(아래 ‘H01 6단계 준비’ 절, `cloudflare-deploy.md`의 ‘수집 workflow’).
 6. 조건 있는 주소의 첫 화면 개선 후보: cards를 숙소 범위별 조각으로 나눠 필요한 조각만 받기, 자주 여는 조건 주소(온천마을 바로 찾기 등)를 정적 페이지로 따로 그리기. 운영 규모 첫 화면은 H01 5단계(병행 운영)에서 실제 배포로 잰다.
 7. D03(설명 번역)을 다시 시작할 때는 요청 신호를 읽기 경로 밖(즐겨찾기·수집 쪽 등)에서 만든다. 상세 GET은 더 기록하지 않는다(P03 PR C).
 8. 비교 4곳 cold CPU 5.23ms는 받아들였다(22:10Z). H01 5단계에서 Workers Logs의 실제 CPU와 1102를 보고, 넘치면 ‘수집 때 합친 숙소 저장’(스키마·쓰기 예산 변경)을 검토한다.
@@ -419,7 +419,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - `.github/workflows/collect.yml`: `workflow_dispatch`만(cron 없음), `mode` = `check-access`(기본)·`gentle`. 대상은 `publicOrigin`, `null`이면 요청 전에 실패한다. 크롤 키 Secret `YUKEMURI_CRAWL_ACCESS_KEY`. 상한은 실행기 `b7f9c64`와 같다(gentle 16페이지, 간격 8초 + 0~4초, 240초, job 6분). gentle 성공 뒤 `deploy.yml`을 `after_collection: true`로 불러 스냅숏을 갱신한다.
 - `.github/workflows/collect-watch.yml`: 6시간마다, `GITHUB_TOKEN`(`actions: read`)으로 마지막 성공 gentle이 12시간을 넘으면 실패. 성공이 없으면 통과, `publicOrigin`이 `null`이면 건너뜀.
 - 새 파일: `scripts/runner/run-collection.py`(실행기 `run-updates.py`의 gentle·check-access 부분을 옮긴 실행기), `scripts/runner/check_collection.py`, `scripts/check-collection-freshness.mjs`, `scripts/check-collect-workflow.mjs`, `scripts/run-actionlint.py`. 세 검사를 `cloud-check.py` 기본 목록에 넣었다.
-- 동시 실행(P03 다음 작업 5번): 대기 중인 수집이 새 push 배포로 취소되는 것은 막지 못했다. 같은 그룹을 공유하는 한 잠금 위치와 관계없이 GitHub의 ‘대기 하나’ 규칙이 적용된다. 실행 중인 수집은 취소되지 않는다. 취소된 수집은 실행기의 다음 cron 부르기(3시간)가 대신하고, 두 12시간 확인은 성공한 gentle만 센다(검사로 단언). 반대로 대기 배포가 수집 부르기로 취소되면 그 수집이 끝에 같은 main을 배포한다. 상세는 `cloudflare-deploy.md`의 ‘수집 workflow’.
+- 동시 실행(P03 다음 작업 5번, Codex 1회째 P2): 처음에는 대기 수집 취소를 ‘다음 cron 부르기로 회복’으로 받아들였다. Codex가 GitHub의 `concurrency.queue: max`(대기 실행 100개까지 보존, FIFO)를 알려 줬고 `github/docs` 원문으로 확인했다. 세 잠금 그룹에 들어가는 모든 실행(`collect.yml`, `deploy.yml` 최상위·job, `d1-setup.yml`)에 `queue: max`를 넣었다. 대기 수집도 대기 배포도 취소되지 않는다. 대가는 연속 push 배포가 합쳐지지 않는 것이다. actionlint는 이 키를 몰라 그 오류만 무시하고 값은 검사가 단언한다. 상세는 `cloudflare-deploy.md`의 ‘수집 workflow’.
 - `START_HERE.md` 2번에 ‘6단계 전환 뒤’ 조건을 붙여 마지막 성공 gentle 시각 확인을 넣었다. 전환 전에는 볼 실행이 없지만 조건이 문장에 있어 지금 넣었다.
 
 ### 실행기 레포 PR(draft)
@@ -448,14 +448,14 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 미확인
 
-- 실제 GitHub에서 재사용 workflow의 최상위 `concurrency`가 적용되는지, 대기 수집이 push 배포로 취소되는 모습. 6단계 수동 실행에서 본다.
+- 실제 GitHub가 `queue: max`를 받는지(문서상 github.com 적용), 재사용 workflow의 최상위 `concurrency` 적용. 병합 뒤 첫 main push 배포와 6단계 수동 실행에서 본다.
 - fine-grained PAT로 다른 레포의 `workflow_dispatch`와 실행 목록 읽기가 되는지(문서상 Actions: Read and write). 6단계에서 실행기 `dispatch`·`check`로 확인한다.
 - 실제 Worker `/api/catalog-export`를 `X-Yukemuri-Crawl-Key`만으로 읽는 백업. 6단계 수동 백업에서 확인한다.
 - 앱 마이그레이션은 14개(`0013`은 색인만)이고 백업 복원 스키마는 `0012`다. 내보내기 manifest도 `0012`라 지금은 맞는다. 표를 바꾸는 마이그레이션이 생기면 백업 스키마를 함께 갱신해야 한다.
 
 ### 검사
 
-- 앱: `python3 scripts/cloud-check.py --full` 32개 통과(작업 트리, 09:17:00Z–09:24:12Z, rc=0). 새 검사 3개가 들어 있다. `check-deploy-config.mjs`도 새 workflow 둘을 포함한 5개 workflow로 통과.
+- 앱: `python3 scripts/cloud-check.py --full` 32개 통과(작업 트리, 09:17:00Z–09:24:12Z, rc=0). Codex 1회째 반영(`queue: max`) 뒤 기본 `cloud-check.py` 19개(09:38:25Z–09:38:47Z)와 `check-deploy-config.mjs` 통과. `queue: max`를 하나씩 `single`로 바꾼 변형 3종(`deploy.yml` job, `d1-setup.yml`, `collect.yml`)에서 `check-collect-workflow.mjs`가 모두 실패했다(`check-deploy-config.mjs`는 앞의 둘에서 실패). 새 검사 3개가 들어 있다. `check-deploy-config.mjs`도 새 workflow 둘을 포함한 5개 workflow로 통과.
 - 앱 변형 11종(cron 추가, 그룹 이름, `cancel-in-progress: true`, job 단위 잠금, gentle 조건 삭제, `after_collection: false`, 취소·check-access 실행을 성공으로 셈, 12시간 한도 완화, `publicOrigin` null 건너뛰기 삭제, 감시 cron 변경)에서 `check-collect-workflow.mjs`가 모두 실패했다.
 - 실행기: `check-dispatch-app-collection.py` 7개, `check-checkpoint.py`, `check-runner.py`, `runner/check_bootstrap.py`, `check-source-safety.py`, `check-trip-parser.py`, `check-project-files.py`(350개), `cloudflare-load/check-cloudflare-load.py --no-d1` 통과. actionlint 1.7.7 통과.
 

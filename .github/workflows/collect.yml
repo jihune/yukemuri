@@ -23,13 +23,14 @@ permissions:
 # hosts still see one sequential collector. The called deploy takes its own top
 # group and then the Cloudflare account lock; this workflow never takes the
 # account lock itself, so both deploy paths take the locks in the same order.
-# A group keeps one pending run: a run still waiting when a newer push deploy
-# queues is cancelled before it starts. The runner's next cron dispatch starts a
-# new one, and the 12-hour freshness checks count successful gentle runs only
-# (docs/cloudflare-deploy.md).
+# queue: max on every run in these groups (here, deploy.yml, d1-setup.yml): by
+# default a group keeps one waiting run and cancels the older one, so a push
+# deploy could cancel a waiting collection or the reverse. With it, waiting runs
+# start in order (FIFO by waiting time), up to 100 (docs/cloudflare-deploy.md).
 concurrency:
   group: yukemuri-catalog-updates
   cancel-in-progress: false
+  queue: max
 jobs:
   collect:
     runs-on: ubuntu-24.04

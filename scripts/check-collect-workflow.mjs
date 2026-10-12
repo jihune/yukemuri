@@ -22,7 +22,17 @@ assert.equal(block(collect,'on'),[
 assert.match(collect,/^run-name: Yukemuri collection \(\$\{\{ inputs\.mode \}\}\)$/m,'run-name carries the mode the freshness checks filter on');
 assert.equal(GENTLE_TITLE,'Yukemuri collection (gentle)');
 // One lock at the top for the whole run (collection and the called deploy).
-assert.match(collect,/^concurrency:\n  group: yukemuri-catalog-updates\n  cancel-in-progress: false\n/m,'collection holds the catalogue group without cancelling a running run');
+assert.match(collect,/^concurrency:\n  group: yukemuri-catalog-updates\n  cancel-in-progress: false\n  queue: max\n/m,'collection holds the catalogue group without cancelling a running or waiting run');
+// Every run that enters these groups keeps the others waiting (PR #48 Codex review):
+// with the default queue a newer waiting run cancels the older one.
+for(const file of readdirSync('.github/workflows').filter(f=>/\.ya?ml$/.test(f))){
+ const text=read(file);
+ for(const m of text.matchAll(/^( *)concurrency:\n((?:\1  .*\n)+)/gm)){
+  if(!/group: .*(?:yukemuri-catalog-updates|yukemuri-snapshot-after-collection|cloudflare-account)/.test(m[2]))continue;
+  assert.match(m[2],/^ *queue: max$/m,file+': a catalogue or account group without queue: max');
+  assert.match(m[2],/^ *cancel-in-progress: false$/m,file+': queue: max needs cancel-in-progress false');
+ }
+}
 assert.equal((collect.match(/^\s*concurrency:/gm)??[]).length,1,'no job-level lock: the account lock is taken only inside the called deploy');
 assert(!/cloudflare-account/.test(collect),'collection never takes the account lock first');
 const deploy=read('deploy.yml');

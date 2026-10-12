@@ -3,6 +3,7 @@
 
 The binary is cached under .sites-runtime/actionlint/. shellcheck and pyflakes
 are turned off so the result does not depend on what the machine has installed.
+Only the unknown concurrency.queue key is ignored (see IGNORE).
 """
 import hashlib
 from pathlib import Path
@@ -50,7 +51,11 @@ def binary():
 
 
 workflows = sorted(str(p.relative_to(ROOT)) for p in (ROOT / '.github/workflows').glob('*.yml'))
-result = subprocess.run([str(binary()), '-shellcheck=', '-pyflakes=', *workflows], cwd=ROOT, check=False)
+# GitHub documents concurrency.queue (single|max) for github.com; actionlint
+# 1.7.7–1.7.12 does not know the key yet. check-deploy-config.mjs and
+# check-collect-workflow.mjs assert its value instead.
+IGNORE = 'unexpected key "queue" for "concurrency" section'
+result = subprocess.run([str(binary()), '-shellcheck=', '-pyflakes=', '-ignore', IGNORE, *workflows], cwd=ROOT, check=False)
 if result.returncode:
     sys.exit(result.returncode)
 print(f'actionlint {VERSION} passed: {len(workflows)} workflows.')

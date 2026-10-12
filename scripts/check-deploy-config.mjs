@@ -97,10 +97,10 @@ assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_call:$/m,'th
 // The deploy job (and its snapshot) waits for a collection run (P03, Codex review on PR #43).
 // Lock order: catalogue group at the top, account inside the job, so a push
 // deploy and the collection's call never hold one each while waiting on the other.
-assert.match(deploy,/^concurrency:\n  group: \$\{\{ inputs\.after_collection && 'yukemuri-snapshot-after-collection' \|\| 'yukemuri-catalog-updates' \}\}\n  cancel-in-progress: false\n/m,'deploy serialized with catalogue writes at the top');
-assert.match(deploy,/^ {4}concurrency:\n {6}group: cloudflare-account\n {6}cancel-in-progress: false\n/m,'deploy job holds the account inside the catalogue group');
+assert.match(deploy,/^concurrency:\n  group: \$\{\{ inputs\.after_collection && 'yukemuri-snapshot-after-collection' \|\| 'yukemuri-catalog-updates' \}\}\n  cancel-in-progress: false\n  queue: max\n/m,'deploy serialized with catalogue writes at the top, every waiting run kept');
+assert.match(deploy,/^ {4}concurrency:\n {6}group: cloudflare-account\n {6}cancel-in-progress: false\n {6}queue: max\n/m,'deploy job holds the account inside the catalogue group, every waiting job kept');
 assert.equal((deploy.match(/^\s*concurrency:/gm)??[]).length,2,'exactly the two deploy locks');
-assert.match(readFileSync('.github/workflows/d1-setup.yml','utf8'),/^concurrency:\n  group: cloudflare-account\n/m,'D1 setup shares the account lock');
+assert.match(readFileSync('.github/workflows/d1-setup.yml','utf8'),/^concurrency:\n  group: cloudflare-account\n  cancel-in-progress: false\n  queue: max\n/m,'D1 setup shares the account lock without cancelling a waiting deploy');
 assert.equal((deploy.match(/^ {6}- (?:if|uses|id|run|env)/gm)??[]).length-(deploy.match(/^ {6}- if: steps\.gate\.outputs\.enabled == 'true'/gm)??[]).length,3,'only checkout, gate and the skip notice run when the gate is off');
 const setup=readFileSync('.github/workflows/d1-setup.yml','utf8').replace(/^\s*#.*$/gm,'');
 assert(/wrangler\.js d1 migrations apply/.test(setup)&&!/(?:wrangler(?:\.js)?|command:)\s+(?:deploy|versions\s+(?:upload|deploy)|secret)\b|wrangler-action/.test(setup),'D1 setup applies migrations and never deploys the Worker');
