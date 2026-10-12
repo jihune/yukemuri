@@ -89,8 +89,9 @@ if(process.argv[2]==='--child'){
   const headers={'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(options.keyed?{'X-Yukemuri-Crawl-Key':KEY}:{})};
   const request=new Request('http://localhost'+path,{method,headers,body:body?.replaceAll('__TOKEN__',crypto.randomUUID())??undefined});
   inDb=0;const t=process.cpuUsage();if(process.env.PHASES){let last=process.cpuUsage(),lastDb=0;globalThis.__phase=n=>{const d=process.cpuUsage(last);console.error(n,((d.user+d.system-(inDb-lastDb))/1000).toFixed(2));last=process.cpuUsage();lastDb=inDb}}
-  const response=await handler(request,{params:Promise.resolve(params??{})});await response.text();
-  const d=process.cpuUsage(t);return{status:response.status,ms:(d.user+d.system-inDb)/1000,dbMs:inDb/1000};
+  const response=await handler(request,{params:Promise.resolve(params??{})});const text=await response.text();
+  const d=process.cpuUsage(t);let done;if(path==='/api/crawl-prepare')try{done=JSON.parse(text).done}catch{}
+  return{status:response.status,ms:(d.user+d.system-inDb)/1000,dbMs:inDb/1000,done};
  };
  // Node's Request, Response, JSON and Web Crypto load lazily on first use;
  // workerd has them built in. Use each once (not the route's code) first.
@@ -109,7 +110,7 @@ if(process.argv[2]==='--child'){
  const runs=[];for(let i=0;i<200;i++)runs.push(await call());
  if(new Set(runs.map(r=>r.start)).size!==1)throw new Error(k+': warm requests started from different database states');
  const ms=runs.map(r=>r.ms).sort((a,b)=>a-b);
- console.log(JSON.stringify({status:runs[0].status,start:runs[0].start,ms:ms[100],p95:ms[190],dbMs:runs.map(r=>r.dbMs).sort((a,b)=>a-b)[100]}));
+ console.log(JSON.stringify({status:runs[0].status,done:runs[0].done,start:runs[0].start,ms:ms[100],p95:ms[190],dbMs:runs.map(r=>r.dbMs).sort((a,b)=>a-b)[100]}));
  process.exit(0);
 }
 
@@ -124,17 +125,22 @@ try{
  const server=join(ROOT,'dist/server'),persist=join(temp,'d1');
  const modules=[{type:'ESModule',path:join(server,'index.js')},...readdirSync(server,{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:join(server,p)}))];
  const mf=new Miniflare({modules,modulesRoot:server,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'route-cpu'},d1Persist:persist,bindings:{CRAWL_ACCESS_KEY:KEY}});
- let ids,counts={};const bodies={};
+ let ids,counts={},prepareCalls=0;const bodies={};
  try{
   const db=await mf.getD1Database('DB');
   for(const f of readdirSync(join(ROOT,'drizzle')).filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join(ROOT,'drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
   const keyed={headers:{'X-Yukemuri-Crawl-Key':KEY}};
-  if(!(await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',...keyed})).ok)throw new Error('prepare failed');
+  // Prepare until done: each request advances at most a page of rows (PR #53
+  // Codex review), so one call leaves the catalogue unprepared.
+  const prepare=async()=>{for(let i=0;i<200;i++){const r=await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',...keyed});if(!r.ok)throw new Error('prepare failed');if((await r.json()).done===true)return i+1}throw new Error('prepare never reported done')};
+  await prepare();
   if(grow){
    const cols=Object.keys(await db.prepare('SELECT * FROM hotels LIMIT 1').first()).filter(c=>c!=='id'&&c!=='payload');
    for(let n=1;;n++){const have=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;if(have>=12271)break;await db.prepare(`INSERT INTO hotels (id,${cols.join(',')},payload) SELECT id||'-copy${n}',${cols.join(',')},json_set(payload,'$.id',id||'-copy${n}') FROM hotels WHERE id NOT LIKE '%-copy%' LIMIT ?`).bind(12271-have).run()}
    for(let n=1;;n++){const have=(await db.prepare('SELECT COUNT(*) AS n FROM crawl_jobs').first()).n;if(have>=15417)break;await db.prepare(`INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,error,fetched_at) SELECT url||'copy${n}/',provider,kind,prefecture,priority,status,attempts,next_at,error,fetched_at FROM crawl_jobs WHERE url NOT LIKE '%copy%' LIMIT ?`).bind(15417-have).run()}
   }
+  // The grown copies are prepared too, so the prepared case is the no-op a collection run meets.
+  prepareCalls=await prepare();
   if(!(await mf.dispatchFetch('http://localhost/api/crawl?provider=jalan&kind=list&limit=1',keyed)).ok)throw new Error('collector count failed');
   ids=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 4").all()).results.map(r=>r.id);
   // The visitor already has one favourite.
@@ -167,6 +173,8 @@ try{
   const run=mode=>{const r=spawnSync(process.execPath,[fileURLToPath(import.meta.url),'--child',bundle,dbFile,JSON.stringify(spec),mode],{encoding:'utf8',cwd:ROOT});if(r.status!==0)throw new Error(spec[0]+' '+mode+': '+r.stderr.slice(-800));return JSON.parse(r.stdout.trim().split('\n').at(-1))};
   // Cold: the median of nine (--cold-runs) new processes.
   const colds=Array.from({length:coldRuns},()=>run('cold')).sort((a,b)=>a.ms-b.ms),mid=colds[colds.length>>1],cold=mid.ms,warm=run('warm');
+  // The prepared case must be the finished no-op; the seed case is a first page (not done).
+  if(spec[0]==='crawlPrepare'&&![...colds,warm].every(r=>r.done===true))throw new Error('crawlPrepare: the catalogue was not fully prepared');
   if(new Set([...colds,warm].map(r=>r.start)).size!==1)throw new Error(spec[0]+': cold and warm runs started from different database states');
   const row={key:spec[0],label:spec[1],method:spec[3],path:spec[4].replace(/after=[^&]+/,'after=…'),status:warm.status,coldMs:+cold.toFixed(2),warmMs:+warm.ms.toFixed(3),warmP95Ms:+warm.p95.toFixed(3),coldDbMs:+mid.dbMs.toFixed(2),coldMaxMs:+colds.at(-1).ms.toFixed(2)};
   if(spec[7]?.keyed){row.maintenance=true;if(warm.status!==200||mid.status!==200)throw new Error(spec[0]+': expected 200, got '+mid.status+'/'+warm.status)}
@@ -174,7 +182,7 @@ try{
  }
  const limit=r=>r.maintenance?MAINTENANCE_LIMIT_MS:LIMIT_MS;
  const over=results.filter(r=>r.coldMs>limit(r)||r.warmMs>limit(r));
- const report={measuredAt:new Date().toISOString(),node:process.version,tables:counts,limitMs:LIMIT_MS,maintenanceLimitMs:MAINTENANCE_LIMIT_MS,results,note:'JavaScript CPU (user+system) of the route handler in Node, minus CPU spent inside the node:sqlite D1 stand-in. cold = median (and max) of 9 first requests in new processes; warm = median (and p95) of 200 requests after 200 warm-up requests. Isolate start, script parse and workerd overhead are not included.'};
+ const report={measuredAt:new Date().toISOString(),node:process.version,tables:counts,prepareCallsAfterGrowth:prepareCalls,limitMs:LIMIT_MS,maintenanceLimitMs:MAINTENANCE_LIMIT_MS,results,note:'JavaScript CPU (user+system) of the route handler in Node, minus CPU spent inside the node:sqlite D1 stand-in. cold = median (and max) of 9 first requests in new processes; warm = median (and p95) of 200 requests after 200 warm-up requests. Isolate start, script parse and workerd overhead are not included.'};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
  console.log(`Route CPU ${over.length?'FAIL':'PASS'}: ${results.filter(r=>!r.maintenance).length} public and ${results.filter(r=>r.maintenance).length} maintenance routes, cold max ${Math.max(...results.map(r=>r.coldMs)).toFixed(2)}ms, warm max ${Math.max(...results.map(r=>r.warmMs)).toFixed(3)}ms (limit ${LIMIT_MS}ms public, ${MAINTENANCE_LIMIT_MS}ms maintenance = Workers Free CPU)${over.length?': '+over.map(r=>r.key).join(', '):''}; tables=${JSON.stringify(counts)}`);
  if(check&&over.length)process.exitCode=1;
