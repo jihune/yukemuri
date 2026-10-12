@@ -7,6 +7,8 @@ import {formatHotelLocation,hotelPlaceSearchText} from './japan-place-labels';
 import {queryCoverage,catalogPreparation} from './hotel-repository';
 import {readCollectionStatus} from './read-collection-status';
 import {hotelSummary,type HotelSummary,type SnapshotCore,type SnapshotText} from './search-snapshot';
+// The builder writes the manifest with this format (scripts/build-search-snapshot.mjs).
+export {SNAPSHOT_FORMAT} from './search-snapshot';
 import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).

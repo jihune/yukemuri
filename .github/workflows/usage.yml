@@ -18,6 +18,10 @@ on:
         default: '2'
 permissions:
   contents: read
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
 jobs:
   usage:
     runs-on: ubuntu-latest
