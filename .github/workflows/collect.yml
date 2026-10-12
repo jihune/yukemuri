@@ -18,6 +18,9 @@ on:
           - gentle
 permissions:
   contents: read
+  actions: read
+# (actions: read passes on to the called deploy.yml for checked-commit.mjs; a
+# called workflow gets no more than its caller.)
 # The catalogue lock for the whole run, collection and the snapshot deploy it
 # calls (P03): runs queue behind each other and behind push deploys, so source
 # hosts still see one sequential collector. The called deploy takes its own top
@@ -31,6 +34,10 @@ concurrency:
   group: yukemuri-catalog-updates
   cancel-in-progress: false
   queue: max
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
 jobs:
   collect:
     runs-on: ubuntu-24.04

@@ -48,12 +48,12 @@ assert(collect.indexOf('check_collection.py')<collect.indexOf('run-collection.py
 assert.equal(collect.slice(collect.indexOf('  snapshot:\n')),[
  '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
  'a successful gentle run refreshes the snapshot through deploy.yml at the same commit');
-assert.match(collect,/^permissions:\n  contents: read\n(?! )/m,'read-only token');
+assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
 
 // Watch: every 6 hours, read-only Actions access, the freshness script.
 const watch=read('collect-watch.yml');
 assert.equal(block(watch,'on'),"  schedule:\n    - cron: '41 */6 * * *'\n  workflow_dispatch:\n",'watch runs every 6 hours');
-assert.match(watch,/^permissions:\n  contents: read\n  actions: read\njobs:/m,'watch token reads Actions runs only');
+assert.match(watch,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'watch token reads Actions runs only');
 assert(!/secrets\./.test(watch),'watch uses the workflow token only');
 assert.match(watch,/GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/check-collection-freshness\.mjs\n/);
 // No other cron in this public repository: collection starts only from the runner's dispatch.

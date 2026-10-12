@@ -116,7 +116,8 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
   const guarded=readOnly(db);
   globalThis.__SNAPSHOT_ENV={DB:guarded.db};
   const started=performance.now();
-  const {buildSearchSnapshot}=builder??createRequire(import.meta.url)(compileLib(temp));
+  const {buildSearchSnapshot,SNAPSHOT_FORMAT}=builder??createRequire(import.meta.url)(compileLib(temp));
+  if(!Number.isInteger(SNAPSHOT_FORMAT))throw new Error('The snapshot builder exports no SNAPSHOT_FORMAT');
   const data=await buildSearchSnapshot(now);
   const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status)};
   const id=createHash('sha256').update(JSON.stringify(files)).digest('hex').slice(0,16);
@@ -128,7 +129,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
    const buffer=Buffer.from(body);writeFileSync(join(dir,name+'.json'),buffer);paths[name]=`/snapshot/v/${id}/${name}.json`;
    sizes[name]={raw:buffer.length,gzip:gzipSync(buffer,{level:9}).length,brotli:brotliCompressSync(buffer,{params:{[constants.BROTLI_PARAM_QUALITY]:11}}).length};
   }
-  const manifest={format:1,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw]))};
+  const manifest={format:SNAPSHOT_FORMAT,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw]))};
   writeFileSync(join(folder,'manifest.json'),JSON.stringify(manifest));
   // The static page, rendered again with this snapshot's default first page.
   if(existsSync(join(out,'index.html'))){
@@ -157,7 +158,10 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
   console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
-  if(report)writeFileSync(report,JSON.stringify({...result,data:undefined,manifest:{...result.manifest,coverage:undefined}},null,1)+'\n');
+  // Refuse before writing the report: a report is what deploy.yml reads the
+  // snapshot id from, and an unprepared snapshot must not get one.
+  if(report)rmSync(report,{force:true});
   if(argv.includes('--require-prepared')&&result.unprepared.length)throw new Error('Catalogue still not prepared: '+result.unprepared.join(', '));
+  if(report)writeFileSync(report,JSON.stringify({...result,data:undefined,manifest:{...result.manifest,coverage:undefined}},null,1)+'\n');
  }finally{close()}
 }

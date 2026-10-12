@@ -22,6 +22,7 @@ commands = [
     [sys.executable, 'scripts/runner/check_bootstrap.py'],
     [sys.executable, 'scripts/runner/check_collection.py'],
     ['node', 'scripts/check-collect-workflow.mjs'],
+    ['node', 'scripts/check-cloudflare-smoke.mjs'],
     [sys.executable, 'scripts/run-actionlint.py'],
     [sys.executable, 'scripts/check-checkpoint.py'],
     [sys.executable, 'scripts/check-chat-export.py'],
