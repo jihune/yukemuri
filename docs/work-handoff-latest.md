@@ -133,6 +133,10 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 14. PR #45(P03 C: 공개 읽기 D1 쓰기 0·수집 현황 스냅숏·경로별 읽기 상한과 CPU)는 Codex 1회(`e8e0aec` 큰 문제 없음) 뒤 상위 세션이 병합했다(2026-10-12T09:05:26Z / 18:05:26 KST, `a5f1a40`). 검토 뒤 바뀐 코드는 #44에서 들어온 것뿐이고(`1a7dbb0`), 코드가 같은 `7b25d87`에서 checks가 통과했다. P03 A·B·C가 모두 main에 들어갔다. 남은 P03 후속은 P03 절 다음 작업에 있다.
 15. 실행기 PR #4(H01 4단계 적재 문장 상한 90,000바이트)는 Codex 1회(`c63c15e` 큰 문제 없음) 뒤 상위 세션이 병합했다(2026-10-12T09:18:25Z / 18:18:25 KST, `9fb6e1d`). 2일차 첫 적재(run 38227710133)가 정확히 100,000바이트 문장에서 `SQLITE_TOOBIG`으로 실패해 원래 상태로 돌아갔고(쓰기 0, hotels 0행), 병합 뒤 다시 적재해 성공했다(run 38229050054, hotels 12,687행 일치, 쓰기 약 76,122행). 3일차 hotel_names는 2026-10-13T00:05Z.
 16. 앱 PR #48(H01 6단계 준비: 수집 workflow `collect.yml`는 `workflow_dispatch`만, 감시 workflow `collect-watch.yml` 6시간마다)은 Codex 2회(1회째 P2 ‘대기 실행 취소’를 `8b12012`에서 세 잠금 그룹에 `queue: max`로 고침, 2회째 큰 문제 없음) 뒤 상위 세션이 병합했다(2026-10-12T09:59:40Z / 18:59:40 KST, `0905ae4`). `queue: max`는 github/docs `actions-group-concurrency.md`가 github.com(fpt)에 적용된다고 확인했고, 병합 뒤 main push의 배포 workflow(run 38233467746)가 파일 오류 없이 성공했다. 대기 실행 보존 자체는 6단계 수동 실행에서 확인한다. 실행기 PR #5(앱 수집 부르기 예약, 백업 대상 전환)는 Codex 1회 큰 문제 없음, 6단계까지 draft.
+17. 앱 PR #51(H01 첫 배포 전 `deploy.yml` 보강: wrangler 직접 실행, `--secrets-file`, 사전 점검 모드, 모든 workflow pipefail, smoke 가볍게, 수집 끝 배포는 빌드만)은 Codex 2회(1회째 P2 `collection-priority` 키 판정을 `d4de172`에서 고침, 2회째 큰 문제 없음) 뒤 상위 세션이 병합했다(2026-10-12T12:28:03Z / 21:28:03 KST, `0420e4e`). 병합 뒤 main push 배포는 `autoDeploy` false라 건너뛰었다. 상위 세션이 바로 사전 점검을 돌렸다(run 38249215867, 결과는 아래 ‘H01 첫 배포 전 deploy.yml 보강’ 절). 첫 배포 계획은 그대로다: 3일차 `hotel_names` 적재(10-13T00:05Z) 뒤 H01 세션이 첫 배포 기록 PR(`publicOrigin`·`autoDeploy`)을 열고, 그날 UTC 쓰기(적재분 + 0013 약 3.1만 + prepare 약 2행)가 9만 이하이면 상위 세션이 병합한다.
+18. 앱 PR #53(H01 6단계 도구: `rollback.yml`, `usage.yml`, 6단계 순서, 유지보수 경로 CPU 측정)은 Codex 3회(P2 4건 모두 고침)와 이어 가는 Claude 검토 1회째(`0b12c5f`, P0–P2 없음, P3 2건) 뒤 상위 세션이 병합했다(2026-10-12T13:32:26Z / 22:32:26 KST, `77aa994`). P3 2건은 이 기록 PR에서 고쳤다(`cloudflare-deploy.md` 롤백 주의 4, 사용량 실패 5종). C1 결정(목록 PUT cold 57ms, seed 바뀐 첫 prepare 약 400ms, 백업 export hotels 1,000행 14–21ms)은 첫 배포 뒤 `usage.yml`로 실제 CPU를 본 다음 상위 세션이 정한다. 실행기 백업의 한 번 읽는 행 수를 250으로 낮추는 것이 후보다. `usage.yml`에는 사용자 조치(토큰에 Account Analytics Read)가 먼저 필요하다.
+19. 앱 PR #52(P03 후속: 예상 숙소·저장 목록 상태, 이름 검색 재시도, 수집 현황 기준, WebMCP 개수, 로캘 무관 검색)는 Codex 2회(1회째 P2 ‘저장 목록 오류 때 0곳 표시’를 `36f955d`에서 고침, 2회째 `904dc40` 큰 문제 없음) 뒤 상위 세션이 병합했다(2026-10-12T13:50:36Z / 22:50:36 KST, `e9b0ea0`). main `77aa994` merge 뒤 `cloud-check.py --full` 35개와 브라우저 U01–U04·후속 검사가 통과했다.
+20. 실행기 PR #6(H01 6단계 차이 반영·즐겨찾기 대조 workflow `cloudflare-sync.yml`)은 Codex 3회 뒤 이어 가는 Claude 검토 1회째를 받는 중이다(`835d0e2`). 두 세션이 따로 만든 구현을 하나로 합쳤다. 즐겨찾기 규칙(상위 세션 결정): 기본은 남김(보고만), `delete_favorites=true`는 `compare_run_id` 필수, 이전 체크포인트에 있던 행(해시 같음)만 지우고 처음 보는 행(새 주소에서 만든 것)은 남긴다.
 
 ## U04 — 예약 링크 날짜·인원과 설명 번역 문구
 
@@ -527,7 +531,7 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 
 ### 미확인
 
-- 실제 Cloudflare에서 `rollback`·`deployments status --json`·`time-travel restore --json`의 동작과 응답 형식(wrangler 4.92.0 소스로만 확인). Secret이 그 버전 뒤에 바뀌었을 때 `rollback`의 비대화형 확인.
+- 실제 Cloudflare에서 `rollback`·`deployments status --json`·`time-travel restore --json`의 동작과 응답 형식(wrangler 4.92.0 소스로만 확인). Secret이 그 버전 뒤에 바뀌었을 때는 확인 없이 강제로 되돌린다(Claude 검토 1회째가 가짜 API로 재현, `cloudflare-deploy.md` 롤백 주의 4).
 - GraphQL 스키마가 이 쿼리를 받는지(필드 이름은 `cloudflare/cloudflare-docs` 원본 예시와 같음). 권한 없는 토큰의 실제 응답 형태.
 - C1 값의 workerd 대비 차이.
 
@@ -544,8 +548,8 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - Codex 3회째(`b029905`, 13:06Z 요청, 13:10Z 완료): P2 1건. `usage.yml`의 `date`에 없는 날짜(`2026-02-31`)를 넣으면 `Date.parse`가 다음 달로 넘겨 다른 날을 조회함 → 파싱한 날짜가 입력과 같은지 확인해 거부, 검사에 2·4월 말과 윤일을 더함(가드를 뺀 변형은 실패). Codex 요청 3회를 다 썼고 그 뒤 기록 파일 밖(스크립트·검사)이 바뀌었으므로 ‘이어 가는 Claude 검토’가 필요하다(상위 세션이 연다).
 - 이어 가는 Claude 검토 1회째(세션 `session_01MnG6VhzbLmECs5o9SPjNjo`, `0b12c5f`, 13:25Z): P0–P2 없음, P3 2건. 병합 조건(마지막 검토 뒤 기록 파일만 변경)을 지키려고 절차 문서는 고치지 않고 아래 다음 작업에 적었다. CI는 `0b12c5f`에서 통과했다.
 - 다음 작업: 위 C1 위험 1~3의 대응 여부를 상위 세션이 정한다.
-- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘롤백’의 ‘Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인)’는 틀렸다. wrangler 4.92.0은 오류 10220을 받으면 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `deployments?force=true`로 강제로 되돌린다(검토 세션이 가짜 API로 재현). 되돌린 버전은 그때의 Secret(예: 바꾸기 전 `CRAWL_ACCESS_KEY`)을 쓸 수 있고 요약에는 표시가 없다. 문서를 고치고, 키를 바꾼 적이 있으면 롤백 뒤 수집 키를 확인하라는 주의와, 필요하면 출력의 `secrets have changed`를 요약 경고로 남기는 처리를 더한다. 이 절의 ‘미확인’ 첫 항목도 같은 내용으로 바꾼다.
-- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘사용량 측정’의 ‘그 밖의 실패 4종’은 5종이다(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음).
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘롤백’의 ‘Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인)’는 틀렸다. wrangler 4.92.0은 오류 10220을 받으면 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `deployments?force=true`로 강제로 되돌린다(검토 세션이 가짜 API로 재현). 되돌린 버전은 그때의 Secret(예: 바꾸기 전 `CRAWL_ACCESS_KEY`)을 쓸 수 있고 요약에는 표시가 없다. 문서를 고치고, 키를 바꾼 적이 있으면 롤백 뒤 수집 키를 확인하라는 주의와, 필요하면 출력의 `secrets have changed`를 요약 경고로 남기는 처리를 더한다. 이 절의 ‘미확인’ 첫 항목도 같은 내용으로 바꾼다. → 완료: 상위 세션 기록 PR에서 롤백 설명과 주의 4, 이 절 ‘미확인’을 고쳤다. 요약 경고 처리는 더하지 않았다(주의 4로 충분하고 코드 변경은 검토가 필요).
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘사용량 측정’의 ‘그 밖의 실패 4종’은 5종이다(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음). → 완료: 상위 세션 기록 PR에서 고쳤다.
 
 ## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
 
@@ -571,7 +575,8 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 
 - 로컬 `cloudflare-deploy-worker.sh --dry-run`(네트워크 차단): 빌드 업로드 5,874.18KiB(gzip 866.89KiB), 바인딩에 `CRAWL_ACCESS_KEY`(숨김) 표시, rc=0, 임시 파일 남지 않음.
 - 변형 11종 중 10종에서 `check-deploy-config.mjs`가 실패했다. `umask 022` 변형은 살아남았다. `mktemp`가 언제나 0600 파일을 만들기 때문이고, 검사는 파일 권한 600을 직접 확인한다.
-- 미확인: 실제 계정에서 `--secrets-file` 업로드, `preflight`의 실제 결과. 병합 뒤 상위 세션이 `preflight`를 수동 실행한다.
+- 미확인: 실제 계정에서 `--secrets-file` 업로드. 첫 배포에서 확인한다.
+- 사전 점검 실제 결과(상위 세션 실행, run 38249215867, main `0420e4e`, 2026-10-12T12:28:11Z–12:31:15Z, 성공): 남은 마이그레이션은 `0013_robust_reaper.sql` 하나(식 색인 2개, 약 3.1만 행 쓰기). 원격 스냅숏은 숙소 12,687곳, 74개 쿼리, 읽기 94,316행, 57.6초(3일차 `hotel_names` 적재 전). `catalog_meta` 키 12개 가운데 준비 안 된 키는 `bath-facts-backfill-v1` 하나, 행별 유지보수 커서는 뒤처진 것 없음, prepare 쓰기 추정 약 2행. `deploy --dry-run`(자리표시 Secret) 통과: 업로드 5,874.18KiB(gzip 866.90KiB), `CRAWL_ACCESS_KEY`는 숨김 표시. 아래 위험(`multilingual-index-v1` 없음)은 해당하지 않는다.
 - 위험: `multilingual-index-v1`이 빠진 채 첫 배포를 하면 prepare가 요청 하나에서 숙소 전체를 재색인한다(로컬 24초). 무료 플랜 CPU 한도(요청당 10ms)로 실패하거나 그날 D1 읽기를 크게 쓸 수 있다. 사전 점검 결과로 상위 세션이 판단한다.
 - `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.
 - 검토: Codex 1회째(`8849151`, 12:03Z 요청, 12:09Z 완료) P2 1건. `maintenanceBehind()`가 `collection-priority:` 접두사로 판정해, 예전 계획 버전의 완료 행만 있어도 ‘완료’로 봤다. 앱은 현재 계획 버전 키(`collection-priority:` + `data/collection-priorities.json`의 `version`)만 본다. 정확한 키로 고치고 예전 버전 행만 있는 경우를 검사에 넣었다. 기본 `cloud-check.py` 통과(12:09:56Z 종료) 뒤 `check-deploy-config.mjs` 통과.
