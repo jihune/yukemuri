@@ -50,16 +50,18 @@ try{
   await second.context.close();
  }
  // 2) Saved list when the favourites cannot be read: no endless search, the
- //    error with a retry, no "nothing saved yet"; the retry restores it.
+ //    error with a retry, no "nothing saved yet" and no count of 0 in the
+//    heading, the result count or the map; the retry restores it.
  {
   const {context,page}=await open();
   let fail=true;await page.route(url=>url.pathname==='/api/favorites',route=>fail&&route.request().method()==='GET'?route.fulfill({status:503,contentType:'application/json',body:'{"error":"즐겨찾기를 불러오지 못했습니다."}'}):route.continue());
   await page.goto(base+'/?saved=1',{waitUntil:'networkidle'});await page.waitForTimeout(800);
-  const state={loading:await page.locator('.catalog-loading').count(),retry:await page.locator('.error-banner',{hasText:'즐겨찾기'}).getByRole('button',{name:'다시 시도'}).count(),empty:await page.locator('.empty-state').count(),subtitle:await page.locator('.result-subtitle').innerText()};
+  const state={loading:await page.locator('.catalog-loading').count(),retry:await page.locator('.error-banner',{hasText:'즐겨찾기'}).getByRole('button',{name:'다시 시도'}).count(),empty:await page.locator('.empty-state').count(),subtitle:await page.locator('.result-subtitle').innerText(),
+   heading:await page.locator('.results-header h2').innerText(),count:await page.locator('.result-count').textContent(),map:await page.locator('.map-coverage').count()};
   fail=false;await page.locator('.error-banner',{hasText:'즐겨찾기'}).getByRole('button',{name:'다시 시도'}).tap().catch(()=>{});
   await page.waitForLoadState('networkidle');await page.waitForTimeout(500);
   const after={loading:await page.locator('.catalog-loading').count(),banner:await page.locator('.error-banner',{hasText:'즐겨찾기'}).count(),empty:await page.locator('.empty-state').count()};
-  check('즐겨찾기를 못 읽으면 저장 목록이 찾는 중에 머물지 않고 오류와 다시 시도를 보임',state.loading===0&&state.retry===1&&state.empty===0&&!/검색하는 중/.test(state.subtitle),state);
+  check('즐겨찾기를 못 읽으면 저장 목록이 찾는 중에 머물지 않고 오류와 다시 시도를 보임',state.loading===0&&state.retry===1&&state.empty===0&&!/검색하는 중/.test(state.subtitle)&&!/[0-9]/.test(state.heading+state.count)&&state.map===0,state);
   check('다시 시도하면 저장 목록으로 돌아옴',after.loading===0&&after.banner===0&&after.empty===1,after);
   await context.close();
  }

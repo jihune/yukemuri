@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-12T11:43:39.364Z",
+ "measuredAt": "2026-10-12T12:19:54.279Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium",
  "viewport": "390x780 · isMobile · hasTouch · deviceScaleFactor 2",
@@ -27,7 +27,10 @@
     "loading": 0,
     "retry": 1,
     "empty": 0,
-    "subtitle": "온천 특징을 비교하고, 마음에 드는 곳을 저장하세요.\n최신 자료 확인"
+    "subtitle": "온천 특징을 비교하고, 마음에 드는 곳을 저장하세요.\n최신 자료 확인",
+    "heading": "즐겨찾기",
+    "count": "",
+    "map": 0
    }
   },
   {
@@ -54,11 +57,11 @@
    "pass": true,
    "detail": {
     "seen": [
-     "/snapshot/v/0b6890027aa5fc04/core.json",
-     "/snapshot/v/0b6890027aa5fc04/cards.json",
-     "/snapshot/v/0b6890027aa5fc04/status.json"
+     "/snapshot/v/24f2f1e31e69c679/core.json",
+     "/snapshot/v/24f2f1e31e69c679/cards.json",
+     "/snapshot/v/24f2f1e31e69c679/status.json"
     ],
-    "first": "0b6890027aa5fc04"
+    "first": "24f2f1e31e69c679"
    }
   },
   {
