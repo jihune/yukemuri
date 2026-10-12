@@ -1,10 +1,8 @@
 import { favoritesDb } from '@/lib/favorites-db';
-import { hotelRepository } from '@/lib/hotel-repository';
 import {visitorFavoriteIds,visitorKey} from '@/lib/visitor-favorites';
 import {hasCrawlAccess} from '@/lib/crawl-access';
 export async function GET(request:Request){
  try{
-  await hotelRepository.ready();
   // Keep the legacy owner collection readable to the maintenance service only.
   const ids=hasCrawlAccess(request)?(await favoritesDb().prepare('SELECT favorites.hotel_id FROM favorites INNER JOIN hotels ON hotels.id=favorites.hotel_id ORDER BY favorites.created_at DESC').all<{hotel_id:string}>()).results.map(r=>r.hotel_id):await visitorFavoriteIds(request);
   return Response.json({ids},{headers:{'Cache-Control':'no-store'}});
@@ -20,8 +18,9 @@ export async function PUT(request:Request){
  try{payload=await request.json()}catch{return Response.json({error:'잘못된 요청입니다.'},{status:400})}
  if(!payload||typeof payload.hotelId!=='string'||typeof payload.saved!=='boolean')return Response.json({error:'유효한 숙소와 저장 상태가 필요합니다.'},{status:400});
  try{
-  if(!(await hotelRepository.get(payload.hotelId)))return Response.json({error:'유효한 숙소와 저장 상태가 필요합니다.'},{status:400});
+  // Existence only: the full hotel (enrichment, source groups) is not needed to save an id.
   const db=favoritesDb();
+  if(!/^[a-zA-Z0-9-]{1,120}$/.test(payload.hotelId)||!(await db.prepare('SELECT 1 FROM hotels WHERE id=?').bind(payload.hotelId).first()))return Response.json({error:'유효한 숙소와 저장 상태가 필요합니다.'},{status:400});
   if(payload.saved)await db.prepare('INSERT INTO visitor_favorites (visitor_key,hotel_id) VALUES (?,?) ON CONFLICT(visitor_key,hotel_id) DO NOTHING').bind(key,payload.hotelId).run();
   else await db.prepare('DELETE FROM visitor_favorites WHERE visitor_key=? AND hotel_id=?').bind(key,payload.hotelId).run();
   return Response.json({hotelId:payload.hotelId,saved:payload.saved});

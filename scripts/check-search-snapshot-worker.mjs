@@ -85,7 +85,7 @@ try{
  // Coverage as the list showed it; collection status as its API returned it.
  // The collector's end-of-run read counts the same aggregate.
  assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
- const live=await api('/api/collection-status');
+ const live=await api('/api/collection-status',{headers:{'X-Yukemuri-Crawl-Key':KEY}});
  assert.deepEqual({...status,measuredAt:undefined},{...live,measuredAt:undefined});
  assert.equal(status.measuredAt,'2026-10-12T00:00:00.000Z','status describes the build time');
 

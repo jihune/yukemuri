@@ -13,7 +13,10 @@ try{
  const db=await runtime.getD1Database('DB');
  for(const file of readdirSync('drizzle').filter(file=>file.endsWith('.sql')).sort())for(const sql of readFileSync(join('drizzle',file),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(value=>value.trim()).filter(Boolean))await db.prepare(sql).run();
  await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':'private-maintenance-only'}});
- const baseline=await(await runtime.dispatchFetch('http://localhost/api/collection-status')).json();
+ // Maintenance only since P03: visitors read the snapshot's status.json.
+ const keyed=path=>runtime.dispatchFetch('http://localhost'+path,{headers:{'X-Yukemuri-Crawl-Key':'private-maintenance-only'}});
+ assert.equal((await runtime.dispatchFetch('http://localhost/api/collection-status')).status,403,'collection status needs the maintenance key');
+ const baseline=await(await keyed('/api/collection-status')).json();
  const row=await db.prepare('SELECT * FROM hotels LIMIT 1').first(),columns=Object.keys(row);
  for(const [id,known,natural,room,detail] of [
   ['qa-grade-only',4096,null,null,false],['qa-explicit-false',1,0,null,true],
@@ -44,7 +47,7 @@ try{
  await db.prepare("INSERT INTO catalog_meta(key,value) VALUES ('crawl-provider-ready:trip',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(String(now+3600)).run();
  await db.prepare("INSERT INTO catalog_meta(key,value) VALUES ('crawl-provider-ready:jalan',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(String(now+3)).run();
  const before=JSON.stringify((await db.prepare('SELECT * FROM crawl_jobs ORDER BY url').all()).results);
- const response=await runtime.dispatchFetch('http://localhost/api/collection-status'),raw=await response.text(),status=JSON.parse(raw);
+ const response=await keyed('/api/collection-status'),raw=await response.text(),status=JSON.parse(raw);
  assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');
  assert.equal(status.providers.length,2);assert.equal(status.google.connected,true);
  assert.deepEqual(status.quality,{

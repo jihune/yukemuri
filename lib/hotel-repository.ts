@@ -62,7 +62,7 @@ export async function queryCoverage(){
  return coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
 }
 // Hotel rows are only ever inserted by writeHotels, which keeps this counter.
-const RECORD_COUNTER='hotel-records';
+export const RECORD_COUNTER='hotel-records';
 let coverageCache:{expires:number;promise:ReturnType<typeof queryCoverage>}|null=null;
 function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  coverageCache={expires:Date.now()+300000,promise};
@@ -102,10 +102,6 @@ export async function readCachedCoverage(sync=false){
 // Writes outside the collector's PUT (names, lifecycle, source links) change
 // the collection summary; the search snapshot follows at the next build.
 export function invalidateSearch(){coverageCache=null}
-export async function requestDescriptionTranslation(hotel:Hotel){
- if(hotel.descriptionTranslation||!needsKoreanDescription(hotel.description))return;
- await favoritesDb().prepare('INSERT INTO hotel_description_requests (hotel_id,source_text,requested_at) VALUES (?,?,?) ON CONFLICT(hotel_id) DO UPDATE SET source_text=excluded.source_text,requested_at=excluded.requested_at WHERE hotel_description_requests.source_text!=excluded.source_text').bind(hotel.id,hotel.description,new Date().toISOString()).run();
-}
 export async function saveDescriptionTranslations(patches:DescriptionPatch[]){
  const db=favoritesDb(),input=JSON.stringify(patches);
  const rows=await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(patches.map(p=>p.id))).all<{id:string;payload:string}>();
@@ -236,6 +232,16 @@ async function backfillBathFacts(){
  await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,'done').run();
 }
 async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
+// What ensureCatalog (run by /api/crawl-prepare) has not done yet on this
+// database, read only: the seed version and its one-time steps (the keys of
+// importSnapshot, reindexNames, backfillBathFacts, importLocalizedNames and
+// importVerifiedSourceGroups). Empty when the catalogue is prepared.
+export async function catalogPreparation(){
+ const once=['bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1'];
+ const rows=await favoritesDb().prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?,?,?,?)').bind('snapshot','multilingual-index-v1',...once).all<{key:string;value:string}>();
+ const stored=new Map(rows.results.map(r=>[r.key,r.value]));
+ return[...(stored.get('snapshot')===catalogVersion?[]:['snapshot']),...(stored.get('multilingual-index-v1')==='done'?[]:['multilingual-index-v1']),...once.filter(key=>!stored.has(key))];
+}
 export const hotelRepository={
  async get(id:string):Promise<Hotel|null>{
   if(!validComparisonIds([id]))return null;
@@ -244,7 +250,8 @@ export const hotelRepository={
  async getMany(ids:string[]):Promise<Hotel[]>{
   if(!validComparisonIds(ids))throw new RangeError('Invalid comparison selection');
   if(!ids.length)return[];
-  await ensureCatalog();
+  // Public reads never prepare the catalogue (no D1 writes on a read, P03);
+  // the collector's /api/crawl-prepare does. An unprepared DB finds nothing.
   const rows=await favoritesDb().prepare("SELECT h.id,h.payload,t.text_ko,t.translated_at FROM hotels h LEFT JOIN hotel_description_translations t ON t.hotel_id=h.id AND t.source_text=json_extract(h.payload,'$.description') WHERE h.id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(ids)).all<{id:string;payload:string;text_ko:string|null;translated_at:string|null}>();
   const byId=new Map(rows.results.map(row=>{
    const hotel=enrichHotel(JSON.parse(row.payload) as Hotel);delete hotel.descriptionTranslation;

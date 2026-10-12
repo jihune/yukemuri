@@ -76,13 +76,16 @@ assert api('/api/favorites')['ids']==[]
 # The home page is one static shell (P03): filters render, the list comes from the snapshot.
 status,home=call('GET','/');assert status==200 and '일본 전국' in home and 'v0.5' in home and 'role="checkbox"' in home
 assert home.count('class="hotel-card ')==0
-photos=api('/api/photo-credits');assert photos['total']>1000 and len(photos['items'])==40 and photos['next']
 print(f"Worker/D1 checks passed: {data['total']} records; nationwide filters, provider scales, 40-row pagination, literal/long query handling, tri-state AND facilities, detail routes and durable favorites.")
 
 # A supported service writer is protected by the hosted private Site boundary.
 queue=api('/api/crawl?provider=jalan&kind=detail&limit=2')
 assert len(queue['jobs'])<=2 and queue['coverage']['records']>1000
 api('/api/crawl?provider=bad&kind=detail',expected=400)
+# Photo sources page by cursor; the total is the record counter the collector's GET above keeps (P03).
+photos=api('/api/photo-credits');assert photos['total']==queue['coverage']['records'] and len(photos['items'])==40 and photos['next'].startswith('/api/photo-credits?after=')
+following=api(photos['next']);assert len(following['items'])==40 and following['items'][0]['hotelId']>photos['items'][-1]['hotelId']
+assert api('/api/photo-credits?page=1')['items']==photos['items'];api('/api/photo-credits?page=2',expected=400);api('/api/photo-credits?after=%27x',expected=400)
 api('/api/crawl','PUT',{'url':'https://example.invalid/','status':'done'},expected=400)
 api('/api/crawl','PUT',{'url':'https://www.jalan.net/yad307416/','status':'done','observations':[],'links':[]},expected=400)
 original=api('/api/hotels/jalan-307416')

@@ -1,9 +1,11 @@
-import {hotelRepository} from '@/lib/hotel-repository';
+import {hasCrawlAccess} from '@/lib/crawl-access';
 import {readCollectionStatus} from '@/lib/read-collection-status';
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
-export async function GET(){
+// Reads the whole queue, so it is maintenance only (P03). Visitors see the
+// status the search snapshot computed (status.json).
+export async function GET(request:Request){
+ if(!hasCrawlAccess(request))return Response.json({error:'Maintenance access required'},{status:403,headers});
  try{
-  await hotelRepository.ready();
   return Response.json(await readCollectionStatus(),{headers});
  }catch(error){
   console.error('Collection status read failed',error);
