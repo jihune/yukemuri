@@ -461,6 +461,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 검토와 다음 작업
 
-- 앱 PR: CI 통과 뒤 Codex 검토를 요청한다. 실행기 PR(#5)은 draft이며 6단계에서 ready로 바꾸고 검토받는다.
+- 앱 PR #48: Codex 1회째(`0c2d386`, 09:31Z 요청) P2 1건(기본 `queue: single`이라 대기 배포·대기 수집이 서로 취소됨) → `8b12012`에서 `queue: max`로 고침, 스레드 답·해결. Codex 2회째(`8b12012`, 09:46Z 요청, 09:49:59Z 완료) ‘큰 문제 없음’. 남은 지적 없음. CI `checks` 통과(`8b12012`). main `2caa14b`과 충돌 없음. 이 기록 커밋 뒤 변경은 인수인계뿐이다.
+- 실행기 PR #5(draft): Codex 1회째(`9ccf22f`, 09:29Z 완료) ‘큰 문제 없음’. 그 뒤 `679b062`에서 workflow 주석·`docs/runner.md`·`project-files.json`만 바꿨다(앱의 `queue: max` 반영 설명). 6단계에서 ready로 바꿀 때 상위 세션이 재검토 여부를 정한다.
 - 다음 작업: 실행기 수동 모드 `backlog`·`refresh`·`diagnose-jalan`은 앱 `collect.yml`로 옮기지 않았다(예약은 gentle만 씀). 필요하면 별도 PR로 옮긴다.
 
