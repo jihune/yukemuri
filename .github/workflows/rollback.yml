@@ -1,0 +1,64 @@
+name: Cloudflare rollback
+# Manual only (H01 rollback table, docs/cloudflare-deploy.md): move the Worker
+# back to an earlier version, or restore D1 to a Time Travel bookmark. The
+# current D1 bookmark goes to the summary before either change. After step 6 a
+# finished collection redeploys main HEAD, so a Worker rollback alone is undone
+# by the next collection: merge a revert on main as well.
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: worker-rollback (earlier Worker version) or d1-restore (Time Travel bookmark)
+        type: choice
+        required: true
+        options:
+          - worker-rollback
+          - d1-restore
+      version_id:
+        description: 'worker-rollback: Worker version id (empty = the previous version wrangler picks)'
+        type: string
+        required: false
+        default: ''
+      bookmark:
+        description: 'd1-restore: D1 bookmark from a deploy or sync summary (overwrites every later write)'
+        type: string
+        required: false
+        default: ''
+      confirm:
+        description: Type rollback to proceed
+        type: string
+        required: true
+# Same lock order as deploy.yml: the catalogue group at the top (no collection
+# or snapshot runs meanwhile), then the account inside the job. Waiting runs
+# are kept (queue: max).
+concurrency:
+  group: yukemuri-catalog-updates
+  cancel-in-progress: false
+  queue: max
+permissions:
+  contents: read
+jobs:
+  rollback:
+    concurrency:
+      group: cloudflare-account
+      cancel-in-progress: false
+      queue: max
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: bash scripts/cloud-setup.sh
+      - env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ACTION: ${{ inputs.action }}
+          VERSION_ID: ${{ inputs.version_id }}
+          BOOKMARK: ${{ inputs.bookmark }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: node scripts/cloudflare-rollback.mjs

@@ -1,0 +1,38 @@
+name: Cloudflare usage
+# Manual, read only: Worker CPU time and invocation statuses, D1 rows read and
+# written per UTC day from the GraphQL Analytics API (H01 steps 5 and 7). The
+# token needs Account > Account Analytics > Read; without it the run fails
+# instead of reporting zero (docs/cloudflare-deploy.md).
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Last UTC date, YYYY-MM-DD (empty = today in UTC)'
+        type: string
+        required: false
+        default: ''
+      days:
+        description: 'Number of UTC days ending at date (1-31)'
+        type: string
+        required: false
+        default: '2'
+permissions:
+  contents: read
+jobs:
+  usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          USAGE_DATE: ${{ inputs.date }}
+          USAGE_DAYS: ${{ inputs.days }}
+        run: node scripts/cloudflare-usage.mjs

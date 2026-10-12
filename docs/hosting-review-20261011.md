@@ -281,8 +281,8 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 1. 실행기 수집 예약을 잠시 멈춘다. `YUKEMURI_ENABLED`를 `false`로 바꾼다(‘2차 검토’ 절의 수집 예약 문단). 예약을 끄는 PR은 쓰지 않는다. 이 변수는 수집만 멈추고 백업 예약은 그대로 돈다. 실행 중인 수집 작업이 끝났는지 본다.
 2. 기존 Sites에는 쓰기 차단 기능을 게시하지 않는다(결정 반영). 사용자는 3번부터 7번까지 기존 Sites에서 즐겨찾기를 바꾸지 않는다. 다른 방문자·오래된 탭의 쓰기 유실 위험은 사용자가 받아들였다. 5번 재백업 대조로 확인한다.
 3. 실행기 수동 백업을 한 번 실행해 최종 체크포인트를 만든다.
-4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 즐겨찾기 해제·출처 묶음 삭제가 여기에 해당한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
-5. 6번 PR 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법으로 차이(삭제 포함)를 새 D1에 반영하고 원인을 기록한다.
+4. 4단계 적재본과 최종 체크포인트를 테이블별 키로 비교한다. 바뀌거나 새로 생긴 행은 새 D1에 upsert한다(키 + 행 해시 비교). 최종 체크포인트에 없는 키의 행은 새 D1에서 지운다. 출처 묶음 삭제가 여기에 해당한다. 다만 즐겨찾기 표(`favorites`, `visitor_favorites`)에서 새 D1에만 있는 행은 지우지 않고 행 수만 보고한다(C4, 2026-10-12). 새 주소에서 만든 즐겨찾기일 수 있기 때문이다. 도구는 실행기 `cloudflare-sync.yml`이다(`maintenance/cloudflare-load/README.md`의 ‘최종 체크포인트 차이 반영’). 쓰기 전에 Time Travel bookmark를 요약에 남기고, 예상 쓰기(행 × (1 + 색인 수))가 하루 9만 행을 넘으면 거부한다. 키가 불분명하거나 차이가 큰 테이블은 그 테이블을 비우고 최종 체크포인트로 다시 적재한다. 행 수와 키 집합을 대조한다(Codex 검토, 2026-10-11).
+5. 6번 PR 직전에 기존 Sites를 한 번 더 백업한다. 6에서 백업 대상이 새 주소로 바뀌기 때문이다. 즐겨찾기 테이블(`favorites`, `visitor_favorites`)이 최종 체크포인트와 같은지 확인한다. 다르면 4와 같은 방법(`cloudflare-sync.yml`의 `favorites` 모드)으로 차이를 새 D1에 반영하고 원인을 기록한다. Sites에서 해제한 즐겨찾기는 C4에 따라 지우지 않고 보고한다.
 6. 수집 실행을 앱 레포로 옮기는 PR 두 개(결정 반영, Codex 검토 2026-10-11). 예약(부르기)은 실행기에 남는다(‘2차 검토’ 절):
    - 앱 레포 PR: 수집 workflow(예: `collect.yml`)를 만든다. 대상은 새 주소이고 크롤 키는 앱 레포 Secret `YUKEMURI_CRAWL_ACCESS_KEY`다. 작업 상한·수집 시간·gentle 페이지 수·요청 간격은 실행기의 현재 값과 같게 둔다. cron은 두지 않고 `workflow_dispatch`만 둔다(‘2차 검토’ 결정 절). 동시 실행 제어도 같게 둔다. `concurrency` 그룹 `yukemuri-catalog-updates`, `cancel-in-progress: false`다. 예약 실행 중 수동 실행을 시작해도 앞 실행이 끝난 뒤 돈다. 그래서 호스트별 순차 요청 규칙이 깨지지 않는다(Codex 검토, 2026-10-11). 이 workflow는 실행기 예약 작업의 부르기나 수동 실행으로만 시작된다. 같은 PR에 감시 workflow를 둔다. 6시간마다 cron으로 돌고(12시간 기준보다 짧게 둬서 넘은 뒤 6시간 안에 알림이 가게 한다, Codex 검토 2026-10-11), `GITHUB_TOKEN`으로 이 레포 수집 workflow의 실행 목록을 읽어 마지막 성공이 12시간을 넘었으면 실패로 끝난다. 성공 실행이 아직 하나도 없으면(이 PR 병합 직후) 통과한다. 실행기 예약이 아예 돌지 않는 경우를 잡기 위해서다(3.5절 14번). public 레포라 로그에 Secret·개인 자료를 찍지 않는다.
    - 실행기 PR: 수집 workflow를 지우고, 그 자리에 같은 cron으로 앱 레포 수집 workflow를 `workflow_dispatch`로 부르는 예약 작업을 둔다. 이 작업은 `YUKEMURI_ENABLED`가 `true`일 때만 부르고, 마지막 성공 수집이 12시간을 넘으면 실패로 끝난다. 토큰은 3.3절 4번의 Secret을 쓴다. 백업 workflow만 새 주소와 Secret `YUKEMURI_CLOUDFLARE_JSON`으로 바꾼다. `run-backup.py` 허용 호스트와 `catalog-checkpoint.py` 검사·헤더를 바꾼다. 수집 전용 파일(`bootstrap.py`, `run-updates.py`)은 지우거나 쓰지 않는다고 표시한다.
@@ -303,8 +303,8 @@ Cloudflare Workers Free + D1 Free, 주소는 `https://<Worker 이름>.<계정 �
 | 시점 | 방법 | 손실 |
 |---|---|---|
 | 6단계 전 | 아무것도 하지 않음. Sites·수집·백업 무변경 | 없음 |
-| 전환 직후 앱 결함 | `wrangler rollback`(이전 Worker 버전) 또는 이전 커밋 재배포 | 없음 |
-| DB 손상 | `wrangler d1 time-travel restore yukemuri --bookmark <배포 때 기록한 값>`(7일 이내, 덮어쓰기) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
+| 전환 직후 앱 결함 | 수동 `rollback.yml`의 `worker-rollback`(이전 Worker 버전)과 결함 커밋의 main revert를 함께 한다. 6단계 뒤에는 수집이 끝날 때마다 main HEAD가 다시 배포되므로 Worker 되돌림만으로는 다음 수집 때 덮인다. `autoDeploy`를 `false`로 바꾸면 수집도 멈춘다(`cloudflare-deploy.md`의 ‘롤백’) | 없음 |
+| DB 손상 | 수동 `rollback.yml`의 `d1-restore`(`wrangler d1 time-travel restore yukemuri --bookmark <배포·차이 반영 요약의 값>`, 7일 이내, 덮어쓰기. 복구 전 현재 bookmark를 요약에 남긴다) 또는 최신 백업 재적재 | 복구 지점 이후 기록 |
 | 새 호스팅 포기 | 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈추고, 앱 레포의 진행 중 수집 실행이 끝난 뒤 실행기 PR을 되돌린다. 되돌림 병합 뒤 `YUKEMURI_ENABLED`를 `true`로 바꿔 Sites Secret·주소의 수집·백업으로 복귀한다. 되돌린 수집 workflow는 이 변수가 `true`일 때만 돈다. 앱 레포 감시 workflow는 지우거나 끈다 | 전환 뒤 새 DB에만 쌓인 수집 관측(재수집 가능)과 새 주소에서 만든 즐겨찾기. Sites DB에 되돌려 넣을 도구가 없음 |
 
 ### 3.3 사용자만 할 수 있는 일
