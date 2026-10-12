@@ -34,6 +34,10 @@ concurrency:
   group: yukemuri-catalog-updates
   cancel-in-progress: false
   queue: max
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
 jobs:
   collect:
     runs-on: ubuntu-24.04

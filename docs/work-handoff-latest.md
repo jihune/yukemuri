@@ -486,10 +486,12 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - C3: 수집 끝 배포는 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사 성공(`Cloud app checks` 또는 push 배포)을 찾으면 `cloud-check --full` 대신 빌드만 한다. 못 찾거나 API가 답하지 않으면 `--full`을 돌린다. 이를 위해 `deploy.yml`·`collect.yml`에 `actions: read`를 더했다.
 - 검사: `check-deploy-config.mjs`가 쓰기 명령이 `mode == 'deploy'` 단계에만 있는지, preflight 단계에 쓰기가 없는지, wrangler-action이 없는지, pipefail, C3 조건, 게이트 모드, 배포 스크립트(가짜 wrangler로 0600 파일·삭제·키 비노출·실패 전파), 추정 함수를 단언한다. 새 `check-cloudflare-smoke.mjs`는 로컬 대역 서버로 smoke를 돌린다.
 
+- 상위 세션 추가 8–10번(11:33Z 요청): 모든 workflow에 `defaults.run.shell: bash`(pipefail), 스냅숏 id가 비면 실패, `--require-prepared` 실패 때 보고서를 쓰지 않음, smoke는 `SNAPSHOT_ID` 필수이고 빌드한 manifest의 id·형식과 대조, 형식 번호는 `SNAPSHOT_FORMAT` 하나에서. 대조 변형 4종(d1-setup 기본 셸 제거, id 확인 제거, smoke에 빈 id, job에서 셸 덮어쓰기)에서 `check-deploy-config.mjs`가 실패했다.
+
 ### 확인한 것과 미확인
 
 - 로컬 `cloudflare-deploy-worker.sh --dry-run`(네트워크 차단): 빌드 업로드 5,874.18KiB(gzip 866.89KiB), 바인딩에 `CRAWL_ACCESS_KEY`(숨김) 표시, rc=0, 임시 파일 남지 않음.
 - 변형 11종 중 10종에서 `check-deploy-config.mjs`가 실패했다. `umask 022` 변형은 살아남았다. `mktemp`가 언제나 0600 파일을 만들기 때문이고, 검사는 파일 권한 600을 직접 확인한다.
 - 미확인: 실제 계정에서 `--secrets-file` 업로드, `preflight`의 실제 결과. 병합 뒤 상위 세션이 `preflight`를 수동 실행한다.
 - 위험: `multilingual-index-v1`이 빠진 채 첫 배포를 하면 prepare가 요청 하나에서 숙소 전체를 재색인한다(로컬 24초). 무료 플랜 CPU 한도(요청당 10ms)로 실패하거나 그날 D1 읽기를 크게 쓸 수 있다. 사전 점검 결과로 상위 세션이 판단한다.
-- `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). `run-actionlint.py` 포함.
+- `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.

@@ -42,6 +42,10 @@ concurrency:
 permissions:
   contents: read
   actions: read
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
 jobs:
   deploy:
     concurrency:
@@ -50,10 +54,6 @@ jobs:
       queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # pipefail: a failing command piped into tee fails the step.
-    defaults:
-      run:
-        shell: bash
     # Wrangler runs from the locked node_modules (4.92.0) with an explicit
     # --config. cloudflare/wrangler-action is not used: its secrets input runs
     # `wrangler secret bulk` without --config, which fails here with "Required
@@ -127,7 +127,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"
-          echo "id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')" >> "$GITHUB_OUTPUT"
+          id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
+          [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
+          echo "id=$id" >> "$GITHUB_OUTPUT"
           echo "prepared=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).unprepared.length===0)')" >> "$GITHUB_OUTPUT"
       # Preflight: catalog_meta keys (a read) and what preparing this release
       # would write, from the measured per-step rows.
@@ -171,7 +173,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           node scripts/build-search-snapshot.mjs --remote --require-prepared --report snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"
-          echo "id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')" >> "$GITHUB_OUTPUT"
+          id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
+          [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
+          echo "id=$id" >> "$GITHUB_OUTPUT"
       - if: steps.gate.outputs.mode == 'deploy' && steps.snapshot.outputs.prepared != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

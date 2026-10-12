@@ -109,7 +109,19 @@ assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_dispatch:\n 
 assert.match(deploy,/PREFLIGHT: \$\{\{ inputs\.preflight == true \}\}\n {8}run: node scripts\/cloudflare-deploy-gate\.mjs/,'the gate reads the preflight input');
 // A failing command piped into tee fails its step; wrangler runs from node_modules
 // with an explicit --config (no wrangler-action: its secret upload has no --config).
-assert.match(deploy,/^ {4}defaults:\n {6}run:\n {8}shell: bash\n/m,'bash with pipefail for every run step');
+// Every workflow: an explicit shell, so GitHub runs bash -eo pipefail and a
+// failure piped into tee fails the step (the default bash -e does not).
+for(const file of workflows)assert.match(readFileSync('.github/workflows/'+file,'utf8'),/^defaults:\n  run:\n    shell: bash\njobs:/m,file+': defaults.run.shell bash (pipefail)');
+assert(!/^\s+shell:/m.test(deploy.replace(/^defaults:\n  run:\n    shell: bash\n/m,'')),'no step overrides the shell');
+// A snapshot step with no id in its report fails instead of deploying without one.
+for(const b of stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text)))assert.match(b.text,/\[\[ "\$id" =~ \^\[0-9a-f\]\{16\}\$ \]\] \|\| \{ echo "No snapshot id in the report"; exit 1; \}\n {10}echo "id=\$id" >> "\$GITHUB_OUTPUT"/,'snapshot id checked before it is output');
+for(const b of stepBlocks.filter(b=>/cloudflare-smoke\.mjs/.test(b.text)))assert.match(b.text,/SNAPSHOT_ID: \$\{\{ steps\.(?:prepared_)?snapshot\.outputs\.id \}\}/,'smoke gets the snapshot id of its build');
+{
+ // What pipefail changes, on this machine's bash: a failing producer piped into tee.
+ const run=flags=>spawnSync('bash',[...flags,'-c','node -e "process.exit(3)" | tee /dev/null'],{encoding:'utf8'}).status;
+ assert.equal(run(['-e']),0,'bash -e hides the failure (the default without shell:)');
+ assert.notEqual(run(['--noprofile','--norc','-eo','pipefail']),0,'shell: bash (-eo pipefail) fails');
+}
 for(const file of workflows)assert(!/cloudflare\/wrangler-action/.test(readFileSync('.github/workflows/'+file,'utf8').replace(/^\s*#.*$/gm,'')),file+' uses wrangler-action');
 assert(!/^\s+secrets:\s*\|/m.test(deploy),'no secrets input');
 for(const m of deploy.matchAll(/node "\$WRANGLER" (\w+)/g))assert(['d1','deploy'].includes(m[1]),'wrangler '+m[1]);
@@ -128,7 +140,7 @@ assert.equal(stepBlocks[stepOf('checked-commit.mjs')].cond,"steps.gate.outputs.m
 assert.equal(stepBlocks[stepOf('cloud-check.py --full')].cond,"steps.gate.outputs.mode == 'deploy' && steps.checked.outputs.checked != 'true'");
 assert.equal(stepBlocks[stepOf('run-framework.mjs build')].cond,"steps.gate.outputs.mode == 'preflight' || steps.checked.outputs.checked == 'true'");
 assert(stepOf('run-framework.mjs build')<stepOf('d1 time-travel info'),'built before any wrangler command');
-assert.match(deploy,/^permissions:\n  contents: read\n  actions: read\njobs:/m,'actions: read for checked-commit.mjs only');
+assert.match(deploy,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'actions: read for checked-commit.mjs only');
 const sha='0123456789abcdef0123456789abcdef01234567',ok={head_sha:sha,event:'push',head_branch:'main',status:'completed',conclusion:'success',path:'.github/workflows/web-checks.yml',id:1};
 assert.equal(checkedOnMain([ok],sha).checked,true);
 assert.equal(checkedOnMain([{...ok,path:'.github/workflows/deploy.yml'}],sha).checked,true);
