@@ -18,8 +18,20 @@ export function deployGate(config){
  return {enabled:true,reason:'enabled',databaseName:config.databaseName,databaseId:config.databaseId,publicOrigin:config.publicOrigin};
 }
 
+// What this run does: deploy (gate on), preflight (a manual read-only check,
+// which needs only the D1 database id) or skip. Preflight never deploys, even
+// with the gate on.
+export function deployMode(config,{preflight=false}={}){
+ const gate=deployGate(config);
+ if(preflight){
+  if(!config.databaseId)throw new Error('preflight needs the D1 database_id in cloudflare-deploy.json');
+  return {mode:'preflight',reason:'read-only preflight',databaseName:config.databaseName,databaseId:config.databaseId,publicOrigin:config.publicOrigin};
+ }
+ return gate.enabled?{mode:'deploy',...gate}:{mode:'skip',reason:gate.reason};
+}
+
 if(import.meta.url===`file://${process.argv[1]}`){
- const gate=deployGate(JSON.parse(readFileSync(process.argv[2]??'cloudflare-deploy.json','utf8')));
- console.log(`enabled=${gate.enabled}`);console.log(`reason=${gate.reason}`);
- if(gate.enabled){console.log(`database_name=${gate.databaseName}`);console.log(`public_origin=${gate.publicOrigin}`)}
+ const run=deployMode(JSON.parse(readFileSync(process.argv[2]??'cloudflare-deploy.json','utf8')),{preflight:process.env.PREFLIGHT==='true'});
+ console.log(`mode=${run.mode}`);console.log(`reason=${run.reason}`);
+ if(run.mode!=='skip'){console.log(`database_name=${run.databaseName}`);console.log(`public_origin=${run.publicOrigin??''}`)}
 }

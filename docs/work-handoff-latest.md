@@ -441,12 +441,18 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 
 ### 6단계에서 상위 세션이 할 일(순서)
 
-1. 실행기 `YUKEMURI_ENABLED`를 `false`로(`hosting-review-20261011.md` 3.2절 6단계 1번).
-2. 앱 레포 PR 병합(이 PR은 병합 시점과 무관하게 무해). `publicOrigin`·`autoDeploy`는 4단계 완료 PR에서 켜진다.
-3. 사용자 Secret 두 개 등록 확인 → 실행기 PR을 ready로 바꾸고 검토·병합.
-4. 앱 레포 `Yukemuri collection`을 `check-access` → `gentle` 수동 실행. gentle 실행 중 하나를 더 넣어 대기 후 이어 도는지 본다. 실행기 `Yukemuri catalog updates`를 `check`로 수동 실행해 성공 시각을 읽는지 본다.
-5. 실행기 백업을 수동 실행해 새 주소에서 성공하는지 본다.
-6. `YUKEMURI_ENABLED`를 `true`로(7단계).
+2026-10-12 UTC에 `hosting-review-20261011.md` 3.2절 6단계 1~7번과 맞췄다(H01 6단계 도구 하위 세션 A2). 시작 조건: 4단계 완료 PR로 `publicOrigin`·`autoDeploy`가 켜져 있고, 차이 반영 도구(실행기 레포의 새 수동 workflow, 작업 중)가 병합돼 있다. 앱 PR #48은 이미 병합됐다(병합 시점과 무관하게 무해).
+
+1. 실행기 `YUKEMURI_ENABLED`를 `false`로 바꾸고 실행 중인 수집이 끝났는지 본다(3.2절 6단계 1번). 바꾼 시각과 재개 조건을 인수인계에 적는다. 이때부터 7번까지 사용자는 기존 Sites에서 즐겨찾기를 바꾸지 않는다(2번).
+2. Sites 최종 백업: 실행기 `Yukemuri private database backups`를 수동 실행하고 run id를 적는다(3번).
+3. 차이 반영: 실행기 레포의 새 수동 workflow(작업 중)로 2번 체크포인트와 새 D1의 차이를 반영한다(4번). 쓰기 전 bookmark를 적는다.
+4. Sites 재백업과 즐겨찾기 대조: 실행기 백업을 한 번 더 수동 실행하고, 같은 workflow로 즐겨찾기 표를 2번 체크포인트와 대조한다. 다르면 원인을 적고 반영한다(5번). 새 D1에만 있는 즐겨찾기는 지우지 않는다(C4).
+5. 사용자 Secret 두 개 등록 확인 → 실행기 PR #5를 ready로 바꾸고 검토·병합(6번). 이 병합으로 백업 대상이 새 주소로 바뀌므로 Sites 백업(2·4번)은 반드시 그 전에 한다.
+6. 앱 레포 `Yukemuri collection`을 `check-access` → `gentle` 수동 실행. gentle 실행 중 하나를 더 넣어 대기 후 이어 도는지 본다. 실행기 `Yukemuri catalog updates`를 `check`로 수동 실행해 성공 시각을 읽는지 본다(6번 끝).
+7. 새 주소 백업: 실행기 백업을 수동 실행해 새 주소에서 성공하는지 본다(7번).
+8. `YUKEMURI_ENABLED`를 `true`로(7번). 하루 수집 횟수가 cron 횟수를 넘지 않는지 본다.
+
+문제가 생기면 앱 레포 `rollback.yml`을 쓴다(`cloudflare-deploy.md`의 ‘롤백’). Worker 되돌림만으로는 다음 수집 때 main HEAD가 다시 배포되므로 main revert를 함께 한다. `autoDeploy`를 `false`로 바꾸면 수집도 멈춘다.
 
 ### 미확인
 
@@ -467,3 +473,106 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 실행기 PR #5(draft): Codex 1회째(`9ccf22f`, 09:29Z 완료) ‘큰 문제 없음’. 그 뒤 `679b062`에서 workflow 주석·`docs/runner.md`·`project-files.json`만 바꿨다(앱의 `queue: max` 반영 설명). 6단계에서 ready로 바꿀 때 상위 세션이 재검토 여부를 정한다.
 - 다음 작업: 실행기 수동 모드 `backlog`·`refresh`·`diagnose-jalan`은 앱 `collect.yml`로 옮기지 않았다(예약은 gentle만 씀). 필요하면 별도 PR로 옮긴다.
 
+
+## H01 6단계 도구(앱 레포: 롤백·사용량·유지보수 경로 CPU)
+
+기록: 2026-10-12T12:03Z / 2026-10-12 21:03 KST. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이다. 작성 세션 `session_015ge493n1x3SUdwcM1xK6Ko`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값·운영 사이트에 접속하지 않았고 운영 workflow를 실행하지 않았다. `deploy.yml`은 건드리지 않았다.
+
+### 기준과 상태
+
+- 브랜치 `claude/h01-step6-tools`. 시작 기준 main `4b55aaa`(PR #50).
+- 환경: Node 22.22.0(컨테이너 기본, `/opt/nvm` 없음), pnpm 11.25.0, Python 3.13.16. `cloud-setup.sh` rc=0, 잠금 파일 무변경. actionlint 1.7.7.
+- 실행기 레포 차이 반영(A1+A3)은 상위 세션이 다른 세션(`session_01S5AqfcBRKDeqZBzxzvu3gv`)에 맡겼다. 이 세션이 먼저 실행기 클론의 로컬 브랜치에 만든 검사 통과본은 push하지 않았고, 코드 전문을 그 세션에 한 번 보냈다(11:58Z). 앱 레포 문서에는 ‘실행기 레포의 새 수동 workflow(작업 중)’로만 적었다.
+
+### 바꾼 것
+
+- A4 `rollback.yml` + `scripts/cloudflare-rollback.mjs`: 수동 실행, `worker-rollback`(이전 Worker 버전)·`d1-restore`(Time Travel bookmark), `confirm`=`rollback` 필수. 두 동작 모두 먼저 현재 bookmark를 요약에 남긴다. 잠금은 `deploy.yml`과 같은 순서(최상위 `yukemuri-catalog-updates` → job `cloudflare-account`, 둘 다 `queue: max`). 롤백 표(`cloudflare-deploy.md`·`hosting-review` 3.2절)에 ‘Worker 되돌림만으로는 다음 수집 때 main HEAD가 다시 배포된다, main revert를 함께 한다’와 ‘`autoDeploy=false`는 수집도 멈춘다’(`run-collection.py`가 요청 전에 실패)를 적었다. Time Travel 보존은 무료 플랜 7일이다.
+- A6 `usage.yml` + `scripts/cloudflare-usage.mjs`: GraphQL Analytics로 UTC 날짜별 Worker 요청·오류·`cpuTimeP50`/`P99`·상태(`exceededResources`=1102·1027)와 D1 `rowsRead`·`rowsWritten`을 읽는다. 권한 오류·빈 계정 목록은 실패로 끝나고 ‘사용량 0이 아니다’라고 적는다. 행이 없는 날은 ‘기록 없음’.
+- A2: 위 ‘H01 6단계 준비’ 절의 6단계 순서를 `hosting-review` 3.2절 6단계 1~7번에 맞췄다. `hosting-review` 4·5번에 C4(새 D1에만 있는 즐겨찾기는 지우지 않음)를 더했다.
+- C1 `scripts/measure-route-cpu.mjs`: 유지보수 경로 11개를 더했다(crawl report=1·GET·POST 2종·PUT 상세·PUT 목록, crawl-prepare 준비됨·seed 바뀜, catalog-export 목록·hotels 1,000행·crawl_jobs 1,000행). 크롤 키 헤더, 요청마다 새 claim token, DB 대역의 `run()`이 실제 변경 행 수를 돌려주게 고쳤다(PUT의 임대 확인이 이 값을 본다). 유지보수 경로는 상태 200이 아니면 측정을 멈춘다. 판정 한도는 공개 5ms, 유지보수 10ms(Workers Free CPU).
+
+### C1 측정 결과(운영 규모 복사본, Node 22.22.0, `docs/evidence/h01-route-cpu-maintenance-20261012.json`)
+
+JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개 중앙·최대, warm은 200회 뒤 200회 중앙·p95. Node 측정이며 workerd의 isolate 시작·파싱은 빠졌다. 쓰기 요청은 측정 뒤 트랜잭션을 되돌려 모든 cold·warm 요청이 같은 DB에서 시작한다(PR #53 Codex 1회째 P2, `c0ce785`). 시작 행 수가 하나라도 다르면 측정이 멈춘다. 되돌림을 끈 변형(`--only crawlPutList --cold-runs 3`)은 ‘cold and warm runs started from different database states’로 멈췄다. 아래는 두 수정 뒤 다시 잰 값이다(측정 끝 2026-10-12T12:55Z).
+
+| 경로 | cold 중앙 ms | cold 최대 | warm 중앙 | warm p95 |
+|---|---:|---:|---:|---:|
+| 수집 보고(report=1) | 2.74 | 3.10 | 0.68 | 1.43 |
+| 수집 GET 집계 | 2.27 | 3.31 | 0.38 | 0.55 |
+| 선점 POST(trip detail) | 3.90 | 4.92 | 0.34 | 0.48 |
+| 선점 POST(jalan list national) | 4.73 | 5.22 | 0.31 | 0.42 |
+| PUT 상세 1곳 | 8.60 | 12.21 | 0.76 | 1.57 |
+| **PUT 목록(새 30·기존 15)** | **57.27** | 68.69 | 6.59 | **16.01** |
+| crawl-prepare(준비 끝남) | 1.81 | 2.66 | 0.10 | 0.31 |
+| **crawl-prepare(seed 바뀜 첫 요청)** | **399.54** | 462.26 | 0.09 | 0.19 |
+| catalog-export 목록 | 2.80 | 3.20 | 0.16 | 0.30 |
+| **catalog-export hotels 1,000행** | **21.00** | 23.60 | **13.87** | **18.63** |
+| catalog-export crawl_jobs 1,000행 | **11.30** | 13.79 | 3.75 | 7.31 |
+
+- crawl-prepare(준비 끝남)는 Codex 2회째 P2로 고친 값이다. 처음 두 측정은 준비 요청을 한 번만 불러 `done:false`인 채로, 아직 남은 준비 한 쪽(최대 500행)을 매번 처리했다(cold 17–22ms). 지금은 측정 전에 `done:true`가 될 때까지 준비하고(운영 규모로 늘린 뒤에도 다시), 준비 끝남 측정에서 응답이 `done:true`가 아니면 멈춘다. 한 번만 부르는 변형은 ‘the catalogue was not fully prepared’로 멈췄다. 수집 실행이 처음 부르는 준비 확인은 cold 1.8ms다.
+- 공개 경로 10개도 같은 실행에서 쟀다. 비교 4곳·사진 출처 다음 쪽 cold가 5ms를 넘어 P03 기록(5.23ms 등)보다 높다. 컨테이너가 달라 생긴 차이일 수 있다(미확인). 공개 경로 판단은 P03 기록을 유지한다.
+- 위험(상위 세션 판단 필요, 이 PR에서 고치지 않음):
+  1. 백업 `catalog-checkpoint.py`가 `limit=1000`으로 hotels를 읽는다. 한 쪽 warm 14ms·cold 21ms로 10ms를 넘는다. crawl_jobs 1,000행도 cold 11ms다. 6단계 뒤 새 주소 백업에서 1102 위험. 실행기의 `limit`을 250 정도로 낮추는 변경이 후보다(쪽 수는 4배, D1 읽기 행은 같음).
+  2. 수집 목록 PUT은 warm 중앙 6.6ms, p95 16.0ms, cold 57ms다. 목록 페이지마다 1102 위험. 쪼개 보내기(관측 수 상한) 또는 저장 경로 최적화가 후보다.
+  3. crawl-prepare는 준비가 끝난 카탈로그에서는 cold 1.8ms로 문제없다. seed가 바뀐 릴리스의 첫 준비 요청은 400ms다. 그 요청은 배포 workflow의 준비 단계(`cloudflare-prepare.mjs`)가 부른다. 실제 1102가 나는지는 seed를 바꾸는 첫 배포에서 본다. Cloudflare 문서는 ‘가끔 넘는 것은 허용’이라고만 한다.
+  4. PUT 상세 1곳은 cold 8.6ms(최대 12.2ms)로 경계다.
+- 5단계 Workers Logs·`usage.yml`의 `exceededResources`로 실제 값을 확인하는 것이 먼저다. 이 측정은 Node 기준이라 workerd와 다를 수 있다.
+
+### 검사
+
+- `python3 scripts/cloud-check.py --full` 33개 통과(11:51Z–12:00Z, rc=0, `check-rollback-workflow.mjs` 포함). 그 뒤 더한 `check-cloudflare-usage.mjs`를 넣어 기본 `cloud-check.py` 통과(12:01Z).
+- `check-rollback-workflow.mjs`: 워크플로 규칙, bookmark 기록 순서, 거부 입력, 가짜 wrangler로 끝까지 env 전달. 변형 9종(confirm 검사 삭제, bookmark 없음 무시, 순서, 복구 확인 삭제, 같은 배포 허용, 주의 문구 삭제, 잠금 그룹, `queue: single`, push 트리거)이 모두 실패.
+- `check-cloudflare-usage.mjs`: 가짜 GraphQL 응답. 변형 7종(빈 계정 목록을 0으로, 403을 권한 오류로 안 봄, 빈 날을 0으로, 마이크로초 그대로, 상태 이름 틀림, ‘기록 없음’ 대신 0, 날짜 필터 틀림)이 모두 실패.
+- actionlint 1.7.7 통과(7개 workflow). `check-deploy-config.mjs`가 새 workflow 둘을 포함해 통과.
+
+### 미확인
+
+- 실제 Cloudflare에서 `rollback`·`deployments status --json`·`time-travel restore --json`의 동작과 응답 형식(wrangler 4.92.0 소스로만 확인). Secret이 그 버전 뒤에 바뀌었을 때 `rollback`의 비대화형 확인.
+- GraphQL 스키마가 이 쿼리를 받는지(필드 이름은 `cloudflare/cloudflare-docs` 원본 예시와 같음). 권한 없는 토큰의 실제 응답 형태.
+- C1 값의 workerd 대비 차이.
+
+### 사용자 조치
+
+1. Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`의 토큰 → Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더한다. 토큰 값은 바뀌지 않는다. 없으면 `usage.yml`이 실패한다.
+2. 실행기 Secret `YUKEMURI_APP_DISPATCH_TOKEN`·`YUKEMURI_CLOUDFLARE_JSON`(위 ‘H01 6단계 준비’ 절, 변경 없음).
+
+### 검토와 다음 작업
+
+- Codex 1회째(`5fcd681`, 12:11Z 요청, 12:15Z 완료): P2 2건. (1) 쓰기 경로 CPU 측정이 같은 DB를 이어 바꿔 ‘새 숙소 30·기존 15’를 실제로 재지 않음 → 요청마다 되돌림과 시작 상태 검사, 다시 측정. (2) 사용량 비율을 이 Worker·D1 값으로 계정 한도에 나눔 → 계정 전체 합계를 따로 읽어 비율·경고에 씀, 변형 4종 실패 확인. 둘 다 `c0ce785`에서 고치고 스레드에 답했다.
+- main `0420e4e`(PR #51) merge(`d1a235f`, 충돌 2곳: 인수인계·`cloud-check.py`, 둘 다 양쪽 유지). #51의 규칙에 따라 `rollback.yml`·`usage.yml`에 `defaults.run.shell: bash`를 넣었다. `cloud-check.py --full` 35개 통과.
+- Codex 2회째(`d1a235f`, 12:44Z 요청, 12:52Z 완료): P2 1건. 측정 fixture가 crawl-prepare를 한 번만 불러 ‘준비됨’ 값이 미완료 쪽을 쟀음 → `6c56c8d`에서 `done:true`까지 준비, 다시 측정(위 표).
+- Codex 3회째(`b029905`, 13:06Z 요청, 13:10Z 완료): P2 1건. `usage.yml`의 `date`에 없는 날짜(`2026-02-31`)를 넣으면 `Date.parse`가 다음 달로 넘겨 다른 날을 조회함 → 파싱한 날짜가 입력과 같은지 확인해 거부, 검사에 2·4월 말과 윤일을 더함(가드를 뺀 변형은 실패). Codex 요청 3회를 다 썼고 그 뒤 기록 파일 밖(스크립트·검사)이 바뀌었으므로 ‘이어 가는 Claude 검토’가 필요하다(상위 세션이 연다).
+- 이어 가는 Claude 검토 1회째(세션 `session_01MnG6VhzbLmECs5o9SPjNjo`, `0b12c5f`, 13:25Z): P0–P2 없음, P3 2건. 병합 조건(마지막 검토 뒤 기록 파일만 변경)을 지키려고 절차 문서는 고치지 않고 아래 다음 작업에 적었다. CI는 `0b12c5f`에서 통과했다.
+- 다음 작업: 위 C1 위험 1~3의 대응 여부를 상위 세션이 정한다.
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘롤백’의 ‘Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인)’는 틀렸다. wrangler 4.92.0은 오류 10220을 받으면 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `deployments?force=true`로 강제로 되돌린다(검토 세션이 가짜 API로 재현). 되돌린 버전은 그때의 Secret(예: 바꾸기 전 `CRAWL_ACCESS_KEY`)을 쓸 수 있고 요약에는 표시가 없다. 문서를 고치고, 키를 바꾼 적이 있으면 롤백 뒤 수집 키를 확인하라는 주의와, 필요하면 출력의 `secrets have changed`를 요약 경고로 남기는 처리를 더한다. 이 절의 ‘미확인’ 첫 항목도 같은 내용으로 바꾼다.
+- 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘사용량 측정’의 ‘그 밖의 실패 4종’은 5종이다(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음).
+
+## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
+
+기록: 2026-10-12T11:39Z / 2026-10-12 20:39 KST. 상위 세션이 맡긴 작업이다(10:35Z 요청, 사전 검토 B1·B2·B3·B5·B6·C2·C3·A5). 작성 세션 `session_01DPWccvrTAVG5jay8KLJYLT`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값에 접속하지 않았다.
+
+### 기준과 상태
+
+- 앱 브랜치 `claude/h01-deploy-preflight`. 시작 기준 main `4b55aaa`(PR #50).
+- 실행기 PR #5(A5): main `9fb6e1d`(PR #4)을 merge했다(`ef88659`). `project-files.json` 충돌은 main 쪽을 기준으로 다시 계산했다. 코드 변경은 없어 재검토는 필요 없다고 본다. 실행기 검사(`check-project-files.py` 350개, `check-dispatch-app-collection.py`, `check-checkpoint.py`, `check-cloudflare-load.py --no-d1`)가 통과했다.
+
+### 바꾼 것
+
+- B1·B2: `deploy.yml`에서 `cloudflare/wrangler-action`을 뺐다. 모든 wrangler 명령을 `node node_modules/wrangler/bin/wrangler.js`(4.92.0)와 `--config dist/server/wrangler.json`으로 직접 실행한다. 근거: action의 `secrets:` 입력은 `wrangler secret bulk`를 `--config` 없이 돌린다. 로컬에서 같은 명령이 빌드 뒤에도 `Required Worker name missing`으로 실패했다(재현). Worker 배포는 새 `scripts/cloudflare-deploy-worker.sh`가 한다. 크롤 키를 0600 임시 파일에 써 `deploy --secrets-file`로 넘기고, 끝나면(실패해도) 지운다. job에 `defaults.run.shell: bash`를 둬서 `| tee`로 이은 단계도 pipefail로 실패하게 했다.
+- B5: `workflow_dispatch` 입력 `preflight`. `databaseId`만 있으면 돌고 쓰기를 하지 않는다. 빌드, time travel 정보, `d1 migrations list`, 원격 스냅숏(읽기), `catalog_meta` 읽기와 `preflight-report.mjs` 추정, `deploy --dry-run`(자리표시 Secret)을 한다. 게이트는 `deployMode()`(`skip`·`deploy`·`preflight`)다.
+- B3: `measure-d1-reads.mjs --prepare-steps`로 운영 규모 복사본에서 seed 단계별 `crawl-prepare` 쓰기를 쟀다(`evidence/h01-deploy-preflight-20261012.json`). `multilingual-index-v1` 45,406행(읽기 191만), 다섯 모두 21,136행, 나머지는 수십 행 이하. 유지보수 커서가 뒤처지면 27번 불러 읽기 757만·쓰기 3.5만 행이었다. 사전 점검이 빠진 키와 뒤처진 커서를 보고하고 쓰기를 추정한다.
+- B6·C2: smoke의 키 있는 `/api/crawl?report=1`(복사본에서 요청 하나가 71,592행 읽음, 준비 안 된 카탈로그를 씀)을 `/api/collector-release`(D1 0행, `siteOrigin`이 이 주소인지 확인)로 바꿨다. manifest와 `/`는 5초 간격 6번까지 다시 본다. smoke의 D1 읽기는 상세 한 건뿐이라 수집 끝 배포도 같은 smoke를 쓴다.
+- C3: 수집 끝 배포는 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사 성공(`Cloud app checks` 또는 push 배포)을 찾으면 `cloud-check --full` 대신 빌드만 한다. 못 찾거나 API가 답하지 않으면 `--full`을 돌린다. 이를 위해 `deploy.yml`·`collect.yml`에 `actions: read`를 더했다.
+- 검사: `check-deploy-config.mjs`가 쓰기 명령이 `mode == 'deploy'` 단계에만 있는지, preflight 단계에 쓰기가 없는지, wrangler-action이 없는지, pipefail, C3 조건, 게이트 모드, 배포 스크립트(가짜 wrangler로 0600 파일·삭제·키 비노출·실패 전파), 추정 함수를 단언한다. 새 `check-cloudflare-smoke.mjs`는 로컬 대역 서버로 smoke를 돌린다.
+
+- 상위 세션 추가 8–10번(11:33Z 요청): 모든 workflow에 `defaults.run.shell: bash`(pipefail), 스냅숏 id가 비면 실패, `--require-prepared` 실패 때 보고서를 쓰지 않음, smoke는 `SNAPSHOT_ID` 필수이고 빌드한 manifest의 id·형식과 대조, 형식 번호는 `SNAPSHOT_FORMAT` 하나에서. 대조 변형 4종(d1-setup 기본 셸 제거, id 확인 제거, smoke에 빈 id, job에서 셸 덮어쓰기)에서 `check-deploy-config.mjs`가 실패했다.
+
+### 확인한 것과 미확인
+
+- 로컬 `cloudflare-deploy-worker.sh --dry-run`(네트워크 차단): 빌드 업로드 5,874.18KiB(gzip 866.89KiB), 바인딩에 `CRAWL_ACCESS_KEY`(숨김) 표시, rc=0, 임시 파일 남지 않음.
+- 변형 11종 중 10종에서 `check-deploy-config.mjs`가 실패했다. `umask 022` 변형은 살아남았다. `mktemp`가 언제나 0600 파일을 만들기 때문이고, 검사는 파일 권한 600을 직접 확인한다.
+- 미확인: 실제 계정에서 `--secrets-file` 업로드, `preflight`의 실제 결과. 병합 뒤 상위 세션이 `preflight`를 수동 실행한다.
+- 위험: `multilingual-index-v1`이 빠진 채 첫 배포를 하면 prepare가 요청 하나에서 숙소 전체를 재색인한다(로컬 24초). 무료 플랜 CPU 한도(요청당 10ms)로 실패하거나 그날 D1 읽기를 크게 쓸 수 있다. 사전 점검 결과로 상위 세션이 판단한다.
+- `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.
+- 검토: Codex 1회째(`8849151`, 12:03Z 요청, 12:09Z 완료) P2 1건. `maintenanceBehind()`가 `collection-priority:` 접두사로 판정해, 예전 계획 버전의 완료 행만 있어도 ‘완료’로 봤다. 앱은 현재 계획 버전 키(`collection-priority:` + `data/collection-priorities.json`의 `version`)만 본다. 정확한 키로 고치고 예전 버전 행만 있는 경우를 검사에 넣었다. 기본 `cloud-check.py` 통과(12:09:56Z 종료) 뒤 `check-deploy-config.mjs` 통과.
+- Codex 2회째(`d4de172`, 12:17Z 요청, 12:21:18Z 완료)는 ‘큰 문제 없음’이었다. 남은 지적은 없다. CI `checks`는 `d4de172`에서 통과했다. main `4b55aaa`과 충돌이 없다. 이 기록 커밋 뒤의 변경은 인수인계뿐이다.

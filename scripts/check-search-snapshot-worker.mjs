@@ -8,6 +8,7 @@ import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync,mkdirSync,writeFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
+import {spawnSync} from 'node:child_process';
 import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE,compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
@@ -40,7 +41,7 @@ try{
  assert.deepEqual(await fingerprint(),before,'building the snapshot changed D1');
  const manifest=read(local,'manifest.json'),dir=join(local,'snapshot','v',manifest.id),file=name=>JSON.parse(readFileSync(join(dir,name+'.json'),'utf8'));
  const core=file('core'),cards=file('cards'),text=file('text'),status=file('status');
- assert.equal(manifest.format,1);assert.equal(manifest.generatedAt,'2026-10-12T00:00:00.000Z');
+ assert.equal(manifest.format,Number(readFileSync('lib/search-snapshot.ts','utf8').match(/^export const SNAPSHOT_FORMAT=(\d+);$/m)[1]),'manifest format is lib SNAPSHOT_FORMAT');assert.equal(manifest.generatedAt,'2026-10-12T00:00:00.000Z');
  for(const [name,path] of Object.entries(manifest.files))assert.equal(path,`/snapshot/v/${manifest.id}/${name}.json`);
 
  // Search columns: the hotels table, in id order, with the former map rule for
@@ -148,6 +149,21 @@ try{
  assert.equal(readFileSync(join(local,'_headers'),'utf8').split(HEADERS_RULE).length,2);
  assert(existsSync(join(local,'snapshot','manifest.json')));
  assert.equal(pageOf().split('data-first-page=').length,2,'rebuild renders one first page');
+ // CLI on an unprepared catalogue (migrations only): --require-prepared fails and
+ // leaves no report, so deploy.yml never reads an id for that snapshot.
+ {
+  const {DatabaseSync}=await import('node:sqlite');
+  const file=join(temp,'unprepared.sqlite'),empty=new DatabaseSync(file);
+  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())empty.exec(readFileSync(join('drizzle',f),'utf8').replaceAll('--> statement-breakpoint',''));
+  empty.close();
+  const cli=args=>spawnSync(process.execPath,['scripts/build-search-snapshot.mjs','--sqlite',file,'--out',join(temp,'cli'),'--report',join(temp,'cli-report.json'),...args],{encoding:'utf8'});
+  writeFileSync(join(temp,'cli-report.json'),'{"stale":true}');
+  let r=cli(['--require-prepared']);
+  assert.notEqual(r.status,0,'--require-prepared fails on an unprepared catalogue');
+  assert(!existsSync(join(temp,'cli-report.json')),'no report (not even a stale one) after --require-prepared fails');
+  r=cli([]);assert.equal(r.status,0,r.stderr);
+  assert(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).unprepared.length>0,'without the flag the report lists the unprepared steps');
+ }
  const kb=n=>(n/1024).toFixed(0)+'KiB';
  console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}

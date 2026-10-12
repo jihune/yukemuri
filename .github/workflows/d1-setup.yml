@@ -17,6 +17,10 @@ concurrency:
   queue: max
 permissions:
   contents: read
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
 jobs:
   d1:
     runs-on: ubuntu-latest
