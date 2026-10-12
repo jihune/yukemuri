@@ -1,0 +1,28 @@
+name: Yukemuri collection watch
+# H01 step 6: every 6 hours, fail when the last successful gentle collection
+# (collect.yml) is older than 12 hours. This catches a runner schedule that
+# never fires (Actions minutes used up, YUKEMURI_ENABLED left false), which the
+# runner's own 12-hour check cannot see (hosting-review-20261011.md 3.5 #14).
+# Skips before the switch (publicOrigin null); passes until the first success.
+on:
+  schedule:
+    - cron: '41 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-collection-freshness.mjs
