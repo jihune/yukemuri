@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 import {deployGate,deployMode} from './cloudflare-deploy-gate.mjs';
 import {checkedOnMain} from './checked-commit.mjs';
-import {prepareEstimate,metaRows,maintenanceBehind,EVIDENCE} from './preflight-report.mjs';
+import {prepareEstimate,metaRows,maintenanceBehind,PRIORITY_VERSION,EVIDENCE} from './preflight-report.mjs';
 import {ensureSubdomain} from './cloudflare-workers-subdomain.mjs';
 
 const base={workerName:'yukemuri',databaseName:'yukemuri',databaseId:null,publicOrigin:null,autoDeploy:false};
@@ -189,8 +189,12 @@ assert.throws(()=>deployMode(base,{preflight:true}),/database_id/);
  assert.equal(prepareEstimate(['snapshot','multilingual-index-v1'],{...prepare,all:{rowsWritten:500}}).rowsWritten,1110,'the larger of the sum and the measured total');
  assert.deepEqual(metaRows([{results:[{key:'snapshot',value:'v'}],success:true}]).map(r=>r.key),['snapshot']);
  assert.throws(()=>metaRows([{results:[{value:'x'}]}]));
- assert.deepEqual(maintenanceBehind([{key:'onsen-place-search-v1',value:'done'},{key:'external-bath-scope-v1',value:'hotel-9'},{key:'collection-priority:v3',value:'done'}]),['external-bath-scope-v1']);
- assert.deepEqual(maintenanceBehind([]),['onsen-place-search-v1','external-bath-scope-v1','collection-priority:'],'a missing cursor is behind');
+ const current='collection-priority:'+PRIORITY_VERSION;
+ assert.equal(PRIORITY_VERSION,JSON.parse(readFileSync('data/collection-priorities.json','utf8')).version);
+ assert.match(readFileSync('lib/collection-priorities.ts','utf8'),/key='collection-priority:'\+plan\.version/,'the app keys priorities by the plan version');
+ assert.deepEqual(maintenanceBehind([{key:'onsen-place-search-v1',value:'done'},{key:'external-bath-scope-v1',value:'hotel-9'},{key:current,value:'done'}]),['external-bath-scope-v1']);
+ assert.deepEqual(maintenanceBehind([{key:'onsen-place-search-v1',value:'done'},{key:'external-bath-scope-v1',value:'done'},{key:'collection-priority:older-plan',value:'done'}]),[current],'an older plan version done does not count');
+ assert.deepEqual(maintenanceBehind([]),['onsen-place-search-v1','external-bath-scope-v1',current],'a missing cursor is behind');
  const evidence=JSON.parse(readFileSync(EVIDENCE,'utf8'));
  for(const k of ['settle','none','snapshot','multilingual-index-v1','bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1','all'])assert(Number.isInteger(evidence.prepareSteps[k]?.rowsWritten),'evidence lacks '+k);
 }

@@ -35,10 +35,13 @@ export function metaRows(output){
 
 // Per-row maintenance every crawl-prepare call resumes (not a seed step): done
 // on a database loaded from a prepared one. When behind, the first calls redo
-// it over every hotel (measured as settle).
-export const MAINTENANCE=['onsen-place-search-v1','external-bath-scope-v1','collection-priority:'];
-export function maintenanceBehind(meta){
- return MAINTENANCE.filter(prefix=>{const rows=meta.filter(r=>prefix.endsWith(':')?r.key.startsWith(prefix):r.key===prefix);return !rows.length||rows.some(r=>r.value!=='done')});
+// it over every hotel (measured as settle). The priority key carries the plan
+// version this build reads (lib/collection-priorities.ts); an older version's
+// done row does not count (PR #51 Codex review).
+export const PRIORITY_VERSION=JSON.parse(readFileSync(new URL('../data/collection-priorities.json',import.meta.url),'utf8')).version;
+export const MAINTENANCE=['onsen-place-search-v1','external-bath-scope-v1','collection-priority:'+PRIORITY_VERSION];
+export function maintenanceBehind(meta,keys=MAINTENANCE){
+ return keys.filter(key=>meta.find(r=>r.key===key)?.value!=='done');
 }
 
 export function summary(report,meta,evidence){
@@ -50,7 +53,7 @@ export function summary(report,meta,evidence){
   `- Snapshot: ${report.manifest.hotels} hotels, ${report.rowsRead||'unreported'} rows read in ${report.queries} queries; gzip ${Object.entries(report.sizes).map(([k,s])=>`${k} ${kb(s.gzip)}`).join(', ')}.`,
   `- catalog_meta keys (${meta.length}): ${meta.map(r=>r.key).join(', ')||'none'}.`,
   `- Not prepared for this release: ${report.unprepared.join(', ')||'none'}.`,
-  `- Per-row maintenance not done: ${behind.map(k=>k.endsWith(':')?k+'*':k).join(', ')||'none'}${behind.length&&settle?` (on the local copy, catching up took ${settle.calls} calls, ${settle.rowsRead.toLocaleString('en-US')} rows read and ${settle.rowsWritten.toLocaleString('en-US')} written; D1 free plan reads 5,000,000 rows per UTC day)`:''}.`,
+  `- Per-row maintenance not done: ${behind.join(', ')||'none'}${behind.length&&settle?` (on the local copy, catching up took ${settle.calls} calls, ${settle.rowsRead.toLocaleString('en-US')} rows read and ${settle.rowsWritten.toLocaleString('en-US')} written; D1 free plan reads 5,000,000 rows per UTC day)`:''}.`,
   `- crawl-prepare writes if deployed now: ${estimate.rowsWritten===null?'unknown':'about '+estimate.rowsWritten.toLocaleString('en-US')+' rows'} (${estimate.basis}; ${evidence.measuredAt}, local copy of ${evidence.tables.hotels} hotels). D1 free plan: ${D1_DAILY_WRITES.toLocaleString('en-US')} rows written per UTC day.`,
  ].join('\n');
 }

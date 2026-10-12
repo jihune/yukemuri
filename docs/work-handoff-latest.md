@@ -495,3 +495,4 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 미확인: 실제 계정에서 `--secrets-file` 업로드, `preflight`의 실제 결과. 병합 뒤 상위 세션이 `preflight`를 수동 실행한다.
 - 위험: `multilingual-index-v1`이 빠진 채 첫 배포를 하면 prepare가 요청 하나에서 숙소 전체를 재색인한다(로컬 24초). 무료 플랜 CPU 한도(요청당 10ms)로 실패하거나 그날 D1 읽기를 크게 쓸 수 있다. 사전 점검 결과로 상위 세션이 판단한다.
 - `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.
+- 검토: Codex 1회째(`8849151`, 12:03Z 요청, 12:09Z 완료) P2 1건. `maintenanceBehind()`가 `collection-priority:` 접두사로 판정해, 예전 계획 버전의 완료 행만 있어도 ‘완료’로 봤다. 앱은 현재 계획 버전 키(`collection-priority:` + `data/collection-priorities.json`의 `version`)만 본다. 정확한 키로 고치고 예전 버전 행만 있는 경우를 검사에 넣었다. 기본 `cloud-check.py` 통과(12:09:56Z 종료) 뒤 `check-deploy-config.mjs` 통과.
