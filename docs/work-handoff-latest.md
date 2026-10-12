@@ -13,7 +13,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - H01 4단계 적재: D1 무료 한도는 UTC 날짜 단위(00:00Z 초기화)라 같은 날짜 안이면 시각은 상관없다(사용자와 확인). 2일차(hotels)는 10-12T09:05Z, 3일차(hotel_names)는 10-13T00:05Z(H01 세션이 예약).
 - 상위 세션 결정(10-11): 검토 상한 규칙(PR #41), Codex 중복 요청은 같은 head면 1회, P03 비교 4곳 cold CPU 5.23ms(최대 6.7ms)는 ‘약 5ms’로 받아들이고 5단계 Workers Logs에서 넘치면 ‘수집 때 합친 숙소 저장’을 검토, 조건 있는 주소의 첫 카드 지연(느린 4G·4x에서 약 5.1초, main 1.7초)은 받아들이고 개선 후보는 P03 다음 작업에 둠.
 - 사용량 한도 대비 절차는 `cloud-development.md`의 ‘사용량 한도와 중단 대비’ 절에 적었다.
-- 사용자 조치: 지금 당장 필요한 것은 없다. 6단계(전환) 전에 실행기 레포 Secret으로 앱 레포 수집 부르기용 fine-grained PAT(`jihune/yukemuri`만, Actions: Read and write)를 만든다(`hosting-review-20261011.md` 3.3절 4번). 6단계 시작 때 상위 세션이 다시 안내한다.
+- 사용자 조치: claude.ai 설정에서 Claude 사용량 크레딧(추가 사용량)이 꺼져 있는지 확인한다. 켜져 있으면 한도 뒤에도 과금으로 계속 돈다(`cloud-development.md` ‘사용량 한도와 중단 대비’). 6단계(전환) 전에 실행기 레포 Secret으로 앱 레포 수집 부르기용 fine-grained PAT(`jihune/yukemuri`만, Actions: Read and write)를 만든다(`hosting-review-20261011.md` 3.3절 4번). 6단계 시작 때 상위 세션이 다시 안내한다.
 
 ## H01 2단계(앱 레포 Cloudflare 배포 준비)
 
