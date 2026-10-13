@@ -1,4 +1,4 @@
-import {SNAPSHOT_FORMAT,SNAPSHOT_MANIFEST,type SnapshotManifest,type SnapshotCore,type SnapshotText,type HotelSummary} from './search-snapshot';
+import {SNAPSHOT_FORMAT,SNAPSHOT_MANIFEST,type SnapshotManifest,type SnapshotCore,type SnapshotText,type SnapshotGeo,type HotelSummary} from './search-snapshot';
 import type {CollectionStatus} from './collection-status';
 import {openSnapshot,addSnapshotText,type SearchSnapshot} from './static-search';
 // Loads the static search snapshot. The manifest is revalidated on every load;
@@ -51,3 +51,6 @@ export function loadSnapshotText(s:SearchSnapshot):Promise<SearchSnapshot>{
 }
 // The collection status computed with a given snapshot: the one the page shows.
 export function loadSnapshotStatus(manifest:SnapshotManifest,signal?:AbortSignal){return json<CollectionStatus>(manifest.files.status,'default',signal)}
+// Map positions with their precision (D06), for a map that shows every hotel;
+// null for a snapshot built before geo.json existed.
+export function loadSnapshotGeo(manifest:SnapshotManifest,signal?:AbortSignal):Promise<SnapshotGeo|null>{return manifest.files.geo?json<SnapshotGeo>(manifest.files.geo,'default',signal):Promise.resolve(null)}

@@ -122,14 +122,36 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CI: 'true'
         run: node "$WRANGLER" d1 migrations apply yukemuri --remote --config dist/server/wrangler.json
+      # D06 map positions: the offline geocoder (jageocoder, hash-pinned in
+      # scripts/geo/requirements.txt) and its address dictionary, pinned by size
+      # and SHA-256 in scripts/geo/pins.json and kept in actions/cache under that
+      # hash. Either step may fail (continue-on-error) without failing the run;
+      # a failed cache restore only means downloading again. The snapshot is then
+      # built without geocoded points and says why. Nothing here touches D1.
+      - if: steps.gate.outputs.mode != 'skip'
+        uses: actions/cache@v5
+        continue-on-error: true
+        with:
+          path: ${{ runner.temp }}/jageocoder/gaiku_all_20250423_v22.zip
+          key: jageocoder-gaiku_all_20250423_v22-31a7551467c209653de62051765442b3ad888530a8dc4e17b8fd123405301653
+      - if: steps.gate.outputs.mode != 'skip'
+        id: geo
+        continue-on-error: true
+        env:
+          GEO_DIR: ${{ runner.temp }}/jageocoder
+        run: bash scripts/geo/prepare.sh | tee -a "$GITHUB_STEP_SUMMARY"
       # The search snapshot (static assets) from the migrated D1: reads only.
       - if: steps.gate.outputs.mode != 'skip'
         id: snapshot
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GEO_DB: ${{ steps.geo.outputs.db }}
+          GEOCODER_PYTHON: ${{ steps.geo.outputs.python }}
+          GEO_REASON: ${{ steps.geo.outputs.reason || 'geocoder preparation failed' }}
         run: |
-          node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi
+          node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json "${geo[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
           [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
           echo "id=$id" >> "$GITHUB_OUTPUT"
@@ -174,8 +196,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GEO_DB: ${{ steps.geo.outputs.db }}
+          GEOCODER_PYTHON: ${{ steps.geo.outputs.python }}
+          GEO_REASON: ${{ steps.geo.outputs.reason || 'geocoder preparation failed' }}
         run: |
-          node scripts/build-search-snapshot.mjs --remote --require-prepared --report snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi
+          node scripts/build-search-snapshot.mjs --remote --require-prepared --report snapshot-report.json "${geo[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
           [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
           echo "id=$id" >> "$GITHUB_OUTPUT"

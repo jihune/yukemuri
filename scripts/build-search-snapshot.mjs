@@ -3,6 +3,10 @@
 // Usage:
 //   node scripts/build-search-snapshot.mjs --sqlite <file> [--out dist/client] [--report file]
 //   node scripts/build-search-snapshot.mjs --remote [--out dist/client] [--report file]
+//   [--geocoder-db <installed jageocoder dictionary> | --geocoder-skip <reason>]
+// Map positions (geo.json, D06): payload coordinates, then Wikidata, then the
+// geocoder (scripts/snapshot-geo.mjs). Without the geocoder the snapshot is
+// still built, without those points; the reason is printed.
 // --remote reads the D1 named in cloudflare-deploy.json through the Cloudflare
 // API (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID). Every source is read-only:
 // a statement that does not start with SELECT/WITH, or holds a write word
@@ -19,6 +23,7 @@ import {createHash} from 'node:crypto';
 import {gzipSync,brotliCompressSync,constants} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 import {renderStaticPage} from './build-static-page.mjs';
+import {addGeo,loadWikidata,dictionaryGeocoder,geoSummary} from './snapshot-geo.mjs';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const HEADERS_RULE='/snapshot/v/*\n  Cache-Control: public, max-age=31536000, immutable\n';
@@ -110,7 +115,9 @@ export function compileLib(temp,entry='lib/search-snapshot-build.ts',more=[]){
 }
 // builder: the compiled lib/search-snapshot-build module, to build more than
 // once without compiling again (tests); compiled here when absent.
-export async function buildSnapshot({db,out,now=new Date(),builder}){
+// geocode: inputs => [lat,lng,grade]|null per input (dictionaryGeocoder), or
+// null with skipReason. wikidata: Trip id -> point (loadWikidata by default).
+export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata}){
  const temp=mkdtempSync(join(tmpdir(),'yukemuri-snapshot-'));
  try{
   const guarded=readOnly(db);
@@ -119,7 +126,10 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
   const {buildSearchSnapshot,SNAPSHOT_FORMAT}=builder??createRequire(import.meta.url)(compileLib(temp));
   if(!Number.isInteger(SNAPSHOT_FORMAT))throw new Error('The snapshot builder exports no SNAPSHOT_FORMAT');
   const data=await buildSearchSnapshot(now);
-  const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status)};
+  let points=wikidata,wikidataError=null;
+  if(!points)try{points=loadWikidata()}catch(error){points=new Map();wikidataError=String(error.message).slice(0,200)}
+  const geo={...await addGeo({ids:data.core.ids,geo:data.geo,inputs:data.geocodeInputs,wikidata:points,geocode,skipReason}),wikidataError};
+  const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status),geo:JSON.stringify(data.geo)};
   const id=createHash('sha256').update(JSON.stringify(files)).digest('hex').slice(0,16);
   const folder=join(out,'snapshot'),dir=join(folder,'v',id);
   // Only the current version is published; older ones leave the asset set.
@@ -140,7 +150,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder}){
   }
   const headers=join(out,'_headers'),current=existsSync(headers)?readFileSync(headers,'utf8'):'';
   if(!current.includes(HEADERS_RULE))writeFileSync(headers,current+(current&&!current.endsWith('\n')?'\n':'')+HEADERS_RULE);
-  return{manifest,sizes,data,unprepared:data.unprepared,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
+  return{manifest,sizes,data,geo,unprepared:data.unprepared,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
  }finally{delete globalThis.__SNAPSHOT_ENV;rmSync(temp,{recursive:true,force:true})}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
@@ -151,12 +161,16 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const config=JSON.parse(readFileSync(join(ROOT,'cloudflare-deploy.json'),'utf8'));
   db=remoteSource({token:process.env.CLOUDFLARE_API_TOKEN,account:process.env.CLOUDFLARE_ACCOUNT_ID,database:config.databaseId});
  }else if(arg('--sqlite')){const s=await sqliteSource(resolve(arg('--sqlite')));db=s;close=s.close}
- else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file] [--require-prepared]');
+ else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file] [--require-prepared] [--geocoder-db dir | --geocoder-skip reason]');
  try{
-  const result=await buildSnapshot({db,out});
+  const dbDir=arg('--geocoder-db'),installed=dbDir&&existsSync(join(resolve(dbDir),'README.md'));
+  const geocode=installed?dictionaryGeocoder({dbDir:resolve(dbDir),python:process.env.GEOCODER_PYTHON||'python3'}):null;
+  const skipReason=dbDir&&!installed?'no installed dictionary in '+dbDir:arg('--geocoder-skip')||'no --geocoder-db given';
+  const result=await buildSnapshot({db,out,geocode,skipReason});
   const kb=n=>(n/1024).toFixed(1)+'KiB';
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
+  console.log(geoSummary(result.geo)+(result.geo.wikidataError?'\n  Wikidata points not used: '+result.geo.wikidataError:''));
   console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
   // Refuse before writing the report: a report is what deploy.yml reads the
   // snapshot id from, and an unprepared snapshot must not get one.
