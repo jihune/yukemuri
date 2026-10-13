@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>유케무리 시안 A · 노렌</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --stone:#f1f2ef; --line:#dfe1dc;
+  --ink:#1c2126; --ink-2:#454c52; --muted:#5d656b;
+  --ai:#233f66;      /* 쪽빛(藍) 노렌 */
+  --ai-soft:#e6ebf2;
+  --hinoki:#8a6532;  /* 편백 */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55;word-break:keep-all;-webkit-font-smoothing:antialiased;width:390px}
+button{font:inherit;color:inherit;background:none;border:0}
+.serif{font-family:"Noto Serif KR",serif}
+.num{font-variant-numeric:tabular-nums}
+.bar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 20px;border-bottom:1px solid var(--line)}
+.word{font-size:21px;font-weight:700;letter-spacing:.5px;color:var(--ai)}
+.word small{font-family:Pretendard,sans-serif;font-size:12px;font-weight:500;color:var(--muted);margin-left:6px;letter-spacing:0}
+.saved{height:44px;padding:0 12px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.intro{padding:22px 20px 18px}
+.intro h1{font-size:24px;line-height:1.4;font-weight:700}
+.field{margin-top:16px;display:flex;align-items:center;height:52px;border-bottom:2px solid var(--ink)}
+.field .r{font-weight:650;padding-right:12px;border-right:1px solid var(--line);white-space:nowrap}
+.field .q{flex:1;padding-left:12px;color:#737b80}
+.field svg{color:var(--ink)}
+.towns{padding:4px 20px 18px}
+.towns h2{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.towns p{font-size:17px;line-height:2.1}
+.towns p span{margin-right:14px;border-bottom:1px solid #c9cfd6;padding-bottom:1px}
+.towns p span.on{color:var(--ai);border-color:var(--ai);font-weight:700}
+.rule{height:8px;background:var(--stone)}
+.head{padding:18px 20px 4px;display:flex;justify-content:space-between;align-items:baseline}
+.head h2{font-size:22px;font-weight:700;white-space:nowrap}
+.head h2 span{font-family:Pretendard,sans-serif;font-size:16px;font-weight:600;color:var(--muted);margin-left:8px}
+.head button{height:44px;font-size:14px;font-weight:600;color:var(--ai)}
+.filters{padding:0 20px 8px;display:flex;gap:16px;font-size:14px;color:var(--ink-2)}
+.filters b{color:var(--ai)}
+.card{padding:14px 20px 22px}
+.ph{height:214px;border-radius:4px;position:relative;background:#c8cdc7;overflow:hidden}
+.ph.p1{background:linear-gradient(170deg,#9fb2a6,#5d776a)}
+.ph.p2{background:linear-gradient(170deg,#cdb08b,#86643f)}
+.ph .cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#fff;background:#00000045;border-radius:3px;padding:0 5px}
+.ph .heart{position:absolute;right:6px;top:6px;width:44px;height:44px;border-radius:22px;display:grid;place-items:center;background:#ffffffe8}
+.loc{margin-top:12px;font-size:14px;color:var(--muted)}
+.loc em{font-style:normal;color:var(--hinoki);font-weight:700;margin-left:6px}
+.name{font-size:22px;font-weight:700;line-height:1.35;margin-top:2px}
+.ja{font-size:14px;color:var(--muted)}
+.rate{margin-top:8px;font-size:15px;color:var(--ink-2)}
+.rate b{font-size:18px;color:var(--ink)}
+.baths{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:15px}
+.baths span{display:flex;align-items:center;gap:6px}
+.baths i{width:10px;height:10px;display:inline-block;background:var(--ai)}
+.baths .u{color:var(--muted)}
+.baths .u i{background:none;border:1.5px solid #9aa3aa}
+.tag{position:fixed;right:10px;top:4px;font-size:11px;color:#7b8a8e}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;height:48px;padding:0 22px;border-radius:4px;background:var(--ai);color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 18px #10203a40}
+</style>
+</head>
+<body>
+<div class="tag">시안 A · 일부 값은 예시</div>
+<header class="bar"><div class="word serif">유케무리<small>湯けむり</small></div><button class="saved">즐겨찾기 3</button></header>
+<section class="intro">
+  <h1 class="serif">어느 온천에서<br>묵을까요</h1>
+  <div class="field"><span class="r">일본 전국 ▾</span><span class="q">온천마을·숙소 이름</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>
+</section>
+<section class="towns">
+  <h2>온천마을에서 고르기</h2>
+  <p class="serif"><span>하코네</span><span class="on">유후인</span><span>구로카와</span><span>벳푸</span><span>노보리베츠</span><span>조잔케이</span><span>아리마</span><span>기노사키</span><span>구사쓰</span></p>
+</section>
+<div class="rule"></div>
+<div class="head"><h2 class="serif">유후인<span class="num">167곳</span></h2><button>조건 고르기</button></div>
+<div class="filters"><span>정렬 <b>추천순</b></span><span>조건 <b>천연온천</b></span></div>
+
+<article class="card">
+  <div class="ph p2"><span class="cap">숙소 사진 · Jalan</span><button class="heart" aria-label="즐겨찾기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c2126" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div>
+  <div class="loc">오이타 유후인 온천<em>료칸</em></div>
+  <div class="name serif" lang="ja">由布のお宿 ほたる</div>
+  <div class="rate"><b class="num">4.8</b> <span class="num">/5 Jalan 리뷰 856개</span></div>
+  <div class="baths">
+    <span><i></i>천연온천</span><span><i></i>공용 노천탕</span><span><i></i>전세탕</span><span><i></i>객실 노천탕 (일부 객실)</span><span><i></i>카케나가시</span><span class="u"><i></i>니고리유 확인 전</span>
+  </div>
+</article>
+<article class="card">
+  <div class="ph p1"><span class="cap">숙소 사진 · Jalan</span><button class="heart" aria-label="즐겨찾기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c2126" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div>
+  <div class="loc">오이타 유후인 온천</div>
+  <div class="name serif" lang="ja">由布院 山ぼうし</div>
+</article>
+<button class="fab">지도로 보기</button>
+</body>
+</html>
