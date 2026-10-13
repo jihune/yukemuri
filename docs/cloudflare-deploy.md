@@ -106,6 +106,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - 검색 캐시:
   - 익명 일반 검색의 짧은 캐시는 기존 isolate 안 30초 결과 캐시(`hotelRepository.search`)다. 키에 즐겨찾기 ID와 방문자 범위가 들어가고 `fresh`·`snapshot` 요청은 건너뛴다(`catalog-operations.md`). 브라우저에는 지금처럼 `Cache-Control: no-store`를 보낸다.
   - Cloudflare 위치 사이에서 공유하는 캐시는 `workers.dev`에서 쓰지 않는다. Cache API(`caches.default`)는 `*.workers.dev` 배포에서 효과가 없다(문서 `r2/examples/cache-api`, 원본 `0d35c2c`: “any `*.workers.dev` deployments will have no impact”). 처음에는 Cache API를 넣었다가 Codex 검토 P2(2026-10-11)로 뺐다.
+  - 문서끼리 맞지 않는다(2026-10-13 확인). 위 문장은 R2 예시 문서(2026-04-21 갱신)에만 있고, Workers 런타임 API의 Cache 참조 문서(2026-08-14 갱신)에는 `workers.dev` 제한이 적혀 있지 않다. 지금은 Cache API를 쓰지 않으므로 바뀌는 것은 없다. 앞으로 쓰려면 어느 문서에도 기대지 말고 `workers.dev`에서 저장 뒤 다시 읽히는지 직접 재서 정한다.
   - Workers Caching(`cache.enabled`)도 쓰지 않는다. 켜면 정적 파일 요청도 Worker 요청 수(하루 10만)에 들어가고, `Cache-Control`이 없는 응답도 기본 TTL로 저장된다. 진입점별 설정은 wrangler 4.107.0 이상이 필요한데 잠금 파일은 4.92.0이다(문서 `workers/cache/`).
   - 그래서 공개 검색의 D1 읽기는 속도 제한과 isolate 캐시로만 줄인다. 더 줄이려면 P01의 색인·쿼리 개선이 필요하다.
 - 남은 위험(공유 캐시 없음, 상위 세션 요청으로 기록):
