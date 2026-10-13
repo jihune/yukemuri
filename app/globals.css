@@ -839,7 +839,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .data-status h2{font-size:var(--yk-fs-md);font-weight:700;color:var(--yk-text);margin:0}
 .data-status p{margin:0}
 .data-status b{font-weight:650}
-.data-status .coverage-panel,.data-status .collection-status{flex-basis:100%}
+.data-status,.data-status>*{min-width:0;max-width:100%}
+.data-status .coverage-panel{flex-basis:100%}
 @media (min-width:901px){.chip-bar .mobile-filter{display:none}}
 @media (max-width:900px){
   .header-inner{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"brand nav" "search search";gap:6px 12px;padding:6px 16px 10px;min-height:0}
