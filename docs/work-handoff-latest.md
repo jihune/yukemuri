@@ -154,6 +154,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67·#80 병합, 다음은 3번 목록). 부모는 보관된 이전 상위 세션이라 지금 상위 세션 id로 직접 보낸다 | 진행 중 |
 | `session_01K9M4aA8GiGuH6KweSuGW3D` | PR #79 Claude 검토 1회째(head `c581ede`, 22:11Z 시작). 결과는 위 3의 PR #79 줄에 적었다 | 보관(22:2xZ) |
+| `session_018C5u7htqtrQBR6no5pfPbQ` | PR #79 Claude 검토 2회째(head `e252f31`, 22:46Z 시작, 세 번째 상위 세션이 염). 결과는 아래 7의 10번에 적었다 | 보관(23:1xZ) |
 | `session_01MYY4pY2yi7c3oixLgRRsjT` | 하네스 관리 세션(`jihune/agent-harness`, 이전 하네스 세션이 20:12Z에 인계). 이 프로젝트 세션이 관리하지 않는다. 하네스 교훈은 이 세션이나 사용자에게 전한다 | 진행 중 |
 | `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합). 브랜치 `claude/d06-geo`는 모두 main에 있다. 후속은 새 세션이 `D06-20261013.md`에서 시작한다 | 보관(10-13 21:5xZ, 사용자 지시) |
 | `session_01Y1JhjKANZbPiLfETCBdRns` | P03 정적 스냅숏(PR #43·#44·#45·#52) | 보관 |
@@ -206,6 +207,10 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
    - 상위 세션 자신도 아낀다. 하위 세션 메시지와 예약으로만 깨어나고, 같은 확인을 반복하지 않는다.
    - 7일 창이 0.95에 닿으면 사용자에게 알리고, `resetsAt` 10분 뒤로 재개를 예약한다(위 2의 사용량 항목).
    - 하네스 제안 (a)·(b)가 반영되지 않은 것을 사용자에게 한 번 알린다.
+10. 인계 뒤 진행(23:1xZ 기록).
+   - PR #79: L01이 Claude 검토 1회째 지적을 고친 `e252f31`을 push했다(22:35Z, CI `checks`와 GitGuardian 통과, mergeable clean). 세 번째 상위 세션이 이어 가는 Claude 검토 2회째 세션 `session_018C5u7htqtrQBR6no5pfPbQ`를 열었다(22:46Z, 모델 Opus 5.5). 결과는 P0~P3 없음(`pullrequestreview-5511031963`, 22:56Z)이다. 검토 5회를 다 썼다. 병합 직전에 공개 API로 head `e252f31`, mergeable clean, 마지막 리뷰를 다시 읽고 40자 SHA로 병합했다(22:57Z, main `3355d38`). 검토 세션이 남긴 참고 두 건(지적 아님)은 `work-handoff-latest.md` L01 절의 다음 작업에 있다.
+   - 병합 뒤 배포는 한 번이었다. ‘Cloudflare deploy’ push 실행은 deferred로 건너뛰었고, ‘Yukemuri lifecycle’이 근거 6건을 적용(`saved` 2, `replayed` 4, `failed` 0)한 뒤 배포했다. 결과는 `deployments.md` 마지막 줄이다. L01 브랜치는 main에서 다시 시작했고, L01의 병합 뒤 기록 커밋(`f7ad581`)은 이 기록 PR에 가져왔다. L01 PR 2는 7일 사용량 때문에 시작 알림을 기다린다.
+   - U05: 3번 목록 PR #89를 열었다(22:40Z, head `f95c289`, Codex 1회째 요청). 첫 커밋 `b0131a0`은 `a4c3fc1`과 같은 수정이다(GitHub API로 받은 두 diff에서 바뀐 줄의 차이 0줄, 두 커밋 모두 2개 파일). U05가 물은 것(자료 현황을 바닥글로 옮긴 뒤 결과가 많으면 바닥글에 닿기 어렵다)은 이번 PR에서 진입점 하나만 더해 고치라고 정했다. 4~7번 PR 시작이 7일 사용량 때문에 정해지지 않아, 7번까지 미루면 이 후퇴가 날짜 없이 운영에 남기 때문이다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
