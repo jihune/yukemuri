@@ -41,6 +41,12 @@ const localBindingConfig = {
       namespace_id: "1001",
       simple: { limit: 120, period: 60 as const },
     },
+    // A narrower per-IP limit for hotel details and comparisons (H02).
+    {
+      name: "DETAIL_RATE_LIMITER",
+      namespace_id: "1002",
+      simple: { limit: 30, period: 60 as const },
+    },
   ],
   // Refuse requests from tools and crawlers without the maintenance key (lib/edge-guard.ts).
   vars: { REJECT_AUTOMATED_AGENTS: "1" },

@@ -5,7 +5,7 @@ import {hasCrawlAccess} from './crawl-access';
 // that reaches the Worker. Static assets are served before the Worker and are
 // not counted. Pages count too: the home page runs a D1 search per request.
 type RateLimiter={limit(options:{key:string}):Promise<{success:boolean}>};
-type GuardEnv={API_RATE_LIMITER?:RateLimiter;REJECT_AUTOMATED_AGENTS?:string};
+type GuardEnv={API_RATE_LIMITER?:RateLimiter;DETAIL_RATE_LIMITER?:RateLimiter;REJECT_AUTOMATED_AGENTS?:string};
 const RATE_LIMIT_MESSAGE='요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요.';
 const AGENT_MESSAGE='브라우저가 아닌 자동화 도구의 요청은 받지 않습니다.';
 const LIMITED_HEADERS={'Cache-Control':'no-store','Retry-After':'60'};
@@ -17,11 +17,13 @@ const ROBOTS='noindex, nofollow, noarchive';
 // HeadlessChrome is allowed: the repository's browser checks run on it.
 const BROWSER=/^(?:Mozilla|Opera)\//;
 const CRAWLER=/bot(?:[/;)-]|$)|crawl|spider|slurp|scrap|facebookexternalhit|meta-external|chatgpt-user|perplexity-user|claude-user|anthropic-ai|cohere-ai/i;
+// Detail and comparison have a narrower per-IP limit of their own (H02): one IP
+// cannot walk the whole catalogue through the API in a few minutes.
+const DETAIL=/^\/api\/(?:hotels\/[^/]+|hotel-comparison)$/;
 
 export function isAutomatedAgent(agent:string|null){return !agent||!BROWSER.test(agent)||CRAWLER.test(agent)}
 
-async function overLimit(request:Request,env:GuardEnv){
- const limiter=env.API_RATE_LIMITER,ip=request.headers.get('CF-Connecting-IP');
+async function overLimit(limiter:RateLimiter|undefined,ip:string|null){
  if(!limiter||!ip)return false;
  try{return !(await limiter.limit({key:ip})).success}
  catch(error){console.error('Rate limiter unavailable',error);return false}
@@ -37,7 +39,10 @@ async function guarded(request:Request,env:GuardEnv,next:()=>Promise<Response>){
  if(hasCrawlAccess(request))return next();
  // Refused before the app and the limiter: no D1 read or write.
  if(env.REJECT_AUTOMATED_AGENTS==='1'&&isAutomatedAgent(request.headers.get('User-Agent')))return refuse(request,403,AGENT_MESSAGE,{'Cache-Control':'no-store'});
- if(await overLimit(request,env))return refuse(request,429,RATE_LIMIT_MESSAGE,LIMITED_HEADERS);
+ const ip=request.headers.get('CF-Connecting-IP');
+ // The detail limit first: a request it refuses does not use the general limit. Neither reaches D1.
+ if(DETAIL.test(new URL(request.url).pathname)&&await overLimit(env.DETAIL_RATE_LIMITER,ip))return refuse(request,429,RATE_LIMIT_MESSAGE,LIMITED_HEADERS);
+ if(await overLimit(env.API_RATE_LIMITER,ip))return refuse(request,429,RATE_LIMIT_MESSAGE,LIMITED_HEADERS);
  return next();
 }
 

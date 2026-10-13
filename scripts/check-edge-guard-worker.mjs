@@ -11,7 +11,7 @@ const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-edge-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
-const KEY='edge-test-only',LIMIT=3,MESSAGE='요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요.',AGENT_MESSAGE='브라우저가 아닌 자동화 도구의 요청은 받지 않습니다.';
+const KEY='edge-test-only',LIMIT=3,DETAIL_LIMIT=2,MESSAGE='요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요.',AGENT_MESSAGE='브라우저가 아닌 자동화 도구의 요청은 받지 않습니다.';
 const ROBOTS='noindex, nofollow, noarchive',VISITOR='e'.repeat(64);
 const CHROME='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 // Browsers people use, and the Playwright Chromium of the repository's browser checks.
@@ -32,7 +32,7 @@ const options=(extra,bindings={})=>({modules,modulesRoot:resolve('dist/server'),
 // As deployed: the limiter and the refusal setting of the generated wrangler.json.
 const deployed=JSON.parse(readFileSync('dist/server/wrangler.json','utf8')).vars;
 assert.equal(deployed?.REJECT_AUTOMATED_AGENTS,'1','the generated config turns the refusal on');
-const limited=new Miniflare(options({ratelimits:{API_RATE_LIMITER:{simple:{limit:LIMIT,period:60}}}},deployed));
+const limited=new Miniflare(options({ratelimits:{API_RATE_LIMITER:{simple:{limit:LIMIT,period:60}},DETAIL_RATE_LIMITER:{simple:{limit:DETAIL_LIMIT,period:60}}}},deployed));
 let unlimited;
 let ipCounter=0;const freshIp=()=>`198.51.100.${++ipCounter}`;
 // A browser unless the test names another agent; every Worker response is marked noindex.
@@ -90,6 +90,20 @@ try{
  assert.equal(await saved(),0,'refused requests wrote nothing');
  for(let i=0;i<LIMIT;i++){const r=await call(limited,'/api/favorites',{'CF-Connecting-IP':toolIp,'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR},put);assert.equal(r.status,200,'the refused IP keeps its limit');await r.body?.cancel()}
  assert.equal(await saved(),1,'the browser request wrote its row');
+ // Details and comparisons: their own narrower limit, checked before the general
+ // one. With the hotels table away, a request that reaches the app fails with
+ // 503; the refused ones answer 429, so they never reached D1.
+ const detailIp=freshIp();
+ await db.prepare('ALTER TABLE hotels RENAME TO hotels_away').run();
+ for(let i=0;i<DETAIL_LIMIT;i++){const r=await call(limited,'/api/hotels/edge-hotel',{'CF-Connecting-IP':detailIp});assert.equal(r.status,503,'under the detail limit the request reaches the app');await r.body?.cancel()}
+ for(const path of ['/api/hotels/edge-hotel','/api/hotel-comparison?ids=edge-hotel']){
+  const r=await call(limited,path,{'CF-Connecting-IP':detailIp});
+  assert.equal(r.status,429,path+' over the detail limit');assert.equal(r.headers.get('Retry-After'),'60');assert.equal(r.headers.get('Cache-Control'),'no-store');assert.deepEqual(await r.json(),{error:MESSAGE});
+ }
+ await db.prepare('ALTER TABLE hotels_away RENAME TO hotels').run();
+ // The refused detail requests did not use the general limit (LIMIT=3: 2 used, 1 left).
+ const otherApi=await call(limited,'/api/favorites',{'CF-Connecting-IP':detailIp});assert.equal(otherApi.status,200,'the general limit is separate');await otherApi.body?.cancel();
+ const keyedDetail=await call(limited,'/api/hotels/edge-hotel',{'CF-Connecting-IP':detailIp,'X-Yukemuri-Crawl-Key':KEY,'User-Agent':'YukemuriBackup/1.0'});assert.notEqual(keyedDetail.status,429,'a valid key is exempt from the detail limit');await keyedDetail.body?.cancel();
 
  // Without the binding and the setting (local tools, the other Worker checks) nothing is limited or refused.
  await limited.dispose();
@@ -97,5 +111,5 @@ try{
  const sameIp=freshIp();
  for(let i=0;i<LIMIT*3;i++){const r=await call(unlimited,probe,{'CF-Connecting-IP':sameIp});assert.equal(r.status,403);await r.body?.cancel()}
  const tool=await call(unlimited,'/api/favorites',{'CF-Connecting-IP':sameIp,'User-Agent':'curl/8.5.0'});assert.equal(tool.status,200,'no setting means no refusal');await tool.body?.cancel();
- console.log(`Edge guard passed: ${LIMIT}/IP then 429 with guidance (JSON for API, HTML for pages), wrong key limited, valid key exempt, separate IPs, home page queries counted, ${TOOLS.length} tool and crawler agents refused with 403 before D1 and the limiter, ${BROWSERS.length} browser agents served, maintenance agents with the key served, X-Robots-Tag on every Worker response, no binding or setting means no limit or refusal.`);
+ console.log(`Edge guard passed: ${LIMIT}/IP then 429 with guidance (JSON for API, HTML for pages), details and comparisons ${DETAIL_LIMIT}/IP on their own limit before D1, wrong key limited, valid key exempt, separate IPs, home page queries counted, ${TOOLS.length} tool and crawler agents refused with 403 before D1 and the limiter, ${BROWSERS.length} browser agents served, maintenance agents with the key served, X-Robots-Tag on every Worker response, no binding or setting means no limit or refusal.`);
 }finally{await limited.dispose().catch(()=>{});if(unlimited)await unlimited.dispose();rmSync(temp,{recursive:true,force:true})}

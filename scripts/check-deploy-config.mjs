@@ -51,8 +51,9 @@ const wrangler=JSON.parse(readFileSync('dist/server/wrangler.json','utf8'));
 assert.equal(wrangler.name,committed.workerName);
 assert.equal(wrangler.workers_dev,true);assert.equal(wrangler.preview_urls,false);
 assert.equal(wrangler.observability?.enabled,true);
-// The whole limiter, not only its name: 120 requests per 60 s per IP, namespace 1001.
-assert.deepEqual(wrangler.ratelimits,[{name:'API_RATE_LIMITER',namespace_id:'1001',simple:{limit:120,period:60}}]);
+// The whole limiters, not only their names: 120 requests per 60 s per IP (namespace 1001),
+// and 30 per 60 s per IP for details and comparisons (namespace 1002, H02).
+assert.deepEqual(wrangler.ratelimits,[{name:'API_RATE_LIMITER',namespace_id:'1001',simple:{limit:120,period:60}},{name:'DETAIL_RATE_LIMITER',namespace_id:'1002',simple:{limit:30,period:60}}]);
 // Tools and crawlers without the maintenance key are refused (lib/edge-guard.ts, H02).
 assert.deepEqual(wrangler.vars,{REJECT_AUTOMATED_AGENTS:'1'});
 // Static assets: noindex on every file, and vinext's cache rule for hashed files,
