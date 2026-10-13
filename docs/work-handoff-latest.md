@@ -610,3 +610,41 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.
 - 검토: Codex 1회째(`8849151`, 12:03Z 요청, 12:09Z 완료) P2 1건. `maintenanceBehind()`가 `collection-priority:` 접두사로 판정해, 예전 계획 버전의 완료 행만 있어도 ‘완료’로 봤다. 앱은 현재 계획 버전 키(`collection-priority:` + `data/collection-priorities.json`의 `version`)만 본다. 정확한 키로 고치고 예전 버전 행만 있는 경우를 검사에 넣었다. 기본 `cloud-check.py` 통과(12:09:56Z 종료) 뒤 `check-deploy-config.mjs` 통과.
 - Codex 2회째(`d4de172`, 12:17Z 요청, 12:21:18Z 완료)는 ‘큰 문제 없음’이었다. 남은 지적은 없다. CI `checks`는 `d4de172`에서 통과했다. main `4b55aaa`과 충돌이 없다. 이 기록 커밋 뒤의 변경은 인수인계뿐이다.
+
+## D06 — 지도 좌표 보강(오프라인 지오코딩)
+
+기록: 2026-10-13T06:45Z / 2026-10-13 15:45 KST. 상세는 `D06-20261013.md` 9절이다.
+
+### 기준과 상태
+
+- 작업 환경: Claude Code 웹 클라우드. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이고, 작성 세션은 `session_01FFQYTnNr47q7K6k8RV3EXP`다. 지도 모드는 다른 하위 세션(U05, `claude/u05-ui`)이 만든다.
+- 브랜치 `claude/d06-geo`, 기준 main `6f15d6e`.
+- 운영 D1·Secret·수집 예약·호스팅은 바꾸지 않았다. 운영 사이트는 공개 스냅숏 GET만 했다(06:12Z, 06:27Z). 유지보수 키를 쓰지 않았다. DB 스키마·수집기 release는 바뀌지 않는다. 351MB 사전은 커밋하지 않았다.
+
+### 바뀐 것
+
+- 스냅숏에 `geo.json`(정밀도 `grade` 0–6과 `lat`·`lng`)을 더했다. `core.json`은 그대로다. 형식 번호는 그대로 1이다(파일 추가만, 예전 페이지는 읽지 않음).
+- `deploy.yml`: 사전 zip `actions/cache`(SHA-256 키) → `scripts/geo/prepare.sh`(continue-on-error; 해시 고정 pip, 사전 크기·SHA-256 확인, 설치) → 스냅숏 두 단계에 `--geocoder-db` 또는 `--geocoder-skip <이유>`.
+- 순서: 출처 좌표 > Wikidata `P10425`(`data/wikidata-trip-hotels.json`, 1,891개) > 일본어 주소 > 우편번호 > 지명 > 도도부현. 도도부현이 다른 답과 일본 밖 답은 버린다.
+- 바닥글에 사전 출처 문구(그대로)와 대략 위치 설명·링크를 두었다(`lib/geo-attribution.ts`).
+- 클라이언트용 `loadSnapshotGeo(manifest)`를 더했다. 지금 화면은 아직 `geo.json`을 쓰지 않는다(U05 몫).
+
+### 검사
+
+- `python3 scripts/cloud-check.py --full` 통과(작업 트리, 06:29Z–06:37Z, 7분 28초). 351MB 사전 없이 돈다.
+- 새 검사: `check-snapshot-geo.mjs`(순서·등급·범위 밖 답·지오코더 없음/실패/잘못된 답·지명 입력·Wikidata 추출·출처 문구 원문과 빌드된 페이지), `scripts/geo/check_geocode.py`(가짜 jageocoder로 등급·우편번호·지명·도도부현 가드, 사전 크기·해시 불일치 거부와 삭제), `check-search-snapshot-worker.mjs`에 `geo.json` 대조·fixture 지오코딩·D1 무변경·CLI 실패 경로, `check-deploy-config.mjs`에 캐시 키·continue-on-error·해시 고정 pip.
+- 변형 13종(우선순위 뒤집기, 등급 범위 해제, 실패 전파, 문구 변경·삭제, 등급 매핑, 도도부현 가드 제거, 해시 검사 제거, 불일치 파일 남기기, continue-on-error 제거, 캐시 키 해시 변경, `--require-hashes` 제거) 모두 검사가 실패했다. 등급 범위 해제는 처음에 통과해 fixture를 보강한 뒤 실패했다.
+- 실제 사전 측정은 `D06-20261013.md` 9.3절(점이 있는 숙소 13,216/13,217, 街区 오차 중앙값 65m·90% 517m).
+- 화면: 정적 페이지(`dist/client`)를 Chromium 1194(Playwright 1.56.1)로 360px·1280px에서 열어 바닥글 문구가 보이고 가로 넘침이 없음을 확인했다. 목록 API가 없는 정적 서버라 목록은 오류 상태였다. 키보드·스크린리더는 미확인이다.
+
+### 미확인 사항
+
+- Actions에서의 실제 실행(첫 사전 다운로드 시간, 캐시 복원 시간, ubuntu-latest Python 버전과 wheel 일치). 실패해도 배포는 지오코딩 없이 진행된다.
+- Trip 우편번호·도시 대표점의 오차(기준 좌표 없음).
+- 배포 때 실제 payload 주소로 낸 결과(측정은 공개 context에서 되읽은 주소).
+
+### 다음 작업
+
+1. PR 검토(Codex) 뒤 상위 세션이 병합한다. 병합 뒤 첫 배포 요약에서 ‘map positions’ 줄과 ‘Geocoder ready’ 시간을 확인한다.
+2. U05 지도 모드가 `geo.json`의 등급으로 대략 위치를 구분해 표시한다(같은 점 목록 펼치기, 범례).
+3. 선택: K1(Wikidata 한국어 레이블)을 D1 이름 경로로 넣을지, 住居表示・地番 사전으로 大字·시정촌 수준을 다시 지오코딩할지.

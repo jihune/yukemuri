@@ -133,6 +133,21 @@ const after=stepBlocks.slice(prepared[1]+1);
 assert(firstSmoke<prepared[0]&&prepared[0]<prepared[1]&&after.findIndex(b=>b.text.includes('bash scripts/cloudflare-deploy-worker.sh |'))===0&&after.findIndex(b=>b.text.includes('cloudflare-smoke.mjs'))===1,'unprepared catalogue: prepare, snapshot, deploy, smoke after the first smoke');
 assert.equal(stepBlocks.filter(b=>b.cond==="steps.gate.outputs.mode == 'deploy' && steps.snapshot.outputs.prepared != 'true'").length,4,'the four preparation steps run only for an unprepared catalogue');
 assert.match(deploy,/echo "prepared=.*unprepared\.length===0/,'the snapshot step reports whether the catalogue is prepared');
+// D06: the geocoder never blocks a deploy. The dictionary cache is keyed by the
+// pinned hash, preparing it may fail (continue-on-error), and both snapshot
+// steps build with the geocoder when it is ready and without it otherwise.
+{
+ const pins=JSON.parse(readFileSync('scripts/geo/pins.json','utf8')).dictionary;
+ const cache=stepBlocks[stepOf('actions/cache@')],prepare=stepBlocks[stepOf('scripts/geo/prepare.sh')];
+ assert(cache.text.includes(`path: \${{ runner.temp }}/jageocoder/${pins.file}\n`)&&cache.text.split('\n').includes(`          key: jageocoder-${pins.file.replace(/\.zip$/,'')}-${pins.sha256}`),'dictionary cache keyed by the pinned file and SHA-256');
+ assert.match(prepare.text,/^ {8}id: geo\n {8}continue-on-error: true\n/m,'a failed geocoder preparation does not fail the deploy');
+ assert(stepOf('actions/cache@')<stepOf('scripts/geo/prepare.sh')&&stepOf('scripts/geo/prepare.sh')<stepOf('build-search-snapshot.mjs --remote --report'),'cache, prepare, then the snapshot');
+ for(const b of stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text))){
+  assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" | tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');
+ }
+ const installs=readFileSync('scripts/geo/prepare.sh','utf8').split('\n').filter(l=>/\bpip"? install\b/.test(l)&&!/^\s*(#|step=)/.test(l));
+ assert(installs.length===1&&installs.every(l=>/--require-hashes --only-binary=:all: --no-deps -r scripts\/geo\/requirements\.txt$/.test(l)),'Python packages only hash-pinned wheels');
+}
 assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_call:$/m,'the collection workflow refreshes the snapshot through workflow_call');
 // C3: a snapshot deploy after a collection builds without the full checks only
 // when this commit passed them on a main push (checked-commit.mjs).

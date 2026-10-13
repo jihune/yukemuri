@@ -1,6 +1,7 @@
 import plan from '../data/collection-priorities.json';
 import { PREFECTURES, REGIONS } from './hotel-types';
 import { normalizeSearch } from './hotel-names';
+import type { GeocodeInput } from './search-snapshot';
 
 type City = [prefecture: string, ko: string, ja: string, en: string];
 // Korean place labels and onsen areas follow Japan National Tourism
@@ -123,4 +124,22 @@ export function hotelPlaceSearchText(hotel: PlaceInput): string {
   const evidence=[hotel.location.label,hotel.location.address,hotel.names?.ja??''].join(' ').toLowerCase();
   const towns=plan.towns.filter(t=>t.prefecture===pref?.id&&t.terms.some(term=>evidence.includes(term.toLowerCase()))).flatMap(t=>[t.name,t.query,...t.terms]);
   return [hotel.location.label,hotel.location.address,label,pref?.name.split(' · ')[0],pref?.ja,pref?.en.split(' ')[0],city?.[2],city?.[3],[city?.[3],pref?.en.split(' ')[0]].filter(Boolean).join(' '),[city?.[2],pref?.ja].filter(Boolean).join(' '),...towns].filter(Boolean).join(' ');
+}
+
+// The geocoder's input for a hotel without coordinates (D06, built into the
+// search snapshot by scripts/geo/geocode.py): the stored address, the
+// prefecture in Japanese, and Japanese names of the onsen area and city the
+// list shows (formatHotelLocation), most specific first, each with the usual
+// suffixes, then the prefecture. Only map positions come from these.
+const NATIVE=/^[\u3040-\u30ff\u3400-\u9fff]+$/;
+export function geocodeInput(hotel: PlaceInput): GeocodeInput {
+  const address = hotel.location.address ?? '', pref = prefectureFor(hotel);
+  if (!pref) return { address, prefecture: null, places: [] };
+  // The prefecture's own label is last; a city of the same name is not told apart.
+  const prefix = pref.name.split(' · ')[0], parts = formatHotelLocation(hotel).split(' · ').filter(part => part !== prefix);
+  const onsen = onsens.find(([p, label]) => p === pref.slug && parts.includes(label));
+  const city = cities.find(([p, ko]) => p === pref.slug && (parts.includes(ko) || ko === onsen?.[2]));
+  const names = [onsen?.[3].source.split('|').find(part => NATIVE.test(part)), city?.[2]].filter((n): n is string => !!n);
+  const places = names.flatMap(n => /[市町村区]$/.test(n) ? [n] : [n + '市', n + '町', n + '村', n + '区', n]).map(n => pref.ja + n);
+  return { address, prefecture: pref.ja, places: [...new Set([...places, pref.ja])] };
 }
