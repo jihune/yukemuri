@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-13T10:29:06.454Z",
+ "checkedAt": "2026-10-13T11:47:56.223Z",
  "base": "http://127.0.0.1:8787",
  "results": [
   {
@@ -17,15 +17,15 @@
       "status": 200
      },
      {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "status": 200
+     },
+     {
       "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
       "status": 200
      },
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2",
-      "status": 200
-     },
-     {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.87.woff2",
       "status": 200
      }
     ],
@@ -251,11 +251,11 @@
       "status": 200
      },
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2",
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
       "status": 200
      },
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2",
       "status": 200
      },
      {
@@ -481,19 +481,19 @@
     "family": "\"Pretendard Variable\", Pretendard, \"Apple SD Gothic Neo\", \"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
     "fontFiles": [
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
-      "status": 200
-     },
-     {
       "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2",
       "status": 200
      },
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.89.woff2",
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.87.woff2",
       "status": 200
      },
      {
-      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2",
       "status": 200
      }
     ],
@@ -640,6 +640,17 @@
    "detail": {
     "firstName": "긴린소",
     "kept": "긴린소",
+    "previewAfterLeaving": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "범위 검색 지점으로 연 목록 밖 숙소도 조건이 바뀌면 미리보기가 남지 않음",
+   "pass": true,
+   "detail": {
+    "outside": "jalan-300028",
+    "areaPreview": 1,
+    "inSaved": 0,
     "previewAfterLeaving": 0
    }
   },

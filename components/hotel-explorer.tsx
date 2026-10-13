@@ -113,6 +113,10 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // hovering another card shows that one only while the pointer is on it.
  const pinnedId=useRef<string|null>(null);
  useEffect(()=>{if(activeId===null)pinnedId.current=null},[activeId]);
+ // A stay opened from a map-bounds point stays only while that point is in the current area result
+ // (new conditions clear or redo the area search).
+ const areaIds=mapArea.area?.data.points;
+ useEffect(()=>{if(areaHotel&&!areaIds?.some(p=>p.id===areaHotel.id))setAreaHotel(null)},[areaIds,areaHotel]);
  // A pinned stay that leaves the results (a filter, the saved view) is no longer pinned or previewed.
  useEffect(()=>{const id=pinnedId.current;if(id&&!displayHotels.some(h=>h.id===id)&&areaHotel?.id!==id){pinnedId.current=null;setActiveId(current=>current===id?null:current)}},[displayHotels,areaHotel]);
  const hoverCard=(id:string|null)=>setActiveId(id??pinnedId.current);

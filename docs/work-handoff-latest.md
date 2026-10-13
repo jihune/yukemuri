@@ -758,6 +758,9 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
   - 고정한 지도 미리보기의 숙소가 결과에서 빠지면(필터·즐겨찾기 보기) 고정을 푼다. 1280px 검사를 더했고, 해제 코드를 끈 변형에서 실패(`previewAfterLeaving:1`)를 확인했다.
 - 같은 사이 main `7d287f5`(D06 PR #66)을 merge했다. 바닥글 충돌은 main의 지도 위치 출처 문구(`geo-credit`)를 살리고 ‘v0.5’만 뺐다. 출처 문구가 들어와 바닥글이 높아지자 데스크톱 필터 패널이 화면 위로 잘려 `check-u03-desktop`이 6건 실패했다. 패널 높이를 바닥글 실제 높이(`--yk-footer-h`, ResizeObserver)로 계산하게 고쳤다. 출처 문구 안 링크는 문장 안 링크로 보고 44px로 키우지 않는다. 일본어 링크가 두 줄로 갈려 `check-u01` 2건이 실패해, 일본어(`:lang(ja)`)는 `keep-all`을 쓰지 않게 하고 출처 링크는 한 줄로 두었다.
 - 08:18Z 계정 5시간 한도에 걸려 턴이 끊겼고 10:13Z에 재개했다. 작업 트리는 남아 있었다.
+- main `1750215`(문서만)을 merge했다(`d54d66f`, roadmap 충돌은 U05 행은 이쪽, D06 행은 main).
+- Codex 2회째(`d54d66f`, 11:29Z 요청, 11:32Z 완료): P2 1건. 지도 범위 검색 지점으로 연 목록 밖 숙소(`areaHotel`)가 조건이 바뀌어도 지워지지 않아 미리보기가 남았다. 지금 범위 결과의 지점에 없으면 `areaHotel`을 지우게 고쳤다. 1280px 검사(지도 확대·범위 검색·목록 밖 표지 선택 → 즐겨찾기 → 목록 → 다른 카드에 올렸다 벗어남)를 더했고, 지우는 코드를 끈 변형에서 실패(`inSaved:1`, `previewAfterLeaving:1`)를 확인했다. 검사 수 52→53.
+- 재검사(`d54d66f` + 이 수정): `check-u05-foundation` 53, `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. `cloud-check.py --full` 38개 통과(11:52:58Z–12:01:33Z, rc=0).
 
 - 재검사(main `7d287f5` merge 뒤 작업 트리): `check-u05-foundation` 52, `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. `cloud-check.py --full` 38개 통과(10:33:42Z–10:41:56Z, rc=0). eslint의 `hotel-explorer.tsx` 오류 4건은 main과 같은 기존 것이다.
 다음:

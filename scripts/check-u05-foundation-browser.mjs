@@ -120,6 +120,27 @@ for(const w of [360,390,1280]){
   await page.mouse.move(5,5);await page.waitForTimeout(400);
   const after=await page.locator('.map-preview').count();
   check('지도에서 보기로 연 미리보기는 카드를 벗어나도 유지, 결과에서 빠지면 해제',kept===firstName&&after===0,{firstName,kept,previewAfterLeaving:after});
+  // The same for a stay opened from a map-bounds point outside the loaded list: once the
+  // conditions change (the saved view), that point and its preview are gone.
+  await page.goto(base+'/',{waitUntil:'networkidle'});
+  const canvas=page.locator('.map-canvas');
+  await canvas.scrollIntoViewIfNeeded();
+  await canvas.focus();for(const key of ['+','+','+','ArrowRight','ArrowRight'])await page.keyboard.press(key);await page.waitForTimeout(800);
+  const areaButton=page.locator('.map-area-search');
+  await areaButton.waitFor({timeout:5000}).catch(()=>{});
+  if(await areaButton.count())await areaButton.click();
+  await page.waitForTimeout(800);
+  const outside=await page.evaluate(()=>{const m=[...document.querySelectorAll('.leaflet-marker-icon[data-stay-ids]')].find(m=>{const ids=m.dataset.stayIds.split(' ');return ids.length===1&&!document.getElementById('card-'+ids[0])});if(!m)return null;m.dataset.u05Outside='1';return m.dataset.stayIds});
+  if(outside)await page.locator('[data-u05-outside]').click();
+  await page.waitForTimeout(500);
+  const areaPreview=await page.locator('.map-preview').count();
+  await page.locator('.header-inner nav button').nth(1).click();await page.waitForTimeout(600);
+  const inSaved=await page.locator('.map-preview').count();
+  await page.locator('.header-inner nav button').nth(0).click();await page.waitForSelector('.hotel-list .hotel-card');await page.waitForTimeout(400);
+  await page.locator('.hotel-list .hotel-card').nth(1).hover();await page.waitForTimeout(200);
+  await page.mouse.move(5,5);await page.waitForTimeout(400);
+  const areaAfter=await page.locator('.map-preview').count();
+  check('범위 검색 지점으로 연 목록 밖 숙소도 조건이 바뀌면 미리보기가 남지 않음',!!outside&&areaPreview===1&&inSaved===0&&areaAfter===0,{outside,areaPreview,inSaved,previewAfterLeaving:areaAfter});
   await page.evaluate(()=>window.scrollTo(0,0));
  }
  // Detail sheet.
