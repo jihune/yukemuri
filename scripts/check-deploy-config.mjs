@@ -53,6 +53,15 @@ assert.equal(wrangler.workers_dev,true);assert.equal(wrangler.preview_urls,false
 assert.equal(wrangler.observability?.enabled,true);
 // The whole limiter, not only its name: 120 requests per 60 s per IP, namespace 1001.
 assert.deepEqual(wrangler.ratelimits,[{name:'API_RATE_LIMITER',namespace_id:'1001',simple:{limit:120,period:60}}]);
+// Tools and crawlers without the maintenance key are refused (lib/edge-guard.ts, H02).
+assert.deepEqual(wrangler.vars,{REJECT_AUTOMATED_AGENTS:'1'});
+// Static assets: noindex on every file, and vinext's cache rule for hashed files,
+// which vinext writes only when public/ has no _headers (docs/H02-20261013.md).
+const staticHeaders=readFileSync('dist/client/_headers','utf8');
+assert.match(staticHeaders,/^\/\*\n  X-Robots-Tag: noindex, nofollow, noarchive$/m,'_headers marks every static asset noindex');
+assert.match(staticHeaders,/^\/_next\/static\/\*\n  Cache-Control: public, max-age=31536000, immutable$/m,'_headers keeps the immutable cache for hashed assets');
+assert.match(readFileSync('dist/client/robots.txt','utf8'),/^User-agent: \*\nAllow: \/\$\nDisallow: \/$/m,'robots.txt opens only the home page');
+assert.match(readFileSync('dist/client/index.html','utf8'),/<meta name="robots" content="noindex, nofollow, noarchive"\/?>/,'the static page carries the robots meta tag');
 assert.deepEqual(wrangler.placement,{mode:'smart'});
 assert.equal(wrangler.d1_databases.length,1);
 const [d1]=wrangler.d1_databases;
