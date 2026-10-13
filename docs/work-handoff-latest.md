@@ -854,4 +854,6 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 3단계(공식 안내 대조, 15:18–15:26Z) 끝: `箱根ハイランドホテル`(`trip-1182118`)이 소유사 오다큐 보도자료(2025-11-13)와 箱根ナビ로 2025-05-08부터 휴관(2027년 가을 무렵 리뉴얼 개업 목표)임을 확인했다. 운영에서는 아직 탐색에 나온다. 하코네 유모토 호텔 휴관은 그대로다. 구로카와 조합 30곳 중 29곳이 카탈로그에 있다. 반영 초안은 `L01-20261013.md` 3.2, 근거는 `docs/evidence/l01-official-20261013.json`.
 - 지역 규칙의 빈 곳(구로카와 낱말이 아소시 黒川을 잡고 조합 숙소 8곳을 놓침, 하코네 한국어 주소 26곳)은 L01 밖이라 기록만 했다(3.3).
 - 기준 확인: main에서 `check-lifecycle-worker.mjs`(CI 밖 검사) 통과(15:3xZ).
-- 다음: 상위 세션 답을 받으면 2단계 PR을 구현한다.
+- 상위 세션 답(15:18Z·15:2xZ): 설계대로 구현, 병합 한 번에 스냅숏 한 번, 3.2의 두 건은 첫 PR에 넣음, 지역 규칙은 다음 PR.
+- 2단계 구현(PR 1): `data/lifecycle-official.json`(6건), `lifecycle.yml`(적용 → 저장분 있으면 스냅숏 한 번 → 판정), `scripts/runner/apply-lifecycle.py`, `update-lifecycle.py`(거절 뒤 계속, 끝에 실패), `deploy.yml` push `paths-ignore`에 근거 파일 추가, 검사 `check-lifecycle-official.mjs`·`runner/check_lifecycle.py`, `measure-d1-reads.mjs` lifecycle 상한. 새 근거 PUT 쓰기 6행, 같은 근거 0행(임시 D1).
+- 다음: PR을 열고 Codex 검토를 받는다. 병합 뒤 첫 실행 결과(4건 replayed, 2건 saved, 스냅숏 한 번 기대)는 상위 세션이 확인한다. 그다음 L01 PR 2(지역 판정 규칙, 상위 세션 주의: `collection-priorities.json` version을 바꾸면 우선순위 유지보수가 전체 숙소에 쓰기를 만든다. 임시 D1로 쓰기 행 수를 재고 배포 UTC 날짜를 PR 설명에 적는다).

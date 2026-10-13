@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "patches": [
+  {
+   "id": "jalan-348699",
+   "state": "temporarily_closed",
+   "sourceUrl": "https://www.hakone-yumotohotel.com/news/リニューアル工事に伴う休館のご案内.html",
+   "sourceKind": "official_property",
+   "sourceLabel": "하코네 유모토 호텔 공식 휴관 안내",
+   "evidence": "공식 안내(2026년 3월 2일 게시)는 리뉴얼 공사로 2026년 3월 1일부터 2027년 6월 30일까지 전관 휴관한다고 적는다. 2026년 10월 13일에 같은 안내를 다시 확인했다. 폐업과 구분하며, 실제 영업 재개는 다시 확인한다.",
+   "identityEvidence": "Jalan 348699의 箱根湯本ホテル（HAKONEYUMOTO HOTEL）와 공식 홈페이지의 숙소명 및 神奈川県足柄下郡箱根町湯本茶屋97 주소가 일치합니다. 이웃한 伊東園ホテル箱根湯本(95-1)과는 별도 숙소입니다.",
+   "checkedAt": "2026-10-13T15:25:07Z",
+   "effectiveDate": "2026-03-01",
+   "closedUntil": "2027-06-30"
+  },
+  {
+   "id": "jalan-387954",
+   "state": "operating",
+   "sourceUrl": "https://www.retona-hakone.jp/access/",
+   "sourceKind": "official_property",
+   "sourceLabel": "RETONA HAKONE 공식 홈페이지",
+   "evidence": "공식 교통 안내 페이지가 RETONA HAKONE의 개업일을 2025년 12월 15일로 명시한다. 공식 홈페이지에는 2026년 9월 시설 소식도 게시되어 있다.",
+   "identityEvidence": "현재 등록 원어명 RETONA HAKONE과 주소 神奈川県足柄下郡箱根町元箱根164가 공식 페이지의 RETONA HAKONE 및 神奈川県足柄下郡箱根町元箱根164와 일치한다. 등록 Jalan 숙소 ID는 387954이다.",
+   "checkedAt": "2026-10-05T12:21:47Z",
+   "effectiveDate": "2025-12-15",
+   "openedAt": "2025-12-15"
+  },
+  {
+   "id": "jalan-389144",
+   "state": "operating",
+   "sourceUrl": "https://www.regina-resorts.com/yufuin/main/news/2580",
+   "sourceKind": "official_property",
+   "sourceLabel": "레지나 리조트 유후인 공식 개업 안내",
+   "evidence": "구누기노모리 숙소의 공식 개업일은 2025년 11월 16일입니다. 공식 홈페이지의 현재 안내와 숙소 상세를 대조했습니다. 같은 리조트의 圍-Kakoi- 구역 개업(2026년 7월 3일)은 별도 확장으로 구분합니다.",
+   "identityEvidence": "Jalan 389144의 レジーナリゾート由布院 및 大分県由布市湯布院町川上460‐6 주소가 공식 くぬぎの杜 460-6과 일치합니다. 圍-Kakoi- 주소 447-1과 본관을 구분했습니다.",
+   "checkedAt": "2026-10-05T06:23:58.269Z",
+   "effectiveDate": "2025-11-16",
+   "openedAt": "2025-11-16"
+  },
+  {
+   "id": "trip-1182118",
+   "state": "temporarily_closed",
+   "sourceUrl": "https://www.odakyu.jp/news/h3de76000000cs8k-att/h3de76000000cs8r.pdf",
+   "sourceKind": "official_property",
+   "sourceLabel": "소유사 오다큐 전철·오다큐 리조츠 보도자료(2025-11-13)",
+   "evidence": "소유사 오다큐 전철과 오다큐 리조츠의 2025년 11월 13일 보도자료는 箱根ハイランドホテル의 종전 호텔이 2025년 5월에 영업을 끝냈고, 12월에 해체를 포함한 공사에 착수하며, 2027년 가을 무렵 리뉴얼 개업을 목표로 한다고 적는다. 오다큐 그룹의 箱根ナビ 숙소 안내(https://www.hakonenavi.jp/spot/1064)는 '5月8日より休館'이라고 적는다. 효력일은 보도자료의 연월과 箱根ナビ의 날짜를 합친 것이다. 재개장 날짜는 공식 안내에 없다. 재개장 뒤에는 객실과 온천 시설이 바뀌므로 다시 확인한다.",
+   "identityEvidence": "Trip.com 숙소 ID 1182118의 원어명 小田急 箱根ハイランドホテル(영문 HAKONE HIGHLAND HOTEL)와 저장 주소 Sengokuhara Shinanoki, 250-0631이 보도자료의 箱根ハイランドホテル 및 소재지 神奈川県足柄下郡箱根町仙石原品の木940과 일치한다. 저장 주소에는 번지가 없다. 2026-10-13 운영 스냅숏에 같은 숙소의 Jalan 기록은 없다.",
+   "checkedAt": "2026-10-13T15:24:17Z",
+   "effectiveDate": "2025-05-08"
+  },
+  {
+   "id": "trip-126663008",
+   "state": "operating",
+   "sourceUrl": "https://prtimes.jp/main/html/rd/p/000000029.000164727.html",
+   "sourceKind": "official_property",
+   "sourceLabel": "숙소 운영사 中島公園ホテル合同会社 공식 보도자료(PR TIMES)",
+   "evidence": "숙소 운영사가 2026년 9월 29일 발표한 개업 1주년 보도자료에서 インターコンチネンタル札幌가 2025년 10월 1일 개업했다고 명시한다. 같은 자료는 2026년 10월 호텔 내 기념 행사를 안내한다.",
+   "identityEvidence": "현재 등록명 InterContinental Sapporo by IHG 및 Trip.com ID 126663008의 주소 1 Chome-1-48 Minami 10 Jonishi, Sapporo가 IHG 공식 숙소 페이지의 インターコンチネンタル札幌 및 札幌市中央区南10条西1丁目1-48과 일치한다. IHG 공식 2025년 10월 1일 개업 발표도 동일 호텔 InterContinental Sapporo로 연결된다.",
+   "checkedAt": "2026-10-05T12:39:05Z",
+   "effectiveDate": "2025-10-01",
+   "openedAt": "2025-10-01"
+  },
+  {
+   "id": "trip-6081808",
+   "state": "closed",
+   "sourceUrl": "https://www.yutorelo-annex.com/",
+   "sourceKind": "official_property",
+   "sourceLabel": "ゆとりろ庵ANNEX 공식 홈페이지 폐관 안내",
+   "evidence": "공식 홈페이지가 2026년 5월 31일 체크아웃 손님을 마지막으로 ゆとりろ庵ANNEX의 폐관을 명시한다. 같은 공지는 5월 31일 이후 안내 전화가 연결되지 않으며 문의는 운영사 이메일 yuto-annex@relo.jp로 받는다고 안내한다.",
+   "identityEvidence": "새로 확보한 Trip.com 숙소 ID 6081808의 원어명 ゆとりろ庵ANNEX가 공식 폐관 공지의 ゆとりろ庵ANNEX와 정확히 일치한다. 공개 Trip.com 페이지 주소는 1300-126 Gora, Hakone Town, Kanagawa이며 저장된 상세 주소에도 1300-126 Gora가 일치한다. 인근 본관 ゆとりろ庵(강라1300-119)과 별도인 ANNEX 항목에만 적용한다.",
+   "checkedAt": "2026-10-05T12:30:08Z",
+   "effectiveDate": "2026-05-31"
+  }
+ ]
+}

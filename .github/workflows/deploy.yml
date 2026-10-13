@@ -9,11 +9,13 @@ name: Cloudflare deploy
 # migrations, the snapshot, catalog_meta) and runs deploy --dry-run; it needs
 # the database_id but not autoDeploy or publicOrigin. A push that changes only
 # Markdown or docs (the same paths web-checks.yml ignores) does not redeploy;
-# the next code push or collection deploys main HEAD with it.
+# the next code push or collection deploys main HEAD with it. Nor does a push
+# that changes only data/lifecycle-official.json: lifecycle.yml stores that
+# evidence first and then calls this workflow once (L01).
 on:
   push:
     branches: [main]
-    paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
+    paths-ignore: ['**/*.md', 'docs/**', 'archives/**', 'data/lifecycle-official.json']
   workflow_dispatch:
     inputs:
       preflight:

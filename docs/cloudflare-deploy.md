@@ -14,6 +14,7 @@
 | `.github/workflows/d1-setup.yml` | 수동 실행 전용. 아래 ‘3단계: D1 만들기’ |
 | `.github/workflows/rollback.yml` | 수동 실행 전용. 아래 ‘롤백’ |
 | `.github/workflows/usage.yml` | 수동 실행 전용. 아래 ‘사용량 측정’ |
+| `.github/workflows/lifecycle.yml` | `data/lifecycle-official.json`을 바꾼 main push·수동 실행. 아래 ‘공식 상태 반영(L01)’ |
 | `scripts/cloudflare-deploy-gate.mjs` | 배포 여부 판정 |
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
 | `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
@@ -153,6 +154,16 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - actionlint 1.7.7–1.7.12는 `queue` 키를 모른다. `run-actionlint.py`는 이 키의 ‘unexpected key’ 오류만 무시하고, `check-deploy-config.mjs`·`check-collect-workflow.mjs`가 값(`queue: max`, `cancel-in-progress: false`)을 단언한다. 실제 GitHub의 수용 여부는 이 PR 병합 뒤 첫 main push 배포(설정 검증)와 6단계 수동 실행(gentle 중 하나 더 넣기)에서 확인한다.
 - `collect-watch.yml`: 6시간마다(`41 */6 * * *`) `GITHUB_TOKEN`(`actions: read`)으로 `collect.yml`의 성공 실행을 읽는다(`scripts/check-collection-freshness.mjs`). 마지막 성공 gentle이 12시간을 넘으면 실패한다. 성공이 하나도 없으면 통과하고, `publicOrigin`이 `null`이면 API를 부르지 않고 건너뛴다. 4단계 완료 PR에서 `publicOrigin`이 채워진 뒤 6단계 전까지는 성공이 없어 통과한다.
 - 검사: `check-collect-workflow.mjs`(두 workflow 설정, 이 레포에 다른 cron 없음, 감시 규칙과 로컬 GitHub API 대역), `runner/check_collection.py`(상한·대상·키 전달), `run-actionlint.py`(actionlint 1.7.7, 해시 고정 내려받기, shellcheck·pyflakes 끔). 모두 `cloud-check.py`에 들어 있다.
+
+## 공식 상태 반영(L01)
+
+기록: 2026-10-13T15:4xZ. 상세와 측정은 `L01-20261013.md` 2절이다.
+
+- 검토된 근거 파일 `data/lifecycle-official.json`(Worker 계약 `lib/lifecycle-contract.ts`의 항목 목록)을 `lifecycle.yml`이 운영 Worker의 `PUT /api/hotel-lifecycle`에 보낸다. 시작은 이 파일을 바꾼 main push와 수동 실행뿐이다. PR·schedule에서는 돌지 않는다.
+- 크롤 키는 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 적용 단계 env로만 받는다. `scripts/runner/apply-lifecycle.py`가 `update-lifecycle.py` 표준입력으로만 넘긴다. 잠금은 수집과 같은 `yukemuri-catalog-updates`(`queue: max`)다.
+- 같은 근거는 `replayed`(쓰기 0)다. 더 새 근거가 저장돼 있으면 409로 거절된다. 저장한 근거가 있으면 `deploy.yml`(`after_collection: true`)로 스냅숏을 한 번 다시 만든다. `deploy.yml` push 트리거는 이 파일만 바꾼 병합을 건너뛴다(`paths-ignore`). 거절된 근거가 있으면 스냅숏 뒤에 판정 job이 실행을 실패로 끝낸다.
+- 파일에서 항목을 지워도 운영 상태는 되돌아가지 않는다. 더 늦은 확인일의 새 근거로 바꾼다.
+- 검사: `check-lifecycle-official.mjs`, `runner/check_lifecycle.py`(`cloud-check.py` 기본 목록), `measure-d1-reads.mjs --check`의 lifecycle 상한.
 
 ## 사용량 측정
 
