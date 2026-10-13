@@ -17,13 +17,24 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('bootstrap', Path(__file__).with_name('bootstrap.py'))
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
+WORKERS_ORIGIN = re.compile(r'https://yukemuri\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.workers\.dev')
+
+
 def sites_release(raw):
     # deploy.yml builds the release for the Worker's own workers.dev origin
     # (YUKEMURI_SITE_ORIGIN); this bootstrap pins the Sites origin, so check the
-    # same files signed for it. Any other origin is left for validate_release.
-    release = json.loads(raw.decode('utf-8'))
-    if not re.fullmatch(r'https://yukemuri\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.workers\.dev', str(release.get('siteOrigin'))):
+    # same files signed for it. The original is validated first with its own
+    # origin (duplicate keys, limits, file and release checksums), so re-signing
+    # cannot hide a broken release. Any other origin is left for validate_release.
+    origin = json.loads(raw.decode('utf-8')).get('siteOrigin')
+    if not isinstance(origin, str) or not WORKERS_ORIGIN.fullmatch(origin):
         return raw
+    pinned = runner.SITE_ORIGIN
+    runner.SITE_ORIGIN = origin
+    try:
+        release = runner.validate_release(raw)
+    finally:
+        runner.SITE_ORIGIN = pinned
     payload = {key: value for key, value in release.items() if key != 'release'}
     payload['siteOrigin'] = runner.SITE_ORIGIN
     payload['release'] = runner.digest(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':')))
@@ -44,6 +55,27 @@ class BootstrapChecks(unittest.TestCase):
         self.assertEqual({item['path'] for item in RELEASE['files']}, runner.FILES)
         for item in RELEASE['files']:
             self.assertEqual(item['content'], (ROOT / item['path']).read_text())
+
+    def test_workers_release_validated_before_resigning(self):
+        def workers(release):
+            payload = {key: value for key, value in release.items() if key != 'release'}
+            payload['siteOrigin'] = 'https://yukemuri.jihune.workers.dev'
+            payload['release'] = runner.digest(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':')))
+            return payload
+        pinned = runner.SITE_ORIGIN
+        good = workers(copy.deepcopy(RELEASE))
+        self.assertEqual(runner.validate_release(sites_release(encode(good)))['siteOrigin'], pinned)
+        bad_file = copy.deepcopy(RELEASE)
+        bad_file['files'][0]['sha256'] = '0' * 64
+        broken = [
+            (encode(dict(good, release='0' * 64)), 'release checksum'),
+            (encode(workers(bad_file)), 'file checksum'),
+            (encode(good)[:-1] + b',"schemaVersion":1}', 'duplicate key'),
+        ]
+        for raw, label in broken:
+            with self.subTest(label), self.assertRaises(runner.ReleaseError):
+                sites_release(raw)
+            self.assertEqual(runner.SITE_ORIGIN, pinned)
 
     def test_malformed_oversized_and_duplicate_json(self):
         for raw in (b'not-json', b'null', b'[]', b'\xff', b' ' * (runner.MAX_BYTES + 1), b'{"schemaVersion":1,"schemaVersion":1}'):
