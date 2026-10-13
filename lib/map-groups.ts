@@ -65,7 +65,7 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
   const a=p.lat[k],b=p.lng[k];
   if(a<view.south||a>view.north||b<view.west||b>view.east)continue;
   inView.push(k);
-  const key=Math.floor(p.x[k]*scale)*2**22+Math.floor(p.y[k]*scale);
+  const key=Math.floor(p.x[k]*scale)*2**24+Math.floor(p.y[k]*scale);
   const cell=cells.get(key);if(cell)cell.push(k);else cells.set(key,[k]);
  }
  // Neighbouring cells can put two icons almost on top of each other across a cell border;
@@ -81,7 +81,7 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
   const n=groups.length,x=new Float64Array(n),y=new Float64Array(n),buckets=new Map<number,number[]>();
   for(let i=0;i<n;i++){
    x[i]=mercatorX(groups[i].lng)*world;y[i]=mercatorY(groups[i].lat)*world;
-   const key=Math.floor(x[i]/W)*2**22+Math.floor(y[i]/H),bucket=buckets.get(key);
+   const key=Math.floor(x[i]/W)*2**24+Math.floor(y[i]/H),bucket=buckets.get(key);
    if(bucket)bucket.push(i);else buckets.set(key,[i]);
   }
   const taken=new Uint8Array(n),next:Group[]=[];
@@ -89,7 +89,7 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
    if(taken[i])continue;taken[i]=1;
    const g=groups[i],bx=Math.floor(x[i]/W),by=Math.floor(y[i]/H);
    let la=g.lat*g.members.length,lo=g.lng*g.members.length;
-   for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(const j of buckets.get((bx+dx)*2**22+by+dy)??[]){
+   for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(const j of buckets.get((bx+dx)*2**24+by+dy)??[]){
     if(taken[j]||Math.abs(x[i]-x[j])>=W||Math.abs(y[i]-y[j])>=H)continue;
     taken[j]=1;merged=true;
     const h=groups[j];la+=h.lat*h.members.length;lo+=h.lng*h.members.length;
