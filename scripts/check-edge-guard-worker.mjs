@@ -96,7 +96,7 @@ try{
  const detailIp=freshIp();
  await db.prepare('ALTER TABLE hotels RENAME TO hotels_away').run();
  for(let i=0;i<DETAIL_LIMIT;i++){const r=await call(limited,'/api/hotels/edge-hotel',{'CF-Connecting-IP':detailIp});assert.equal(r.status,503,'under the detail limit the request reaches the app');await r.body?.cancel()}
- for(const path of ['/api/hotels/edge-hotel','/api/hotel-comparison?ids=edge-hotel']){
+ for(const path of ['/api/hotels/edge-hotel','/api/hotels/edge-hotel/google?photo=1','/api/hotel-comparison?ids=edge-hotel']){
   const r=await call(limited,path,{'CF-Connecting-IP':detailIp});
   assert.equal(r.status,429,path+' over the detail limit');assert.equal(r.headers.get('Retry-After'),'60');assert.equal(r.headers.get('Cache-Control'),'no-store');assert.deepEqual(await r.json(),{error:MESSAGE});
  }

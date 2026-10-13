@@ -101,7 +101,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - Worker에 닿는 모든 요청(페이지·RSC·`/api/*`)을 `CF-Connecting-IP`별로 센다. 정적 파일(`dist/client`)은 Worker 앞에서 바로 나가므로 세지 않는다. 첫 화면(`app/page.tsx`)도 요청마다 D1 검색을 하므로 `/?q=<매번 다른 값>`으로 제한을 피할 수 없게 했다(Codex 검토 P1, 2026-10-11).
   - 60초에 120회를 넘으면 429, `Retry-After: 60`, `Cache-Control: no-store`를 돌려준다. `/api/*`에는 JSON `{"error":"요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요."}`를 보낸다. 화면은 기존 오류 표시 경로(`lib/api-client.ts`)로 이 문구를 보여 주고 자동 재시도하지 않는다. 페이지에는 같은 문구의 작은 HTML 화면을 보낸다.
   - 크롤 키가 맞는 요청(수집기·백업)은 세지 않는다. 틀린 키는 일반 요청처럼 센다.
-  - 상세(`/api/hotels/<id>`)와 비교(`/api/hotel-comparison`)는 따로 IP별 60초 30회다(`DETAIL_RATE_LIMITER`, H02, 상위 세션 결정 2026-10-13T12:44Z). 이 제한을 먼저 보고, 여기서 거절한 요청은 120회 제한을 쓰지 않는다. 키가 맞는 요청은 세지 않는다. IP 하나가 상세 13,000곳을 받는 데 약 7시간이 걸린다.
+  - 상세(`/api/hotels/<id>`), 그 Google 조회(`/api/hotels/<id>/google`, 켜져 있으면 유료 공급자), 비교(`/api/hotel-comparison`)는 따로 IP별 60초 30회다(`DETAIL_RATE_LIMITER`, H02, 상위 세션 결정 2026-10-13T12:44Z, Google 경로는 Codex 1회째 P2). Google이 켜진 숙소의 상세 한 번은 두 건으로 센다. 이 제한을 먼저 보고, 여기서 거절한 요청은 120회 제한을 쓰지 않는다. 키가 맞는 요청은 세지 않는다. IP 하나가 상세 13,000곳을 받는 데 약 7시간이 걸린다.
   - Cloudflare 문서상 카운터는 위치(데이터센터)마다 따로이고 근사값이다.
   - 바인딩이 없거나 `limit()`가 실패하면 제한 없이 통과시킨다. 로컬 검사·개발에서 앱이 그대로 동작한다.
   - 무료 플랜에서 Rate Limiting 바인딩을 쓸 수 있는지는 미확인이다. 문서(`workers/runtime-apis/bindings/rate-limit`, 2026-10-11 원본 `0d35c2c`)에 플랜 제한 문구는 없다. 첫 실제 배포에서 확인한다. 배포가 바인딩 때문에 거절되면 `vite.config.ts`의 `ratelimits`를 빼는 PR로 되돌린다. 코드는 바인딩 없이도 동작한다.

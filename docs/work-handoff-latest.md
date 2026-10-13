@@ -831,6 +831,7 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 1단계(조사·설계) 끝: Cloudflare 공식 문서 원문(12:35Z)으로 무료 플랜·workers.dev에서 쓸 수 있는 수단을 정리했다. Worker 하루 요청 한도는 Worker 코드로 지킬 수 없다(거절도 요청으로 센다). 정적 자산은 한도와 관계없이 나간다.
 - 상위 세션 답(12:44Z): 스냅숏은 정적으로 둔다(남는 위험은 H02 문서에 적음). Worker 실패 때 상세 화면은 U05 상세 PR이 만들고, 응답 모양은 H02 문서 ‘상세 API 실패 응답’에 적었다. 상세·비교 IP별 60초 30회는 PR 1에 넣었다.
 - PR 1: robots.txt(첫 화면만 열림), `public/_headers`와 `edge-guard`의 `X-Robots-Tag`, `app/layout.tsx` robots 메타 한 줄, 키 없는 자동화 UA 403, `DETAIL_RATE_LIMITER`, smoke 단언. 검사와 고장 낸 변형은 H02 문서와 PR 설명에 있다.
+- PR #76(13:03Z 열림): `cloud-check.py --full` 38개 통과, 브라우저 검사 8종 360개 통과(이 PR 빌드, 제한이 켜진 로컬 서버, 429 없음). Codex 1회째 P2 1건(`/api/hotels/<id>/google`도 좁은 제한에) 반영.
 - 실행기 저장소는 읽기만 했다(`55572c8`, 백업 UA `YukemuriBackup/1.0`, 모든 요청에 크롤 키).
 - 배포 뒤 운영 확인: 키 없는 `/api/*`는 브라우저 형식 UA가 필요하다(`cloudflare-deploy.md` ‘공개 사이트 보호’).
 - 미확인: 실제 Cloudflare에서 `_headers`의 `/*`가 `/`에도 붙는지(배포 smoke가 확인), 1027의 상태 코드.

@@ -17,9 +17,10 @@ const ROBOTS='noindex, nofollow, noarchive';
 // HeadlessChrome is allowed: the repository's browser checks run on it.
 const BROWSER=/^(?:Mozilla|Opera)\//;
 const CRAWLER=/bot(?:[/;)-]|$)|crawl|spider|slurp|scrap|facebookexternalhit|meta-external|chatgpt-user|perplexity-user|claude-user|anthropic-ai|cohere-ai/i;
-// Detail and comparison have a narrower per-IP limit of their own (H02): one IP
-// cannot walk the whole catalogue through the API in a few minutes.
-const DETAIL=/^\/api\/(?:hotels\/[^/]+|hotel-comparison)$/;
+// Detail, its Google lookup (a paid provider when enabled) and comparison have a
+// narrower per-IP limit of their own (H02): one IP cannot walk the whole
+// catalogue through the API in a few minutes.
+const DETAIL=/^\/api\/(?:hotels\/[^/]+(?:\/google)?|hotel-comparison)$/;
 
 export function isAutomatedAgent(agent:string|null){return !agent||!BROWSER.test(agent)||CRAWLER.test(agent)}
 
