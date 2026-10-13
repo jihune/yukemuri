@@ -22,7 +22,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
  const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label,approximate:false}));
  // The note under the map names where the points come from: approximate points (dashed) too.
- const approximateShown=result?result.positions.grade.some(g=>g>=2):spots.some(s=>s.approximate);
+ const approximateShown=result?result.positions.grade.some(g=>g>=2):spots.some(s=>s.approximate)||cells.some(c=>c.approximate>0);
  const props=useRef({spots,cells,activeId,onSelect,result,onView,onOpenGroup});props.current={spots,cells,activeId,onSelect,result,onView,onOpenGroup};
  const area=points!==null||cells.length>0;
  // Moves made by the code (fitting results, focusing a card) do not offer an area search.
@@ -99,7 +99,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
     }
     // Grid counts from a map-bounds search with more points than one response holds.
     for(const cell of props.current.cells){
-     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster">${cell.count}곳</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`});
+     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster ${cell.approximate===cell.count?'is-approximate':''}">${cell.count}곳</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`});
      add(marker,{cell:`${cell.south},${cell.west}`},()=>map.fitBounds(L.latLngBounds([[cell.south,cell.west],[cell.north,cell.east]])));
     }
     tabStops();

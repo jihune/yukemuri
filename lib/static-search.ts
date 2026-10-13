@@ -24,7 +24,8 @@ export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|n
 // The D06 approximate points (geo.json), when the page has them: a stay without the
 // source's point is placed there, as on the U05 map (lib/map-groups.ts).
 export type GeoColumns={grade:(number|null)[];lat:(number|null)[];lng:(number|null)[]};
-export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number};
+// approximate: members whose point is approximate (grade 2 and up).
+export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number;approximate:number};
 export type MapAreaResponse={total:number;inBounds:number;outOfBounds:number;withoutCoordinates:number;limit:number;points:MapPoint[];cells:MapCell[]};
 const SURROGATE=/[\ud800-\udfff]/;
 // SQLite BINARY order (UTF-8 bytes, i.e. code points). Native comparison of
@@ -185,12 +186,12 @@ export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=fa
  if(!inside.length)return result;
  const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,Math.max(1,geo?.grade[i]??1)]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
  if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:c.name[i],lat,lng,score:score[i],grade}});return result}
- const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[]}>();
+ const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[];approximate:number}>();
  for(const i of inside){
-  const [lat,lng]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
-  const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[]};cell.lats.push(lat);cell.lngs.push(lng);cells.set(row*16+col,cell);
+  const [lat,lng,grade]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
+  const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[],approximate:0};cell.lats.push(lat);cell.lngs.push(lng);if(grade>=2)cell.approximate++;cells.set(row*16+col,cell);
  }
- result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({lat:sqliteAverage(x.lats),lng:sqliteAverage(x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep}));
+ result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({lat:sqliteAverage(x.lats),lng:sqliteAverage(x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
  return result;
 }
 export function suggestions(s:SearchSnapshot,f:HotelFilters,savedOnly=false,savedIds:string[]=[]):HotelSuggestion[]{
