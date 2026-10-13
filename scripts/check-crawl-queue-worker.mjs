@@ -133,8 +133,9 @@ try{
   await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url=?').bind(url).run();
   return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
  };
+ const view=async()=>(await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=40')).jobs.map(j=>j.url);
  assert.equal(await bathsAgain('v1'),url,'A v1 Jalan detail is revisited');
- assert.equal(await bathsAgain('v2'),url,'A v2 Jalan detail is revisited');
+ assert.equal(await bathsAgain('v2'),url,'A v2 Jalan detail is revisited');assert((await view()).includes(url),'The queue view lists it too');
  assert.equal(await bathsAgain('v3'),null,'A v3 Jalan detail is not revisited');
  // A curated group's Jalan detail lives in hotel_source_observations, not in
  // hotels; the phase revisits it the same way (Codex review on PR #77).
@@ -146,7 +147,16 @@ try{
   return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
  };
  assert.equal(await linkedAgain('v2'),linkedUrl,'A curated group\'s older Jalan observation is revisited');
- assert.equal(await linkedAgain('v3'),null,'A curated group\'s v3 Jalan observation is not revisited');
+ assert((await view()).includes(linkedUrl),'The queue view lists the curated group\'s observation too (Codex review 3 on PR #77)');
+ assert.equal(await linkedAgain('v3'),null,'A curated group\'s v3 Jalan observation is not revisited');assert(!(await view()).includes(linkedUrl),'Nor does the queue view');
+ // A verified hotel keeps its hand-checked facts: neither the claim nor the queue view picks its detail.
+ const verifiedUrl='https://www.jalan.net/yad327522/',hadVerifiedJob=await db.prepare('SELECT 1 FROM crawl_jobs WHERE url=?').bind(verifiedUrl).first();
+ assert(await db.prepare("SELECT 1 FROM hotels WHERE id='jalan-327522' AND json_extract(payload,'$.links[0].url')=? AND json_extract(payload,'$.sources[0].bathDataVersion') IS NULL").bind(verifiedUrl).first(),'The verified hotel is an older-parser candidate but for its exclusion');
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-kumamoto','done',1,0) ON CONFLICT(url) DO UPDATE SET status='done',next_at=0,lease_token=NULL,lease_until=0").bind(verifiedUrl).run();
+ await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url IN (?,?)').bind(url,linkedUrl).run();
+ assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null,null,'A verified hotel is not revisited');
+ assert(!(await view()).includes(verifiedUrl),'Nor listed by the queue view');
+ if(!hadVerifiedJob)await db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(verifiedUrl).run();
  await db.batch([db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(linkedUrl),db.prepare("DELETE FROM hotel_source_observations WHERE id='jalan-999157'")]);
  assert.equal((await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=5')).jobs.length,0,'The queue view agrees');
  await db.prepare("UPDATE hotels SET payload=json_remove(payload,'$.sources[0].bathDataVersion') WHERE id=?").bind(h.id).run();
