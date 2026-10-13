@@ -1,0 +1,410 @@
+{
+ "measuredAt": "2026-10-13T15:37:04.085Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
+ "externalRequests": "blocked",
+ "control": null,
+ "results": [
+  {
+   "width": 360,
+   "name": "jalan-345284: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "공용 대욕장 노천탕",
+     "전망 욕탕",
+     "천연온천 확인 필요"
+    ],
+    "tag": {
+     "l": 251.421875,
+     "t": 385.984375,
+     "r": 309.640625,
+     "b": 410.78125,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-345284: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-345284: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-345284: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 258.6875,
+     "r": 344,
+     "b": 520.6875,
+     "w": 328,
+     "h": 262
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 3,
+     "rows": 2,
+     "rowsWithoutTag": 2,
+     "cardHeight": 262,
+     "cardHeightWithoutTag": 262
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-321273: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "대욕장",
+     "공용 대욕장 노천탕",
+     "전망 욕탕",
+     "대욕탕 · 천연온천 미확인"
+    ],
+    "tag": {
+     "l": 141,
+     "t": 415.78125,
+     "r": 199.21875,
+     "b": 440.578125,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-321273: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-321273: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-321273: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 234.6875,
+     "r": 344,
+     "b": 544.375,
+     "w": 328,
+     "h": 309.6875
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 4,
+     "rows": 3,
+     "rowsWithoutTag": 2,
+     "cardHeight": 309.6875,
+     "cardHeightWithoutTag": 279.890625
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-999171: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "천연온천",
+     "대욕장",
+     "객실 노천탕 · 일부 객실",
+     "공용 대욕장 노천탕",
+     "전세·가족 노천탕",
+     "카케나가시 · 흘려보내는 온천",
+     "전망 욕탕"
+    ],
+    "tag": {
+     "l": 141,
+     "t": 499.046875,
+     "r": 199.21875,
+     "b": 523.84375,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-999171: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-999171: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "jalan-999171: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 182.765625,
+     "r": 344,
+     "b": 597.84375,
+     "w": 328,
+     "h": 415.078125
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 7,
+     "rows": 6,
+     "rowsWithoutTag": 5,
+     "cardHeight": 415.078125,
+     "cardHeightWithoutTag": 385.28125
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-345284: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "공용 대욕장 노천탕",
+     "전망 욕탕",
+     "천연온천 확인 필요"
+    ],
+    "tag": {
+     "l": 251.421875,
+     "t": 385.984375,
+     "r": 309.640625,
+     "b": 410.78125,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-345284: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-345284: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-345284: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 258.6875,
+     "r": 374,
+     "b": 520.6875,
+     "w": 358,
+     "h": 262
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 3,
+     "rows": 2,
+     "rowsWithoutTag": 1,
+     "cardHeight": 262,
+     "cardHeightWithoutTag": 262
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-321273: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "대욕장",
+     "공용 대욕장 노천탕",
+     "전망 욕탕",
+     "대욕탕 · 천연온천 미확인"
+    ],
+    "tag": {
+     "l": 299.140625,
+     "t": 385.984375,
+     "r": 357.359375,
+     "b": 410.78125,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-321273: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-321273: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-321273: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 258.6875,
+     "r": 374,
+     "b": 520.6875,
+     "w": 358,
+     "h": 262
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 4,
+     "rows": 2,
+     "rowsWithoutTag": 2,
+     "cardHeight": 262,
+     "cardHeightWithoutTag": 262
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-999171: ‘전망 욕탕’ 표지가 보이고 가운데를 누를 수 있음",
+   "pass": true,
+   "detail": {
+    "tags": [
+     "천연온천",
+     "대욕장",
+     "객실 노천탕 · 일부 객실",
+     "공용 대욕장 노천탕",
+     "전세·가족 노천탕",
+     "카케나가시 · 흘려보내는 온천",
+     "전망 욕탕"
+    ],
+    "tag": {
+     "l": 302.921875,
+     "t": 469.15625,
+     "r": 361.140625,
+     "b": 493.953125,
+     "w": 58.21875,
+     "h": 24.796875
+    },
+    "fontSize": "13px"
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-999171: 표지 글자가 한 줄이고 잘리지 않음",
+   "pass": true,
+   "detail": {
+    "cut": 0,
+    "lines": 1
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-999171: 모든 표지가 표지 줄과 카드 안에 있고 서로 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "outsideRow": [],
+    "outsideCard": [],
+    "overlaps": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "jalan-999171: 카드·페이지 가로 넘침 없음, 카드 아래 버튼이 카드 안에 있음",
+   "pass": true,
+   "detail": {
+    "pageOverflow": 0,
+    "cardOverflow": 0,
+    "card": {
+     "l": 16,
+     "t": 212.46875,
+     "r": 374,
+     "b": 567.953125,
+     "w": 358,
+     "h": 355.484375
+    },
+    "buttonsOutside": [],
+    "layout": {
+     "tagCount": 7,
+     "rows": 4,
+     "rowsWithoutTag": 4,
+     "cardHeight": 355.484375,
+     "cardHeightWithoutTag": 355.484375
+    }
+   }
+  }
+ ]
+}
