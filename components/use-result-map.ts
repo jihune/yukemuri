@@ -22,5 +22,5 @@ export function useResultMap(snap:SnapshotState,order:number[]|null,shown:boolea
   return()=>controller.abort();
  },[shown,manifest,geoFor]);
  const positions=useMemo<ResultPositions|null>(()=>s&&order?resultPositions(order,s.core,geoFor?.data??null):null,[s,order,geoFor]);
- return{positions,geoLoading:shown&&!!manifest&&!!manifest.files.geo&&!geoFor,geoFailed:!!geoFor?.failed};
+ return{positions,geo:geoFor?.data??null,geoLoading:shown&&!!manifest&&!!manifest.files.geo&&!geoFor,geoFailed:!!geoFor?.failed};
 }

@@ -19,7 +19,11 @@ export type SearchResponse={hotels:HotelSummary[];total:number;unknownExcluded:n
 // The default view's first page of one snapshot, rendered into the static page.
 export type FirstPage={snapshot:string;manifest:SnapshotManifest;response:SearchResponse};
 export type MapBounds={west:number;south:number;east:number;north:number};
-export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|null};
+// grade: lib/search-snapshot.ts GEO_GRADE (1 the source's point, 2 and up approximate).
+export type MapPoint={id:string;name:string;lat:number;lng:number;score:number|null;grade?:number};
+// The D06 approximate points (geo.json), when the page has them: a stay without the
+// source's point is placed there, as on the U05 map (lib/map-groups.ts).
+export type GeoColumns={grade:(number|null)[];lat:(number|null)[];lng:(number|null)[]};
 export type MapCell={lat:number;lng:number;count:number;south:number;west:number;north:number;east:number};
 export type MapAreaResponse={total:number;inBounds:number;outOfBounds:number;withoutCoordinates:number;limit:number;points:MapPoint[];cells:MapCell[]};
 const SURROGATE=/[\ud800-\udfff]/;
@@ -164,22 +168,24 @@ function sqliteAverage(values:number[]){
 }
 // Every matching hotel inside the bounds: points (id order) up to the limit,
 // else counts on a 16 x 16 grid over the bounds.
-export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=false,savedIds:string[]=[]):MapAreaResponse{
+export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=false,savedIds:string[]=[],geo:GeoColumns|null=null):MapAreaResponse{
  const c=s.core,scope=scopeOf(s,f,savedOnly,savedIds);
  let total=0,withoutCoordinates=0;const inside:number[]=[];
  for(let i=0;i<s.size;i++){
   if(!inScope(s,i,f,scope)||!eligible(c,i,f))continue;
-  total++;const lat=c.lat[i],lng=c.lng[i];
+  total++;let lat=c.lat[i],lng=c.lng[i];
+  if((lat===null||lng===null)&&geo&&(geo.grade[i]??0)>0){lat=geo.lat[i]??null;lng=geo.lng[i]??null}
   if(lat===null||lng===null){withoutCoordinates++;continue}
   if(lat>=b.south&&lat<=b.north&&lng>=b.west&&lng<=b.east)inside.push(i);
  }
  const score=f.ratingProvider==='jalan'?c.jalanScore:c.tripScore;
  const result:MapAreaResponse={total,inBounds:inside.length,outOfBounds:total-withoutCoordinates-inside.length,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
  if(!inside.length)return result;
- if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>({id:c.ids[i],name:c.name[i],lat:c.lat[i]!,lng:c.lng[i]!,score:score[i]}));return result}
+ const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,1]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
+ if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:c.name[i],lat,lng,score:score[i],grade}});return result}
  const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[]}>();
  for(const i of inside){
-  const lat=c.lat[i]!,lng=c.lng[i]!,row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
+  const [lat,lng]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
   const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[]};cell.lats.push(lat);cell.lngs.push(lng);cells.set(row*16+col,cell);
  }
  result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({lat:sqliteAverage(x.lats),lng:sqliteAverage(x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep}));

@@ -80,6 +80,16 @@ for(const w of [390,1280]){
    check(`${label||'전국'}: 묶음(${count}곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림`,(zoomed&&x.shown===x.expected&&x.list===x.expected)||(listed.includes('이 묶음')&&after.list===count),{count,zoomed,listed,after:x});
   }
  }
+ // Wide screen: '지도 크게' puts the map in the list's place and the stays in view beside it,
+ // with the same counts.
+ if(!mobile){
+  await page.goto(base+'/',{waitUntil:'networkidle'});
+  await page.getByRole('button',{name:'지도 크게'}).click();await page.waitForTimeout(1200);
+  const layout=await page.evaluate(()=>{const m=document.querySelector('.stay-map')?.getBoundingClientRect(),l=document.querySelector('.map-stay-list')?.getBoundingClientRect(),r=document.querySelector('.results-section');return{map:m&&Math.round(m.width),list:l&&Math.round(l.left-m.right),results:r?getComputedStyle(r).display:null,pressed:document.querySelector('.view-switch [aria-pressed=true]')?.textContent}});
+  const r=await page.evaluate(()=>{const cov=document.querySelector('.map-coverage')?.innerText.replace(/\s+/g,' ')??'';const m=cov.match(/이 화면 ([\d,]+)곳/);return{inView:m?Number(m[1].replace(/,/g,'')):null,list:Number((document.querySelector('.map-stay-list h3 b')?.textContent??'-1').replace(/[^0-9-]/g,'')),markers:[...document.querySelectorAll('.map-canvas .stay-marker')].map(e=>e.textContent.trim())}});
+  const shown=r.markers.reduce((n,t)=>n+(t.endsWith('곳')?num(t):1),0);
+  check('지도 크게: 목록 대신 넓은 지도, 옆에 이 화면 목록, 표지+묶음 합 = 이 화면 = 목록',layout.results==='none'&&layout.map>600&&layout.list>=0&&layout.pressed==='지도 크게'&&shown===r.inView&&r.list===r.inView,{layout,...r,shown});
+ }
  // Phone: the list is a sheet over the map; its handle cycles peek, half and full.
  if(mobile){
   await page.goto(base+'/',{waitUntil:'networkidle'});await tap(page.locator('.mobile-map-toggle'));await page.waitForTimeout(800);
