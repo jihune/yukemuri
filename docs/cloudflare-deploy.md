@@ -64,6 +64,13 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - D1의 실제 위치(`--location apac` 힌트 반영 여부)는 미확인이다. 4단계 또는 첫 배포에서 `wrangler d1 info yukemuri --config dist/server/wrangler.json`으로 확인한다.
 - `publicOrigin`과 `autoDeploy`는 아직 켜지 않았다. 아래 ‘4단계 뒤’의 PR에서 켠다.
 
+## 4단계 결과(2026-10-11–13)
+
+- 실행기 레포 workflow `cloudflare-load.yml`(PR #3 `b7f9c64`, PR #4 `9fb6e1d`)로 백업 run 38092128934의 13개 테이블을 3일에 나눠 적재했다. 모든 테이블의 원격 `COUNT(*)`가 백업 manifest와 같다. 상세·run 번호는 `H01-20261011.md`의 ‘4단계 결과’.
+- D1 위치는 `APAC`(`d1 info`의 `running_in_region`)다.
+- 원격 import는 정확히 100,000바이트인 문장을 `SQLITE_TOOBIG`으로 거절했다. 적재 SQL 문장은 90,000바이트 이하로 만든다.
+- 예상 쓰기 ‘행 × (1 + 색인 수, TEXT 기본키 자동 색인 포함)’가 `rows_written_24h`와 맞았다(1일차 87,035 + 3단계 111 = 87,146, 2일차 76,122).
+
 ## 4단계 뒤: 자동 배포 켜기
 
 4단계 적재(`catalog_meta` 포함)가 끝났다는 기록 PR이 `publicOrigin`을 채우고 `autoDeploy`를 `true`로 바꾼다. 이 PR의 병합이 첫 배포다. P03 뒤 공개 읽기는 D1에 쓰지 않고(seed 없음), 목록 API(`/api/hotels`)도 없다. 그래도 적재 전에 배포하면 빈 카탈로그로 만든 검색 스냅숏이 공개되므로 이 순서를 지킨다. 병합 전에 `deploy.yml`을 `preflight: true`로 수동 실행해 남은 마이그레이션·준비 안 된 키·쓰기 추정을 확인하고, 그날 UTC 쓰기(적재분 + 마이그레이션 + 준비) 합계가 9만 행 이하인지 PR에 적는다. 적재 전 상태 확인은 `wrangler d1 execute yukemuri --remote --config dist/server/wrangler.json --command "SELECT COUNT(*) FROM hotels"`처럼 DB를 바꾸지 않는 조회로만 한다.
