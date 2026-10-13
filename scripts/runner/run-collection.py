@@ -2,10 +2,13 @@
 """Run the in-repo collector against the Cloudflare Worker (H01 step 6).
 
 .github/workflows/collect.yml calls this; the runner repository dispatches that
-workflow on its existing cron. The budget matches the runner's run-updates.py
-when collection moved here (jihune/yukemuri-script-runner b7f9c64): gentle is
---gentle --max-pages 16, every step gets --interval 8 --jitter 4, and the whole
-run has 240 seconds. The target is publicOrigin in cloudflare-deploy.json.
+workflow on its existing cron. Pacing matches the runner's run-updates.py when
+collection moved here (jihune/yukemuri-script-runner b7f9c64): every step gets
+--interval 8 --jitter 4 per source host. The page count of a gentle run comes
+from scripts/collection-budget.mjs (C03, 2026-10-13: as many pages as the free
+D1 limits allow, at most 120; 16 before C03 and when usage is unreadable), and
+the run gets 11 seconds a page plus 60, never less than 240 seconds. The target
+is publicOrigin in cloudflare-deploy.json.
 The crawl key comes from YUKEMURI_CRAWL_ACCESS_KEY and reaches the collector
 only on stdin, never in arguments, the child environment or logs. No LLM calls.
 """
@@ -20,12 +23,30 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 COLLECTOR = ROOT / 'scripts/crawler/update-site.py'
-MODES = {
-    'check-access': [['--health-only']],
-    'gentle': [['--gentle', '--max-pages', '16']],
-}
+MODES = ('check-access', 'gentle')
 PACING = ['--interval', '8', '--jitter', '4']
 TIME_LIMIT = 240
+MAX_PAGES = 120
+DEFAULT_PAGES = 16
+SECONDS_PER_PAGE = 11
+
+
+def phases(mode, pages):
+    if mode == 'check-access':
+        return [['--health-only']]
+    return [['--gentle', '--max-pages', str(pages)]]
+
+
+def time_limit(mode, pages):
+    # About 9 seconds a page measured on 2026-10-13 (16 pages in 146 s, two hosts).
+    return TIME_LIMIT if mode == 'check-access' else max(TIME_LIMIT, 60 + SECONDS_PER_PAGE * pages)
+
+
+def page_count(value):
+    pages = int(value)
+    if not 0 <= pages <= MAX_PAGES:
+        raise argparse.ArgumentTypeError(f'pages must be 0-{MAX_PAGES}')
+    return pages
 # Same rule as scripts/cloudflare-deploy-gate.mjs and source_safety.WORKER_HOST.
 WORKER_ORIGIN = re.compile(r'https://yukemuri\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.workers\.dev')
 
@@ -89,16 +110,23 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=MODES, required=True)
     parser.add_argument('--config', type=Path, default=ROOT / 'cloudflare-deploy.json')
+    parser.add_argument('--pages', type=page_count, default=DEFAULT_PAGES,
+                        help='gentle only: pages for this run (0 skips the run; the free daily D1 budget is used up)')
     args = parser.parse_args(argv)
-    deadline = time.monotonic() + TIME_LIMIT
+    limit = time_limit(args.mode, args.pages)
+    deadline = time.monotonic() + limit
     try:
         origin = target_origin(json.loads(args.config.read_text()))
         access = {'url': origin, 'token': load_key()}
     except (ValueError, OSError) as error:
         print('Collection stopped: ' + (str(error) if isinstance(error, ValueError) else type(error).__name__), file=sys.stderr)
         return 1
-    print(json.dumps({'mode': args.mode, 'target': origin, 'timeLimitSeconds': TIME_LIMIT, 'llmCalls': 0}), flush=True)
-    for phase in MODES[args.mode]:
+    if args.mode == 'gentle' and args.pages == 0:
+        print(json.dumps({'mode': args.mode, 'state': 'skipped', 'reason': 'free daily D1 budget used; next scheduled run', 'pages': 0}), flush=True)
+        return 0
+    print(json.dumps({'mode': args.mode, 'target': origin, 'pages': args.pages if args.mode == 'gentle' else None,
+                      'timeLimitSeconds': limit, 'llmCalls': 0}), flush=True)
+    for phase in phases(args.mode, args.pages):
         state = run_step(phase, access, deadline)
         if state == 'budget':
             print(json.dumps({'state': 'budget_reached', 'resume': 'next scheduled run; unfinished claims expire on the server', 'inventoryComplete': False}), flush=True)

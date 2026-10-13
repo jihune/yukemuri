@@ -22,13 +22,31 @@ ENABLED = {'workerName': 'yukemuri', 'databaseName': 'yukemuri', 'databaseId': '
 
 
 class CollectionChecks(unittest.TestCase):
-    def test_budget_matches_the_runner(self):
-        # jihune/yukemuri-script-runner b7f9c64: run-updates.py MODES, run_step pacing, --time-limit 240.
-        self.assertEqual(launcher.MODES, {'check-access': [['--health-only']], 'gentle': [['--gentle', '--max-pages', '16']]})
+    def test_pacing_matches_the_runner(self):
+        # jihune/yukemuri-script-runner b7f9c64: run_step pacing and --time-limit 240 stay the floor.
+        self.assertEqual(launcher.MODES, ('check-access', 'gentle'))
         self.assertEqual(launcher.PACING, ['--interval', '8', '--jitter', '4'])
         self.assertEqual(launcher.TIME_LIMIT, 240)
         self.assertEqual(launcher.COLLECTOR, launcher.ROOT / 'scripts/crawler/update-site.py')
         self.assertTrue(launcher.COLLECTOR.is_file())
+
+    def test_page_budget(self):
+        # C03 (2026-10-13): the page count comes from collection-budget.mjs; 16 is the
+        # pre-C03 size and the default, 120 the cap; pacing per host is unchanged.
+        self.assertEqual((launcher.DEFAULT_PAGES, launcher.MAX_PAGES), (16, 120))
+        self.assertEqual(launcher.phases('check-access', 120), [['--health-only']])
+        for pages in (1, 16, 120):
+            self.assertEqual(launcher.phases('gentle', pages), [['--gentle', '--max-pages', str(pages)]])
+        self.assertEqual(launcher.time_limit('check-access', 120), 240)
+        self.assertEqual(launcher.time_limit('gentle', 16), 240)
+        self.assertEqual(launcher.time_limit('gentle', 120), 1380)
+        # The collect job timeout (26 minutes) must cover the largest run and the setup.
+        self.assertLess(launcher.time_limit('gentle', launcher.MAX_PAGES) + 120, 26 * 60)
+        for good in ('0', '16', '120'):
+            self.assertEqual(launcher.page_count(good), int(good))
+        for bad in ('-1', '121', 'x', ''):
+            with self.assertRaises((launcher.argparse.ArgumentTypeError, ValueError), msg=bad):
+                launcher.page_count(bad)
 
     def test_target_is_the_recorded_worker_only(self):
         self.assertEqual(launcher.target_origin(ENABLED), ORIGIN)
@@ -85,6 +103,24 @@ class CollectionChecks(unittest.TestCase):
                 with patch.dict(os.environ, {'YUKEMURI_CRAWL_ACCESS_KEY': KEY}), patch.object(launcher, 'run_step', return_value=state), \
                         contextlib.redirect_stdout(io.StringIO()):
                     self.assertEqual(launcher.main(['--mode', mode, '--config', str(config)]), code, (mode, state))
+            # The budget reaches the collector as --max-pages, with a deadline sized for it.
+            with patch.dict(os.environ, {'YUKEMURI_CRAWL_ACCESS_KEY': KEY}), patch.object(launcher, 'run_step', return_value='ok') as run, \
+                    contextlib.redirect_stdout(io.StringIO()) as out:
+                started = time.monotonic()
+                self.assertEqual(launcher.main(['--mode', 'gentle', '--pages', '120', '--config', str(config)]), 0)
+            self.assertEqual(run.call_args.args[0], ['--gentle', '--max-pages', '120'])
+            self.assertGreater(run.call_args.args[2], started + 1300)
+            self.assertIn('"pages": 120', out.getvalue())
+            # Budget 0: no request at all, a successful run (next scheduled run tries again).
+            with patch.dict(os.environ, {'YUKEMURI_CRAWL_ACCESS_KEY': KEY}), patch.object(launcher, 'run_step') as run, \
+                    contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(launcher.main(['--mode', 'gentle', '--pages', '0', '--config', str(config)]), 0)
+            run.assert_not_called()
+            self.assertIn('"state": "skipped"', out.getvalue())
+            with patch.dict(os.environ, {'YUKEMURI_CRAWL_ACCESS_KEY': KEY}), patch.object(launcher, 'run_step') as run, \
+                    contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                launcher.main(['--mode', 'gentle', '--pages', '121', '--config', str(config)])
+            run.assert_not_called()
 
     def test_stops_before_any_request_without_target_or_key(self):
         with tempfile.TemporaryDirectory() as folder:

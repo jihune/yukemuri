@@ -41,21 +41,42 @@ defaults:
 jobs:
   collect:
     runs-on: ubuntu-24.04
-    timeout-minutes: 6
+    # A gentle run takes up to 120 pages at about 9-11 seconds each
+    # (run-collection.py allows 60 + 11 s a page, 1,380 s for 120 pages).
+    timeout-minutes: 26
+    outputs:
+      pages: ${{ steps.budget.outputs.pages }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Verify the launcher without credentials
         run: python3 scripts/runner/check_collection.py
+      - uses: actions/setup-node@v7
+        if: inputs.mode == 'gentle'
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # C03: as many pages as today's free D1 limits allow (at most 120), 16 when
+      # usage cannot be read, 0 when the day's budget is used. The Cloudflare
+      # token reaches this step only (Account Analytics read, as usage.yml).
+      - name: Size the run within the free D1 limits
+        id: budget
+        if: inputs.mode == 'gentle'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/collection-budget.mjs | tee -a "$GITHUB_OUTPUT"
       - name: Run the Python collector against the Worker
         env:
           YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
           MODE: ${{ inputs.mode }}
-        run: python3 scripts/runner/run-collection.py --mode "$MODE"
+          PAGES: ${{ steps.budget.outputs.pages }}
+        run: python3 scripts/runner/run-collection.py --mode "$MODE" --pages "${PAGES:-16}"
+  # No snapshot when the run collected nothing (budget 0): it would only read.
   snapshot:
     needs: collect
-    if: inputs.mode == 'gentle'
+    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'
     uses: ./.github/workflows/deploy.yml
     with:
       after_collection: true
