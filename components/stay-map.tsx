@@ -110,7 +110,8 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    };
    map.on('moveend',()=>{draw.current();if(!programmatic.current)setMoved(true)});
    map.on('resize',tabStops);
-   const observer=new ResizeObserver(()=>map.invalidateSize());observer.observe(container.current);
+   // A resize is not the user moving the map: it offers no area search.
+   const observer=new ResizeObserver(()=>quietly(()=>map.invalidateSize()));observer.observe(container.current);
    (map as Leaflet.Map & {_stayObserver?:ResizeObserver})._stayObserver=observer;
    setReady(true);
   }).catch(()=>setError(true));

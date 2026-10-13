@@ -224,7 +224,8 @@ async function run(page,cdp){
  // The same with Space from the keyboard, after moving the cell away from the middle
  // (up and down: the map is taller than it is wide, so the cell stays wholly inside it).
  await nudge('ArrowUp');
- const cellAway=await cell.count()?await offCentre():null,focusedCell=await tabToMarker(page,m=>!!m.cell);
+ // Tab to the cell measured above (the first cell in Tab order depends on the map's size).
+ const cellAway=await cell.count()?await offCentre():null,focusedCell=await tabToMarker(page,m=>!!m.cell&&!!m.title?.includes(`${biggest}개`));
  const cellScroll=await page.evaluate(()=>scrollY);
  if(focusedCell){await page.keyboard.press('Space');await page.waitForTimeout(1000)}
  const cellBack=await cell.count()?await offCentre():null,cellFocus=await focusedMarker(page);

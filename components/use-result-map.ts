@@ -21,6 +21,8 @@ export function useResultMap(snap:SnapshotState,order:number[]|null,shown:boolea
    .catch(()=>{if(!controller.signal.aborted)setGeo({id:manifest.id,data:null,failed:true})});
   return()=>controller.abort();
  },[shown,manifest,geoFor]);
- const positions=useMemo<ResultPositions|null>(()=>s&&order?resultPositions(order,s.core,geoFor?.data??null):null,[s,order,geoFor]);
- return{positions,geo:geoFor?.data??null,geoLoading:shown&&!!manifest&&!!manifest.files.geo&&!geoFor,geoFailed:!!geoFor?.failed};
+ // A geo.json that is not row for row the loaded snapshot is not used.
+ const geoData=geoFor?.data&&s&&geoFor.data.grade.length===s.core.ids.length?geoFor.data:null;
+ const positions=useMemo<ResultPositions|null>(()=>s&&order?resultPositions(order,s.core,geoData):null,[s,order,geoData]);
+ return{positions,geo:geoData,geoLoading:shown&&!!manifest&&!!manifest.files.geo&&!geoFor,geoFailed:!!geoFor?.failed};
 }

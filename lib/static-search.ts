@@ -170,6 +170,8 @@ function sqliteAverage(values:number[]){
 // else counts on a 16 x 16 grid over the bounds.
 export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=false,savedIds:string[]=[],geo:GeoColumns|null=null):MapAreaResponse{
  const c=s.core,scope=scopeOf(s,f,savedOnly,savedIds);
+ // Approximate points only from a geo.json that is row for row this snapshot.
+ if(geo&&geo.grade.length!==s.size)geo=null;
  let total=0,withoutCoordinates=0;const inside:number[]=[];
  for(let i=0;i<s.size;i++){
   if(!inScope(s,i,f,scope)||!eligible(c,i,f))continue;

@@ -25,7 +25,7 @@ export default function MapStayList({title,stays,provider,activeId,onSelect,onBa
  const [forTitle,setForTitle]=useState(title);
  if(forTitle!==title){setForTitle(title);if(sheet&&onBack&&height==='peek')setHeight('half')}
  return <section className={`map-stay-list ${sheet?'is-sheet sheet-'+height:''}`} aria-label={title}>
-  {sheet&&<button type="button" className="map-sheet-handle" aria-label={SHEET_LABEL[height]} aria-expanded={height!=='peek'} onClick={()=>setHeight(SHEET[(SHEET.indexOf(height)+1)%SHEET.length])}><span/></button>}
+  {sheet&&<button type="button" className="map-sheet-handle" aria-label={`${title} ${stays.length.toLocaleString()}곳, ${SHEET_LABEL[height]}`} aria-expanded={height!=='peek'} onClick={()=>setHeight(SHEET[(SHEET.indexOf(height)+1)%SHEET.length])}><span className="map-sheet-grip"/><span className="map-sheet-title">{title} <b>{stays.length.toLocaleString()}곳</b></span></button>}
   <div className="map-stay-list-head">
    {onBack&&<button type="button" className="map-stay-list-back" onClick={onBack}>← 이 화면 목록</button>}
    <h3>{title} <b>{stays.length.toLocaleString()}곳</b></h3>
