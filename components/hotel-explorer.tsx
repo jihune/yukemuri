@@ -30,6 +30,7 @@ import {openStayHistory,closeStayHistory,restoreListingPosition,type ListingPosi
 import type {PreparedSearchIndex} from '@/lib/hotel-search-index';
 import {useSearchSnapshot} from './use-search-snapshot';
 import {POPSTATE} from '@/lib/history-events';
+import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS} from '@/lib/geo-attribution';
 const NO_INDEX:PreparedSearchIndex=[];
 function writeBookingUrl(q:BookingQuery){const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
 function Picker({value,onChange,options,label}:{value:string;onChange:(v:string)=>void;options:{value:string;label:string}[];label:string}){
@@ -230,6 +231,6 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady} booking={booking} onBooking={onBooking}/>
  {detailLoading&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
  {toast&&<div className="toast-message" role="status">{toast}</div>}
- <footer className="site-footer"><span>유케무리 · 일본 온천 탐색</span><span>v0.5 · <a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span></footer>
+ <footer className="site-footer"><span>유케무리 · 일본 온천 탐색</span><span>v0.5 · <a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p></footer>
  </>
 }

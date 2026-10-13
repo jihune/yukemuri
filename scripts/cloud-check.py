@@ -36,6 +36,7 @@ commands = [
     ['node', 'scripts/check-local-search.mjs'],
     ['node', 'scripts/check-map-bounds.mjs'],
     ['node', 'scripts/check-comparison-differences.mjs'],
+    ['node', 'scripts/check-snapshot-geo.mjs'],
 ]
 if args.full:
     commands += [
@@ -50,6 +51,7 @@ if args.full:
         ['node', 'scripts/check-edge-guard-worker.mjs'],
         ['node', 'scripts/check-deploy-config.mjs'],
         ['node', 'scripts/check-search-snapshot-worker.mjs'],
+        ['node', 'scripts/check-snapshot-geo.mjs', '--built'],
         ['node', 'scripts/check-public-reads-worker.mjs'],
         ['node', 'scripts/measure-d1-reads.mjs', '--check'],
     ]

@@ -83,6 +83,31 @@ try{
  }
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
 
+ // Map positions (D06): geo.json in core order; payload coordinates are grade 1
+ // (4 when the payload marks them approximate) with the same values as core.
+ // Without a geocoder nothing else is added but Wikidata points for Trip ids.
+ const geo=file('geo'),approximate=new Map((await db.prepare("SELECT id,json_extract(payload,'$.location.isApproximate') AS a FROM hotels").all()).results.map(r=>[r.id,!!r.a]));
+ assert.deepEqual(Object.keys(geo),['grade','lat','lng']);for(const k of ['grade','lat','lng'])assert.equal(geo[k].length,rows.length,k);
+ core.ids.forEach((id,i)=>{
+  if(core.lat[i]!==null){assert.equal(geo.grade[i],approximate.get(id)?4:1,id);assert.deepEqual([geo.lat[i],geo.lng[i]],[core.lat[i],core.lng[i]],id)}
+  else assert([0,6].includes(geo.grade[i])&&(geo.grade[i]===6)===(geo.lat[i]!==null),id+' without a geocoder: Wikidata or nothing');
+ });
+ assert.equal(built.geo.status,'skipped');assert.equal(built.manifest.bytes.geo,Buffer.byteLength(JSON.stringify(geo)));
+ // With the geocoder (a fixture): points only where there were none, core untouched.
+ {
+  const asked=[],out=join(temp,'geocoded');mkdirSync(out,{recursive:true});
+  const located=await buildSnapshot({db,out,now:new Date('2026-10-12T00:00:00Z'),geocode:async list=>{asked.push(...list);return list.map((_,n)=>n%3===2?null:[35+n*1e-5,139+n*1e-5,n%3?3:2])}});
+  const m=read(out,'manifest.json'),g=JSON.parse(readFileSync(join(out,'snapshot','v',m.id,'geo.json'),'utf8'));
+  assert.notEqual(m.id,manifest.id,'geocoded points make a new snapshot version');
+  assert.deepEqual(JSON.parse(readFileSync(join(out,'snapshot','v',m.id,'core.json'),'utf8')),core,'core.json (list and search) unchanged');
+  const open=geo.grade.flatMap((v,i)=>v===0?[i]:[]);
+  assert.equal(asked.length,open.length,'every hotel with no point, and only those, is asked');
+  assert(asked.every(a=>typeof a.address==='string'&&Array.isArray(a.places)));
+  open.forEach((i,n)=>{assert.equal(g.grade[i],n%3===2?0:n%3?3:2,core.ids[i]);assert.equal(g.lat[i],n%3===2?null:Math.round((35+n*1e-5)*1e6)/1e6)});
+  geo.grade.forEach((v,i)=>{if(v!==0)assert.deepEqual([g.grade[i],g.lat[i],g.lng[i]],[v,geo.lat[i],geo.lng[i]],core.ids[i])});
+  assert.equal(located.geo.status,'ok');assert.deepEqual(await fingerprint(),before,'geocoding wrote nothing to D1');
+ }
+
  // Coverage as the list showed it; collection status as its API returned it.
  // The collector's end-of-run read counts the same aggregate.
  assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
@@ -161,7 +186,10 @@ try{
   let r=cli(['--require-prepared']);
   assert.notEqual(r.status,0,'--require-prepared fails on an unprepared catalogue');
   assert(!existsSync(join(temp,'cli-report.json')),'no report (not even a stale one) after --require-prepared fails');
-  r=cli([]);assert.equal(r.status,0,r.stderr);
+  r=cli([]);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: no --geocoder-db given/);
+  // A dictionary that is not there: the snapshot is still built, the reason printed.
+  r=cli(['--geocoder-db',join(temp,'no-dictionary')]);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: no installed dictionary/);
+  r=cli(['--geocoder-skip','dictionary download failed']);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: dictionary download failed/);
   assert(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).unprepared.length>0,'without the flag the report lists the unprepared steps');
  }
  const kb=n=>(n/1024).toFixed(0)+'KiB';
