@@ -1,0 +1,146 @@
+{
+ "measuredAt": "2026-10-13T15:14:45Z",
+ "origin": "https://yukemuri.jihune.workers.dev",
+ "snapshot": "df6ddf58032a7dcb",
+ "generatedAt": "2026-10-13T13:36:47.886Z",
+ "hotels": 13217,
+ "states": {
+  "None": 10464,
+  "closed": 1,
+  "operating": 3,
+  "temporarily_closed": 1,
+  "unverified": 2748
+ },
+ "reviewNeeded": 0,
+ "official": [
+  {
+   "id": "jalan-348699",
+   "name": "箱根湯本ホテル（HAKONEYUMOTO HOTEL）",
+   "prefecture": "pref-kanagawa",
+   "state": "temporarily_closed"
+  },
+  {
+   "id": "jalan-387954",
+   "name": "RETONA HAKONE",
+   "prefecture": "pref-kanagawa",
+   "state": "operating"
+  },
+  {
+   "id": "jalan-389144",
+   "name": "レジーナリゾート由布院",
+   "prefecture": "pref-ooita",
+   "state": "operating"
+  },
+  {
+   "id": "trip-126663008",
+   "name": "인터컨티넨탈 삿포로 바이 IHG",
+   "prefecture": "pref-hokkaido",
+   "state": "operating"
+  },
+  {
+   "id": "trip-6081808",
+   "name": "유토렐로-안 아넥스",
+   "prefecture": "pref-kanagawa",
+   "state": "closed"
+  }
+ ],
+ "towns": {
+  "하코네": {
+   "prefecture": "pref-kanagawa",
+   "termRule": 363,
+   "koreanLabel": 388,
+   "either": 389,
+   "labelOnly": [
+    "trip-10717929",
+    "trip-114938842",
+    "trip-134034945",
+    "trip-2057559",
+    "trip-21830558",
+    "trip-2199654",
+    "trip-2199668",
+    "trip-2200346",
+    "trip-23192351",
+    "trip-2338368",
+    "trip-2561314",
+    "trip-2802696",
+    "trip-2845721",
+    "trip-28801002",
+    "trip-2971465",
+    "trip-6081808",
+    "trip-70417876",
+    "trip-704264",
+    "trip-704273",
+    "trip-704276",
+    "trip-704279",
+    "trip-704719",
+    "trip-705914",
+    "trip-706131",
+    "trip-85985803",
+    "trip-8649664"
+   ],
+   "providers": {
+    "jalan": 226,
+    "trip": 163
+   },
+   "states": {
+    "None": 158,
+    "closed": 1,
+    "operating": 1,
+    "temporarily_closed": 1,
+    "unverified": 228
+   },
+   "bathKnown": 141,
+   "official": [
+    {
+     "id": "jalan-348699",
+     "state": "temporarily_closed"
+    },
+    {
+     "id": "jalan-387954",
+     "state": "operating"
+    },
+    {
+     "id": "trip-6081808",
+     "state": "closed"
+    }
+   ]
+  },
+  "유후인": {
+   "prefecture": "pref-ooita",
+   "termRule": 167,
+   "koreanLabel": 151,
+   "either": 167,
+   "labelOnly": [],
+   "providers": {
+    "jalan": 167
+   },
+   "states": {
+    "operating": 1,
+    "unverified": 166
+   },
+   "bathKnown": 108,
+   "official": [
+    {
+     "id": "jalan-389144",
+     "state": "operating"
+    }
+   ]
+  },
+  "구로카와": {
+   "prefecture": "pref-kumamoto",
+   "termRule": 35,
+   "koreanLabel": 21,
+   "either": 35,
+   "labelOnly": [],
+   "providers": {
+    "jalan": 35
+   },
+   "states": {
+    "unverified": 35
+   },
+   "bathKnown": 1,
+   "official": []
+  }
+ },
+ "meaning": "provider records; cross-provider duplicates may remain. None: no hotel_lifecycle row."
+}

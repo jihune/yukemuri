@@ -1067,3 +1067,21 @@ Codex 3회째(head `ab5bd91`, 20:55Z) P2 1건과 반영(`79d1368`):
 3. U05에 전할 필드: `features.viewBath`, `rooms`, `roomTypes`(형식은 `D05-20261013.md` 4.1절).
 4. D05가 끝나면 상위 세션이 이 세션에 D04(시설 연식)를 맡길 계획이다(12:25Z 메시지). Trip.com 표지의 연도 값은 `D05-20261013.md` 8절에 적었다.
 5. D04 첫 PR에서 고칠 것(Claude 검토 1회째 P3): `scripts/check-source-policy.mjs`의 객실 수 순서 단언은 Trip.com 관측의 `retrievedAt`을, 객실 사진 순서 단언은 Jalan 묶음의 `verifiedAt`을 하루 늦게 두어 정렬 키 순서를 뒤집은 결함을 잡게 한다. 변경은 `1fcbc42`에 있다.
+
+## L01 — 신규·폐업·휴관 반영
+
+기록: 2026-10-13T15:20Z / 2026-10-14 00:20 KST. 하위 세션 `session_01B1EMNXwBFR86E9fRdWbW1N`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/l01-lifecycle`, 시작 기준 main `b577cc8`. 상세는 `L01-20261013.md`.
+
+- 1단계(지금 상태 조사) 끝: 운영 확인은 공개 GET만 했다. `update-lifecycle.py`는 옛 Sites 주소에 고정되어 있지 않고 workers.dev 주소를 받는다. 그러나 운영에서 이 도구를 부르는 workflow가 없어 키를 가진 사람만 공식 상태를 바꿀 수 있다.
+- 운영 스냅숏 `df6ddf58032a7dcb`(13,217곳): 공식 상태는 휴관 1·폐업 1·영업(개업일) 3이다. 다섯 건 모두 2026-10-05 Sites에서 넣은 근거이고 운영 D1에 그대로 있다. 하코네 363~389곳, 유후인 167곳, 구로카와 35곳(공급자별 기록). 값은 `docs/evidence/l01-snapshot-20261013.json`, 명령은 `scripts/lifecycle-survey.py`.
+- 2단계 설계(근거 파일 `data/lifecycle-official.json` → main push 뒤 `lifecycle.yml`이 기존 Secret `YUKEMURI_CRAWL_ACCESS_KEY`로 적용)를 상위 세션에 보내고 답을 기다린다. 새 Secret·사용자 조치는 없다.
+- 3단계(공식 안내 대조, 15:18–15:26Z) 끝: `箱根ハイランドホテル`(`trip-1182118`)이 소유사 오다큐 보도자료(2025-11-13)와 箱根ナビ로 2025-05-08부터 휴관(2027년 가을 무렵 리뉴얼 개업 목표)임을 확인했다. 운영에서는 아직 탐색에 나온다. 하코네 유모토 호텔 휴관은 그대로다. 구로카와 조합 30곳 중 29곳이 카탈로그에 있다. 반영 초안은 `L01-20261013.md` 3.2, 근거는 `docs/evidence/l01-official-20261013.json`.
+- 지역 규칙의 빈 곳(구로카와 낱말이 아소시 黒川을 잡고 조합 숙소 8곳을 놓침, 하코네 한국어 주소 26곳)은 L01 밖이라 기록만 했다(3.3).
+- 기준 확인: main에서 `check-lifecycle-worker.mjs`(CI 밖 검사) 통과(15:3xZ).
+- 상위 세션 답(15:18Z·15:2xZ): 설계대로 구현, 병합 한 번에 스냅숏 한 번, 3.2의 두 건은 첫 PR에 넣음, 지역 규칙은 다음 PR.
+- 2단계 구현(PR 1): `data/lifecycle-official.json`(6건), `lifecycle.yml`(적용 → 저장분 있으면 스냅숏 한 번 → 판정), `scripts/runner/apply-lifecycle.py`, `update-lifecycle.py`(거절 뒤 계속, 끝에 실패), `deploy.yml` push `paths-ignore`에 근거 파일 추가, 검사 `check-lifecycle-official.mjs`·`runner/check_lifecycle.py`, `measure-d1-reads.mjs` lifecycle 상한. 새 근거 PUT 쓰기 6행, 같은 근거 0행(임시 D1).
+- 다음: PR을 열고 Codex 검토를 받는다. 병합 뒤 첫 실행 결과(4건 replayed, 2건 saved, 스냅숏 한 번 기대)는 상위 세션이 확인한다. 그다음 L01 PR 2(지역 판정 규칙, 상위 세션 주의: `collection-priorities.json` version을 바꾸면 우선순위 유지보수가 전체 숙소에 쓰기를 만든다. 임시 D1로 쓰기 행 수를 재고 배포 UTC 날짜를 PR 설명에 적는다).
+- 멈춤(2026-10-13T16:4xZ, 사용자 지시 ‘사용량이 모자라니 멈추고 다음 작업은 예약’, 상위 세션 전달): PR #79 head `d9da084`는 Codex 1회째 P1·P2를 고친 커밋이다(`cloud-check.py --full` 40개 통과, 스레드 2개 답하고 해결). CI 결과 대기, Codex 2회째는 아직 요청하지 않았다. 재개 예약 2026-10-13T20:10Z. PR 2 준비분은 이 세션의 로컬 브랜치 `l01-pr2-wip`(`5103175`, push 안 함)에만 있다. 내용: 구로카와 낱말을 `黒川温泉`·`南小国町`·`Minamioguni`·`미나미오구니`·`Kurokawa Onsen`·`杖立`·`わいた`·`Tsuetate`·`Waita`로, 하코네에 `하코네`를 더함, 판 번호 `onsen-first-20261013`, 우선순위 유지보수가 바뀐 행만 값별로 UPDATE, `check-crawl-queue-worker.mjs`에 쓰기 횟수 trigger 단언, `measure-d1-reads.mjs --prepare-steps`에 `priority` 항목. 운영 규모 복사본 측정: 우선순위 단계만 다시 돌리면 고치기 전 읽기 3,942,787·쓰기 30,928행, 고친 뒤 22,924·34행(작업 1%가 바뀌면 23,694·342행). 운영에서 우선순위가 바뀌는 숙소는 55곳(스냅숏 추정).
+- 재개(2026-10-13T20:11Z, 예약): 5시간 창 0.07, 7일 창 0.53. Codex 2회째(`61dd7b0`) P2 1건(재실행 때 실패한 스냅숏 복구)을 고쳤다: 수동 실행·재실행에서도 스냅숏을 만든다. Codex 3회째(마지막 Codex)를 요청한다.
+- main merge(21:25Z, `44915dd`, 기록 파일 충돌만 풂, `checks` 통과) 뒤 Codex 3회째(마지막 Codex, 21:39Z) P2 두 건을 고쳤다: `deploy.yml`이 근거 파일을 바꾼 push를 `lifecycle.yml`에 맡김(`scripts/lifecycle-push.mjs`, 배포 판정 `deferred`), 저장과 다시 읽기 실패를 따로 셈. 다음 검토는 상위 세션이 여는 Claude 검토 세션이다.
+- Claude 검토 1회째(`c581ede`, 22:24Z, 검토 세션 `session_01K9M4aA8GiGuH6KweSuGW3D`): P2 1건, P3 2건. main merge(`0e1f45a`, 충돌 없음) 뒤 모두 고쳤다. P2: 건너뛴 push 배포가 성공으로 끝나 `checked-commit.mjs`가 그 커밋을 ‘전체 검사 통과’로 봤다. 이제 `Cloud app checks`만 센다. P3: `lifecycle-push.mjs`를 로컬 compare API 대역으로 검사, 복구 안내를 수동 실행으로(재실행은 원래 커밋을 다시 배포). 이 문서 다른 절의 C3 줄(‘`Cloud app checks` 또는 push 배포’)은 그때 기록이라 그대로 둔다. 지금 규칙은 `cloudflare-deploy.md`다. 다음은 상위 세션이 여는 Claude 검토 2회째(마지막)다.
