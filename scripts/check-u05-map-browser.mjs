@@ -80,6 +80,20 @@ for(const w of [390,1280]){
    check(`${label||'전국'}: 묶음(${count}곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림`,(zoomed&&x.shown===x.expected&&x.list===x.expected)||(listed.includes('이 묶음')&&after.list===count),{count,zoomed,listed,after:x});
   }
  }
+ // Phone: the list is a sheet over the map; its handle cycles peek, half and full.
+ if(mobile){
+  await page.goto(base+'/',{waitUntil:'networkidle'});await tap(page.locator('.mobile-map-toggle'));await page.waitForTimeout(800);
+  const sheet=page.locator('.map-stay-list.is-sheet'),handle=page.locator('.map-sheet-handle');
+  const state=async()=>({h:Math.round((await sheet.boundingBox())?.height??0),expanded:await handle.getAttribute('aria-expanded'),bottom:await sheet.evaluate(e=>Math.round(innerHeight-e.getBoundingClientRect().bottom))});
+  const peek=await state();const hb=await handle.boundingBox();
+  await tap(handle);await page.waitForTimeout(400);const half=await state();
+  await tap(handle);await page.waitForTimeout(400);const full=await state();
+  await tap(handle);await page.waitForTimeout(400);const back=await state();
+  check('목록 시트: 손잡이(44px)로 엿보기 → 절반 → 전체 → 엿보기, 화면 아래에 붙음',!!hb&&hb.height>=44&&peek.bottom===0&&peek.h<half.h&&half.h<full.h&&back.h===peek.h&&peek.expanded==='false'&&half.expanded==='true',{peek,half,full,back,handle:hb});
+  const unknownButton=page.locator('.map-coverage button',{hasText:'위치 미확인'});
+  if(await unknownButton.count()){await unknownButton.evaluate(e=>e.click());await page.waitForTimeout(400);const opened=await state();
+   check('목록 시트: 위치 미확인 목록을 열면 시트가 절반으로 올라옴',opened.h===half.h,{opened,half});}
+ }
  // Keyboard: a marker is a Tab stop and Enter opens it (U02 kept).
  await page.goto(base+'/',{waitUntil:'networkidle'});
  if(mobile)await tap(page.locator('.mobile-map-toggle'));

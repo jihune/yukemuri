@@ -110,7 +110,8 @@ async function run(page,cdp){
  const caption=(await page.locator('.map-caption').innerText()).replace(/\s+/g,' ');
  check('이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 스냅숏 값과 같음',t.includes(`이 지역 ${count(expected.inBounds)}`)&&t.includes(`범위 밖 ${count(expected.outOfBounds)}`)&&t.includes(`위치 미확인 ${count(expected.withoutCoordinates)}`)&&t.includes(`조건에 맞는 전체 ${count(expected.total)}`)&&caption.includes(count(expected.inBounds)),{text:t,caption,expected:{...expected,points:expected.points.length}});
  const list=search.list('');
- check('지도 범위 결과는 목록을 바꾸지 않음',(await page.locator('.mobile-map-toggle').innerText()).includes(String(list.hotels.length))&&expected.total===list.total,{listTotal:list.total,mapTotal:expected.total});
+ // U05: the floating button counts the whole result (the map shows all of it), not the loaded page.
+ check('지도 범위 결과는 목록을 바꾸지 않음',(await page.locator('.mobile-map-toggle').innerText()).includes(list.total.toLocaleString('ko-KR'))&&expected.total===list.total,{listTotal:list.total,mapTotal:expected.total});
  // The area belongs to the view the user chose: searching keeps that view, and pressing
  // again for the same view gives the same result.
  const viewAfter=await pane();
