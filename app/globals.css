@@ -784,3 +784,20 @@ body{word-break:keep-all;overflow-wrap:break-word}
 /* keep-all is for Korean; Japanese text breaks between characters as usual. A credit link stays on one line. */
 :lang(ja){word-break:normal}
 .geo-credit a{white-space:nowrap}
+/* U05 map mode: approximate points and the list of the stays in view. */
+.stay-marker.is-approximate{border-style:dashed;border-width:2px}
+.stay-marker.is-cluster.is-approximate{border-color:var(--yk-bg)}
+.map-stay-list{margin-top:var(--yk-space-4);background:var(--yk-bg);border:1px solid var(--yk-line);border-radius:var(--yk-radius-lg)}
+.map-stay-list-head{display:flex;align-items:center;gap:var(--yk-space-2);padding:var(--yk-space-3) var(--yk-space-4);border-bottom:1px solid var(--yk-line)}
+.map-stay-list-head h3{font-size:var(--yk-fs-md);font-weight:700}
+.map-stay-list-head h3 b{color:var(--yk-primary);white-space:nowrap}
+.map-stay-list-back{min-height:var(--yk-tap);color:var(--yk-primary);font-size:var(--yk-fs-sm);padding:0 var(--yk-space-2) 0 0}
+.map-stay-list ul{list-style:none;margin:0;padding:0;max-height:420px;overflow-y:auto;overscroll-behavior:contain}
+.map-stay-list li+li{border-top:1px solid var(--yk-line)}
+.map-stay-list li button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:var(--yk-tap);padding:var(--yk-space-2) var(--yk-space-4);text-align:left}
+.map-stay-list li button:hover,.map-stay-list li button.is-active{background:var(--yk-primary-soft)}
+.map-stay-name{font-size:var(--yk-fs-sm);font-weight:650;color:var(--yk-text)}
+.map-stay-meta{font-size:var(--yk-fs-xs);color:var(--yk-text-3)}
+.map-stay-meta b{color:var(--yk-primary)}
+.map-stay-list-empty{padding:var(--yk-space-4);font-size:var(--yk-fs-sm);color:var(--yk-text-3)}
+.map-stay-list-more{display:block;width:100%;min-height:var(--yk-tap);border-top:1px solid var(--yk-line);color:var(--yk-primary);font-size:var(--yk-fs-sm)}
