@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -16,7 +17,20 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('bootstrap', Path(__file__).with_name('bootstrap.py'))
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
-RAW = (ROOT / 'data/collector-release.generated.json').read_bytes()
+def sites_release(raw):
+    # deploy.yml builds the release for the Worker's own workers.dev origin
+    # (YUKEMURI_SITE_ORIGIN); this bootstrap pins the Sites origin, so check the
+    # same files signed for it. Any other origin is left for validate_release.
+    release = json.loads(raw.decode('utf-8'))
+    if not re.fullmatch(r'https://yukemuri\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.workers\.dev', str(release.get('siteOrigin'))):
+        return raw
+    payload = {key: value for key, value in release.items() if key != 'release'}
+    payload['siteOrigin'] = runner.SITE_ORIGIN
+    payload['release'] = runner.digest(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(',', ':')))
+    return (json.dumps(payload, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+
+
+RAW = sites_release((ROOT / 'data/collector-release.generated.json').read_bytes())
 RELEASE = runner.validate_release(RAW)
 ACCESS = {'url': runner.SITE_ORIGIN, 'token': 'test-only-maintenance-key'}
 
