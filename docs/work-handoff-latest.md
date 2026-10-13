@@ -85,6 +85,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 인계 뒤 두 하위 세션의 질문에만 답한다. 보관하지 않는다 | 대기 |
 | `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션) | 진행 중 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, 부모는 새 상위 세션) | 진행 중 |
+| `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67~). 부모는 이전 상위 세션이라 새 상위 세션 id로 직접 보낸다 | 진행 중 |
 | `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합, 후속 브랜치 `claude/d06-geo`) | 쉬는 중 |
 | `session_01Y1JhjKANZbPiLfETCBdRns` | P03 정적 스냅숏(PR #43·#44·#45·#52) | 보관 |
@@ -117,6 +118,15 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - D05 1단계 조사(하위 세션 메시지 12:17Z, 브랜치 `claude/d05-rooms` `3e0f219`의 `D05-20261013.md`): Jalan 상세 첫 쪽에 객실 수 표·`展望風呂`·객실 사진 3장이 있고 Trip.com 상세에 객실 수 표지와 객실 타입별 사진이 있다. 새 표·마이그레이션 없이 `features.viewBath`와 `rooms`를 더하고, 기존 Jalan 상세는 baths 판 번호 v2로 다시 찾는다(약 12일, gentle 쪽의 약 1/8, 추정). 상위 세션이 v2와 지금 카드에 ‘전망 욕탕’ 표지가 저절로 생기는 것을 받아들였다. 필드 이름은 U05 하위 세션에 전했다.
 - 약관: 하위 세션이 인용한 Jalan 이용규약 제5조·제8조와 Trip.com 영국판 약관 3절 문구를 상위 세션이 원문에서 직접 확인했다. 객실 사진 저장·표시와 지금 공개 사이트의 출처 자료 사용 방식을 `roadmap.md` ‘사용자 결정 대기’에 넣고 사용자에게 물었다. 결정 전까지 객실 사진은 만들지 않는다.
 - 사용자 답(12:2xZ): 객실 사진과 객실 타입 이름을 보여 준다(비상업 사이트라 약관과 무관하다는 사용자 판단). 공개 사이트의 출처 자료 사용은 상위 세션에 맡겼고, 상위 세션은 지금처럼 두기로 했다. 0.9 기준을 확정했다. 세 결정은 `roadmap.md` 결정 기록에 있다.
+- 사용자 지시(12:3xZ): DDoS와 외부 봇 수집에 대응하려고 Cloudflare를 쓰라고 했으니, 앞의 공개 사이트 질문이 그와 관련 있으면 잘 막으라고 했다. 상위 세션은 관련이 있다고 보고 12:2xZ의 ‘검색 엔진 색인도 막지 않는다’를 뒤집었다. 12:32Z에 H02 하위 세션(`session_019yG8qw1WbTQEBYXDzk4D1Z`)을 열었다. 이때 5시간 창은 0.58(12:30Z)이었다. 하위 세션은 먼저 15:10Z 재개 예약을 둔다.
+- PR #67(U05 1번 토대): 하위 세션의 병합 준비 알림(12:25Z) 뒤 상위 세션이 확인했다. 확인한 것은 스레드 4개 해결, Codex 3회째 큰 문제 없음(`f3e12ca`), 그 뒤 변경이 기록 파일뿐인 것, head `4cc5c0a`의 CI·GitGuardian 통과, main `979e6d0`과 충돌 없음이다. 12:27Z에 병합했다(`00bcfdb`). 운영 배포 run 38397433990 결과는 `deployments.md`에 적는다.
+- H02 1단계 조사(하위 세션 메시지 12:43Z, 브랜치 `claude/h02-protect` `e50124d`의 `H02-20261013.md`)에 상위 세션이 답했다(12:4xZ).
+  - 정적 스냅숏은 Turnstile·`run_worker_first` 없이 그대로 둔다. Cloudflare `workers/static-assets/billing-and-limitations` 원문을 상위 세션이 확인했다: 무료 플랜에서 `run_worker_first` 경로는 하루 한도를 넘으면 정적 파일로 대신하지 않고 429를 받는다. 막으면 DDoS 때 목록·검색·지도까지 멈춘다. 자료를 일부러 받으려는 사람은 정적 파일을 받을 수 있다는 위험은 남는다.
+  - Worker 실패(1027·5xx·429·403) 때 상세를 스냅숏 카드 자료로 보여 주는 일은 U05 상세 화면 PR이 맡는다(U05에 전함).
+  - `/api/hotels/<id>`·`/api/hotel-comparison`에 IP별 60초 30회 제한을 따로 둔다.
+  - PR 1(검색 엔진 색인 차단, 자동화 User-Agent 403)은 답을 기다리지 않고 구현한다. 배포 뒤에는 키 없는 `/api/*` 확인에 브라우저 UA가 필요하다(U05·D05에 전함).
+- PR #76(H02 PR 1): 하위 세션의 병합 준비 알림(13:31Z) 뒤 상위 세션이 확인했다. Codex 1회째(`1cf7bbe`) P2 1건(‘`/api/hotels/<id>/google`이 상세 제한 밖’)이 `f41c02b`에서 고쳐져 스레드가 해결됐고, 2회째(`f41c02b`)는 큰 문제 없음이었다. head의 CI·GitGuardian이 통과했고 main `fbc5389`과 충돌이 없었다. 상위 세션이 `lib/edge-guard.ts`에서 크롤 키 요청이 UA 거절·속도 제한보다 먼저 통과하는 것을 읽었다. 13:32Z에 병합했다(`68c54e6`). 배포 결과는 `deployments.md`에 있다. 부수 효과: 메신저 링크 미리보기 봇(이름에 scrap이 든 것 등, 이름은 추정)도 Worker가 답하는 경로에서는 막힌다. 정적 첫 화면은 Worker를 거치지 않아 막히지 않는다.
+- 13:4xZ 무렵 계정 5시간 한도에 닿아 이 세션의 턴이 끊겼고, 15:06Z(초기화 15:00Z 뒤)에 사용자 지시 ‘다시 시도’로 이어 갔다. 그때 5시간 창 0.12, 7일 창 0.41이었다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
@@ -889,3 +899,16 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
      - `viewBath`는 `FEATURE_LABELS` 끝(비트 13, ‘전망 욕탕’)에만 있다. 필터·상세·비교에 넣을지는 U05가 정한다.
      - `rooms.verifiedAt`은 YYYY-MM-DD이고, byType 합과 total(Jalan 総部屋数)이 다를 수 있다.
    - D05 객실 사진: 상세·비교 API의 `roomTypes: [{sourceId, verifiedAt, items:[{name, photos:[{url, caption}]}]}]`. Trip.com은 타입 이름과 사진 3장(최대 30개 타입), Jalan은 name이 null이고 caption은 숙소 설명이다. Trip.com → Jalan 순으로 이어 붙인다. 출처 표기는 대표 사진과 같은 방식이다. 상세 PR에서 있을 때와 없을 때 모두 동작하게 한다.
+
+## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
+
+기록: 2026-10-13T12:45Z / 21:45 KST, 갱신 12:58Z. 하위 세션 `session_019yG8qw1WbTQEBYXDzk4D1Z`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/h02-protect`, 시작 기준 main `00bcfdb`, main `fbc5389` merge. 상세는 `H02-20261013.md`.
+
+- 1단계(조사·설계) 끝: Cloudflare 공식 문서 원문(12:35Z)으로 무료 플랜·workers.dev에서 쓸 수 있는 수단을 정리했다. Worker 하루 요청 한도는 Worker 코드로 지킬 수 없다(거절도 요청으로 센다). 정적 자산은 한도와 관계없이 나간다.
+- 상위 세션 답(12:44Z): 스냅숏은 정적으로 둔다(남는 위험은 H02 문서에 적음). Worker 실패 때 상세 화면은 U05 상세 PR이 만들고, 응답 모양은 H02 문서 ‘상세 API 실패 응답’에 적었다. 상세·비교 IP별 60초 30회는 PR 1에 넣었다.
+- PR 1: robots.txt(첫 화면만 열림), `public/_headers`와 `edge-guard`의 `X-Robots-Tag`, `app/layout.tsx` robots 메타 한 줄, 키 없는 자동화 UA 403, `DETAIL_RATE_LIMITER`, smoke 단언. 검사와 고장 낸 변형은 H02 문서와 PR 설명에 있다.
+- PR #76(13:03Z 열림): `cloud-check.py --full` 38개 통과, 브라우저 검사 8종 360개 통과(이 PR 빌드, 제한이 켜진 로컬 서버, 429 없음). Codex 1회째 P2 1건(`/api/hotels/<id>/google`도 좁은 제한에) 반영.
+- 실행기 저장소는 읽기만 했다(`55572c8`, 백업 UA `YukemuriBackup/1.0`, 모든 요청에 크롤 키).
+- 배포 뒤 운영 확인: 키 없는 `/api/*`는 브라우저 형식 UA가 필요하다(`cloudflare-deploy.md` ‘공개 사이트 보호’).
+- 미확인: 실제 Cloudflare에서 `_headers`의 `/*`가 `/`에도 붙는지(배포 smoke가 확인), 1027의 상태 코드.
+- 재개 예약: `trig_019ymamW4itAtbxLm49Yfrm6`(2026-10-13T15:10Z, 5시간 사용량 초기화 뒤).
