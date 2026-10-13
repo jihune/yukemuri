@@ -21,11 +21,11 @@
 | `scripts/cloudflare-rollback.mjs` | Worker 되돌림·D1 Time Travel 복구(`rollback.yml`) |
 | `scripts/cloudflare-usage.mjs` | Worker CPU·D1 일일 행 수 읽기(`usage.yml`) |
 | `scripts/build-search-snapshot.mjs` | 검색 스냅숏 생성(D1 읽기 전용, 정적 자산 `/snapshot/`). P03, `P03-20261012.md` |
-| `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한, 키 없는 자동화 도구 거절, Worker 응답의 `X-Robots-Tag`) |
+| `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한, 상세·비교의 좁은 속도 제한, 키 없는 자동화 도구 거절, Worker 응답의 `X-Robots-Tag`) |
 | `public/robots.txt` | 모든 봇에 첫 화면 밖 차단, 알려진 AI 수집 봇에 전체 차단 요청(H02) |
 | `public/_headers` | 정적 파일의 `X-Robots-Tag`와 vinext의 `/_next/static/*` 캐시 규칙(H02) |
 
-생성된 `dist/server/wrangler.json`의 설정: Worker 이름 `yukemuri`, `workers_dev: true`, `preview_urls: false`, `observability.enabled: true`, `placement.mode: smart`, D1 바인딩 `DB`(`database_name: yukemuri`, `migrations_dir: ../../drizzle`), Rate Limiting 바인딩 `API_RATE_LIMITER`(namespace `1001`, 60초에 120회), `vars.REJECT_AUTOMATED_AGENTS: "1"`(H02). `migrations_dir`는 생성된 설정 파일 위치(`dist/server/`)에서 계산하므로 `../../drizzle`이 레포의 `drizzle/`을 가리킨다.
+생성된 `dist/server/wrangler.json`의 설정: Worker 이름 `yukemuri`, `workers_dev: true`, `preview_urls: false`, `observability.enabled: true`, `placement.mode: smart`, D1 바인딩 `DB`(`database_name: yukemuri`, `migrations_dir: ../../drizzle`), Rate Limiting 바인딩 `API_RATE_LIMITER`(namespace `1001`, 60초에 120회)와 `DETAIL_RATE_LIMITER`(namespace `1002`, 60초에 30회, H02), `vars.REJECT_AUTOMATED_AGENTS: "1"`(H02). `migrations_dir`는 생성된 설정 파일 위치(`dist/server/`)에서 계산하므로 `../../drizzle`이 레포의 `drizzle/`을 가리킨다.
 
 모든 `wrangler d1` 명령은 데이터베이스 이름과 설정 경로를 준다. 예: `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`.
 
@@ -101,6 +101,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - Worker에 닿는 모든 요청(페이지·RSC·`/api/*`)을 `CF-Connecting-IP`별로 센다. 정적 파일(`dist/client`)은 Worker 앞에서 바로 나가므로 세지 않는다. 첫 화면(`app/page.tsx`)도 요청마다 D1 검색을 하므로 `/?q=<매번 다른 값>`으로 제한을 피할 수 없게 했다(Codex 검토 P1, 2026-10-11).
   - 60초에 120회를 넘으면 429, `Retry-After: 60`, `Cache-Control: no-store`를 돌려준다. `/api/*`에는 JSON `{"error":"요청이 너무 많습니다. 1분쯤 뒤에 다시 시도해 주세요."}`를 보낸다. 화면은 기존 오류 표시 경로(`lib/api-client.ts`)로 이 문구를 보여 주고 자동 재시도하지 않는다. 페이지에는 같은 문구의 작은 HTML 화면을 보낸다.
   - 크롤 키가 맞는 요청(수집기·백업)은 세지 않는다. 틀린 키는 일반 요청처럼 센다.
+  - 상세(`/api/hotels/<id>`)와 비교(`/api/hotel-comparison`)는 따로 IP별 60초 30회다(`DETAIL_RATE_LIMITER`, H02, 상위 세션 결정 2026-10-13T12:44Z). 이 제한을 먼저 보고, 여기서 거절한 요청은 120회 제한을 쓰지 않는다. 키가 맞는 요청은 세지 않는다. IP 하나가 상세 13,000곳을 받는 데 약 7시간이 걸린다.
   - Cloudflare 문서상 카운터는 위치(데이터센터)마다 따로이고 근사값이다.
   - 바인딩이 없거나 `limit()`가 실패하면 제한 없이 통과시킨다. 로컬 검사·개발에서 앱이 그대로 동작한다.
   - 무료 플랜에서 Rate Limiting 바인딩을 쓸 수 있는지는 미확인이다. 문서(`workers/runtime-apis/bindings/rate-limit`, 2026-10-11 원본 `0d35c2c`)에 플랜 제한 문구는 없다. 첫 실제 배포에서 확인한다. 배포가 바인딩 때문에 거절되면 `vite.config.ts`의 `ratelimits`를 빼는 PR로 되돌린다. 코드는 바인딩 없이도 동작한다.
@@ -119,7 +120,8 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - 검색 엔진·수집 차단(H02, 사용자 지시 2026-10-13T12:3xZ, `H02-20261013.md`):
   - `robots.txt`: 모든 봇에 `Allow: /$`와 `Disallow: /`. 정적 첫 화면만 열어 검색 엔진이 noindex를 읽게 한다(Google: robots.txt로 막은 주소는 noindex를 못 본다). 알려진 AI 수집 봇(GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, PerplexityBot 등)에는 사이트 전체를 막아 달라고 요청한다. 규칙을 지키는 봇에만 효과가 있다.
   - 모든 응답에 `X-Robots-Tag: noindex, nofollow, noarchive`. 정적 파일은 `public/_headers`의 `/*` 규칙, Worker 응답은 `edge-guard`가 붙인다(`_headers`는 Worker 응답에 적용되지 않는다). vinext는 `_headers`가 없을 때만 `/_next/static/*` 캐시 규칙을 쓰므로 그 규칙을 `public/_headers`에 옮겼다. 첫 화면 HTML에는 같은 값의 `<meta name="robots">`가 있다(`app/layout.tsx`).
-  - 키 없는 Worker 요청 중 UA가 없거나, `Mozilla/`·`Opera/`로 시작하지 않거나(curl·python-requests·Go-http-client·node 등), 수집기 표지(`bot/`처럼 이름 끝 bot, crawl, spider, slurp, scrap, ChatGPT-User 등)가 있으면 403이다. 앱·속도 제한·D1에 닿기 전에 끊는다. `HeadlessChrome`은 막지 않는다(브라우저 검사가 씀). 생성된 설정의 `vars.REJECT_AUTOMATED_AGENTS="1"`일 때만 동작하고, 배포 smoke가 Node 기본 UA의 403과 noindex 헤더를 확인한다. 키 없이 curl로 `/api/*`를 부르는 운영 확인은 403이 된다. 정적 파일 확인은 그대로 된다.
+  - 키 없는 Worker 요청 중 UA가 없거나, `Mozilla/`·`Opera/`로 시작하지 않거나(curl·python-requests·Go-http-client·node 등), 수집기 표지(`bot/`처럼 이름 끝 bot, crawl, spider, slurp, scrap, ChatGPT-User 등)가 있으면 403이다. 앱·속도 제한·D1에 닿기 전에 끊는다. `HeadlessChrome`은 막지 않는다(브라우저 검사가 씀). 생성된 설정의 `vars.REJECT_AUTOMATED_AGENTS="1"`일 때만 동작하고, 배포 smoke가 Node 기본 UA의 403과 noindex 헤더를 확인한다.
+- 운영 확인(공개 GET, H02 배포 뒤): 정적 파일(`/`, `/snapshot/manifest.json`, `/robots.txt`)은 curl 기본 UA로도 그대로 받는다. 키 없이 `/api/*`를 부를 때는 브라우저 형식 UA가 필요하다(예: `curl -A 'Mozilla/5.0 (compatible; YukemuriCheck/1.0)' <주소>/api/hotels/<id>`). 기본 UA면 403 `{"error":"브라우저가 아닌 자동화 도구의 요청은 받지 않습니다."}`다.
 - Bot Fight Mode·WAF 규칙은 도메인 단위라 `workers.dev`에 쓸 수 없다. 하루 요청 10만 건을 넘으면 09:00 KST까지 1027 오류가 나지만 요금은 없다. 403·429로 거절한 요청도 Worker 요청으로 센다(Worker가 이미 불렸다). 그래서 Worker 코드로는 이 한도를 지킬 수 없다. 한도를 넘어도 정적 파일(첫 화면·스냅숏 목록·검색·지도)은 계속 나간다(`run_worker_first`가 아닌 정적 자산은 Worker를 부르지 않는다, 문서 `workers/static-assets/billing-and-limitations`).
 
 ## 수집기와 배포 자료

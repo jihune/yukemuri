@@ -826,11 +826,12 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
-기록: 2026-10-13T12:45Z / 21:45 KST. 하위 세션 `session_019yG8qw1WbTQEBYXDzk4D1Z`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/h02-protect`, 시작 기준 main `00bcfdb`. 상세는 `H02-20261013.md`.
+기록: 2026-10-13T12:45Z / 21:45 KST, 갱신 12:58Z. 하위 세션 `session_019yG8qw1WbTQEBYXDzk4D1Z`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/h02-protect`, 시작 기준 main `00bcfdb`, main `fbc5389` merge. 상세는 `H02-20261013.md`.
 
 - 1단계(조사·설계) 끝: Cloudflare 공식 문서 원문(12:35Z)으로 무료 플랜·workers.dev에서 쓸 수 있는 수단을 정리했다. Worker 하루 요청 한도는 Worker 코드로 지킬 수 없다(거절도 요청으로 센다). 정적 자산은 한도와 관계없이 나간다.
-- 상위 세션에 물은 것: 스냅숏 보호(권장: 정적으로 둠), Worker 실패 때 상세 화면(권장: 스냅숏 카드로 대신), 상세·비교 속도 제한 60초 30회(권장).
-- 결정 기록 충돌: `roadmap.md` ‘공개 사이트의 출처 자료 사용’ 행의 “검색 엔진 색인도 막지 않는다”는 사용자 지시(12:3xZ)로 바뀌었다. 정정은 상위 세션이 한다.
+- 상위 세션 답(12:44Z): 스냅숏은 정적으로 둔다(남는 위험은 H02 문서에 적음). Worker 실패 때 상세 화면은 U05 상세 PR이 만들고, 응답 모양은 H02 문서 ‘상세 API 실패 응답’에 적었다. 상세·비교 IP별 60초 30회는 PR 1에 넣었다.
+- PR 1: robots.txt(첫 화면만 열림), `public/_headers`와 `edge-guard`의 `X-Robots-Tag`, `app/layout.tsx` robots 메타 한 줄, 키 없는 자동화 UA 403, `DETAIL_RATE_LIMITER`, smoke 단언. 검사와 고장 낸 변형은 H02 문서와 PR 설명에 있다.
 - 실행기 저장소는 읽기만 했다(`55572c8`, 백업 UA `YukemuriBackup/1.0`, 모든 요청에 크롤 키).
-- 다음: PR 1 구현(robots.txt·`X-Robots-Tag`·메타 태그·자동화 UA 거절, 검사·smoke).
+- 배포 뒤 운영 확인: 키 없는 `/api/*`는 브라우저 형식 UA가 필요하다(`cloudflare-deploy.md` ‘공개 사이트 보호’).
+- 미확인: 실제 Cloudflare에서 `_headers`의 `/*`가 `/`에도 붙는지(배포 smoke가 확인), 1027의 상태 코드.
 - 재개 예약: `trig_019ymamW4itAtbxLm49Yfrm6`(2026-10-13T15:10Z, 5시간 사용량 초기화 뒤).
