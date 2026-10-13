@@ -757,3 +757,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 @media(max-width:900px){
   .site-footer{padding-top:6px;padding-bottom:95px}
 }
+@media(max-width:550px){
+  /* Three 44px text buttons fit one row of a narrow card without their icons (U05 check rule 8). */
+  .card-bottom svg{display:none}
+  .card-bottom{column-gap:10px}
+}

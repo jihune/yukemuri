@@ -610,3 +610,43 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - `python3 scripts/cloud-check.py --full` 33개 통과(작업 트리, 2026-10-12T11:39:55Z–11:46:43Z, rc=0). 8–10번 반영 뒤 다시 33개 통과(11:49:31Z–11:56:23Z, rc=0). `run-actionlint.py` 포함.
 - 검토: Codex 1회째(`8849151`, 12:03Z 요청, 12:09Z 완료) P2 1건. `maintenanceBehind()`가 `collection-priority:` 접두사로 판정해, 예전 계획 버전의 완료 행만 있어도 ‘완료’로 봤다. 앱은 현재 계획 버전 키(`collection-priority:` + `data/collection-priorities.json`의 `version`)만 본다. 정확한 키로 고치고 예전 버전 행만 있는 경우를 검사에 넣었다. 기본 `cloud-check.py` 통과(12:09:56Z 종료) 뒤 `check-deploy-config.mjs` 통과.
 - Codex 2회째(`d4de172`, 12:17Z 요청, 12:21:18Z 완료)는 ‘큰 문제 없음’이었다. 남은 지적은 없다. CI `checks`는 `d4de172`에서 통과했다. main `4b55aaa`과 충돌이 없다. 이 기록 커밋 뒤의 변경은 인수인계뿐이다.
+
+## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
+
+기록: 2026-10-13T06:44Z / 2026-10-13 15:44 KST. 상위 세션(`session_01BSbr1zrttr8mSibf5bfz2R`)이 맡긴 작업이다. 작성 세션 `session_01EKeavHcR5d8PKrSwVHyhn6`. 병합과 병합 기록은 상위 세션이 한다. 설계안은 `U05-20261013.md`, 결정은 `roadmap.md`의 ‘U05 디자인(사용자)’ 행이다. PR 7개를 하나씩 연다(1 토대 → 2 지도 모드 → 3 목록 → 4 필터 → 5 상세 → 6 비교 → 7 즐겨찾기·자료 현황).
+
+### 1번 토대 PR
+
+- 브랜치 `claude/u05-ui`. 시작 기준 main `97b8c2e`(PR #61). 기록 직전에 main `8ae6d48`(PR #65)을 merge했다. 충돌 없음.
+- 환경: Node 24.21.0(nvm), pnpm 11.25.0, Playwright 1.56.1(`.sites-runtime/u01-browser`)과 `/opt/pw-browsers`의 Chromium. 로컬 사이트는 `prepare-local-site.mjs` 뒤 `pnpm start`(임시 D1, 체크인 자료 1,655곳). 운영 사이트·운영 DB에는 접속하지 않았다.
+
+바꾼 것:
+
+- `globals.css`: 먼저 규칙 하나를 한 줄로 나눴다(`57bf806`, 공백을 빼면 바이트가 같음). 그 위에 `--yk-*` 토큰을 세웠다. 색은 설계안 B(글자 `#14272b`·`#3d5157`·`#566a70`, 주 색 `#0a6670`), 글자 13/14/15/16/17/21/24px, 간격 4–32px, 누름 44px. shadcn 변수는 토큰을 가리킨다. 회청색 글자 수십 개를 세 단계로 합쳤고 9–12px 글자는 13px로 올렸다. 기존 여백 값은 배치가 바뀌지 않게 두었다. 간격 토큰은 새 규칙에만 썼고 화면별 PR에서 옮긴다.
+- Pretendard Variable 1.3.9(OFL, `public/fonts/pretendard/LICENSE.txt`)를 사이트 정적 파일로 넣었다. 동적 부분 글꼴 CSS는 `public/fonts/pretendard/`에, woff2 92개(3.1MB)는 다른 이진 자료처럼 `source-assets/016`–`107`에 넣고 `cloud-setup.sh`가 복원한다(경로는 `.gitignore`). npm `pretendard@1.3.9` 묶음(sha256 `0ffc240c…bd53`)에서 꺼냈다. 외부 CDN 요청은 없다. 한국어 화면에서 내려받는 조각은 첫 화면 기준 몇 개이고 일본어 글자는 기기 글꼴로 보인다.
+- 모든 조작을 44×44px 이상으로 했다. 사진 위 하트와 지도 표지는 보이는 모양을 그대로 두고 버튼만 키웠다. 360px 카드의 버튼 셋은 아이콘을 빼 한 줄에 둔다(점검 규칙 8).
+- ‘YUKEMURI’·‘JAPAN v0.5’·‘EXPLORE JAPAN’·‘MY SAVED STAYS’·바닥글 ‘v0.5’를 지웠다. 상세 위쪽 소제목의 자간도 뺐다.
+- 탭 ARIA 오류: 지도 옆 ‘목록 + 지도 / 목록만’은 패널 없는 탭이었다(axe critical). 눌림 상태 버튼 두 개(`aria-pressed`)로 바꿨다.
+- 동작 변경 한 가지: 카드의 ‘지도에서 보기’나 표지로 연 지도 미리보기는 포인터가 카드를 떠나도 닫히지 않는다. 다른 카드에 올리면 그 카드만 잠깐 보인다. 카드 버튼이 높아져 U03 데스크톱 검사의 스크롤에서 포인터가 카드를 벗어났고 미리보기가 닫혔다(main에서는 12개 통과, 수정 전 이 브랜치에서 4개 실패를 확인).
+- 바닥글은 44px 링크를 넣고도 높이 64px을 유지한다. 데스크톱 필터 패널의 `max-height`가 이 높이를 전제로 한다(바꾸기 전 패널 위가 6px 잘려 U03 데스크톱 검사가 실패).
+- `word-break: keep-all`, 결과 수 ‘1,655곳’ 줄 안 바뀜(점검 규칙 5). 지도 오류 문구가 확대 버튼과 겹치지 않게 했다.
+
+검사:
+
+- 새 `scripts/check-u05-foundation-browser.mjs`(실제 Chromium 360·390·1280px): Pretendard 정적 파일 적재와 외부 글꼴 요청 없음, axe 색 대비 위반 0, axe critical 0, 보이는 조작 전부 44px 이상(문장 안 링크·지도 저작권 표시 제외, 라벨 안 체크박스는 라벨 크기), 13px 미만 글자 0(사진 위 표지 제외), 영어 흔적 없음, 가로 넘침 없음, 키보드 초점 표시, 휴대폰 필터 시트, 실패 화면의 다시 시도(44px)와 회복. 수정 후 36개 통과(`evidence/ui-u05-foundation-20261013.json`). 같은 검사를 main에서 돌리면 28개가 실패한다(`evidence/ui-u05-foundation-before-20261013.json`: 390px 대비 위반 194곳, 44px 미만 216개, 13px 미만 글자 424개, Pretendard 미적재, 1280px critical 1건).
+- 기존 브라우저 검사(로컬 사이트, 최종 커밋): `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. 그 전 실행 한 번에서 `check-u04`가 390px 상세의 예약 칸을 15초 안에 못 찾아 1건 실패했고, 같은 코드로 세 번 다시 돌려 모두 통과했다(로컬 Worker 상세 API 응답 지연으로 본다, 원인 미확인).
+- `python3 scripts/cloud-check.py --full` 36개 통과(main merge 뒤 작업 트리, 06:44:17Z–06:52:46Z, rc=0). eslint는 바꾼 파일에서 새 지적이 없다(`layout.tsx`의 `<link>`는 이유를 적고 규칙을 껐다).
+- 첫 카드 위치(로컬 사이트, 화면 높이 800px): 390px 636→725px, 360px 653→725px, 1280px 513→553px. 44px 누름 영역 때문에 내려갔다. 300px 안으로 올리는 것은 3번 목록 PR의 완료 기준이다. 카드 높이 390px 279→295px, 360px 279→314px.
+- 화면 캡처(수정 전후, 360·390·1280px의 첫 화면·필터·즐겨찾기·실패·다시 시도·키보드 초점·불러오기·상세·비교·지도)는 작업 세션 임시 폴더에만 있다. 외부 요청을 막아 숙소 사진·지도 타일은 없다. 다시 찍기: `check-u05-foundation-browser.mjs <base> <json> <폴더>`와 `docs/evidence/u05-20261013/tools/views.mjs <폴더>`.
+- 설계안 5절 점검 규칙: 1(영어 소제목 없음)·2(13px 이상)·3(대비)·4(44px)·5(keep-all·숫자 단위)·10(장식 하나 더 빼기: 상세 소제목 자간)을 이 PR에서 확인했다. 6(주 색·강조 색 하나)은 토큰으로 정했고 강조 색은 아직 쓰지 않았다. 7(상자 안 상자)·8(아이콘)·9(출처 안내 한 곳)는 배치를 바꾸는 3–5번 PR에서 다룬다.
+
+미확인:
+
+- 실제 휴대폰(iOS Safari·Android Chrome)과 스크린리더. 캡처 환경의 한국어 글꼴은 이제 Pretendard지만 일본어는 WenQuanYi다.
+- 지도 표지(1280px)는 누름 영역만 44px로 키웠다. 표지 모양·척도 표시는 2번 지도 PR에서 바꾼다.
+- 느린 망에서 글꼴 조각을 받는 시간은 재지 않았다(`font-display: swap`이라 글자는 기기 글꼴로 먼저 보인다).
+
+다음:
+
+1. PR 리뷰(Codex) → 지적 반영 → 상위 세션 병합.
+2. 병합 뒤 같은 브랜치를 최신 main에서 다시 시작해 2번 지도 모드 PR. `D06-20261013.md`에 따르면 좌표가 있는 숙소는 10.4%라 ‘위치 미확인 N곳’이 대부분이다. 지도 PR은 이 수를 목록으로 열 수 있게 한다.

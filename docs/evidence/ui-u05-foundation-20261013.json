@@ -1,0 +1,491 @@
+{
+ "checkedAt": "2026-10-13T06:37:36.893Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": true,
+   "detail": {
+    "fonts": [
+     "Pretendard Variable"
+    ],
+    "family": "\"Pretendard Variable\", Pretendard, \"Apple SD Gothic Neo\", \"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+    "fontFiles": [
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "status": 200
+     }
+    ],
+    "fontRequests": 24,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": true,
+   "detail": {
+    "violations": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "axe critical 위반 0",
+   "pass": true,
+   "detail": {
+    "critical": [],
+    "other": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": true,
+   "detail": {
+    "controls": 275,
+    "exempt": 0,
+    "small": [],
+    "smallCount": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": true,
+   "detail": {
+    "count": 0,
+    "sample": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": true,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "필터 시트: 44px 미만 조작 0·13px 미만 글자 0",
+   "pass": true,
+   "detail": {
+    "small": [],
+    "tiny": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": true,
+   "detail": {
+    "size": {
+     "w": 52.078125,
+     "h": 44
+    },
+    "contrast": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  },
+  {
+   "width": 390,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": true,
+   "detail": {
+    "fonts": [
+     "Pretendard Variable"
+    ],
+    "family": "\"Pretendard Variable\", Pretendard, \"Apple SD Gothic Neo\", \"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+    "fontFiles": [
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.87.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
+      "status": 200
+     }
+    ],
+    "fontRequests": 24,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": true,
+   "detail": {
+    "violations": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "axe critical 위반 0",
+   "pass": true,
+   "detail": {
+    "critical": [],
+    "other": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": true,
+   "detail": {
+    "controls": 275,
+    "exempt": 0,
+    "small": [],
+    "smallCount": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": true,
+   "detail": {
+    "count": 0,
+    "sample": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": true,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "필터 시트: 44px 미만 조작 0·13px 미만 글자 0",
+   "pass": true,
+   "detail": {
+    "small": [],
+    "tiny": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": true,
+   "detail": {
+    "size": {
+     "w": 56.53125,
+     "h": 44
+    },
+    "contrast": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": true,
+   "detail": {
+    "fonts": [
+     "Pretendard Variable"
+    ],
+    "family": "\"Pretendard Variable\", Pretendard, \"Apple SD Gothic Neo\", \"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+    "fontFiles": [
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.91.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.88.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.85.woff2",
+      "status": 200
+     },
+     {
+      "url": "/fonts/pretendard/woff2-dynamic-subset/PretendardVariable.subset.90.woff2",
+      "status": 200
+     }
+    ],
+    "fontRequests": 24,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": true,
+   "detail": {
+    "violations": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "axe critical 위반 0",
+   "pass": true,
+   "detail": {
+    "critical": [],
+    "other": [
+     {
+      "id": "target-size",
+      "impact": "serious",
+      "nodes": 1
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": true,
+   "detail": {
+    "controls": 307,
+    "exempt": 2,
+    "small": [],
+    "smallCount": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": true,
+   "detail": {
+    "count": 0,
+    "sample": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": true,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": true,
+   "detail": {
+    "found": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "탭이 실제 패널을 가리킴(또는 탭이 아님)",
+   "pass": true,
+   "detail": {
+    "tabs": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": true,
+   "detail": {
+    "size": {
+     "w": 67.921875,
+     "h": 44
+    },
+    "contrast": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  }
+ ]
+}
