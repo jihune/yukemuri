@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>유케무리 시안 C · 온천 지도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#18232a; --ink-2:#44525a; --muted:#5b6870; --line:#dde3e6;
+  --sea:#cfe2ea; --land:#eef0ea; --road:#ffffff; --park:#dfe9d6;
+  --spring:#c23a28;  /* 온천 지도 기호 ♨의 붉은색 */
+  --water:#1f5e8c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;color:var(--ink);font-size:15px;line-height:1.5;word-break:keep-all;width:390px;height:844px;overflow:hidden;position:relative;background:var(--land)}
+button{font:inherit;color:inherit;background:none;border:0}
+.num{font-variant-numeric:tabular-nums}
+.map{position:absolute;inset:0}
+.top{position:absolute;left:12px;right:12px;top:12px;z-index:3}
+.pill{height:50px;background:#fff;border-radius:25px;box-shadow:0 4px 16px #18232a26;display:flex;align-items:center;padding:0 6px 0 18px;gap:10px}
+.pill .q{flex:1;font-weight:650}
+.pill .q small{display:block;font-size:12px;font-weight:500;color:var(--muted);line-height:1.2}
+.pill .f{width:40px;height:40px;border-radius:20px;border:1px solid var(--line);display:grid;place-items:center}
+.chips{display:flex;gap:8px;margin-top:10px;overflow:hidden;white-space:nowrap}
+.chip{height:36px;padding:0 13px;border-radius:18px;background:#fff;box-shadow:0 2px 8px #18232a1f;display:flex;align-items:center;font-size:14px;font-weight:600;flex-shrink:0}
+.chip.on{background:var(--ink);color:#fff}
+.town{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 8px;border-radius:18px;background:#fff;border:2px solid var(--spring);font-weight:750;font-size:14px;box-shadow:0 3px 10px #18232a30}
+.town svg{color:var(--spring)}
+.town span{font-weight:600;color:var(--muted)}
+.pin{position:absolute;z-index:2;height:30px;min-width:44px;padding:0 8px;border-radius:15px;background:#fff;border:1px solid #9aa9b0;font-weight:750;font-size:13px;display:grid;place-items:center;box-shadow:0 2px 6px #18232a26}
+.pin.on{background:var(--water);border-color:var(--water);color:#fff}
+.areasearch{position:absolute;z-index:2;left:50%;transform:translateX(-50%);top:120px;height:40px;padding:0 16px;border-radius:20px;background:var(--ink);color:#fff;font-size:14px;font-weight:650;display:flex;align-items:center;gap:6px}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:330px;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -6px 24px #18232a2e;z-index:4;padding:8px 16px 0}
+.grab{width:40px;height:5px;border-radius:3px;background:#c7d0d4;margin:0 auto 10px}
+.sh{display:flex;justify-content:space-between;align-items:baseline}
+.sh h2{font-size:18px;font-weight:800;white-space:nowrap}
+.sh h2 span{color:var(--water);margin-left:4px}
+.sh button{height:44px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.note{font-size:13px;color:var(--muted);margin-bottom:8px}
+.row{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ph{width:84px;height:84px;border-radius:10px;flex-shrink:0;background:linear-gradient(160deg,#9db0c4,#4c6683)}
+.ph.b{background:linear-gradient(160deg,#b8a58b,#6e5638)}
+.loc{font-size:13px;color:var(--muted)}
+.name{font-size:16px;font-weight:750;line-height:1.35}
+.rate{font-size:13px;color:var(--ink-2);margin-top:2px}
+.rate b{font-size:15px;color:var(--ink)}
+.facts{margin-top:5px;font-size:13px;color:var(--ink-2)}
+.facts b{color:var(--water)}
+.ctrl{position:absolute;right:12px;top:200px;z-index:3;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 2px 10px #18232a26;overflow:hidden}
+.ctrl button{width:44px;height:44px;display:grid;place-items:center;font-size:20px;font-weight:600}
+.ctrl button+button{border-top:1px solid var(--line)}
+.tag{position:absolute;right:14px;bottom:338px;z-index:5;font-size:11px;color:#6b787e;background:#ffffffc0;padding:0 4px}
+.attr{position:absolute;left:8px;bottom:336px;z-index:3;font-size:11px;color:#55626a;background:#ffffffd0;padding:0 4px}
+</style>
+</head>
+<body>
+<svg class="map" viewBox="0 0 390 844" preserveAspectRatio="none" aria-hidden="true">
+  <rect width="390" height="844" fill="var(--sea)"/>
+  <path d="M-10 160 C80 150 140 210 200 230 S320 260 400 240 L400 900 L-10 900 Z" fill="var(--land)"/>
+  <path d="M30 420 C90 380 150 400 190 450 S250 560 300 600 L240 700 C200 640 140 600 90 600 Z" fill="var(--park)"/>
+  <path d="M-10 330 C80 340 160 360 230 330 S340 300 400 320" stroke="var(--road)" stroke-width="7" fill="none"/>
+  <path d="M120 230 C130 320 170 420 160 520 S190 650 220 760" stroke="var(--road)" stroke-width="5" fill="none"/>
+  <path d="M260 250 C250 330 280 420 330 470" stroke="#f5d9a8" stroke-width="5" fill="none"/>
+  <path d="M60 520 C120 500 210 540 300 520" stroke="var(--road)" stroke-width="4" fill="none"/>
+  <ellipse cx="300" cy="640" rx="60" ry="34" fill="var(--sea)"/>
+</svg>
+<div class="top">
+  <div class="pill"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="q">하코네<small>가나가와 · 조건 1개</small></div><button class="f" aria-label="필터"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button></div>
+  <div class="chips"><span class="chip on">천연온천</span><span class="chip">노천탕</span><span class="chip">객실탕</span><span class="chip">내 기준 9.0+</span></div>
+</div>
+<button class="areasearch">이 지역에서 다시 찾기</button>
+<div class="town" style="left:136px;top:262px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3c-1.2 1.6 1.2 2.4 0 4M12 2.5c-1.2 1.6 1.2 2.4 0 4M16 3c-1.2 1.6 1.2 2.4 0 4"/><path d="M5 11a7 7 0 1 0 14 0"/></svg>고라<span class="num">24</span></div>
+<div class="town" style="left:40px;top:372px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3c-1.2 1.6 1.2 2.4 0 4M12 2.5c-1.2 1.6 1.2 2.4 0 4M16 3c-1.2 1.6 1.2 2.4 0 4"/><path d="M5 11a7 7 0 1 0 14 0"/></svg>센고쿠하라<span class="num">31</span></div>
+<span class="pin on num" style="left:236px;top:356px">9.7</span>
+<span class="pin num" style="left:262px;top:420px">8.9</span>
+<span class="pin num" style="left:200px;top:450px">9.5</span>
+<span class="pin num" style="left:120px;top:470px">4.6/5</span>
+<div class="ctrl"><button>+</button><button>−</button></div>
+<div class="attr">© OpenStreetMap</div>
+<div class="tag">시안 C · 지도는 그림, 값은 예시</div>
+<section class="sheet">
+  <div class="grab"></div>
+  <div class="sh"><h2>이 지역 <span class="num">58곳</span></h2><button>추천순 ▾</button></div>
+  <p class="note">지도에 위치가 확인된 숙소만 보입니다. 위로 끌어 올리면 목록이 커집니다.</p>
+  <div class="row"><div class="ph"></div><div><div class="loc">하코네 온천</div><div class="name">하코네 귀안</div><div class="rate"><b class="num">9.7</b> /10 Trip.com 리뷰 47개</div><div class="facts">탕 정보 <b>확인 전</b> · 자란 시설 안내 있음</div></div></div>
+  <div class="row"><div class="ph b"></div><div><div class="loc">하코네 온천</div><div class="name">하코네 호텔</div><div class="rate"><b class="num">8.9</b> /10 Trip.com 리뷰 288개</div><div class="facts">탕 정보 <b>확인 전</b></div></div></div>
+</section>
+</body>
+</html>

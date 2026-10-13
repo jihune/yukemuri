@@ -25,15 +25,24 @@ assert.equal(manifest.status,200,'/snapshot/manifest.json status '+manifest.stat
 assert.equal(manifest.body?.id,expectedId,'served snapshot is not the one this run built');
 assert.equal(manifest.body.format,built.format,'served snapshot format differs from the build');
 assert(manifest.body.hotels>0&&manifest.body.hotels===built.hotels,'/snapshot/manifest.json has no catalogue or not this one');
-for(const path of Object.values(manifest.body.files)){const file=await get(path);assert.equal(file.status,200,path+' status '+file.status)}
+// A file this edge does not have yet comes back as the single-page fallback
+// (200, HTML), so wait until each file is JSON (deploy 9a6d63f smoke, 2026-10-13).
+const files={};
+for(const [name,path] of Object.entries(manifest.body.files)){
+ const file=await retry(path,()=>get(path),f=>f.status===200&&f.body!==null&&typeof f.body==='object');
+ assert.equal(file.status,200,path+' status '+file.status);
+ assert(file.body!==null&&typeof file.body==='object',path+' is not JSON (the static asset is not served yet)');
+ files[name]=file.body;
+}
 // The static page carries the first page of this snapshot as cards; the first
 // hotel of the snapshot has a detail.
 const page=await retry('/',()=>get('/',{Accept:'text/html'}),p=>p.status===200&&String(p.body).includes(`data-first-page="${manifest.body.id}"`));
 assert.equal(page.status,200,'/ status '+page.status);
 const cards=(String(page.body).match(/class="card-title"/g)??[]).length;
 assert(String(page.body).includes(`data-first-page="${manifest.body.id}"`)&&cards>0,'/ has no first page of the served snapshot');
-const core=await get(manifest.body.files.core);
-const detail=await get('/api/hotels/'+encodeURIComponent(core.body.ids[0]));
+const ids=files.core?.ids;
+assert(Array.isArray(ids)&&ids.length>0,'core.json has no hotel ids');
+const detail=await get('/api/hotels/'+encodeURIComponent(ids[0]));
 assert.equal(detail.status,200,'/api/hotels/<id> status '+detail.status);
 // The maintenance key, on a route that reads no D1: the collector release
 // (built for this origin). /api/crawl?report=1 used to be checked here, but it

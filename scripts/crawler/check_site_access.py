@@ -7,7 +7,7 @@ import unittest
 from email.message import Message
 from pathlib import Path
 from unittest.mock import patch
-from source_safety import site_api
+from source_safety import USER_AGENT,site_api
 
 ROOT=Path(__file__).parent
 SECRET='site-access-test-secret'
@@ -25,11 +25,11 @@ class SiteAccessChecks(unittest.TestCase):
   for url in SITES:
    base,headers=site_api(url,SECRET)
    self.assertEqual(base,url.rstrip('/'))
-   self.assertEqual(headers,{'X-Yukemuri-Crawl-Key':SECRET,'OAI-Sites-Authorization':'Bearer '+SECRET})
+   self.assertEqual(headers,{'X-Yukemuri-Crawl-Key':SECRET,'User-Agent':USER_AGENT,'OAI-Sites-Authorization':'Bearer '+SECRET})
 
  def test_worker_gets_only_the_app_key(self):
   base,headers=site_api(WORKER+'/',SECRET)
-  self.assertEqual(base,WORKER);self.assertEqual(headers,{'X-Yukemuri-Crawl-Key':SECRET})
+  self.assertEqual(base,WORKER);self.assertEqual(headers,{'X-Yukemuri-Crawl-Key':SECRET,'User-Agent':USER_AGENT})
 
  def test_other_destinations_are_rejected(self):
   for url in ['http://yukemuri.jihun7891.chatgpt.site','https://other.jihun7891.chatgpt.site','https://evil.chatgpt.site',
