@@ -875,3 +875,8 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 로컬 사이트 주의: `rebuild.sh`처럼 서버가 떠 있는 채로 `pnpm start`를 또 띄우면 8787에 두 서버가 겹쳐 manifest가 빈 응답이 된다. 서버를 PID로 끄고(`pgrep -f "[w]rangler.js dev|[b]in/workerd"`) 하나만 띄운다.
 
 8. D05 안내(상위 세션, 12:19Z·12:25Z): `features.viewBath`(‘전망 욕탕’)는 카드 6칸 밖, 상세에만 둔다(3번 목록 PR). 객실 사진·객실 타입 이름 자리는 상세 PR(5번)에 둔다.
+9. 상위 세션 안내(12:44Z·12:46Z):
+   - H02(claude/h02-protect)가 `app/layout.tsx` metadata에 robots(noindex) 한 줄을 넣는다. 이 파일을 고칠 때 그 줄을 지우지 않고, 충돌이 나면 두 쪽을 모두 살린다.
+   - 상세 PR(5번) 추가 일: 상세 API가 1027·5xx·429·403으로 실패하면 스냅숏 카드 자료로 상세를 보여 주고 ‘자세한 정보를 지금 불러올 수 없음’을 안내한다(응답 모양은 `docs/H02-20261013.md`).
+   - H02 배포 뒤에는 UA가 `Mozilla/`·`Opera/`로 시작하지 않는 `/api/*` 요청이 403이다. U05 검사 스크립트는 Node fetch로 정적 `/snapshot/`만 부르고 `/api/`는 브라우저로만 부른다(재확인 필요).
+   - D05 객실 사진: 상세·비교 API의 `roomTypes: [{sourceId, verifiedAt, items:[{name, photos:[{url, caption}]}]}]`. Trip.com은 타입 이름과 사진 3장(최대 30개 타입), Jalan은 name이 null이고 caption은 숙소 설명이다. Trip.com → Jalan 순으로 이어 붙인다. 출처 표기는 대표 사진과 같은 방식이다. 상세 PR에서 있을 때와 없을 때 모두 동작하게 한다.
