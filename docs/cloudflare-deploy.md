@@ -21,10 +21,11 @@
 | `scripts/cloudflare-rollback.mjs` | Worker 되돌림·D1 Time Travel 복구(`rollback.yml`) |
 | `scripts/cloudflare-usage.mjs` | Worker CPU·D1 일일 행 수 읽기(`usage.yml`) |
 | `scripts/build-search-snapshot.mjs` | 검색 스냅숏 생성(D1 읽기 전용, 정적 자산 `/snapshot/`). P03, `P03-20261012.md` |
-| `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한) |
-| `public/robots.txt` | `/api/`와 알려진 AI 수집 봇 차단 요청 |
+| `lib/edge-guard.ts` | 공개 사이트 보호(IP별 속도 제한, 키 없는 자동화 도구 거절, Worker 응답의 `X-Robots-Tag`) |
+| `public/robots.txt` | 모든 봇에 첫 화면 밖 차단, 알려진 AI 수집 봇에 전체 차단 요청(H02) |
+| `public/_headers` | 정적 파일의 `X-Robots-Tag`와 vinext의 `/_next/static/*` 캐시 규칙(H02) |
 
-생성된 `dist/server/wrangler.json`의 설정: Worker 이름 `yukemuri`, `workers_dev: true`, `preview_urls: false`, `observability.enabled: true`, `placement.mode: smart`, D1 바인딩 `DB`(`database_name: yukemuri`, `migrations_dir: ../../drizzle`), Rate Limiting 바인딩 `API_RATE_LIMITER`(namespace `1001`, 60초에 120회). `migrations_dir`는 생성된 설정 파일 위치(`dist/server/`)에서 계산하므로 `../../drizzle`이 레포의 `drizzle/`을 가리킨다.
+생성된 `dist/server/wrangler.json`의 설정: Worker 이름 `yukemuri`, `workers_dev: true`, `preview_urls: false`, `observability.enabled: true`, `placement.mode: smart`, D1 바인딩 `DB`(`database_name: yukemuri`, `migrations_dir: ../../drizzle`), Rate Limiting 바인딩 `API_RATE_LIMITER`(namespace `1001`, 60초에 120회), `vars.REJECT_AUTOMATED_AGENTS: "1"`(H02). `migrations_dir`는 생성된 설정 파일 위치(`dist/server/`)에서 계산하므로 `../../drizzle`이 레포의 `drizzle/`을 가리킨다.
 
 모든 `wrangler d1` 명령은 데이터베이스 이름과 설정 경로를 준다. 예: `wrangler d1 migrations apply yukemuri --remote --config dist/server/wrangler.json`.
 
@@ -85,7 +86,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   3. `d1 migrations apply yukemuri --remote`. 새 마이그레이션이 없으면 아무것도 하지 않는다.
   3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다. 이 단계는 `/`의 정적 페이지도 다시 그린다(기본 보기 첫 쪽과 manifest를 넣는다). 카탈로그가 이 릴리스의 seed로 준비되지 않았으면(`catalog_meta`의 준비 표시 5개) 그 목록을 `prepared=false`로 알린다.
   4. `bash scripts/cloudflare-deploy-worker.sh`: `deploy --config dist/server/wrangler.json --secrets-file <0600 임시 파일>`. 크롤 키는 env에서 그 파일로만 가고 스크립트가 끝나면 지운다(실패해도). 배포 버전 ID를 요약에 남긴다.
-  5. `scripts/cloudflare-smoke.mjs`: `/`의 정적 페이지가 이번 스냅숏의 첫 쪽 카드를 담는지, core 첫 숙소의 상세가 200인지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일들이 열리는지, `/api/collector-release`가 키 없이 403·키로 200이고 `siteOrigin`이 이 주소인지, `robots.txt`가 `/api/`를 막는지 본다. manifest와 `/`는 새 버전이 퍼질 때까지 5초 간격으로 6번까지 다시 본다. 예전의 키 있는 `/api/crawl?report=1`은 뺐다. 운영 규모 복사본에서 요청 하나가 71,592행을 읽고, 준비 안 된 카탈로그면 `ensureCatalog`로 쓰기를 하기 때문이다(B6·C2, `evidence/h01-deploy-preflight-20261012.json`). 이제 smoke의 D1 읽기는 상세 한 건(약 25행)뿐이다. 수집 끝 배포도 같은 smoke를 쓴다. 로그에는 상태와 개수만 남긴다.
+  5. `scripts/cloudflare-smoke.mjs`: `/`의 정적 페이지가 이번 스냅숏의 첫 쪽 카드를 담는지, core 첫 숙소의 상세가 200인지, `/snapshot/manifest.json`이 이번 실행의 스냅숏이고 파일들이 열리는지, `/api/collector-release`가 키 없이 403·키로 200이고 `siteOrigin`이 이 주소인지, `/`·manifest·상세 응답에 `X-Robots-Tag`가 있는지, 키 없는 Node 기본 UA의 상세 요청이 403인지, `robots.txt`가 첫 화면만 여는지 본다(H02). 공개 요청은 브라우저 형식 UA `Mozilla/5.0 (compatible; YukemuriSmoke/1.0; …)`를, 키 요청은 수집기 UA를 보낸다. manifest와 `/`는 새 버전이 퍼질 때까지 5초 간격으로 6번까지 다시 본다. 예전의 키 있는 `/api/crawl?report=1`은 뺐다. 운영 규모 복사본에서 요청 하나가 71,592행을 읽고, 준비 안 된 카탈로그면 `ensureCatalog`로 쓰기를 하기 때문이다(B6·C2, `evidence/h01-deploy-preflight-20261012.json`). 이제 smoke의 D1 읽기는 상세 한 건(약 25행)뿐이다. 수집 끝 배포도 같은 smoke를 쓴다. 로그에는 상태와 개수만 남긴다.
   6. 3-1이 `prepared=false`일 때만(seed를 바꾼 릴리스): 공개 읽기는 카탈로그를 채우지 않으므로(P03 PR C) `scripts/cloudflare-prepare.mjs`가 새 Worker의 `/api/crawl-prepare`를 완료까지 부르고, 스냅숏을 `--require-prepared`로 다시 만들어 같은 빌드를 한 번 더 배포하고 smoke를 다시 돌린다. 그 사이 사이트는 앞 스냅숏(준비 전 행)으로 온전히 열린다.
 - Wrangler 실행(B1·B2, 2026-10-12): 모든 wrangler 명령을 잠금 파일의 `node node_modules/wrangler/bin/wrangler.js`(4.92.0)로 `--config dist/server/wrangler.json`과 함께 직접 실행한다. `cloudflare/wrangler-action`은 더 쓰지 않는다. 그 `secrets:` 입력은 `wrangler secret bulk`를 `--config` 없이 레포 루트에서 돌린다(`src/wranglerAction.ts` `953926a`). 로컬에서 같은 명령을 돌리면 빌드가 남긴 `.wrangler/deploy/config.json`이 있어도 `Required Worker name missing`으로 실패했다. 이 명령은 redirect 설정을 쓰지 않는다. 또 이 action은 `pnpm-lock.yaml`을 보고 pnpm으로 wrangler를 찾는다. job의 `defaults.run.shell: bash`로 pipefail을 켜서 `| tee`로 이은 명령의 실패가 단계 실패가 되게 했다(전에는 기본 `bash -e`라 smoke 실패가 가려질 수 있었다).
 - 실패 삼킴 막기(상위 세션 8–10번, 2026-10-12): 모든 workflow 최상단에 `defaults.run.shell: bash`를 둔다. GitHub는 이때 `bash --noprofile --norc -eo pipefail`로 돌린다. 기본(`bash -e`)에서는 `node … | tee`의 실패가 단계 성공으로 끝났다(`check-deploy-config.mjs`가 이 차이를 직접 돌려 확인한다). 스냅숏 단계는 보고서의 id가 16자리 16진수가 아니면 실패한다. `--require-prepared`가 실패하면 보고서를 쓰지 않는다(전에는 쓰고 나서 실패해 id가 남을 수 있었다, `check-search-snapshot-worker.mjs`가 확인). smoke는 `SNAPSHOT_ID`가 없거나 빌드한 `dist/client/snapshot/manifest.json`의 id와 다르면 실패하고, 받은 manifest의 형식 번호를 빌드의 것과 비교한다. 형식 번호는 `lib/search-snapshot.ts`의 `SNAPSHOT_FORMAT` 하나에서 온다.
@@ -115,8 +116,11 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - 속도 제한 60초 120회는 IP 하나가 1분에 목록 첫 쪽 기준 약 453만 행(120 × 37,723)을 읽게 허용한다. IP 한 곳이 1분 안팎에 그날 남은 읽기를 다 쓸 수 있다. 다 쓰면 09:00 KST까지 모든 D1 쿼리가 실패해 사이트가 멈춘다. 요금은 나오지 않는다.
   - 한도 값은 120으로 둔다. 30으로 낮춰도 IP 하나가 1분에 약 113만 행을 읽어 4분쯤이면 같은 결과가 되고, 사람의 지도 이동·검색에 먼저 걸린다. 속도 제한으로는 일일 읽기 한도를 지킬 수 없다.
   - 대응은 새 작업 P02(목록·검색 요청당 D1 읽기를 색인 등으로 크게 줄임)다. P02 완료 전에는 6단계 전환을 하지 않는다. 5단계 병행 운영에서 실제 일일 읽기량을 확인한다. (2026-10-11T14:58Z 상위 세션 결정으로 바뀜: 6단계 선행 조건은 P02 + P03 + 5단계 Workers CPU 실측(1102 없음)이다. `roadmap.md` 결정 기록)
-- `robots.txt`: 모든 봇에 `/api/`를, 알려진 AI 수집 봇(GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, PerplexityBot 등)에 사이트 전체를 막아 달라고 요청한다. 규칙을 지키는 봇에만 효과가 있다.
-- Bot Fight Mode·WAF 규칙은 도메인 단위라 `workers.dev`에 쓸 수 없다. 하루 요청 10만 건을 넘으면 09:00 KST까지 1027 오류가 나지만 요금은 없다.
+- 검색 엔진·수집 차단(H02, 사용자 지시 2026-10-13T12:3xZ, `H02-20261013.md`):
+  - `robots.txt`: 모든 봇에 `Allow: /$`와 `Disallow: /`. 정적 첫 화면만 열어 검색 엔진이 noindex를 읽게 한다(Google: robots.txt로 막은 주소는 noindex를 못 본다). 알려진 AI 수집 봇(GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, PerplexityBot 등)에는 사이트 전체를 막아 달라고 요청한다. 규칙을 지키는 봇에만 효과가 있다.
+  - 모든 응답에 `X-Robots-Tag: noindex, nofollow, noarchive`. 정적 파일은 `public/_headers`의 `/*` 규칙, Worker 응답은 `edge-guard`가 붙인다(`_headers`는 Worker 응답에 적용되지 않는다). vinext는 `_headers`가 없을 때만 `/_next/static/*` 캐시 규칙을 쓰므로 그 규칙을 `public/_headers`에 옮겼다. 첫 화면 HTML에는 같은 값의 `<meta name="robots">`가 있다(`app/layout.tsx`).
+  - 키 없는 Worker 요청 중 UA가 없거나, `Mozilla/`·`Opera/`로 시작하지 않거나(curl·python-requests·Go-http-client·node 등), 수집기 표지(`bot/`처럼 이름 끝 bot, crawl, spider, slurp, scrap, ChatGPT-User 등)가 있으면 403이다. 앱·속도 제한·D1에 닿기 전에 끊는다. `HeadlessChrome`은 막지 않는다(브라우저 검사가 씀). 생성된 설정의 `vars.REJECT_AUTOMATED_AGENTS="1"`일 때만 동작하고, 배포 smoke가 Node 기본 UA의 403과 noindex 헤더를 확인한다. 키 없이 curl로 `/api/*`를 부르는 운영 확인은 403이 된다. 정적 파일 확인은 그대로 된다.
+- Bot Fight Mode·WAF 규칙은 도메인 단위라 `workers.dev`에 쓸 수 없다. 하루 요청 10만 건을 넘으면 09:00 KST까지 1027 오류가 나지만 요금은 없다. 403·429로 거절한 요청도 Worker 요청으로 센다(Worker가 이미 불렸다). 그래서 Worker 코드로는 이 한도를 지킬 수 없다. 한도를 넘어도 정적 파일(첫 화면·스냅숏 목록·검색·지도)은 계속 나간다(`run_worker_first`가 아닌 정적 자산은 Worker를 부르지 않는다, 문서 `workers/static-assets/billing-and-limitations`).
 
 ## 수집기와 배포 자료
 
