@@ -676,7 +676,7 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 
 검사:
 
-- 새 `scripts/check-u05-foundation-browser.mjs`(실제 Chromium 360·390·1280px): Pretendard 정적 파일 적재와 외부 글꼴 요청 없음, axe 색 대비 위반 0, axe critical 0, 보이는 조작 전부 44px 이상(문장 안 링크·지도 저작권 표시 제외, 라벨 안 체크박스는 라벨 크기), 13px 미만 글자 0(사진 위 표지 제외), 영어 흔적 없음, 가로 넘침 없음, 키보드 초점 표시, 휴대폰 필터 시트, 실패 화면의 다시 시도(44px)와 회복. 수정 후 36개 통과(`evidence/ui-u05-foundation-20261013.json`). 같은 검사를 main에서 돌리면 28개가 실패한다(`evidence/ui-u05-foundation-before-20261013.json`: 390px 대비 위반 194곳, 44px 미만 216개, 13px 미만 글자 424개, Pretendard 미적재, 1280px critical 1건).
+- 새 `scripts/check-u05-foundation-browser.mjs`(실제 Chromium 360·390·1280px, Codex 1회째 반영 뒤 52개): Pretendard 정적 파일 적재와 외부 글꼴 요청 없음, axe 색 대비 위반 0, axe critical 0, 보이는 조작 전부 44px 이상(문장 안 링크·지도 저작권 표시 제외, 라벨 안 체크박스는 라벨 크기), 13px 미만 글자 0(사진 위 표지 제외), 영어 흔적 없음, 가로 넘침 없음, 키보드 초점 표시, 휴대폰 필터 시트, 실패 화면의 다시 시도(44px)와 회복. 수정 후 36개 통과(`evidence/ui-u05-foundation-20261013.json`). 같은 검사를 main에서 돌리면 28개가 실패한다(`evidence/ui-u05-foundation-before-20261013.json`: 390px 대비 위반 194곳, 44px 미만 216개, 13px 미만 글자 424개, Pretendard 미적재, 1280px critical 1건).
 - 기존 브라우저 검사(로컬 사이트, 최종 커밋): `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. 그 전 실행 한 번에서 `check-u04`가 390px 상세의 예약 칸을 15초 안에 못 찾아 1건 실패했고, 같은 코드로 세 번 다시 돌려 모두 통과했다(로컬 Worker 상세 API 응답 지연으로 본다, 원인 미확인).
 - `python3 scripts/cloud-check.py --full` 36개 통과(main merge 뒤 작업 트리, 06:44:17Z–06:52:46Z, rc=0). eslint는 바꾼 파일에서 새 지적이 없다(`layout.tsx`의 `<link>`는 이유를 적고 규칙을 껐다).
 - 첫 카드 위치(로컬 사이트, 화면 높이 800px): 390px 636→725px, 360px 653→725px, 1280px 513→553px. 44px 누름 영역 때문에 내려갔다. 300px 안으로 올리는 것은 3번 목록 PR의 완료 기준이다. 카드 높이 390px 279→295px, 360px 279→314px.
@@ -689,6 +689,15 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 지도 표지(1280px)는 누름 영역만 44px로 키웠다. 표지 모양·척도 표시는 2번 지도 PR에서 바꾼다.
 - 느린 망에서 글꼴 조각을 받는 시간은 재지 않았다(`font-display: swap`이라 글자는 기기 글꼴로 먼저 보인다).
 
+검토(1번 토대 PR #67):
+
+- Codex 1회째(`adb8485`, 07:24Z 요청, 07:30Z 완료): P2 3건. 모두 고쳤다.
+  - 검사가 첫 화면에서만 axe와 44px을 봤다. 이제 즐겨찾기·정렬 선택·필터 시트·상세 시트·비교 막대·비교 시트·지도 미리보기 화면마다 같은 묶음(axe 대비·critical, 44px, 13px, 영어 흔적)을 돈다. 검사 수 36→52. 넓힌 검사로 상세의 출처·시설 안내 링크(15–20px), 비교 시트의 빼기 버튼(40×36)·이름·‘근거 보기’·도구 버튼(41px), 지도 미리보기 이름 버튼, 사진 위 ‘숙소 사진’ 표지 대비(사진이 없을 때 2.4:1)가 걸려 같이 고쳤다.
+  - 고정한 지도 미리보기의 숙소가 결과에서 빠지면(필터·즐겨찾기 보기) 고정을 푼다. 1280px 검사를 더했고, 해제 코드를 끈 변형에서 실패(`previewAfterLeaving:1`)를 확인했다.
+- 같은 사이 main `7d287f5`(D06 PR #66)을 merge했다. 바닥글 충돌은 main의 지도 위치 출처 문구(`geo-credit`)를 살리고 ‘v0.5’만 뺐다. 출처 문구가 들어와 바닥글이 높아지자 데스크톱 필터 패널이 화면 위로 잘려 `check-u03-desktop`이 6건 실패했다. 패널 높이를 바닥글 실제 높이(`--yk-footer-h`, ResizeObserver)로 계산하게 고쳤다. 출처 문구 안 링크는 문장 안 링크로 보고 44px로 키우지 않는다. 일본어 링크가 두 줄로 갈려 `check-u01` 2건이 실패해, 일본어(`:lang(ja)`)는 `keep-all`을 쓰지 않게 하고 출처 링크는 한 줄로 두었다.
+- 08:18Z 계정 5시간 한도에 걸려 턴이 끊겼고 10:13Z에 재개했다. 작업 트리는 남아 있었다.
+
+- 재검사(main `7d287f5` merge 뒤 작업 트리): `check-u05-foundation` 52, `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. `cloud-check.py --full` 38개 통과(10:33:42Z–10:41:56Z, rc=0). eslint의 `hotel-explorer.tsx` 오류 4건은 main과 같은 기존 것이다.
 다음:
 
 1. PR 리뷰(Codex) → 지적 반영 → 상위 세션 병합.

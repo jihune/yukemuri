@@ -113,6 +113,8 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // hovering another card shows that one only while the pointer is on it.
  const pinnedId=useRef<string|null>(null);
  useEffect(()=>{if(activeId===null)pinnedId.current=null},[activeId]);
+ // A pinned stay that leaves the results (a filter, the saved view) is no longer pinned or previewed.
+ useEffect(()=>{const id=pinnedId.current;if(id&&!displayHotels.some(h=>h.id===id)&&areaHotel?.id!==id){pinnedId.current=null;setActiveId(current=>current===id?null:current)}},[displayHotels,areaHotel]);
  const hoverCard=(id:string|null)=>setActiveId(id??pinnedId.current);
  const regionName=REGIONS.find(r=>r.id===filters.region)?.name??'일본 전국';
  const listEnd=useRef<HTMLDivElement>(null),listingPosition=useRef<ListingPosition|null>(null);
@@ -183,6 +185,12 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // reloaded page opens the same dated booking links.
  function onBooking(q:BookingQuery){bookingRef.current=q;setBooking(q);writeBookingUrl(q)}
  function refreshResults(){snap.refresh();document.querySelector('.results-section')?.scrollIntoView({behavior:'instant',block:'start'})}
+ // The sticky desktop filter panel sizes itself to end above the footer (globals.css --yk-footer-h).
+ useEffect(()=>{
+  const footer=document.querySelector('.site-footer');if(!footer||typeof ResizeObserver==='undefined')return;
+  const observer=new ResizeObserver(()=>document.documentElement.style.setProperty('--yk-footer-h',Math.ceil(footer.getBoundingClientRect().height)+'px'));
+  observer.observe(footer);return()=>observer.disconnect();
+ },[]);
  useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(''),3500);return()=>clearTimeout(t)}},[toast]);
  // Optional browser-agent interface; no dependency on WebMCP for normal use.
  useEffect(()=>{

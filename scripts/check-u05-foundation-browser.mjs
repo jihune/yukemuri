@@ -27,8 +27,9 @@ const coreFile=url=>/\/snapshot\/v\/[^/]+\/(core|cards)\.json$/.test(url.pathnam
 // Every visible control on the page, its size and whether it is exempt.
 const targets=page=>page.evaluate(()=>{
  const shown=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.closest('[aria-hidden=true],[inert]')};
- // A link inside running text, or the map attribution (WCAG 2.5.8 inline and essential exceptions).
- const exempt=e=>!!e.closest('.leaflet-control-attribution')||(e.tagName==='A'&&[...e.parentElement.childNodes].some(n=>n!==e&&n.nodeType===3&&n.textContent.trim().length>1));
+ // A link inside running text (its paragraph says more than the link), or the map attribution
+ // (WCAG 2.5.8 inline and essential exceptions).
+ const exempt=e=>!!e.closest('.leaflet-control-attribution')||(e.tagName==='A'&&(e.closest('p,li')??e.parentElement).textContent.trim().length>e.textContent.trim().length+2);
  return [...document.querySelectorAll('button,a[href],input:not([type=hidden]),select,summary,[role=combobox],[role=checkbox],[role=tab],[role=button],[tabindex="0"]')].filter(shown).map(e=>{
   // A checkbox inside its label is touched through the whole label row.
   const r=(e.getAttribute('role')==='checkbox'&&e.closest('label')||e).getBoundingClientRect();return {name:(e.getAttribute('aria-label')||e.innerText||e.getAttribute('placeholder')||e.className||e.tagName).toString().trim().split('\n')[0].slice(0,40),w:Math.round(r.width*10)/10,h:Math.round(r.height*10)/10,exempt:exempt(e)}});
@@ -46,6 +47,13 @@ const smallText=page=>page.evaluate(()=>{
  return out;
 });
 const axe=async(page,rules)=>{await page.addScriptTag({path:AXE});return page.evaluate(async rules=>{const r=await window.axe.run(document,rules);return r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,sample:v.nodes.slice(0,5).map(n=>(n.target.join(' ')+' | '+(n.any[0]?.message||'')).slice(0,180))}))},rules)};
+// One screen at a time: the same axe (contrast and every WCAG A/AA rule), 44px and 13px rules.
+const audit=async(page,label)=>{
+ const contrast=await axe(page,{runOnly:{type:'rule',values:['color-contrast']}});
+ const critical=(await axe(page,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}})).filter(v=>v.impact==='critical');
+ const small=(await targets(page)).filter(t=>!t.exempt&&(t.w<44||t.h<44)),tiny=await smallText(page),found=await leftovers(page);
+ check(`${label}: axe 대비 위반 0·critical 0·44px 미만 조작 0·13px 미만 글자 0·영어 흔적 없음`,!contrast.length&&!critical.length&&!small.length&&!tiny.length&&!found.length,{contrast,critical,small:small.slice(0,20),smallCount:small.length,tiny:tiny.slice(0,10),found});
+};
 const leftovers=page=>page.evaluate(()=>{const t=document.body.innerText;return ['EXPLORE JAPAN','MY SAVED STAYS','YUKEMURI','v0.5'].filter(s=>t.includes(s))});
 
 for(const w of [360,390,1280]){
@@ -80,23 +88,59 @@ for(const w of [360,390,1280]){
  for(let i=0;i<6;i++){await page.keyboard.press('Tab');rings.push(await page.evaluate(()=>{const e=document.activeElement,s=getComputedStyle(e);return {name:(e.getAttribute('aria-label')||e.innerText||e.tagName).trim().slice(0,24),outline:s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>=2,ring:s.boxShadow!=='none'}}))}
  check('키보드 초점이 보임(첫 Tab 6개)',rings.every(r=>r.outline||r.ring),{rings});
  if(shots){await page.keyboard.press('Tab');await page.screenshot({path:`${shots}/focus-${w}.png`})}
- // Saved view: no English eyebrow there either (reads favourites only).
- await page.locator('.header-inner nav button').nth(1).click();await page.waitForTimeout(800);
- check('즐겨찾기 화면에도 흔적 없음',(await leftovers(page)).length===0,{found:await leftovers(page)});
+ const tap=locator=>mobile?locator.tap():locator.click();
+ // Saved view (reads favourites only; no heart is pressed).
+ await tap(page.locator('.header-inner nav button').nth(1));await page.waitForTimeout(800);
+ await audit(page,'즐겨찾기 화면');
  if(shots)await page.screenshot({path:`${shots}/saved-${w}.png`});
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ // Sort menu open.
+ await tap(page.locator('.result-actions [data-slot=select-trigger]').first());await page.waitForTimeout(500);
+ await audit(page,'정렬 선택 열림');
+ await page.keyboard.press('Escape');await page.waitForTimeout(400);
  if(mobile){
-  await page.goto(base+'/',{waitUntil:'networkidle'});
-  await page.locator('.mobile-filter').click();await page.waitForTimeout(700);
-  const sheet=(await targets(page)).filter(t=>!t.exempt&&(t.w<44||t.h<44));
-  const sheetText=await smallText(page);
-  check('필터 시트: 44px 미만 조작 0·13px 미만 글자 0',sheet.length===0&&sheetText.length===0,{small:sheet.slice(0,20),tiny:sheetText.slice(0,10)});
+  await tap(page.locator('.mobile-filter'));await page.waitForTimeout(700);
+  await audit(page,'필터 시트');
   if(shots)await page.screenshot({path:`${shots}/filter-${w}.png`});
   await page.keyboard.press('Escape');await page.waitForTimeout(500);
  }else{
   // The desktop map/list switch: real tabs with panels, or plain buttons.
   const tabs=await page.evaluate(()=>[...document.querySelectorAll('[role=tab]')].map(t=>({controls:t.getAttribute('aria-controls'),panel:!!(t.getAttribute('aria-controls')&&document.getElementById(t.getAttribute('aria-controls')))})));
   check('탭이 실제 패널을 가리킴(또는 탭이 아님)',tabs.every(t=>t.panel),{tabs});
+  // A preview opened with a card's map button stays while the pointer leaves the card, and is
+  // dropped once that stay leaves the results (here the empty saved view), so hovering another
+  // card and leaving it does not bring the old preview back.
+  const firstName=await page.locator('.hotel-list .card-title h3').first().innerText();
+  await page.getByRole('button',{name:/지도에서 보기/}).first().click();
+  await page.mouse.move(5,5);await page.waitForTimeout(400);
+  const kept=await page.locator('.map-preview').count()?await page.locator('.map-preview button:not(.icon-button)').innerText():null;
+  await page.locator('.header-inner nav button').nth(1).click();await page.waitForTimeout(600);
+  await page.locator('.header-inner nav button').nth(0).click();await page.waitForSelector('.hotel-list .hotel-card');await page.waitForTimeout(400);
+  await page.locator('.hotel-list .hotel-card').nth(1).hover();await page.waitForTimeout(200);
+  await page.mouse.move(5,5);await page.waitForTimeout(400);
+  const after=await page.locator('.map-preview').count();
+  check('지도에서 보기로 연 미리보기는 카드를 벗어나도 유지, 결과에서 빠지면 해제',kept===firstName&&after===0,{firstName,kept,previewAfterLeaving:after});
+  await page.evaluate(()=>window.scrollTo(0,0));
  }
+ // Detail sheet.
+ await tap(page.locator('.hotel-list .card-title').first());
+ await page.waitForSelector('.detail-scroll',{timeout:20000});await page.waitForTimeout(800);
+ await audit(page,'상세 시트');
+ if(shots)await page.screenshot({path:`${shots}/detail-${w}.png`});
+ await page.keyboard.press('Escape');await page.waitForTimeout(600);
+ // Comparison sheet with three stays, then its dock is emptied again.
+ const cmp=page.locator('.card-compare');
+ for(let i=0;i<3;i++)await tap(cmp.nth(i));
+ await audit(page,'비교 막대가 뜬 목록');
+ await tap(page.locator('.comparison-dock button').first());await page.waitForTimeout(1500);
+ await audit(page,'비교 시트');
+ if(shots)await page.screenshot({path:`${shots}/compare-${w}.png`});
+ await page.keyboard.press('Escape');await page.waitForTimeout(500);
+ await tap(page.getByRole('button',{name:'비교 후보 모두 비우기'}));
+ // Map with a preview open: on a phone the card's map button switches to the map view.
+ await tap(page.getByRole('button',{name:/지도에서 보기/}).first());await page.waitForTimeout(800);
+ await audit(page,'지도와 미리보기');
+ if(shots)await page.screenshot({path:`${shots}/map-${w}.png`});
  await context.close();
  // Loading, failure and retry with the new tokens.
  {
