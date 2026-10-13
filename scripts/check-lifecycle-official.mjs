@@ -12,6 +12,7 @@ import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
+import {pushDeployPending,DEPLOY} from './pending-push-deploy.mjs';
 
 const FILE='data/lifecycle-official.json';
 // Booking sites and aggregators: a listing shows the source exists, never the
@@ -74,11 +75,22 @@ try{
  const steps=apply.split(/\n(?=      - )/),keyed=steps.filter(s=>/YUKEMURI_CRAWL_ACCESS_KEY/.test(s));
  assert.equal(keyed.length,1,'the key reaches one step');
  assert.match(keyed[0],/^      - name: Apply the official evidence to the Worker\n {8}id: apply\n {8}env:\n {10}YUKEMURI_CRAWL_ACCESS_KEY: \$\{\{ secrets\.YUKEMURI_CRAWL_ACCESS_KEY \}\}\n {8}run: python3 scripts\/runner\/apply-lifecycle\.py\n?$/,'the key is in that step\'s env only; the launcher passes it on stdin (check_lifecycle.py)');
- assert(apply.indexOf('check_lifecycle.py')<apply.indexOf('apply-lifecycle.py'),'offline checks before the key is used');
- assert.match(apply,/outputs:\n      saved: \$\{\{ steps\.apply\.outputs\.saved \}\}\n      failed: \$\{\{ steps\.apply\.outputs\.failed \}\}\n/);
+ assert.match(apply,/^  apply:\n(?:    #.*\n)*    if: github\.ref == 'refs\/heads\/main'\n/,'only main is applied, also by hand');
+ const order=['check_lifecycle.py','cloud-setup.sh','node scripts/check-lifecycle-official.mjs','apply-lifecycle.py','pending-push-deploy.mjs'].map(s=>apply.indexOf(s));
+ assert(order.every((at,i)=>at>0&&(i===0||at>order[i-1])),'offline checks, then the whole file against the Worker contract, then the key, then the pending deploy');
+ assert.match(apply,/name: Leave the snapshot to a push deploy of this commit still waiting\n {8}id: pending\n {8}env:\n {10}GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/pending-push-deploy\.mjs \| tee -a "\$GITHUB_OUTPUT"\n/);
+ assert.match(apply,/outputs:\n      saved: \$\{\{ steps\.apply\.outputs\.saved \}\}\n      failed: \$\{\{ steps\.apply\.outputs\.failed \}\}\n      deploy_pending: \$\{\{ steps\.pending\.outputs\.deploy_pending \}\}\n/);
  assert.equal(jobs.slice(jobs.indexOf('  snapshot:\n'),jobs.indexOf('  # Refused')),[
-  '  snapshot:','    needs: apply',"    if: needs.apply.outputs.saved != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
-  'one snapshot through deploy.yml, after the evidence is stored and only when something was saved');
+  '  snapshot:','    needs: apply',"    if: needs.apply.outputs.saved != '0' && needs.apply.outputs.deploy_pending != 'true'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
+  'one snapshot through deploy.yml after the evidence is stored, when something was saved and no push deploy of this commit is waiting to build it');
+ // A push deploy of the same commit that has not completed runs after this run
+ // (catalogue lock) and builds the snapshot; one that completed ran before it.
+ const sha='0123456789abcdef0123456789abcdef01234567',run={id:1,head_sha:sha,event:'push',head_branch:'main',path:DEPLOY,status:'queued'};
+ for(const status of ['queued','waiting','pending','requested','in_progress'])assert.equal(pushDeployPending([{...run,status}],sha).pending,true,status);
+ for(const other of [{status:'completed'},{head_sha:'f'.repeat(40)},{event:'workflow_dispatch'},{event:'workflow_call'},{head_branch:'feature'},{path:'.github/workflows/web-checks.yml'}])assert.equal(pushDeployPending([{...run,...other}],sha).pending,false,JSON.stringify(other));
+ assert.equal(pushDeployPending([],sha).pending,false,'a push of the evidence file alone has no push deploy');
+ const unreachable=spawnSync(process.execPath,['scripts/pending-push-deploy.mjs'],{encoding:'utf8',env:{...process.env,GITHUB_API_URL:'http://127.0.0.1:9',GITHUB_REPOSITORY:'jihune/yukemuri',GITHUB_SHA:sha,GH_TOKEN:'test-only'}});
+ assert.equal(unreachable.status,0);assert.match(unreachable.stdout,/^deploy_pending=false\nreason=could not tell/,'when the API cannot tell, lifecycle.yml builds the snapshot itself');
  assert.match(jobs,/  verdict:\n    needs: \[apply, snapshot\]\n    if: \$\{\{ !cancelled\(\) \}\}\n/,'refused evidence fails the run after the snapshot');
  assert.match(jobs,/test "\$APPLY" = success && test "\$FAILED" = 0 && \{ test "\$SNAPSHOT" = success \|\| test "\$SNAPSHOT" = skipped; \}/);
  // One snapshot per merge of this file alone: the push deploy skips it.
@@ -87,5 +99,5 @@ try{
  for(const line of ignored(checks))assert(!line.includes('lifecycle-official'),'web-checks.yml still checks the evidence file on pull requests and main pushes');
  // No other workflow applies the file or names the lifecycle launcher.
  for(const f of ['collect.yml','collect-watch.yml','deploy.yml','d1-setup.yml','rollback.yml','usage.yml','web-checks.yml'])assert(!/apply-lifecycle|update-lifecycle|hotel-lifecycle/.test(read(f)),f+' must not apply lifecycle evidence');
- console.log(`Lifecycle evidence passed: ${data.patches.length} entries match the Worker contract, ${Object.keys(broken).length+1} broken copies refused; lifecycle.yml applies them on a main push of ${FILE} or by hand with the crawl key in one step, then one snapshot when something was saved (deploy.yml skips that push).`);
+ console.log(`Lifecycle evidence passed: ${data.patches.length} entries match the Worker contract, ${Object.keys(broken).length+1} broken copies refused; lifecycle.yml applies them on main only (a push of ${FILE} or by hand), after the whole file passed, with the crawl key in one step, then one snapshot when something was saved: its own, or a waiting push deploy's (deploy.yml skips a push of the file alone).`);
 }finally{rmSync(temp,{recursive:true,force:true})}
