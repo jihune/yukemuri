@@ -21,6 +21,9 @@ export async function siteSearch(base){
    snapshot:s,
    list(params,saved=[]){const q=query(params);return search.resultPage(s,search.searchSnapshot(s,q.filters,q.sort,q.savedOnly,saved),q.page)},
    map(params,bounds,saved=[]){const q=query(params);return search.mapArea(s,q.filters,bounds,q.savedOnly,saved)},
+   // The whole result in list order (the U05 map shows all of it).
+   order(params,saved=[]){const q=query(params);return search.searchSnapshot(s,q.filters,q.sort,q.savedOnly,saved).order},
+   geo:manifest.files.geo?await get(manifest.files.geo):null,
   };
  }finally{rmSync(temp,{recursive:true,force:true})}
 }

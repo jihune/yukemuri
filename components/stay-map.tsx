@@ -73,6 +73,8 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
        });
       }
      }
+     // The drawn view, for browser checks (scripts/check-u05-map-browser.mjs).
+     map.getContainer().dataset.view=[bounds.getWest(),bounds.getSouth(),bounds.getEast(),bounds.getNorth(),map.getZoom()].join(',');
      props.current.onView?.(view);
     }
     const groups:{spots:Spot[];point:Leaflet.Point}[]=[];
