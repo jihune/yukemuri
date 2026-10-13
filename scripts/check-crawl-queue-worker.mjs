@@ -4,6 +4,7 @@ import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs'
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
@@ -125,6 +126,40 @@ try{
  // Enrichment uses an indexed hotel identity lookup, including completed jobs.
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").run();
  const baths=await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()});assert.equal(baths.jobs[0].url,url);
+ // D05: the phase revisits a Jalan detail saved by an older parser (v1, v2)
+ // and leaves one saved by the current parser (v3) alone.
+ const bathsAgain=async version=>{
+  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].bathDataVersion',?) WHERE id=?").bind(version,h.id).run();
+  await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url=?').bind(url).run();
+  return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
+ };
+ const view=async()=>(await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=40')).jobs.map(j=>j.url);
+ assert.equal(await bathsAgain('v1'),url,'A v1 Jalan detail is revisited');
+ assert.equal(await bathsAgain('v2'),url,'A v2 Jalan detail is revisited');assert((await view()).includes(url),'The queue view lists it too');
+ assert.equal(await bathsAgain('v3'),null,'A v3 Jalan detail is not revisited');
+ // A curated group's Jalan detail lives in hotel_source_observations, not in
+ // hotels; the phase revisits it the same way (Codex review on PR #77).
+ const linkedUrl='https://www.jalan.net/yad999157/';
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','done',1,0)").bind(linkedUrl).run();
+ const linkedAgain=async version=>{
+  await db.prepare("INSERT INTO hotel_source_observations(id,payload,observed_at) VALUES ('jalan-999157',?,'2026-10-05T05:00:00Z') ON CONFLICT(id) DO UPDATE SET payload=excluded.payload").bind(JSON.stringify({links:[{url:linkedUrl}],sources:[{bathDataVersion:version}]})).run();
+  await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url IN (?,?)').bind(url,linkedUrl).run();
+  return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
+ };
+ assert.equal(await linkedAgain('v2'),linkedUrl,'A curated group\'s older Jalan observation is revisited');
+ assert((await view()).includes(linkedUrl),'The queue view lists the curated group\'s observation too (Codex review 3 on PR #77)');
+ assert.equal(await linkedAgain('v3'),null,'A curated group\'s v3 Jalan observation is not revisited');assert(!(await view()).includes(linkedUrl),'Nor does the queue view');
+ // A verified hotel keeps its hand-checked facts: neither the claim nor the queue view picks its detail.
+ const verifiedUrl='https://www.jalan.net/yad327522/',hadVerifiedJob=await db.prepare('SELECT 1 FROM crawl_jobs WHERE url=?').bind(verifiedUrl).first();
+ assert(await db.prepare("SELECT 1 FROM hotels WHERE id='jalan-327522' AND json_extract(payload,'$.links[0].url')=? AND json_extract(payload,'$.sources[0].bathDataVersion') IS NULL").bind(verifiedUrl).first(),'The verified hotel is an older-parser candidate but for its exclusion');
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-kumamoto','done',1,0) ON CONFLICT(url) DO UPDATE SET status='done',next_at=0,lease_token=NULL,lease_until=0").bind(verifiedUrl).run();
+ await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url IN (?,?)').bind(url,linkedUrl).run();
+ assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null,null,'A verified hotel is not revisited');
+ assert(!(await view()).includes(verifiedUrl),'Nor listed by the queue view');
+ if(!hadVerifiedJob)await db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(verifiedUrl).run();
+ await db.batch([db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(linkedUrl),db.prepare("DELETE FROM hotel_source_observations WHERE id='jalan-999157'")]);
+ assert.equal((await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=5')).jobs.length,0,'The queue view agrees');
+ await db.prepare("UPDATE hotels SET payload=json_remove(payload,'$.sources[0].bathDataVersion') WHERE id=?").bind(h.id).run();
  const trip=fixture('trip','999110');await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail','pref-tokyo','pending',0,0)").bind(trip.sources[0].url).run();
  const tripPut=await api('/api/crawl','PUT',{url:trip.sources[0].url,status:'done',observations:[trip],links:[]});
  assert.equal(tripPut.coverage.records,result.coverage.records+1,'Only the new property is counted; updates and rejected observations are not');
@@ -138,6 +173,23 @@ try{
  // the collector reads at the end of each run.
  await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
  assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
+ assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
+ // D05: what the collector parses from a reduced actual Jalan detail page
+ // (a room count, a view bath and room photos) passes the observation contract
+ // and reaches the hotel row and the detail API. A count or photos naming
+ // another source, no rooms, or a photo outside the two source image hosts are
+ // refused.
+ const counted=JSON.parse(execFileSync('python3',['-c',"import json,sys\nsys.path.insert(0,'scripts/crawler')\nfrom collect import parse_source_page\nraw=open('scripts/crawler/fixtures/jalan-rooms-greenplaza.html',encoding='utf-8').read().replace('345284','999155')\nprint(json.dumps(parse_source_page(raw,'jalan','https://www.jalan.net/yad999155/','2026-10-05T05:00:00+00:00','pref-hokkaido','detail')[0][0],ensure_ascii=False))"],{encoding:'utf8'}));
+ const countedUrl=counted.sources[0].url;
+ assert.equal(counted.rooms.total,123);assert.equal(counted.features.viewBath.value,true);assert.equal(counted.roomTypes[0].items[0].photos.length,4);assert.equal(counted.sources[0].bathDataVersion,'v3');
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','pending',0,0)").bind(countedUrl).run();
+ for(const rooms of [{...counted.rooms,sourceId:'jalan-999156'},{...counted.rooms,total:0}])await api('/api/crawl','PUT',{url:countedUrl,status:'done',observations:[{...counted,rooms}],links:[]},400);
+ for(const set of [{...counted.roomTypes[0],sourceId:'jalan-999156'},{...counted.roomTypes[0],items:[{name:null,photos:[{url:'https://example.com/room.jpg',caption:''}]}]}])await api('/api/crawl','PUT',{url:countedUrl,status:'done',observations:[{...counted,roomTypes:[set]}],links:[]},400);
+ assert.equal((await api('/api/crawl','PUT',{url:countedUrl,status:'done',observations:[counted],links:[]})).accepted,1);
+ const countedDetail=await api('/api/hotels/'+counted.id);
+ assert.deepEqual(countedDetail.rooms,counted.rooms);assert.equal(countedDetail.features.viewBath.value,true);assert.deepEqual(countedDetail.roomTypes,counted.roomTypes);
+ const viewBit=1<<13,countedRow=await db.prepare('SELECT bath_features,bath_known FROM hotels WHERE id=?').bind(counted.id).first();
+ assert.equal(countedRow.bath_features&viewBit,viewBit);assert.equal(countedRow.bath_known&viewBit,viewBit);
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
  // Overlapping collector runs: a full-count GET racing new-property PUTs must
  // not drop their increments (Codex review on PR #28).
