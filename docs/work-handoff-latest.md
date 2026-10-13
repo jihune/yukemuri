@@ -85,7 +85,8 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 인계 뒤 두 하위 세션의 질문에만 답한다. 보관하지 않는다 | 대기 |
 | `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션) | 진행 중 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, 부모는 새 상위 세션) | 진행 중 |
-| `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, 부모는 새 상위 세션) | 진행 중 |
+| `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, PR #76 병합·배포, 부모는 새 상위 세션) | 보관(15:09Z) |
+| `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67~). 부모는 이전 상위 세션이라 새 상위 세션 id로 직접 보낸다 | 진행 중 |
 | `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합, 후속 브랜치 `claude/d06-geo`) | 쉬는 중 |
 | `session_01Y1JhjKANZbPiLfETCBdRns` | P03 정적 스냅숏(PR #43·#44·#45·#52) | 보관 |
@@ -127,6 +128,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
   - PR 1(검색 엔진 색인 차단, 자동화 User-Agent 403)은 답을 기다리지 않고 구현한다. 배포 뒤에는 키 없는 `/api/*` 확인에 브라우저 UA가 필요하다(U05·D05에 전함).
 - PR #76(H02 PR 1): 하위 세션의 병합 준비 알림(13:31Z) 뒤 상위 세션이 확인했다. Codex 1회째(`1cf7bbe`) P2 1건(‘`/api/hotels/<id>/google`이 상세 제한 밖’)이 `f41c02b`에서 고쳐져 스레드가 해결됐고, 2회째(`f41c02b`)는 큰 문제 없음이었다. head의 CI·GitGuardian이 통과했고 main `fbc5389`과 충돌이 없었다. 상위 세션이 `lib/edge-guard.ts`에서 크롤 키 요청이 UA 거절·속도 제한보다 먼저 통과하는 것을 읽었다. 13:32Z에 병합했다(`68c54e6`). 배포 결과는 `deployments.md`에 있다. 부수 효과: 메신저 링크 미리보기 봇(이름에 scrap이 든 것 등, 이름은 추정)도 Worker가 답하는 경로에서는 막힌다. 정적 첫 화면은 Worker를 거치지 않아 막히지 않는다.
 - 13:4xZ 무렵 계정 5시간 한도에 닿아 이 세션의 턴이 끊겼고, 15:06Z(초기화 15:00Z 뒤)에 사용자 지시 ‘다시 시도’로 이어 갔다. 그때 5시간 창 0.12, 7일 창 0.41이었다.
+- 15:08Z에 L01 하위 세션(`session_01B1EMNXwBFR86E9fRdWbW1N`)을 열었다. 개발 세션은 운영 유지관리 키를 쓰지 않으므로, 공식 상태는 근거 파일을 PR로 검토받고 병합 뒤 Actions가 적용하는 경로로 설계하게 했다. 운영 쓰기 경로를 새로 여는 설계는 상위 세션 답을 받은 뒤 구현한다. H02는 남은 일이 없어 15:09Z에 보관했다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
