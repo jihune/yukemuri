@@ -1,0 +1,8 @@
+# Every static asset: not for search engines or archives (docs/H02-20261013.md).
+# Worker responses get the same header from lib/edge-guard.ts.
+/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+# vinext writes this rule only when there is no _headers file, so it is kept here.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -824,6 +824,19 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 1. PR 리뷰(Codex) → 지적 반영 → 상위 세션 병합.
 2. 병합 뒤 같은 브랜치를 최신 main에서 다시 시작해 2번 지도 모드 PR. `D06-20261013.md`에 따르면 좌표가 있는 숙소는 10.4%라 ‘위치 미확인 N곳’이 대부분이다. 지도 PR은 이 수를 목록으로 열 수 있게 한다.
 
+## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
+
+기록: 2026-10-13T12:45Z / 21:45 KST, 갱신 12:58Z. 하위 세션 `session_019yG8qw1WbTQEBYXDzk4D1Z`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/h02-protect`, 시작 기준 main `00bcfdb`, main `fbc5389` merge. 상세는 `H02-20261013.md`.
+
+- 1단계(조사·설계) 끝: Cloudflare 공식 문서 원문(12:35Z)으로 무료 플랜·workers.dev에서 쓸 수 있는 수단을 정리했다. Worker 하루 요청 한도는 Worker 코드로 지킬 수 없다(거절도 요청으로 센다). 정적 자산은 한도와 관계없이 나간다.
+- 상위 세션 답(12:44Z): 스냅숏은 정적으로 둔다(남는 위험은 H02 문서에 적음). Worker 실패 때 상세 화면은 U05 상세 PR이 만들고, 응답 모양은 H02 문서 ‘상세 API 실패 응답’에 적었다. 상세·비교 IP별 60초 30회는 PR 1에 넣었다.
+- PR 1: robots.txt(첫 화면만 열림), `public/_headers`와 `edge-guard`의 `X-Robots-Tag`, `app/layout.tsx` robots 메타 한 줄, 키 없는 자동화 UA 403, `DETAIL_RATE_LIMITER`, smoke 단언. 검사와 고장 낸 변형은 H02 문서와 PR 설명에 있다.
+- PR #76(13:03Z 열림): `cloud-check.py --full` 38개 통과, 브라우저 검사 8종 360개 통과(이 PR 빌드, 제한이 켜진 로컬 서버, 429 없음). Codex 1회째 P2 1건(`/api/hotels/<id>/google`도 좁은 제한에) 반영.
+- 실행기 저장소는 읽기만 했다(`55572c8`, 백업 UA `YukemuriBackup/1.0`, 모든 요청에 크롤 키).
+- 배포 뒤 운영 확인: 키 없는 `/api/*`는 브라우저 형식 UA가 필요하다(`cloudflare-deploy.md` ‘공개 사이트 보호’).
+- 미확인: 실제 Cloudflare에서 `_headers`의 `/*`가 `/`에도 붙는지(배포 smoke가 확인), 1027의 상태 코드.
+- 재개 예약: `trig_019ymamW4itAtbxLm49Yfrm6`(2026-10-13T15:10Z, 5시간 사용량 초기화 뒤).
+
 ## D05 — Jalan 객실 수·전망 욕탕·객실 사진
 
 기록: 2026-10-13T12:22Z / 2026-10-13 21:22 KST, 구현 기록 12:40Z / 21:40 KST. 상세는 `D05-20261013.md`다.
@@ -851,7 +864,10 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 
 ### 다음 작업
 
-1. PR #77을 열고(13:19Z) 구독했고 상위 세션에 알렸다. CI 통과 뒤 Codex 검토를 요청한다.
+1. PR #77을 열고(13:19Z) 구독했고 상위 세션에 알렸다. CI `checks`가 `eabdba6`에서 통과했다(13:22–13:28Z).
+   - Codex 1회째(`eabdba6`, 13:32Z 요청, 13:35Z 완료): P2 3건. 모두 고쳤다(`D05-20261013.md` 7.5절). (1) 큐레이션 숙소 묶음의 Jalan 관측(`hotel_source_observations`)이 baths 재방문에서 빠졌다. 선점 조건에 그 표의 기본 키 조회를 더했다. (2) 묶음이 기준 숙소를 다시 넣으면 `roomTypes`가 두 번 나왔다. 출처마다 한 묶음만 남긴다. (3) `audit-catalog.py`의 시설 키 목록에 `viewBath`가 없었다.
+   - 13:50Z 확인 예약은 사용량 한도로 15:06Z에야 도착했고, 작업자 프로세스도 다시 시작됐다. 작업 트리는 남아 있었다.
+   - 15:0xZ에 main `68c54e6`(H02 PR #76까지)을 merge했다. 인수인계 충돌은 H02 절과 D05 절을 모두 살려 풀었다.
 2. 상위 세션 답(12:19Z, 12:46Z): baths 재방문(`v3`, 약 12일 동안 gentle 쪽의 약 1/8, 추정)과 카드의 ‘전망 욕탕’ 표지를 받아들였다. 360px 카드 줄바꿈은 브라우저로 보지 않아 미확인이다(`D05-20261013.md` 4.6절).
 3. U05에 전할 필드: `features.viewBath`, `rooms`, `roomTypes`(형식은 `D05-20261013.md` 4.1절).
 4. D05가 끝나면 상위 세션이 이 세션에 D04(시설 연식)를 맡길 계획이다(12:25Z 메시지). Trip.com 표지의 연도 값은 `D05-20261013.md` 8절에 적었다.

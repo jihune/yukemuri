@@ -1,4 +1,6 @@
-# Yukemuri is a personal onsen catalogue. The API is not for crawling.
+# Yukemuri is a personal onsen catalogue. It is not for search engines or crawling:
+# every response carries X-Robots-Tag noindex, and only the home page stays
+# open so that search engines can read it (docs/H02-20261013.md).
 # Known AI training and answer-engine crawlers are asked not to collect the site.
 User-agent: GPTBot
 User-agent: OAI-SearchBot
@@ -18,4 +20,5 @@ User-agent: Timpibot
 Disallow: /
 
 User-agent: *
-Disallow: /api/
+Allow: /$
+Disallow: /
