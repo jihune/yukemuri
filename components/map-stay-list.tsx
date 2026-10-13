@@ -21,6 +21,9 @@ export default function MapStayList({title,stays,provider,activeId,onSelect,onBa
  const [shown,setShown]=useState(PAGE),key=stays.length+':'+(stays[0]?.id??'');
  const [forKey,setForKey]=useState(key);
  if(forKey!==key){setForKey(key);setShown(PAGE)}
+ // A group's or the location-unknown list opens at half height so its stays are seen.
+ const [forTitle,setForTitle]=useState(title);
+ if(forTitle!==title){setForTitle(title);if(sheet&&onBack&&height==='peek')setHeight('half')}
  return <section className={`map-stay-list ${sheet?'is-sheet sheet-'+height:''}`} aria-label={title}>
   {sheet&&<button type="button" className="map-sheet-handle" aria-label={SHEET_LABEL[height]} aria-expanded={height!=='peek'} onClick={()=>setHeight(SHEET[(SHEET.indexOf(height)+1)%SHEET.length])}><span/></button>}
   <div className="map-stay-list-head">
