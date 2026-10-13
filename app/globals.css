@@ -801,3 +801,17 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .map-stay-meta b{color:var(--yk-primary)}
 .map-stay-list-empty{padding:var(--yk-space-4);font-size:var(--yk-fs-sm);color:var(--yk-text-3)}
 .map-stay-list-more{display:block;width:100%;min-height:var(--yk-tap);border-top:1px solid var(--yk-line);color:var(--yk-primary);font-size:var(--yk-fs-sm)}
+/* U05 map mode on a phone: the list is a sheet over the bottom of the map. */
+.map-sheet-handle{display:flex;justify-content:center;align-items:center;width:100%;min-height:var(--yk-tap)}
+.map-sheet-handle span{width:40px;height:5px;border-radius:3px;background:var(--yk-line)}
+@media(max-width:900px){
+  .map-stay-list.is-sheet{position:fixed;left:0;right:0;bottom:0;z-index:25;margin:0;border-radius:var(--yk-radius-lg) var(--yk-radius-lg) 0 0;border-bottom:0;box-shadow:0 -6px 24px #14272b26;display:flex;flex-direction:column;transition:height .2s ease-out}
+  .map-stay-list.is-sheet ul{max-height:none;flex:1;min-height:0}
+  .map-stay-list.sheet-peek{height:124px}
+  .map-stay-list.sheet-half{height:50dvh}
+  .map-stay-list.sheet-full{height:85dvh}
+  .map-stay-list.sheet-peek ul,.map-stay-list.sheet-peek .map-stay-list-more{display:none}
+  /* The floating list button and the page end stay above the sheet's peek. */
+  .view-map~.mobile-map-toggle,body:has(.map-stay-list.is-sheet) .mobile-map-toggle{bottom:140px}
+  body:has(.map-stay-list.is-sheet) .site-footer{padding-bottom:240px}
+}
