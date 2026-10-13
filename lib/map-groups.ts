@@ -47,12 +47,14 @@ const mercatorX=(lng:number)=>(lng+180)/360;
 const mercatorY=(lat:number)=>{const s=Math.sin(Math.max(-85.0511,Math.min(85.0511,lat))*Math.PI/180);return 0.5-Math.log((1+s)/(1-s))/(4*Math.PI)};
 
 // The result's points: payload points first, then the approximate ones (D06 geo.json)
-// when that file is loaded. A row with neither is unknown.
+// when that file is loaded. A row with neither is unknown. A payload point keeps the grade
+// geo.json gives it (a seed point is approximate, lib/search-snapshot-build.ts).
 export function resultPositions(order:ArrayLike<number>,core:PositionColumns,geo:PositionColumns|null):ResultPositions{
  const n=order.length,rows:number[]=[],lat:number[]=[],lng:number[]=[],grade:number[]=[],unknown:number[]=[];
  for(let k=0;k<n;k++){
-  const i=order[k];let a=core.lat[i]??null,b=core.lng[i]??null,g=1;
-  if((a===null||b===null)&&geo){const gg=geo.grade?.[i]??0;if(gg>0){a=geo.lat[i]??null;b=geo.lng[i]??null;g=gg}}
+  const i=order[k],gg=geo?.grade?.[i]??0;let a=core.lat[i]??null,b=core.lng[i]??null,g=1;
+  if(a!==null&&b!==null){if(gg>=2)g=gg}
+  else if(geo&&gg>0){a=geo.lat[i]??null;b=geo.lng[i]??null;g=gg}
   if(a===null||b===null||!Number.isFinite(a)||!Number.isFinite(b)){unknown.push(i);continue}
   rows.push(i);lat.push(a);lng.push(b);grade.push(g);
  }

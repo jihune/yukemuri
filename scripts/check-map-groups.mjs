@@ -41,6 +41,9 @@ try{
  const bare=resultPositions(order,{lat,lng},null);
  assert.equal(bare.rows.length+bare.unknown.length,N);
  assert.equal(bare.rows.length,lat.filter(v=>v!==null).length);
+ // A payload point keeps the grade geo.json gives it: a seed point (grade 4) is approximate.
+ const seedPoints=resultPositions([0,1],{lat:[35,35.1],lng:[139,139.1]},{lat:[35,35.1],lng:[139,139.1],grade:[4,1]});
+ assert.deepEqual([...seedPoints.grade],[4,1],'payload points keep their geo.json grade');
 
  const views=[];
  const japan={west:122,south:24,east:154,north:46};

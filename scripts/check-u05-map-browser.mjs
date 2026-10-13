@@ -9,7 +9,8 @@
 // - the location-unknown list holds that many stays;
 // - a group marker zooms in or opens its stays as a list of the same count;
 // - Enter on a focused stay marker opens its preview, on a group zooms in or lists it;
-// - when geo.json fails the sum still holds (more stays unknown) and retry loads it.
+// - when geo.json fails the sum still holds (more stays unknown) and retry loads it;
+// - an area search closes an open list of the result.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-map-browser.mjs [base] [evidence.json]
@@ -108,6 +109,21 @@ for(const w of [390,1280]){
   const unknownButton=page.locator('.map-coverage button',{hasText:'위치 미확인'});
   if(await unknownButton.count()){await unknownButton.evaluate(e=>e.click());await page.waitForTimeout(400);const opened=await state();
    check('목록 시트: 위치 미확인 목록을 열면 시트가 절반으로 올라옴',opened.h===half.h,{opened,half});}
+ }
+ // The note under the map names the approximate points too; an area search replaces the
+ // markers, so a list of the result that was open closes.
+ if(!mobile){
+  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(800);
+  const note=await page.locator('.map-note').innerText(),approximate=!!geo&&search.order('').some(i=>s.core.lat[i]===null&&(geo.grade[i]??0)>=2);
+  check('지도 안내: 대략 위치가 있으면 예약 사이트 위치와 대략 위치(점선)를 함께 씀을 알림',approximate?note.includes('대략 위치(점선)'):note.includes('확인된 위치'),{note,approximate});
+  await page.locator('.map-coverage button',{hasText:'위치 미확인'}).evaluate(e=>e.click());await page.waitForTimeout(300);
+  const opened=(await page.locator('.map-stay-list h3').innerText()).includes('위치 미확인');
+  await page.locator('.map-canvas').focus();await page.keyboard.press('ArrowRight');await page.waitForTimeout(600);
+  await page.locator('.map-area-search').click();await page.waitForTimeout(1200);
+  const after={bbox:await page.locator('.map-coverage').getAttribute('data-bbox'),lists:await page.locator('.map-stay-list').count()};
+  await page.getByRole('button',{name:'검색 결과 지도로 돌아가기'}).click();await page.waitForTimeout(800);
+  const back=await page.locator('.map-stay-list h3').innerText().catch(()=>'');
+  check('이 지역에서 검색을 누르면 열려 있던 위치 미확인 목록이 닫히고, 돌아오면 이 화면 목록',opened&&!!after.bbox&&after.lists===0&&back.startsWith('이 화면'),{opened,...after,back});
  }
  // Keyboard: a marker is a Tab stop and Enter opens it (U02 kept).
  await page.goto(base+'/',{waitUntil:'networkidle'});

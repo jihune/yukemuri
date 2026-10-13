@@ -183,7 +183,7 @@ export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=fa
  const score=f.ratingProvider==='jalan'?c.jalanScore:c.tripScore;
  const result:MapAreaResponse={total,inBounds:inside.length,outOfBounds:total-withoutCoordinates-inside.length,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
  if(!inside.length)return result;
- const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,1]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
+ const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,Math.max(1,geo?.grade[i]??1)]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
  if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:c.name[i],lat,lng,score:score[i],grade}});return result}
  const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[]}>();
  for(const i of inside){

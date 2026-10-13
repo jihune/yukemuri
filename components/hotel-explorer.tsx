@@ -92,7 +92,10 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // New conditions start from the stays in view again.
  useEffect(()=>{setMapList(null)},[resultMap.positions]);
  const view=mapArea.area||!mapResult?null:mapView;
- const listRows=mapList?.rows??view?.inView??null,listStays=listRows&&snap.snapshot?listRows.map(r=>snap.snapshot!.cards[r]):null;
+ // An area search replaces the markers; a group or location-unknown list of the result closes.
+ const [listArea,setListArea]=useState(mapArea.area);
+ if(listArea!==mapArea.area){setListArea(mapArea.area);if(mapArea.area)setMapList(null)}
+ const listRows=mapArea.area?null:mapList?.rows??view?.inView??null,listStays=listRows&&snap.snapshot?listRows.map(r=>snap.snapshot!.cards[r]):null;
  // However the phone map opens (its button, a card, view=map in the address), put the map
  // column with its counts and load-more button at the top, clear of the floating list button.
  // Once more when the first snapshot arrives: the summary above the map grows then.

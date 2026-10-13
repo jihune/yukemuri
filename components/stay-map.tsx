@@ -14,13 +14,15 @@ type Props={hotels:HotelSummary[];activeId:string|null;onSelect:(id:string,keybo
  // grouped; onView reports them so the list beside the map shows the same stays.
  result?:{positions:ResultPositions;stay:(row:number)=>{id:string;label:string;title:string};rowOf:(id:string)=>number|undefined}|null;
  onView?:(view:ViewGroups)=>void;onOpenGroup?:(rows:number[])=>void};
-type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string};
+type Spot={id:string;lat:number;lng:number;label:string;title:string;place:string;approximate:boolean};
 // One empty array for every render: a new [] each time would re-run the fitting effect
 // and throw away the view the user chose.
 const NO_CELLS:MapCell[]=[];
 export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=NO_CELLS,onSearchArea,areaBusy=false,areaFailed=false,result=null,onView,onOpenGroup}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
- const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label}));
+ const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label,approximate:false}));
+ // The note under the map names where the points come from: approximate points (dashed) too.
+ const approximateShown=result?result.positions.grade.some(g=>g>=2):spots.some(s=>s.approximate);
  const props=useRef({spots,cells,activeId,onSelect,result,onView,onOpenGroup});props.current={spots,cells,activeId,onSelect,result,onView,onOpenGroup};
  const area=points!==null||cells.length>0;
  // Moves made by the code (fitting results, focusing a card) do not offer an area search.
@@ -89,7 +91,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
      const hs=group.spots,first=hs[0];
      const lat=hs.reduce((a,h)=>a+h.lat,0)/hs.length,lng=hs.reduce((a,h)=>a+h.lng,0)/hs.length;
      const active=hs.some(h=>h.id===props.current.activeId);
-     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
+     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''} ${hs.every(h=>h.approximate)?'is-approximate':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
      add(marker,{stayIds:hs.map(h=>h.id).join(' ')},keyboard=>{
       if(hs.length>1){map.fitBounds(L.latLngBounds(hs.map(h=>[h.lat,h.lng] as [number,number])),{padding:[50,50],maxZoom:17});}
       else props.current.onSelect(first.id,keyboard);
@@ -164,6 +166,6 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
   </div>
   {!ready&&!error&&<div className="map-loading">지도를 불러오는 중…</div>}
   {(error||tileError)&&<div className="map-error">배경 지도를 불러오지 못했습니다. 숙소 상세의 Google Maps에서 위치를 확인해 주세요.</div>}
-  <div className="map-note">예약 사이트의 확인된 위치 · 상세에서 출처 확인</div>
+  <div className="map-note">{approximateShown?'예약 사이트 위치와 주소로 찾은 대략 위치(점선)':'예약 사이트의 확인된 위치'} · 상세에서 출처 확인</div>
  </div>
 }
