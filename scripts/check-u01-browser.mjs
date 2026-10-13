@@ -139,6 +139,9 @@ async function run(page,cdp){
  await close.tap();await sheet.waitFor({state:'detached'});
 
  // Collection status: loading, failure, retry, empty and the table on a narrow screen.
+ // U05 moved it to the footer. With all 1,655 stays the list keeps loading pages as the footer
+ // comes near, so the footer is reached on a short result (handoff U05 3번: 7번 PR에서 진입점).
+ await page.goto(base+'/?q='+encodeURIComponent('노보리베츠'),{waitUntil:'networkidle'});
  const panel=page.locator('.coverage-panel'),summary=panel.locator('summary');
  await page.route('**/snapshot/v/*/status.json',async route=>{await new Promise(done=>setTimeout(done,1200));await route.continue()});
  // The panel is in the footer (U05): bring it to the middle, clear of the floating buttons.
