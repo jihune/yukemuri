@@ -895,7 +895,7 @@ Codex 1회째(PR #80, head `5592a2a`) 지적 4건과 반영:
   - 창 크기 검사는 가운데에서 다시 시작한다.
   - 낱개 표지가 없으면 확대해 찾는다.
 - 브라우저 검사(로컬 사이트): `check-u05-map` 21, `check-u02` 52, `check-u01` 64, `check-u05-foundation` 53, `check-u03-desktop` 12, `check-u03-comparison` 60, `check-u04` 57, `check-p03-followups` 9개가 `4a2c523` 빌드에서 통과했다. 그 뒤 화면 코드 변경은 `6705dca`(칸·버킷 키 자리 2^22→2^24, 확대 18 이하에서는 결과가 같음, `check-map-groups` 통과) 하나뿐이다. `check-u02-map` 53개는 `6705dca` 빌드에서 통과했다.
-- `python3 scripts/cloud-check.py --full`: `7839c21`에서 실행 중(20:23:17Z 시작).
+- `python3 scripts/cloud-check.py --full`: `7839c21`에서 39개 통과(20:23:17Z–20:30:44Z, rc=0).
 
 미확인·다음:
 
