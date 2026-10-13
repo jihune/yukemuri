@@ -84,7 +84,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01KfLU3P8YrmZdyxehAEp9rp` | 새 상위 세션(2026-10-13T11:57Z 시작, 브랜치 `claude/yukemuri-parent`, 부모는 이전 상위 세션) | 진행 중 |
 | `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 인계 뒤 두 하위 세션의 질문에만 답한다. 보관하지 않는다 | 대기 |
 | `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션) | 진행 중 |
-| `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, 부모는 새 상위 세션) | 진행 중 |
+| `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, PR #77 병합·배포, 부모는 새 상위 세션). 다음은 D04(7일 사용량이 허락할 때) | 대기 |
 | `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, PR #76 병합·배포, 부모는 새 상위 세션) | 보관(15:09Z) |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67~). 부모는 이전 상위 세션이라 새 상위 세션 id로 직접 보낸다 | 진행 중 |
@@ -133,6 +133,8 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 하위 세션 PR(16:5xZ까지): L01 PR #79(근거 파일·`lifecycle.yml`), U05 PR #80(2번 지도 모드), D05 PR #77(Codex 3회 끝). #77의 마지막 코드 수정 `cfde6a1`은 Codex가 다시 보지 않아, 상위 세션이 16:31Z에 이어 가는 Claude 검토 세션 `session_01UXw48gT9DkHR9DUymjRM6Z`(한 PR의 4회째)를 열었다.
 - 16:4xZ 멈춤 체크포인트: 사용자 지시 ‘지금 claude 한도 모자르니까 지금 작업중인거 잠깐 중단하거나 마무리하고 다음 작업은 예약 걸어둬’(16:4xZ). 상위 세션은 U05·D05·L01·#77 검토 세션에 정리 뒤 멈추고 20:10Z 재개를 예약하라고 보냈고, 하네스 점검 세션에도 알렸다. 자기 확인 예약은 20:15Z로 옮겼다. 그러나 5시간 창은 16:41Z 0.99, 16:42Z 1.0(거절)이 되어 이 세션의 턴도 기록 커밋 전에 끊겼다. U05(16:5xZ)·D05(17:2xZ)·#77 검토 세션(16:4xZ)도 한도에 걸려 failed로 멈췄다. 진행 중인 배경 작업은 없었고, 이 브랜치의 기록 커밋은 push돼 있었다.
 - 20:17Z 재개(초기화 20:00Z 뒤, 20:15Z 예약): 5시간 창 0.12, 7일 창 0.54. L01은 20:10Z 예약으로 다시 움직이고 있었다. 상위 세션이 U05·D05·#77 검토 세션에 재개를 지시했다. 7일 창은 하루 사이 0.29에서 0.54가 됐다.
+- PR #77(D05) 병합(21:11Z, `e88c14c`)과 배포: 이어 가는 Claude 검토 1회째(`b14f9b7`)는 P0–P2가 없고 P3가 2건이었다. roadmap 상태 칸은 D05가 기록 파일에서 고쳤다. 검사 단언 보강(`check-source-policy`)은 D04 첫 PR로 넘겼다. D05는 상위 세션의 답이 닿기 전에 그 보강을 `1fcbc42`로 push했다가 `a0511cc`에서 되돌렸다. 상위 세션이 `git diff b14f9b7 a0511cc -- . ':!docs'`로 코드가 검토본과 같음(빈 차이)을 확인하고 40자 SHA로 병합했다. 배포 run 38468641288과 main 검사 run 38468641274가 통과했고, 결과는 `deployments.md`에 있다. 이 배포부터 gentle 수집이 판 번호가 v3가 아닌 Jalan 상세를 다시 방문한다. 그만큼 D1 쓰기가 늘 수 있으나 하루 85% 상한(`collection-budget.mjs`)이 쪽 수를 줄인다. #77 검토 세션(`session_01UXw48gT9DkHR9DUymjRM6Z`)은 20:22Z에 이미 보관됐다.
+- PR #80(U05 2번 지도 모드): Codex 검토 3회를 다 써서 상위 세션이 21:10Z에 이어 가는 Claude 검토 세션 `session_01GrGohgfho7Qo9M6RHsMELR`(head `9659c5b`)을 열었다. P0–P2가 없으면 병합하고, 그 뒤 U05가 3번 목록 PR을 시작한다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
