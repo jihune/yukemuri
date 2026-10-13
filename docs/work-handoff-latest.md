@@ -808,6 +808,8 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - main `1750215`(문서만)을 merge했다(`d54d66f`, roadmap 충돌은 U05 행은 이쪽, D06 행은 main).
 - Codex 2회째(`d54d66f`, 11:29Z 요청, 11:32Z 완료): P2 1건. 지도 범위 검색 지점으로 연 목록 밖 숙소(`areaHotel`)가 조건이 바뀌어도 지워지지 않아 미리보기가 남았다. 지금 범위 결과의 지점에 없으면 `areaHotel`을 지우게 고쳤다. 1280px 검사(지도 확대·범위 검색·목록 밖 표지 선택 → 즐겨찾기 → 목록 → 다른 카드에 올렸다 벗어남)를 더했고, 지우는 코드를 끈 변형에서 실패(`inSaved:1`, `previewAfterLeaving:1`)를 확인했다. 검사 수 52→53.
 - 재검사(`d54d66f` + 이 수정): `check-u05-foundation` 53, `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. `cloud-check.py --full` 38개 통과(11:52:58Z–12:01:33Z, rc=0).
+- Codex 3회째(`f3e12ca`, 12:11Z 요청, 12:15Z 완료): ‘큰 문제 없음’. 남은 지적이 없다. CI `checks`는 `f3e12ca`에서 통과했다. 그 뒤 main `f6664ab`(문서만)을 충돌 없이 merge했고 이 기록을 더했다(기록 파일만 바뀜). 검토 요청은 Codex 3회를 모두 썼다.
+- 상위 세션이 2026-10-13T11:57Z에 `session_01KfLU3P8YrmZdyxehAEp9rp`로 바뀌었다. 병합 준비 알림은 그 세션으로 보낸다.
 
 - 재검사(main `7d287f5` merge 뒤 작업 트리): `check-u05-foundation` 52, `check-u01` 64, `check-u02` 52, `check-u02-map` 53, `check-u03-comparison` 60, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9개 모두 통과. `cloud-check.py --full` 38개 통과(10:33:42Z–10:41:56Z, rc=0). eslint의 `hotel-explorer.tsx` 오류 4건은 main과 같은 기존 것이다.
 다음:
