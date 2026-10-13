@@ -136,6 +136,18 @@ try{
  assert.equal(await bathsAgain('v1'),url,'A v1 Jalan detail is revisited');
  assert.equal(await bathsAgain('v2'),url,'A v2 Jalan detail is revisited');
  assert.equal(await bathsAgain('v3'),null,'A v3 Jalan detail is not revisited');
+ // A curated group's Jalan detail lives in hotel_source_observations, not in
+ // hotels; the phase revisits it the same way (Codex review on PR #77).
+ const linkedUrl='https://www.jalan.net/yad999157/';
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','done',1,0)").bind(linkedUrl).run();
+ const linkedAgain=async version=>{
+  await db.prepare("INSERT INTO hotel_source_observations(id,payload,observed_at) VALUES ('jalan-999157',?,'2026-10-05T05:00:00Z') ON CONFLICT(id) DO UPDATE SET payload=excluded.payload").bind(JSON.stringify({links:[{url:linkedUrl}],sources:[{bathDataVersion:version}]})).run();
+  await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url IN (?,?)').bind(url,linkedUrl).run();
+  return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
+ };
+ assert.equal(await linkedAgain('v2'),linkedUrl,'A curated group\'s older Jalan observation is revisited');
+ assert.equal(await linkedAgain('v3'),null,'A curated group\'s v3 Jalan observation is not revisited');
+ await db.batch([db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(linkedUrl),db.prepare("DELETE FROM hotel_source_observations WHERE id='jalan-999157'")]);
  assert.equal((await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=5')).jobs.length,0,'The queue view agrees');
  await db.prepare("UPDATE hotels SET payload=json_remove(payload,'$.sources[0].bathDataVersion') WHERE id=?").bind(h.id).run();
  const trip=fixture('trip','999110');await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail','pref-tokyo','pending',0,0)").bind(trip.sources[0].url).run();

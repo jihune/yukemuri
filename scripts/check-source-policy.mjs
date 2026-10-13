@@ -27,6 +27,7 @@ try{
  const shown=(h,name)=>({...structuredClone(h),roomTypes:[{sourceId:h.id,verifiedAt:'2026-10-05',items:[{name,photos:[]}]}]});
  assert.deepEqual(composePreferredHotel(shown(jalan,null),[shown(trip,'트윈룸')]).roomTypes.map(s=>s.sourceId),[trip.id,jalan.id],'Room photos keep both sources, Trip.com first');
  assert.equal('roomTypes' in composePreferredHotel(trip,[jalan]),false,'No room photos stay absent');
+ const self=shown(jalan,null);assert.equal(composePreferredHotel(self,[self]).roomTypes.length,1,'A group listing the base hotel again keeps one set per source');
  const mixed=structuredClone(jalan);mixed.image.alternatives=[trip.image.url];mixed.sources.push(...trip.sources);assert.equal(composePreferredHotel(mixed,[]).image.url,trip.image.url,'Historical Trip alternatives outrank the main Jalan image');
  const placeId='ChIJSourcePolicyOnly123',key='test-key-not-real';let calls=[];
  const detail={id:placeId,rating:4.6,userRatingCount:321,googleMapsUri:'https://maps.google.com/?cid=123',photos:[{name:'places/'+placeId+'/photos/MockPhoto123',googleMapsUri:'https://www.google.com/maps/photo?x=1',authorAttributions:[{displayName:'Test Author',uri:'https://www.google.com/maps/contrib/123',photoUri:'https://lh3.googleusercontent.com/avatar'}]}]};
