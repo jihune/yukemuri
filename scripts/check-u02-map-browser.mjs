@@ -34,10 +34,34 @@ const focusedMarker=page=>page.evaluate(()=>{
  const r=e.getBoundingClientRect(),ids=e.dataset.stayIds?.split(' ')??[];
  return {ids,cell:e.dataset.cell??null,cluster:!!e.querySelector('.is-cluster'),title:e.getAttribute('title'),card:!!document.getElementById('card-'+ids[0]),inside:r.left>=c.left-.5&&r.right<=c.right+.5&&r.top>=c.top-.5&&r.bottom<=c.bottom+.5};
 });
+// U05 draws only the stays inside the view, so a marker over the map's edge needs a move:
+// pan with the arrow keys (each pan redraws) until some drawn marker sticks out of the map.
+// A direction that finds none pans back, so the map keeps its markers in view.
+const markerToEdge=async page=>{
+ const back={ArrowRight:'ArrowLeft',ArrowLeft:'ArrowRight',ArrowDown:'ArrowUp',ArrowUp:'ArrowDown'};
+ for(const key of ['ArrowRight','ArrowLeft','ArrowDown','ArrowUp']){
+  let steps=0;
+  for(;steps<12;steps++){
+   const stops=await tabStops(page);if(stops.outside>0)return true;if(stops.inside===0)break;
+   await page.locator('.map-canvas').focus();await page.keyboard.press(key);await page.waitForTimeout(450);
+  }
+  for(;steps>0;steps--){await page.locator('.map-canvas').focus();await page.keyboard.press(back[key]);await page.waitForTimeout(450)}
+ }
+ return (await tabStops(page)).outside>0;
+};
 // Tab from the map until a marker matching want has focus; null once focus leaves the markers.
 const tabToMarker=async(page,want)=>{
  await page.locator('.map-canvas').focus();
  for(let i=0;i<40;i++){await page.keyboard.press('Tab');const m=await focusedMarker(page);if(!m.ids)return null;if(want(m))return m}
+ return null;
+};
+// U05 merges groups whose icons would overlap, so a view can hold only groups: zoom in
+// (the zoom button, not a pan) until a single stay is a Tab stop.
+const tabToSingle=async page=>{
+ for(let i=0;i<6;i++){
+  const m=await tabToMarker(page,m=>!m.cluster);if(m)return m;
+  await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(600);
+ }
  return null;
 };
 const onPreviewName=page=>page.evaluate(()=>document.activeElement?.matches('.map-preview button:not(.icon-button)')??false);
@@ -99,7 +123,8 @@ async function run(page,cdp){
  const caption=(await page.locator('.map-caption').innerText()).replace(/\s+/g,' ');
  check('이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 스냅숏 값과 같음',t.includes(`이 지역 ${count(expected.inBounds)}`)&&t.includes(`범위 밖 ${count(expected.outOfBounds)}`)&&t.includes(`위치 미확인 ${count(expected.withoutCoordinates)}`)&&t.includes(`조건에 맞는 전체 ${count(expected.total)}`)&&caption.includes(count(expected.inBounds)),{text:t,caption,expected:{...expected,points:expected.points.length}});
  const list=search.list('');
- check('지도 범위 결과는 목록을 바꾸지 않음',(await page.locator('.mobile-map-toggle').innerText()).includes(String(list.hotels.length))&&expected.total===list.total,{listTotal:list.total,mapTotal:expected.total});
+ // U05: the floating button counts the whole result (the map shows all of it), not the loaded page.
+ check('지도 범위 결과는 목록을 바꾸지 않음',(await page.locator('.mobile-map-toggle').innerText()).includes(list.total.toLocaleString('ko-KR'))&&expected.total===list.total,{listTotal:list.total,mapTotal:expected.total});
  // The area belongs to the view the user chose: searching keeps that view, and pressing
  // again for the same view gives the same result.
  const viewAfter=await pane();
@@ -212,7 +237,8 @@ async function run(page,cdp){
  // The same with Space from the keyboard, after moving the cell away from the middle
  // (up and down: the map is taller than it is wide, so the cell stays wholly inside it).
  await nudge('ArrowUp');
- const cellAway=await cell.count()?await offCentre():null,focusedCell=await tabToMarker(page,m=>!!m.cell);
+ // Tab to the cell measured above (the first cell in Tab order depends on the map's size).
+ const cellAway=await cell.count()?await offCentre():null,focusedCell=await tabToMarker(page,m=>!!m.cell&&!!m.title?.includes(`${biggest}개`));
  const cellScroll=await page.evaluate(()=>scrollY);
  if(focusedCell){await page.keyboard.press('Space');await page.waitForTimeout(1000)}
  const cellBack=await cell.count()?await offCentre():null,cellFocus=await focusedMarker(page);
@@ -221,10 +247,11 @@ async function run(page,cdp){
  await shot('grid');
 
  // Back to the loaded list positions with the keyboard.
- const back=coverage.getByRole('button',{name:'불러온 목록 위치로 돌아가기'});
+ const back=coverage.getByRole('button',{name:'검색 결과 지도로 돌아가기'});
  await back.focus();await page.keyboard.press('Enter');
  await page.waitForTimeout(300);
- check('Enter로 불러온 목록 위치로 돌아가면 기존 표시 수 안내로 돌아옴',(await text()).includes('검색 결과')&&(await text()).includes('중 지도에'),{text:await text()});
+ // U05: the map shows the whole result, so leaving the area result returns to the in-view counts.
+ check('Enter로 검색 결과 지도로 돌아가면 이 화면·검색 결과 안내로 돌아옴',(await text()).includes('검색 결과')&&(await text()).includes('이 화면'),{text:await text()});
 
  // Where PR #13 and this PR meet. Opening the phone map scrolls its column to the top
  // (PR #13); the area button must then be on screen and clear without further scrolling.
@@ -234,8 +261,7 @@ async function run(page,cdp){
  await canvas.focus();await page.keyboard.press('ArrowRight');await page.waitForTimeout(600);
  await areaButton.waitFor({timeout:5000}).catch(()=>{});
  check('지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',await areaButton.count()===1&&inView(await box(areaButton))&&await fullyReachable(areaButton),{button:await areaButton.count()?await box(areaButton):null});
- // The loaded-list counts (PR #13) and an area result shown together.
- await coverage.getByRole('button',{name:/더 불러와 지도에 표시/}).tap();
+ // The whole-result counts (U05, which replaced PR #13's loaded-list counts) and an area result shown together.
  await areaButton.tap();
  await coverage.getByText('이 지역').first().waitFor({timeout:10000}).catch(()=>{});
  const both=await text();
@@ -258,15 +284,24 @@ async function desktopHover(page){
  // scrolls its card into view, and a card that lands under a resting mouse takes the preview.
  await page.mouse.move(1279,795);
  for(let i=0;i<2;i++){await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(500)}
+ await markerToEdge(page);
  const stops=await tabStops(page);
- check('데스크톱에서 확대하면 지도 안에 다 보이는 지점만 Tab 정지',stops.wrong===0&&stops.inside>0&&stops.outside>0,stops);
- // A narrower window resizes the map without the user moving it.
+ check('데스크톱에서 확대하면 지도 안에 다 보이는 지점만 Tab 정지(가장자리에 걸친 지점 포함)',stops.wrong===0&&stops.inside>0&&stops.outside>0,stops);
+ // A narrower window resizes the map without the user moving it. Start again from the
+ // stays at the centre (the edge search above leaves a marker at the map's edge, which a
+ // narrower map would push out of view).
+ await page.goto(base+'/',{waitUntil:'networkidle'});await canvas.waitFor();await page.waitForTimeout(500);
+ await page.mouse.move(1279,795);
+ for(let i=0;i<2;i++){await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(500)}
  const wideMap=(await box(canvas)).width;
  await page.setViewportSize({width:1100,height:640});await page.waitForTimeout(800);
- const resized=await tabStops(page),narrowMap=(await box(canvas)).width;
- check('창 크기가 바뀌어 지도가 줄어도 지도 안에 다 보이는 지점만 Tab 정지',narrowMap<wideMap&&resized.wrong===0&&resized.outside>0,{...resized,wideMap,narrowMap});
+ const narrowMap=(await box(canvas)).width,afterResize=await tabStops(page);
+ // U05 redraws the stays in view after the resize; then pan toward an edge marker as above
+ // (80px key steps can step over the ~30px band where a drawn marker sticks out).
+ const edge=await markerToEdge(page),resized=await tabStops(page);
+ check('창 크기가 바뀌어 지도가 줄어든 뒤에도 지도 안에 다 보이는 지점만 Tab 정지',narrowMap<wideMap&&afterResize.wrong===0&&afterResize.inside+afterResize.outside>0&&resized.wrong===0,{afterResize,edge,...resized,wideMap,narrowMap});
  await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(800);
- const single=await tabToMarker(page,m=>!m.cluster);
+ const single=await tabToSingle(page);
  const trip=single?await previewRoundTrip(page,single,'Enter'):null;
  check('데스크톱에서 Enter로 지점의 미리보기를 열면 포커스가 미리보기로 가고 닫으면 지점으로 돌아옴',!!trip?.pass,{trip});
  // The opener may leave the map while its preview is open: closing must not focus it unseen.
@@ -274,12 +309,16 @@ async function desktopHover(page){
  if(single){
   const again=await tabToMarker(page,m=>m.ids?.[0]===single.ids[0]);
   if(again){await page.keyboard.press('Enter');await page.locator('.map-preview').waitFor({timeout:8000}).catch(()=>{})}
-  await canvas.focus();for(let i=0;i<8;i++)await page.keyboard.press('ArrowRight');await page.waitForTimeout(800);
+  // Pan until that stay is off the map (U05 draws whole-result markers, so how far depends on the view).
+  await canvas.focus();
+  for(let i=0;i<20;i++){await page.keyboard.press('ArrowRight');await page.waitForTimeout(250);if(await page.evaluate(id=>{const c=document.querySelector('.map-canvas').getBoundingClientRect(),m=[...document.querySelectorAll('.leaflet-marker-icon')].find(e=>e.dataset.stayIds?.split(' ').includes(id));if(!m)return true;const r=m.getBoundingClientRect();return r.right<c.left||r.left>c.right},single.ids[0]))break}
+  await page.waitForTimeout(800);
   const gone=await page.evaluate(id=>{const c=document.querySelector('.map-canvas').getBoundingClientRect(),m=[...document.querySelectorAll('.leaflet-marker-icon')].find(e=>e.dataset.stayIds?.split(' ').includes(id));if(!m)return null;const r=m.getBoundingClientRect();return !(r.left>=c.left&&r.right<=c.right&&r.top>=c.top&&r.bottom<=c.bottom)},single.ids[0]);
   await page.getByRole('button',{name:'지도 숙소 선택 해제'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(300);
   away={again:!!again,gone,preview:await page.locator('.map-preview').count(),focus:await focusedMarker(page),onMap:await page.evaluate(()=>document.activeElement===document.querySelector('.map-canvas'))};
  }
- check('미리보기를 연 지점이 지도 밖으로 나간 뒤 닫으면 포커스는 그 지점이 아니라 지도로 감',!!away&&away.again&&away.gone===true&&away.preview===0&&(away.onMap||(!!away.focus.ids&&away.focus.inside)),{away});
+ // U05 draws only the stays in view: a stay moved out of the map has no marker at all (gone null).
+ check('미리보기를 연 지점이 지도 밖으로 나간 뒤 닫으면 포커스는 그 지점이 아니라 지도로 감',!!away&&away.again&&away.gone!==false&&away.preview===0&&(away.onMap||(!!away.focus.ids&&away.focus.inside)),{away});
 }
 
 const chromiumVersion=browser.version();

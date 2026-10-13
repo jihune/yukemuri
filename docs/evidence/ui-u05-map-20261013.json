@@ -1,0 +1,846 @@
+{
+ "checkedAt": "2026-10-13T21:00:19.669Z",
+ "base": "http://127.0.0.1:8787",
+ "geo": true,
+ "results": [
+  {
+   "width": 390,
+   "name": "전국: 확대 단계마다 표지+묶음 합 = 이 화면 = 목록 = 스냅숏의 화면 안 수, 가려진 표지 0, 화면 안+밖+미확인 = 결과 1655곳",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 4,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 1",
+      "zoom": 5,
+      "expected": 53,
+      "shown": 53,
+      "hidden": 0,
+      "inView": 53,
+      "list": 53,
+      "out": 7,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 2",
+      "zoom": 6,
+      "expected": 21,
+      "shown": 21,
+      "hidden": 0,
+      "inView": 21,
+      "list": 21,
+      "out": 39,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 3",
+      "zoom": 7,
+      "expected": 9,
+      "shown": 9,
+      "hidden": 0,
+      "inView": 9,
+      "list": 9,
+      "out": 51,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 1",
+      "zoom": 6,
+      "expected": 21,
+      "shown": 21,
+      "hidden": 0,
+      "inView": 21,
+      "list": 21,
+      "out": 39,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 2",
+      "zoom": 5,
+      "expected": 53,
+      "shown": 53,
+      "hidden": 0,
+      "inView": 53,
+      "list": 53,
+      "out": 7,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 3",
+      "zoom": 4,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 4",
+      "zoom": 3,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 5",
+      "zoom": 2,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "묶음 누름",
+      "zoom": 4,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     }
+    ],
+    "bad": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "전국: 위치 미확인 목록 수 = 결과 중 위치 없는 숙소 1595곳",
+   "pass": true,
+   "detail": {
+    "list": 1595,
+    "expected": 1595
+   }
+  },
+  {
+   "width": 390,
+   "name": "전국: 묶음(60곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림",
+   "pass": true,
+   "detail": {
+    "count": 60,
+    "zoomed": true,
+    "listed": "이 화면 60곳",
+    "after": {
+     "step": "묶음 누름",
+     "zoom": 4,
+     "expected": 60,
+     "shown": 60,
+     "hidden": 0,
+     "inView": 60,
+     "list": 60,
+     "out": 0,
+     "unknown": 1595,
+     "total": 1655
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "이름 검색: 확대 단계마다 표지+묶음 합 = 이 화면 = 목록 = 스냅숏의 화면 안 수, 가려진 표지 0, 화면 안+밖+미확인 = 결과 4곳",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 12,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 1",
+      "zoom": 13,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 2",
+      "zoom": 14,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 3",
+      "zoom": 15,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 1",
+      "zoom": 14,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 2",
+      "zoom": 13,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 3",
+      "zoom": 12,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 4",
+      "zoom": 11,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 5",
+      "zoom": 10,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "묶음 누름",
+      "zoom": 15,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     }
+    ],
+    "bad": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "이름 검색: 묶음(4곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림",
+   "pass": true,
+   "detail": {
+    "count": 4,
+    "zoomed": true,
+    "listed": "이 화면 4곳",
+    "after": {
+     "step": "묶음 누름",
+     "zoom": 15,
+     "expected": 4,
+     "shown": 4,
+     "hidden": 0,
+     "inView": 4,
+     "list": 4,
+     "out": 0,
+     "unknown": 0,
+     "total": 4
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 시트: 손잡이(44px)로 엿보기 → 절반 → 전체 → 엿보기, 화면 아래에 붙음",
+   "pass": true,
+   "detail": {
+    "peek": {
+     "h": 56,
+     "expanded": "false",
+     "bottom": 0
+    },
+    "half": {
+     "h": 400,
+     "expanded": "true",
+     "bottom": 0
+    },
+    "full": {
+     "h": 680,
+     "expanded": "true",
+     "bottom": 0
+    },
+    "back": {
+     "h": 56,
+     "expanded": "false",
+     "bottom": 0
+    },
+    "handle": {
+     "x": 1,
+     "y": 745,
+     "width": 388,
+     "height": 56
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 시트: 위치 미확인 목록을 열면 시트가 절반으로 올라옴",
+   "pass": true,
+   "detail": {
+    "opened": {
+     "h": 400,
+     "expanded": "true",
+     "bottom": 0
+    },
+    "half": {
+     "h": 400,
+     "expanded": "true",
+     "bottom": 0
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "숙소 표지에 Tab으로 가서 Enter로 열 수 있음(미리보기)",
+   "pass": true,
+   "detail": {
+    "reachable": 1,
+    "before": {
+     "preview": false,
+     "zoom": 6,
+     "list": "이 화면 21곳"
+    },
+    "after": {
+     "preview": true,
+     "zoom": 6,
+     "list": "이 화면 21곳"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "묶음 표지에 Tab으로 가서 Enter로 열 수 있음(확대 또는 묶음 목록)",
+   "pass": true,
+   "detail": {
+    "reachable": 1,
+    "before": {
+     "preview": false,
+     "zoom": 4,
+     "list": "이 화면 60곳"
+    },
+    "after": {
+     "preview": false,
+     "zoom": 6,
+     "list": "이 화면 25곳"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "전국: 확대 단계마다 표지+묶음 합 = 이 화면 = 목록 = 스냅숏의 화면 안 수, 가려진 표지 0, 화면 안+밖+미확인 = 결과 1655곳",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 5,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 1",
+      "zoom": 6,
+      "expected": 33,
+      "shown": 33,
+      "hidden": 0,
+      "inView": 33,
+      "list": 33,
+      "out": 27,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 2",
+      "zoom": 7,
+      "expected": 11,
+      "shown": 11,
+      "hidden": 0,
+      "inView": 11,
+      "list": 11,
+      "out": 49,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "확대 3",
+      "zoom": 8,
+      "expected": 8,
+      "shown": 8,
+      "hidden": 0,
+      "inView": 8,
+      "list": 8,
+      "out": 52,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 1",
+      "zoom": 7,
+      "expected": 11,
+      "shown": 11,
+      "hidden": 0,
+      "inView": 11,
+      "list": 11,
+      "out": 49,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 2",
+      "zoom": 6,
+      "expected": 33,
+      "shown": 33,
+      "hidden": 0,
+      "inView": 33,
+      "list": 33,
+      "out": 27,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 3",
+      "zoom": 5,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 4",
+      "zoom": 4,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "축소 5",
+      "zoom": 3,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     },
+     {
+      "step": "묶음 누름",
+      "zoom": 5,
+      "expected": 60,
+      "shown": 60,
+      "hidden": 0,
+      "inView": 60,
+      "list": 60,
+      "out": 0,
+      "unknown": 1595,
+      "total": 1655
+     }
+    ],
+    "bad": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "전국: 위치 미확인 목록 수 = 결과 중 위치 없는 숙소 1595곳",
+   "pass": true,
+   "detail": {
+    "list": 1595,
+    "expected": 1595
+   }
+  },
+  {
+   "width": 1280,
+   "name": "전국: 묶음(31곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림",
+   "pass": true,
+   "detail": {
+    "count": 31,
+    "zoomed": true,
+    "listed": "이 화면 60곳",
+    "after": {
+     "step": "묶음 누름",
+     "zoom": 5,
+     "expected": 60,
+     "shown": 60,
+     "hidden": 0,
+     "inView": 60,
+     "list": 60,
+     "out": 0,
+     "unknown": 1595,
+     "total": 1655
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "이름 검색: 확대 단계마다 표지+묶음 합 = 이 화면 = 목록 = 스냅숏의 화면 안 수, 가려진 표지 0, 화면 안+밖+미확인 = 결과 4곳",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 12,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 1",
+      "zoom": 13,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 2",
+      "zoom": 14,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "확대 3",
+      "zoom": 15,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 1",
+      "zoom": 14,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 2",
+      "zoom": 13,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 3",
+      "zoom": 12,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 4",
+      "zoom": 11,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "축소 5",
+      "zoom": 10,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     },
+     {
+      "step": "묶음 누름",
+      "zoom": 16,
+      "expected": 4,
+      "shown": 4,
+      "hidden": 0,
+      "inView": 4,
+      "list": 4,
+      "out": 0,
+      "unknown": 0,
+      "total": 4
+     }
+    ],
+    "bad": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "이름 검색: 묶음(4곳)을 누르면 확대되고 합이 그대로 맞거나, 같은 수의 목록이 열림",
+   "pass": true,
+   "detail": {
+    "count": 4,
+    "zoomed": true,
+    "listed": "이 화면 4곳",
+    "after": {
+     "step": "묶음 누름",
+     "zoom": 16,
+     "expected": 4,
+     "shown": 4,
+     "hidden": 0,
+     "inView": 4,
+     "list": 4,
+     "out": 0,
+     "unknown": 0,
+     "total": 4
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도 크게: 목록 대신 넓은 지도, 옆에 이 화면 목록, 표지+묶음 합 = 이 화면 = 목록",
+   "pass": true,
+   "detail": {
+    "layout": {
+     "map": 616,
+     "list": 16,
+     "results": "none",
+     "pressed": "지도 크게"
+    },
+    "inView": 60,
+    "list": 60,
+    "markers": [
+     "20곳",
+     "15곳",
+     "8곳",
+     "8곳",
+     "4곳",
+     "3곳",
+     "2곳"
+    ],
+    "shown": 60
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도 안내: 대략 위치가 있으면 예약 사이트 위치와 대략 위치(점선)를 함께 씀을 알림",
+   "pass": true,
+   "detail": {
+    "note": "예약 사이트 위치와 주소로 찾은 대략 위치(점선) · 상세에서 출처 확인",
+    "approximate": true
+   }
+  },
+  {
+   "width": 1280,
+   "name": "이 지역에서 검색을 누르면 열려 있던 위치 미확인 목록이 닫히고, 돌아오면 이 화면 목록",
+   "pass": true,
+   "detail": {
+    "opened": true,
+    "bbox": "129.02344,20.83828,149.76563,47.84266",
+    "lists": 0,
+    "back": "이 화면 60곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "숙소 표지에 Tab으로 가서 Enter로 열 수 있음(미리보기)",
+   "pass": true,
+   "detail": {
+    "reachable": 1,
+    "before": {
+     "preview": false,
+     "zoom": 6,
+     "list": "이 화면 33곳"
+    },
+    "after": {
+     "preview": true,
+     "zoom": 6,
+     "list": "이 화면 33곳"
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "묶음 표지에 Tab으로 가서 Enter로 열 수 있음(확대 또는 묶음 목록)",
+   "pass": true,
+   "detail": {
+    "reachable": 1,
+    "before": {
+     "preview": false,
+     "zoom": 5,
+     "list": "이 화면 60곳"
+    },
+    "after": {
+     "preview": false,
+     "zoom": 7,
+     "list": "이 화면 21곳"
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "대략 위치(geo.json) 실패: 출처 좌표만 쓰고 나머지는 위치 미확인으로 셈, 합은 결과 수",
+   "pass": true,
+   "detail": {
+    "failed": {
+     "cov": "이 화면 57곳 화면 밖 0곳 위치 미확인 1,598곳 목록 검색 결과 1,655곳 대략 위치를 불러오지 못해 출처 좌표만 표시합니다. 대략 위치 다시 불러오기",
+     "inView": 57,
+     "out": 0,
+     "unknown": 1598,
+     "total": 1655
+    },
+    "expectedUnknown": 1598
+   }
+  },
+  {
+   "width": 1280,
+   "name": "대략 위치 다시 불러오기: 실패 안내가 사라지고 위치 미확인이 줄어듦, 합은 결과 수",
+   "pass": true,
+   "detail": {
+    "retried": {
+     "cov": "이 화면 60곳 화면 밖 0곳 위치 미확인 1,595곳 목록 검색 결과 1,655곳",
+     "inView": 60,
+     "out": 0,
+     "unknown": 1595,
+     "total": 1655
+    },
+    "expectedUnknown": 1595
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

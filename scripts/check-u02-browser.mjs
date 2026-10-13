@@ -150,44 +150,46 @@ async function run(page){
  check('상세가 404면 안내 후 시트를 닫고 스냅숏 목록을 다시 확인',await page.locator('.toast-message',{hasText:'숙소를 찾을 수 없습니다.'}).count()>0&&manifests===1&&await page.locator('.hotel-list .card-title').count()>0&&!new URL(page.url()).hash.startsWith('#stay/'),{manifests,url:page.url()});
  page.off('request',countManifest);await page.unroute(detailApi);
 
- // Map view on a phone: the caption explains the gap between the result and the markers.
- // The unfiltered list has enough pages for loading, failure and retry.
+ // Map view on a phone (U05, which replaced the loaded-pages map of PR #13): the whole result
+ // is on the map, and the line above it says how many stays are in view, outside it and
+ // without a point; they add up to the result. Stays without a point open as a list.
  await page.goto(base+'/',{waitUntil:'networkidle'});
- const all=await api('');
+ const all=await api(''),order=search.order(''),core=search.snapshot.core,geo=search.geo;
+ const point=i=>core.lat[i]!==null&&core.lng[i]!==null||!!geo&&(geo.grade[i]??0)>0&&geo.lat[i]!==null;
+ const noPoint=order.filter(i=>!point(i)).length;
  await page.locator('.mobile-map-toggle').tap();
  await coverage.waitFor();
- const firstPage=all.hotels,shown=firstPage.filter(located).length;
+ await page.waitForFunction(()=>document.querySelector('.map-canvas')?.dataset.view,null,{timeout:10000}).catch(()=>{});
  const coverageText=async()=>(await coverage.innerText()).replace(/\s+/g,' ');
  let text=await coverageText();
- check('지도 화면에 결과 전체 수·지도 표시 수·위치 미확인·미로딩 수 표시',shown<all.total&&text.includes(`검색 결과 ${count(all.total)} 중 지도에 ${count(shown)} 표시`)&&text.includes(`위치 미확인 ${count(firstPage.length-shown)}`)&&text.includes(`아직 불러오지 않음 ${count(all.total-firstPage.length)}`),{text,total:all.total,shown,loaded:firstPage.length});
- const caption=await page.locator('.map-caption').innerText();
- check('지도 표시 수와 지도 캡션의 수가 같음',caption.replace(/\s+/g,' ').includes(`지도 표시 ${count(shown)}`),{caption});
- const more=coverage.getByRole('button');
+ const pick=re=>{const m=text.match(re);return m?Number(m[1].replace(/,/g,'')):NaN};
+ const inViewCount=pick(/이 화면 ([\d,]+)곳/),out=pick(/화면 밖 ([\d,]+)곳/),unknown=pick(/위치 미확인 ([\d,]+)곳/);
+ check('지도 화면에 결과 전체 수·이 화면·화면 밖·위치 미확인 수 표시(합 = 결과 수)',order.length===all.total&&text.includes(`검색 결과 ${count(all.total)}`)&&unknown===noPoint&&inViewCount+out+unknown===all.total,{text,total:all.total,noPoint});
+ const listHead=(await page.locator('.map-stay-list h3').innerText()).replace(/\s+/g,' ');
+ check('이 화면 수와 지도 옆 목록 머리의 수가 같음',listHead.includes(`이 화면 ${count(inViewCount)}`),{listHead,inViewCount});
+ const more=coverage.getByRole('button',{name:/위치 미확인/});
  // Opening the map puts its counts and button at the top, clear of the floating list button.
  const initial={box:await box(more),reachable:await fullyReachable(more)};
- check('‘지도 보기’ 버튼으로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',inView(initial.box)&&initial.reachable,{initiallyCovered:!initial.reachable,button:initial.box});
+ check('‘지도 보기’ 버튼으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음',inView(initial.box)&&initial.reachable,{initiallyCovered:!initial.reachable,button:initial.box});
  await more.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));
- check('지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 더 불러오기 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more)});
+ check('지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 위치 미확인 목록 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상',await overflow()<=0&&inView(await box(more))&&await fullyReachable(more)&&(await box(more)).height>=44,{overflow:await overflow(),button:await box(more)});
  await shot('map');
 
- // Touch: the next page comes from the loaded snapshot at once, without a request.
+ // Touch: the list opens at once, without a request, with that many stays.
  const sent=workerLists.length;
- await more.tap();
- const second=await api('page=2');
- text=await coverageText();
- const loadedTwo=firstPage.length+second.hotels.length,shownTwo=shown+second.hotels.filter(located).length;
- check('터치로 다음 페이지를 불러오면 요청 없이 지도 표시 수와 미로딩 수가 바뀜',workerLists.length===sent&&text.includes(`지도에 ${count(shownTwo)} 표시`)&&text.includes(`불러온 ${count(loadedTwo)} 중`)&&(all.total>loadedTwo?text.includes(`아직 불러오지 않음 ${count(all.total-loadedTwo)}`):!text.includes('아직 불러오지 않음')),{text});
+ await more.tap();await page.waitForTimeout(300);
+ let head=(await page.locator('.map-stay-list h3').innerText()).replace(/\s+/g,' ');
+ check('터치로 위치 미확인 목록을 열면 요청 없이 그 수의 목록',workerLists.length===sent&&head.includes('위치 미확인')&&head.includes(count(unknown)),{head,requests:workerLists.slice(sent)});
+ await page.locator('.map-stay-list-back').tap();await page.waitForTimeout(200);
 
- // Keyboard: Tab reaches the button; Space loads the next page.
- if(all.total>loadedTwo){
-  await page.evaluate(()=>{document.activeElement?.blur();window.scrollTo({top:0,behavior:'instant'})});
-  let tabs=0;for(;tabs<120&&!(await more.evaluate(e=>e===document.activeElement));tabs++)await page.keyboard.press('Tab');
-  check('Tab으로 더 불러오기 버튼에 도달',tabs<120,{tabs});
-  await page.keyboard.press('Space');
-  await page.waitForTimeout(200);
-  text=await coverageText();
-  check('Space로 다음 페이지를 불러옴',text.includes(`불러온 ${count(Math.min(all.total,loadedTwo+40))} 중`),{text});
- }else check('세 번째 페이지 없음: 키보드 검사를 위한 결과가 부족함',false,{total:all.total});
+ // Keyboard: Tab reaches the button; Space opens the list.
+ await page.evaluate(()=>{document.activeElement?.blur();window.scrollTo({top:0,behavior:'instant'})});
+ let tabs=0;for(;tabs<120&&!(await more.evaluate(e=>e===document.activeElement));tabs++)await page.keyboard.press('Tab');
+ check('Tab으로 위치 미확인 목록 버튼에 도달',tabs<120,{tabs});
+ await page.keyboard.press('Space');await page.waitForTimeout(200);
+ head=(await page.locator('.map-stay-list h3').innerText()).replace(/\s+/g,' ');
+ check('Space로 위치 미확인 목록을 엶',head.includes('위치 미확인')&&head.includes(count(unknown)),{head});
+ await page.locator('.map-stay-list-back').tap();
 
  // A later page cannot come back empty or fail any more: pages are slices of
  // the loaded snapshot (P03), so the former shortened-list notice is gone.
@@ -195,15 +197,15 @@ async function run(page){
  // The other two ways into the phone map: an address with view=map, and a card's map button.
  const firstView=async name=>{
   await coverage.waitFor();await page.waitForTimeout(400);
-  const button=coverage.getByRole('button'),b=await box(button);
+  const button=coverage.getByRole('button',{name:/위치 미확인/}),b=await box(button);
   check(name,inView(b)&&await fullyReachable(button),{button:b});
  };
  await page.goto(base+'/?view=map',{waitUntil:'networkidle'});
- await firstView('주소의 view=map으로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
+ await firstView('주소의 view=map으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
  await page.goto(base+'/',{waitUntil:'networkidle'});
  // A card below the first screen: the page is already scrolled when the map opens.
  await page.locator('.card-bottom button',{hasText:'지도에서 보기'}).nth(2).tap();
- await firstView('카드의 ‘지도에서 보기’로 연 처음 위치에서 더 불러오기 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
+ await firstView('카드의 ‘지도에서 보기’로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
 }
 
 const chromiumVersion=browser.version();

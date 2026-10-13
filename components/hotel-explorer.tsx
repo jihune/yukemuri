@@ -19,6 +19,10 @@ import {parseHotelQuery,listingUrl} from '@/lib/hotel-query';
 import {DEFAULT_BOOKING,parseBookingQuery,type BookingQuery} from '@/lib/booking-query';
 import { apiJson, ApiError } from '@/lib/api-client';
 import HotelAutocomplete from './hotel-autocomplete';
+import MapStayList,{scoreLabel} from './map-stay-list';
+import {useResultMap} from './use-result-map';
+import type {ViewGroups} from '@/lib/map-groups';
+import type {GeoColumns} from '@/lib/static-search';
 import HotelCard from './hotel-card';
 import CollectionStatusPanel from './collection-status-panel';
 import HotelComparison from './hotel-comparison';
@@ -64,10 +68,11 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  function setFilters(value:HotelFilters|((previous:HotelFilters)=>HotelFilters)){setFilterState(value)}
 
  const [favorites,setFavorites]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
- const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady,!!favoritesError,firstPage);
+ const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore,order}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady,!!favoritesError,firstPage);
  // The saved list cannot be shown without the favourites: the error banner and its retry say so.
  const favoritesBlocked=savedOnly&&!favoritesReady&&!!favoritesError;
- const mapArea=useMapArea(snap,filters,savedOnly,favorites),[areaHotel,setAreaHotel]=useState<HotelSummary|null>(null);
+ const geoRef=useRef<GeoColumns|null>(null);
+ const mapArea=useMapArea(snap,filters,savedOnly,favorites,geoRef),[areaHotel,setAreaHotel]=useState<HotelSummary|null>(null);
  // Suggestions read the name-search part of the snapshot; fetch it once typing starts.
  useEffect(()=>{if(draft.trim())snap.wantText()},[draft,snap.wantText]);
  const results=response.hotels,alternatives=response.alternatives??[];
@@ -76,6 +81,21 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const ratingFor=(h:HotelSummary)=>providerRating(h,filters.ratingProvider)??displayRating(h);
  const [mode,setMode]=useState('split'),[activeId,setActiveId]=useState<string|null>(null),[detailId,setDetailId]=useState<string|null>(null),[mapFocusId,setMapFocusId]=useState<string|null>(null),[filterOpen,setFilterOpen]=useState(false),[toast,setToast]=useState('');
  const [isMobile,setIsMobile]=useState(false);
+ // U05 map mode: the whole result is on the map (or counted as location unknown), never only
+ // the loaded pages; with no match, the alternatives are. The list beside the map shows the
+ // stays in view, a group's stays, or the stays without a point.
+ const altRows=useMemo(()=>{const s=snap.snapshot;return s&&order&&order.length===0&&alternatives.length?alternatives.map(a=>s.position.get(a.hotel.id)).filter((i):i is number=>i!==undefined):null},[snap.snapshot,order,alternatives]);
+ const resultMap=useResultMap(snap,altRows??order,!isMobile||mode==='map');
+ geoRef.current=resultMap.geo;
+ const [mapView,setMapView]=useState<ViewGroups|null>(null),[mapList,setMapList]=useState<{title:string;rows:number[]}|null>(null);
+ const mapResult=useMemo(()=>{const s=snap.snapshot;if(!s||!resultMap.positions)return null;return{positions:resultMap.positions,rowOf:(id:string)=>s.position.get(id),stay:(row:number)=>{const h=s.cards[row];return{id:h.id,label:scoreLabel(h,filters.ratingProvider)??'숙소',title:h.names.ko}}}},[snap.snapshot,resultMap.positions,filters.ratingProvider]);
+ // New conditions start from the stays in view again.
+ useEffect(()=>{setMapList(null)},[resultMap.positions]);
+ const view=mapArea.area||!mapResult?null:mapView;
+ // An area search replaces the markers; a group or location-unknown list of the result closes.
+ const [listArea,setListArea]=useState(mapArea.area);
+ if(listArea!==mapArea.area){setListArea(mapArea.area);if(mapArea.area)setMapList(null)}
+ const listRows=mapArea.area?null:mapList?.rows??view?.inView??null,listStays=listRows&&snap.snapshot?listRows.map(r=>snap.snapshot!.cards[r]):null;
  // However the phone map opens (its button, a card, view=map in the address), put the map
  // column with its counts and load-more button at the top, clear of the floating list button.
  // Once more when the first snapshot arrives: the summary above the map grows then.
@@ -116,7 +136,13 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // A stay opened from a map-bounds point stays only while that point is in the current area result
  // (new conditions clear or redo the area search).
  const areaIds=mapArea.area?.data.points;
- useEffect(()=>{if(areaHotel&&!areaIds?.some(p=>p.id===areaHotel.id))setAreaHotel(null)},[areaIds,areaHotel]);
+ // In map mode a stay of the current result (on the map or without a point) stays too.
+ useEffect(()=>{
+  if(!areaHotel||areaIds?.some(p=>p.id===areaHotel.id))return;
+  const at=snap.snapshot?.position.get(areaHotel.id),p=resultMap.positions;
+  if(at!==undefined&&p&&(p.rows.includes(at)||p.unknown.includes(at)))return;
+  setAreaHotel(null);
+ },[areaIds,areaHotel,resultMap.positions,snap.snapshot]);
  // A pinned stay that leaves the results (a filter, the saved view) is no longer pinned or previewed.
  useEffect(()=>{const id=pinnedId.current;if(id&&!displayHotels.some(h=>h.id===id)&&areaHotel?.id!==id){pinnedId.current=null;setActiveId(current=>current===id?null:current)}},[displayHotels,areaHotel]);
  const hoverCard=(id:string|null)=>setActiveId(id??pinnedId.current);
@@ -236,12 +262,21 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
    <div ref={listEnd} className="catalog-sentinel" aria-hidden="true"/>
    {!loading&&hasMore&&<div className="catalog-load-more" role="status"><button onClick={loadMore}>숙소 더 불러오기</button></div>}
    {!loading&&!searchError&&alternatives.length>0&&<section className="alternative-results" aria-label="조건을 일부 바꾼 추천 숙소"><div className="alternative-heading"><span>다른 후보</span><h3>조건을 일부 바꾸면 찾을 수 있는 숙소</h3><p>{filters.query&&!alternatives.some(a=>a.queryMatched)?'검색어에 해당하는 숙소는 확인하지 못했습니다. 선택한 지역·시설 조건과 가까운 후보를 보여드립니다.':'이름·지역·시설의 관련성이 높은 후보입니다. 선택한 조건을 모두 충족하는 결과는 아닙니다.'} 각 숙소에서 맞지 않거나 확인되지 않은 조건을 확인하세요.</p></div><div className="hotel-list">{alternatives.map(a=>renderCard(a.hotel,a.unmetConditions))}</div></section>}
-   {!loading&&!searchError&&!favoritesBlocked&&<p className="list-end">{results.length.toLocaleString()} / {response.total.toLocaleString()}곳 불러옴{!hasMore&&results.length>0?' · 목록 끝':''}<br/>지도에는 불러온 숙소 중 위치가 확인된 항목을 표시합니다. 같은 숙소가 예약 사이트별로 표시될 수 있습니다.</p>}
+   {!loading&&!searchError&&!favoritesBlocked&&<p className="list-end">{results.length.toLocaleString()} / {response.total.toLocaleString()}곳 불러옴{!hasMore&&results.length>0?' · 목록 끝':''}<br/>{mapResult?'지도에는 검색 결과 전체를 표시하고, 위치를 확인하지 못한 숙소는 ‘위치 미확인’으로 따로 셉니다.':'지도에는 불러온 숙소 중 위치가 확인된 항목을 표시합니다.'} 같은 숙소가 예약 사이트별로 표시될 수 있습니다.</p>}
   </section>
-  <aside className="map-column" aria-label="지도와 숙소"><div className="map-sticky">{!loading&&!searchError&&!favoritesBlocked&&<div className="map-coverage" role="status" data-bbox={mapArea.area?.bbox}>{mapArea.error?<><span role="alert">{mapArea.error}</span><button onClick={mapArea.retry}>다시 검색</button><button onClick={mapArea.clear}>불러온 목록 위치로 돌아가기</button></>:mapArea.area?<><span>이 지역 <b>{mapArea.area.data.inBounds.toLocaleString()}곳</b></span><span>범위 밖 {mapArea.area.data.outOfBounds.toLocaleString()}곳</span><span>위치 미확인 {mapArea.area.data.withoutCoordinates.toLocaleString()}곳</span><span>조건에 맞는 전체 {mapArea.area.data.total.toLocaleString()}곳</span>{mapArea.area.data.cells.length>0&&<span>숙소가 {mapArea.area.data.limit.toLocaleString()}곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다.</span>}<button onClick={mapArea.clear}>불러온 목록 위치로 돌아가기</button></>:results.length===0?<span>{alternatives.length?`조건을 모두 충족한 숙소가 없어 다른 후보 ${displayHotels.filter(hasCoordinates).length}곳의 위치를 표시합니다.`:'지도에 표시할 숙소가 없습니다.'}</span>:located===response.total?<span>검색 결과 <b>{response.total.toLocaleString()}곳</b>을 모두 지도에 표시합니다.</span>:<><span>검색 결과 <b>{response.total.toLocaleString()}곳</b> 중 지도에 <b>{located.toLocaleString()}곳</b> 표시</span><span>불러온 {results.length.toLocaleString()}곳 중 위치 미확인 {(results.length-located).toLocaleString()}곳</span>{notLoaded>0&&<span>아직 불러오지 않음 {notLoaded.toLocaleString()}곳</span>}{hasMore&&<button onClick={loadMore}>{`${Math.min(response.pageSize,notLoaded)}곳 더 불러와 지도에 표시`}</button>}</>}</div>}<div className="map-heading"><span><Map size={17}/> 지도로 둘러보기</span><div className="view-switch" role="group" aria-label="보기 방식">{([['split','목록 + 지도'],['list','목록만']] as const).map(([value,label])=><button key={value} type="button" aria-pressed={(mode==='list'?'list':'split')===value} onClick={()=>setMode(value)}>{label}</button>)}</div></div><div className="map-frame">{(!isMobile||mode==='map')&&<StayMap hotels={displayHotels} activeId={activeId} onSelect={selectOnMap} focusId={mapFocusId} points={mapArea.area?mapArea.area.data.points:null} cells={mapArea.area?.data.cells} onSearchArea={mapArea.search} areaBusy={mapArea.busy} areaFailed={!!mapArea.error}/>}{active&&<div className="map-preview"><RetryImage src={active.image.url} alternatives={active.image.alternatives} alt={active.image.alt}/><div><small>{active.location.label}</small><button ref={previewName} onClick={()=>openDetail(active.id)}>{active.names.ko}</button><span><b>{ratingFor(active)?.score.toFixed(1)??'미확인'}</b> · {ratingFor(active)?.provider==='jalan'?'Jalan /5':'Trip.com /10'} · 리뷰 {ratingFor(active)?.reviewCount??'미확인'}개</span></div><button className="icon-button" aria-label="지도 숙소 선택 해제" onClick={closePreview}><X size={17}/></button></div>}</div><div className="map-tip"><span className="map-dot">9.0</span><p>평점은 각 예약 사이트의 원래 척도입니다. 겹친 숫자를 눌러 확대하세요.</p></div></div></aside>
+  <aside className="map-column" aria-label="지도와 숙소"><div className="map-sticky">{!loading&&!searchError&&!favoritesBlocked&&<div className="map-coverage" role="status" data-bbox={mapArea.area?.bbox}>{mapArea.error?<><span role="alert">{mapArea.error}</span><button onClick={mapArea.retry}>다시 검색</button><button onClick={mapArea.clear}>검색 결과 지도로 돌아가기</button></>:mapArea.area?<><span>이 지역 <b>{mapArea.area.data.inBounds.toLocaleString()}곳</b></span><span>범위 밖 {mapArea.area.data.outOfBounds.toLocaleString()}곳</span><span>위치 미확인 {mapArea.area.data.withoutCoordinates.toLocaleString()}곳</span><span>조건에 맞는 전체 {mapArea.area.data.total.toLocaleString()}곳</span>{mapArea.area.data.cells.length>0&&<span>숙소가 {mapArea.area.data.limit.toLocaleString()}곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다.</span>}<button onClick={mapArea.clear}>검색 결과 지도로 돌아가기</button></>:view?<>
+<span>이 화면 <b>{view.inView.length.toLocaleString()}곳</b></span>
+<span>화면 밖 {view.outOfView.toLocaleString()}곳</span>
+{view.unknown>0?<button onClick={()=>setMapList({title:'위치 미확인',rows:resultMap.positions?.unknown??[]})}>위치 미확인 {view.unknown.toLocaleString()}곳 목록</button>:<span>위치 미확인 0곳</span>}
+<span>{results.length===0&&alternatives.length?'다른 후보':'검색 결과'} {view.total.toLocaleString()}곳</span>
+{resultMap.geoLoading&&<span>대략 위치를 불러오는 중…</span>}
+{resultMap.geoFailed&&<><span>대략 위치를 불러오지 못해 출처 좌표만 표시합니다.</span><button onClick={resultMap.retryGeo}>대략 위치 다시 불러오기</button></>}
+</>:results.length===0?<span>{alternatives.length?`조건을 모두 충족한 숙소가 없어 다른 후보 ${displayHotels.filter(hasCoordinates).length}곳의 위치를 표시합니다.`:'지도에 표시할 숙소가 없습니다.'}</span>:located===response.total?<span>검색 결과 <b>{response.total.toLocaleString()}곳</b>을 모두 지도에 표시합니다.</span>:<><span>검색 결과 <b>{response.total.toLocaleString()}곳</b> 중 지도에 <b>{located.toLocaleString()}곳</b> 표시</span><span>불러온 {results.length.toLocaleString()}곳 중 위치 미확인 {(results.length-located).toLocaleString()}곳</span>{notLoaded>0&&<span>아직 불러오지 않음 {notLoaded.toLocaleString()}곳</span>}{hasMore&&<button onClick={loadMore}>{`${Math.min(response.pageSize,notLoaded)}곳 더 불러와 지도에 표시`}</button>}</>}</div>}<div className="map-heading"><span><Map size={17}/> 지도로 둘러보기</span><div className="view-switch" role="group" aria-label="보기 방식">{([['split','목록 + 지도'],['map','지도 크게'],['list','목록만']] as const).map(([value,label])=><button key={value} type="button" aria-pressed={(mode==='list'||mode==='map'?mode:'split')===value} onClick={()=>setMode(value)}>{label}</button>)}</div></div><div className="map-frame">{(!isMobile||mode==='map')&&<StayMap hotels={displayHotels} activeId={activeId} onSelect={selectOnMap} focusId={mapFocusId} points={mapArea.area?mapArea.area.data.points:null} cells={mapArea.area?.data.cells} onSearchArea={mapArea.search} areaBusy={mapArea.busy} areaFailed={!!mapArea.error} result={mapArea.area?null:mapResult} onView={setMapView} onOpenGroup={rows=>setMapList({title:'이 묶음',rows})}/>}{active&&<div className="map-preview"><RetryImage src={active.image.url} alternatives={active.image.alternatives} alt={active.image.alt}/><div><small>{active.location.label}</small><button ref={previewName} onClick={()=>openDetail(active.id)}>{active.names.ko}</button><span><b>{ratingFor(active)?.score.toFixed(1)??'미확인'}</b> · {ratingFor(active)?.provider==='jalan'?'Jalan /5':'Trip.com /10'} · 리뷰 {ratingFor(active)?.reviewCount??'미확인'}개</span></div><button className="icon-button" aria-label="지도 숙소 선택 해제" onClick={closePreview}><X size={17}/></button></div>}</div><div className="map-tip"><span className="map-dot">9.0</span><p>{mapResult?'표지 숫자는 Trip.com 10점, ‘4.6/5’처럼 /5가 붙으면 Jalan 5점입니다. 점선 표지는 주소로 찾은 대략 위치입니다. ‘N곳’ 묶음을 누르면 확대하고, 한 곳에 겹친 숙소는 목록으로 엽니다.':'평점은 각 예약 사이트의 원래 척도입니다. 겹친 숫자를 눌러 확대하세요.'}</p></div>
+{listStays&&<MapStayList sheet={isMobile&&mode==='map'} title={mapList?.title??'이 화면'} stays={listStays} provider={filters.ratingProvider} activeId={activeId} onBack={mapList?()=>setMapList(null):undefined} empty={mapList?'숙소가 없습니다.':'지도를 옮기거나 축소하면 이 화면의 숙소가 여기에 나옵니다.'} onSelect={id=>{const at=snap.snapshot?.position.get(id);if(at!==undefined&&resultMap.positions?.unknown.includes(at))openDetail(id);else selectOnMap(id)}}/>}
+</div></aside>
   {mode==='list'&&<button className="restore-map" onClick={()=>setMode('split')}><Map size={17}/>지도 함께 보기</button>}
  </main>
- <button className="mobile-map-toggle" onClick={()=>setMode(mode==='map'?'list':'map')}>{mode==='map'?<List size={18}/>:<Map size={18}/>} {mode==='map'?'목록 보기':'지도 보기'}<span>{results.length}</span></button>
+ <button className="mobile-map-toggle" onClick={()=>setMode(mode==='map'?'list':'map')}>{mode==='map'?<List size={18}/>:<Map size={18}/>} {mode==='map'?'목록 보기':'지도 보기'}<span>{response.total.toLocaleString()}</span></button>
  <Sheet open={filterOpen} onOpenChange={setFilterOpen}><SheetContent side="left" showCloseButton={false} className="mobile-filter-sheet !w-[min(92vw,360px)] !max-w-[360px] !gap-0"><div className="mobile-sheet-title"><div><SheetTitle>숙소 필터</SheetTitle><SheetDescription>{favoritesBlocked?'즐겨찾기를 불러오지 못했어요':`조건에 맞는 ${response.total.toLocaleString()}곳`}</SheetDescription></div><SheetClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></SheetClose></div><div className="mobile-sheet-body"><Filters filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></div><SheetClose asChild><button className="apply-filters">{favoritesBlocked?'목록으로 돌아가기':response.total.toLocaleString()+'곳 보기'}</button></SheetClose></SheetContent></Sheet>
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
  <HotelComparison open={comparisonOpen} ids={comparisonIds} onClose={()=>setComparisonOpen(false)} onRemove={id=>setComparisonIds(previous=>previous.filter(item=>item!==id))} onClear={()=>setComparisonIds([])} onRestoreFocus={restoreComparisonFocus} onDetail={openDetail}/>
