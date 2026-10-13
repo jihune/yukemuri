@@ -65,7 +65,15 @@ plaza_raw=(fixtures/'jalan-rooms-greenplaza.html').read_text()
 plaza=jalan_rooms(None,'345284',plaza_raw)
 assert plaza['rooms']=={'total':123,'byType':{'western':31,'japanese':42,'japaneseWestern':38,'other':12},'sourceId':'jalan-345284','verifiedAt':'2026-10-13','note':'자란 객실 수 표: 洋室 31室, 和室 42室, 和洋室 38室, その他 12室, 総部屋数 123室'},plaza['rooms']
 assert plaza['features']['viewBath']['value'] is True and plaza['features']['viewBath']['scope']=='property'
-assert '展望風呂（条件有り）' in plaza['features']['viewBath']['note'] and plaza['sources'][0]['bathDataVersion']=='v2'
+assert '展望風呂（条件有り）' in plaza['features']['viewBath']['note'] and plaza['sources'][0]['bathDataVersion']=='v3'
+# The room gallery: this property's photos with its own captions, no room type names.
+[plaza_photos]=plaza['roomTypes']
+assert plaza_photos['sourceId']=='jalan-345284' and plaza_photos['verifiedAt']=='2026-10-13' and len(plaza_photos['items'])==1 and plaza_photos['items'][0]['name'] is None
+assert [p['url'].rsplit('/',1)[1] for p in plaza_photos['items'][0]['photos']]==['Y345284AS7.jpg','Y345284AU2.jpg','Y345284AT9.jpg','Y345284AG9.jpg']
+assert plaza_photos['items'][0]['photos'][0]['caption'].startswith('【富士見和洋室】') and plaza_photos['items'][0]['photos'][3]['caption']==''
+# Another property's image or a page without the room section adds no room photo.
+assert len(jalan_rooms(None,'345284',plaza_raw.replace('Y345284/Y345284AS7','Y999999/Y999999AS7'))['roomTypes'][0]['items'][0]['photos'])==3
+assert 'roomTypes' not in jalan_rooms(None,'345284',plaza_raw.replace('部屋・部屋施設','部屋'))
 hanayu=jalan_rooms('jalan-rooms-hanayu.html','321273')
 # The stated total stays although the stated parts add up to 31.
 assert hanayu['rooms']['total']==33 and sum(hanayu['rooms']['byType'].values())==31,hanayu['rooms']
@@ -74,8 +82,16 @@ shinanoki=jalan_rooms('jalan-rooms-shinanoki.html','312415')
 assert shinanoki['rooms']['total']==40 and shinanoki['rooms']['byType']['japanese']==40
 # No view-bath entry on the page (only scenic photo captions): unknown, not none.
 assert shinanoki['features']['viewBath']=={'value':None,'sourceId':'jalan-312415','verifiedAt':None}
+# The new sections leave the existing observation as the parser before D05 made
+# it: the page URL in sources and links, and the same bath facts (the room
+# table's counts once hid the bath table's counts from the 大浴場 caption check).
+for page,ident,known in [(plaza,'345284',{'outdoor':True,'communalOutdoor':True,'viewBath':True}),(hanayu,'321273',{'largeBath':True,'outdoor':True,'communalOutdoor':True,'viewBath':True}),
+                         (shinanoki,'312415',{'largeBath':True,'outdoor':True,'roomOutdoor':True,'communalOutdoor':True})]:
+ assert page['sources'][0]['url']==page['links'][0]['url']=='https://www.jalan.net/yad'+ident+'/',page['sources'][0]['url']
+ assert {k:v['value'] for k,v in page['features'].items() if v['value'] is not None}==known,(ident,page['features'])
 # Pages without the room table have no room count.
 assert 'rooms' not in record and 'rooms' not in soz_record and record['features']['viewBath']['value'] is None
+assert 'roomTypes' not in record and 'roomTypes' not in soz_record
 # Mismatched header and value cells, a non-number or a zero total make no count.
 for broken in [plaza_raw.replace('<th>その他</th>','',1),plaza_raw.replace('123室','多数',1),plaza_raw.replace('123室','0室',1)]:
  assert 'rooms' not in jalan_rooms(None,'345284',broken)
@@ -138,9 +154,13 @@ fujiya_url='https://www.trip.com/hotels/hakone-hotel-detail-704264/fujiya-hotel/
 fujiya=parse_source_page(trip_rooms_raw,'trip',fujiya_url,stamp,kind='detail')[0][0]
 assert fujiya['rooms']=={'total':120,'sourceId':'trip-704264','verifiedAt':stamp[:10],'note':'Trip.com 숙소 정보: 객실 수: 120'},fujiya.get('rooms')
 assert fujiya['features']['viewBath']['value'] is None and 'bathDataVersion' not in fujiya['sources'][0]
+# Room type names in the page's room order, at most three photos each.
+[fujiya_types]=fujiya['roomTypes']
+assert fujiya_types['sourceId']=='trip-704264' and [t['name'] for t in fujiya_types['items']]==['포레스트 윙 코너 트윈룸','욕조가 있는 디럭스, 트윈룸, 산 전망','COMFY LODGE& RESTFUL COTTAGE Building Twin Room','웨스턴스타일 빌딩 스위트'],fujiya_types
+assert all(len(t['photos'])==3 and all(p['url'].startswith('https://aw-d.tripcdn.com/images/') and p['caption']=='' for p in t['photos']) for t in fujiya_types['items'])
 other_hotel=trip_rooms_raw.replace('\\"masterHotelId\\":704264','\\"masterHotelId\\":704265')
-assert other_hotel!=trip_rooms_raw and 'rooms' not in parse_source_page(other_hotel,'trip',fujiya_url,stamp,kind='detail')[0][0]
-assert 'rooms' not in parse_source_page(korean,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/',stamp,kind='detail')[0][0]
+assert other_hotel!=trip_rooms_raw and not {'rooms','roomTypes'}&set(parse_source_page(other_hotel,'trip',fujiya_url,stamp,kind='detail')[0][0])
+assert not {'rooms','roomTypes'}&set(parse_source_page(korean,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/',stamp,kind='detail')[0][0])
 with tempfile.TemporaryDirectory() as folder:
  db=open_db(Path(folder)/'queue.sqlite')
  url='https://www.jalan.net/yad307416/'

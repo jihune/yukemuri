@@ -23,6 +23,10 @@ try{
  const newerCount=counted(jalan,121,'2026-10-07');newerCount.sources[0].retrievedAt='2026-10-07T12:00:00Z';
  assert.equal(composePreferredHotel(counted(jalan,118,'2026-10-05'),[newerCount]).rooms.total,121,'Within one provider the newer room count wins');
  assert.equal('rooms' in composePreferredHotel(trip,[jalan]),false,'No room count stays unknown');
+ // Room photos of every linked source, Trip.com first (the photo order).
+ const shown=(h,name)=>({...structuredClone(h),roomTypes:[{sourceId:h.id,verifiedAt:'2026-10-05',items:[{name,photos:[]}]}]});
+ assert.deepEqual(composePreferredHotel(shown(jalan,null),[shown(trip,'트윈룸')]).roomTypes.map(s=>s.sourceId),[trip.id,jalan.id],'Room photos keep both sources, Trip.com first');
+ assert.equal('roomTypes' in composePreferredHotel(trip,[jalan]),false,'No room photos stay absent');
  const mixed=structuredClone(jalan);mixed.image.alternatives=[trip.image.url];mixed.sources.push(...trip.sources);assert.equal(composePreferredHotel(mixed,[]).image.url,trip.image.url,'Historical Trip alternatives outrank the main Jalan image');
  const placeId='ChIJSourcePolicyOnly123',key='test-key-not-real';let calls=[];
  const detail={id:placeId,rating:4.6,userRatingCount:321,googleMapsUri:'https://maps.google.com/?cid=123',photos:[{name:'places/'+placeId+'/photos/MockPhoto123',googleMapsUri:'https://www.google.com/maps/photo?x=1',authorAttributions:[{displayName:'Test Author',uri:'https://www.google.com/maps/contrib/123',photoUri:'https://lh3.googleusercontent.com/avatar'}]}]};

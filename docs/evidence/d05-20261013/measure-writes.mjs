@@ -1,5 +1,5 @@
 // D05: rows written by one Jalan detail PUT with and without the D05 fields
-// (rooms, features.viewBath, bathDataVersion v2), against the built Worker
+// (rooms, features.viewBath, roomTypes, bathDataVersion v3), against the built Worker
 // (dist/) and a temporary Miniflare D1. Never touches the production database.
 // Run from the repo root after a build: node docs/evidence/d05-20261013/measure-writes.mjs
 import {createRequire} from 'node:module';
@@ -29,7 +29,7 @@ sys.path.insert(0,'scripts/crawler')
 from collect import parse_source_page
 raw=open('scripts/crawler/fixtures/jalan-rooms-greenplaza.html',encoding='utf-8').read().replace('345284',sys.argv[1])
 print(json.dumps(parse_source_page(raw,'jalan','https://www.jalan.net/yad'+sys.argv[1]+'/',sys.argv[2],'pref-kanagawa','detail')[0][0],ensure_ascii=False))`,ident,at],{encoding:'utf8'}));
-const strip=h=>{const o=structuredClone(h);delete o.rooms;delete o.features.viewBath;o.sources[0].bathDataVersion='v1';return o};
+const strip=h=>{const o=structuredClone(h);delete o.rooms;delete o.roomTypes;delete o.features.viewBath;o.sources[0].bathDataVersion='v1';return o};
 try{
  const db=await runtime.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
@@ -42,16 +42,16 @@ try{
  };
  const t1='2026-10-13T12:00:00+00:00',t2='2026-10-13T13:00:00+00:00';
  const full=parse('345284',t1),fullLater=parse('345284',t2),old=strip(parse('345285',t1)),oldLater=strip(parse('345285',t2)),revisit=parse('345285','2026-10-13T14:00:00+00:00');
- assert.equal(full.rooms.total,123);assert.equal(full.features.viewBath.value,true);assert.equal(old.rooms,undefined);
+ assert.equal(full.rooms.total,123);assert.equal(full.features.viewBath.value,true);assert.equal(full.roomTypes[0].items[0].photos.length,4);assert.equal(old.rooms,undefined);assert.equal(old.roomTypes,undefined);
  await put(strip(parse('345286',t1))); // warm-up: the first PUT of an isolate also fills its caches
  const rows=[
-  ['new hotel, parser before D05 (no rooms, no viewBath, v1)',await put(old)],
+  ['new hotel, parser before D05 (no rooms, viewBath or roomTypes, v1)',await put(old)],
   ['new hotel, D05 parser',await put(full)],
   ['update, parser before D05',await put(oldLater)],
   ['update, D05 parser',await put(fullLater)],
   ['revisit: v1 row updated by the D05 parser',await put(revisit)],
  ];
- const detail=(await call('/api/hotels/jalan-345285')).body;assert.equal(detail.rooms.total,123);
+ const detail=(await call('/api/hotels/jalan-345285')).body;assert.equal(detail.rooms.total,123);assert.equal(detail.roomTypes[0].items[0].photos.length,4);
  const bytes=id=>db.prepare('SELECT length(payload) AS n FROM hotels WHERE id=?').bind(id).first();
  console.log(JSON.stringify({measuredAt:new Date().toISOString(),environment:'Miniflare local D1 (not production D1), built dist/',rows:rows.map(([label,m])=>({label,statements:m.statements,rowsRead:m.rowsRead,rowsWritten:m.rowsWritten})),payloadBytes:{d05:(await bytes('jalan-345284')).n,beforeD05Fields:JSON.stringify(strip(full)).length,withD05Fields:JSON.stringify(full).length}},null,1));
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

@@ -831,7 +831,7 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 ### 기준과 상태
 
 - 작업 환경: Claude Code 웹 클라우드. 상위 세션 `session_01KfLU3P8YrmZdyxehAEp9rp`가 맡긴 작업이고, 작성 세션은 `session_01EbPNydUi1HEGqL6GRQxwcD`다. 화면은 U05 하위 세션(`claude/u05-ui`)이 만든다.
-- 브랜치 `claude/d05-rooms`, 기준 main `72f518c`.
+- 브랜치 `claude/d05-rooms`, 기준 main `72f518c`. 12:44Z에 main `fbc5389`(PR #75까지)을 merge했다(인수인계·roadmap 충돌은 양쪽 절을 모두 살려 풀었다).
 - 1단계(조사·설계)를 마쳤고 2단계(구현 PR)를 진행 중이다. 원출처 요청은 Jalan 6회(상세 4쪽, 객실 하위 쪽 1쪽, 404 약관 주소 1회)와 Trip.com 2쪽이다. 수집기 `SourceGuard`로 robots를 확인하고 8초 이상 간격을 두었다. 403·429·봇 확인은 없었다. 운영 사이트는 공개 GET(스냅숏 파일, 상세 API 2건)만 했다.
 - 운영 D1·Secret·수집 주기·상한·간격은 바꾸지 않았다.
 
@@ -841,15 +841,16 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - Trip.com 상세 SSR에 `객실 수: N` 표지와 객실 타입별 이름·사진 목록이 있다. 수집기가 이미 받는 쪽이다.
 - Jalan 약관 第５条·第８条와 Trip.com 약관 3절은 사적 이용 밖 사용을 제한한다(`D05-20261013.md` 3.3절). 사용자는 비상업 사이트라 무관하다고 보고 객실 사진과 객실 타입 이름을 보여 주기로 했다(`roadmap.md` 결정 기록, 2026-10-13T12:2xZ).
 
-### 구현(2단계, 기록 2026-10-13T12:40Z / 21:40 KST)
+### 구현(2단계, 기록 2026-10-13T13:05Z / 22:05 KST)
 
-- 수집기가 Jalan 상세의 객실 수 표(`rooms`)와 `展望風呂`(`features.viewBath`), Trip.com 상세의 `객실 수: N`(`rooms`)을 읽는다. Jalan 상세의 `bathDataVersion`은 `v2`이고, baths 단계가 `v2`가 아닌 Jalan 상세를 다시 고른다. 계약·합성(Jalan → Trip.com)·서버 쪽 숙소 밖 온천 처리를 맞췄다. 상세는 `D05-20261013.md` 7절이다.
-- 컴포넌트와 `FEATURE_GROUPS`는 고치지 않았다. 지금 카드(`hotel-card.tsx`)는 모든 시설 키를 돌기 때문에 ‘전망 욕탕’ 표지가 나온다.
-- 쓰기 측정: 상세 PUT 한 번의 쓰기 행 수는 D05 필드가 있든 없든 같다(새 숙소 24, 갱신 19, Miniflare 임시 D1, 12:34Z). `collection-budget.mjs`는 그대로다.
-- 검사 결과는 `D05-20261013.md` 7.3절에 적는다.
+- 수집기가 Jalan 상세의 객실 수 표(`rooms`), `展望風呂`(`features.viewBath`), 객실 갤러리 사진(`roomTypes`, 이름 없음)을, Trip.com 상세의 `객실 수: N`(`rooms`)과 객실 타입 이름·사진(`roomTypes`, 타입마다 3장)을 읽는다. Jalan 상세의 `bathDataVersion`은 `v3`이고, baths 단계가 `v3`가 아닌 Jalan 상세를 다시 고른다. 계약·합성(객실 수는 Jalan → Trip.com, 객실 사진은 Trip.com → Jalan)·서버 쪽 숙소 밖 온천 처리를 맞췄다. 상세는 `D05-20261013.md` 7절이다.
+- 객실 사진은 처음에 다음 PR로 미루려 했으나, PR을 열기 전에 사용자 결정(보여 줌)을 보고 같은 PR에 넣었다.
+- 컴포넌트와 `FEATURE_GROUPS`는 고치지 않았다. 지금 카드(`hotel-card.tsx`)는 모든 시설 키를 돌기 때문에 ‘전망 욕탕’ 표지가 나온다. 객실 사진은 화면에 아직 나오지 않는다(U05 상세 PR).
+- 쓰기 측정: 상세 PUT 한 번의 쓰기 행 수는 D05 필드가 있든 없든 같다(`D05-20261013.md` 4.4절). `collection-budget.mjs`는 그대로다.
+- 검사 결과는 `D05-20261013.md` 7.3절에 있다.
 
 ### 다음 작업
 
 1. PR을 열고 구독한 뒤 상위 세션에 알린다. CI 통과 뒤 Codex 검토를 요청한다.
-2. 상위 세션에 물은 것: baths `v2`로 재방문해도 되는지, 카드의 ‘전망 욕탕’ 표지를 받아들일지. 답이 없으면 지금 구현대로 둔다.
-3. 객실 사진·객실 타입 이름은 사용자 결정(보여 줌, 출처 표기는 대표 사진과 같은 방식)에 따라 이어지는 PR로 구현한다.
+2. 상위 세션에 물은 것: baths 재방문(이제 `v3`)을 써도 되는지, 카드의 ‘전망 욕탕’ 표지를 받아들일지. 답이 없으면 지금 구현대로 둔다.
+3. U05에 전할 필드: `features.viewBath`, `rooms`, `roomTypes`(형식은 `D05-20261013.md` 4.1절).

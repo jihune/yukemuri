@@ -1,9 +1,9 @@
 {
- "measuredAt": "2026-10-13T12:43:13.916Z",
+ "measuredAt": "2026-10-13T13:18:38.296Z",
  "environment": "Miniflare local D1 (not production D1), built dist/",
  "rows": [
   {
-   "label": "new hotel, parser before D05 (no rooms, no viewBath, v1)",
+   "label": "new hotel, parser before D05 (no rooms, viewBath or roomTypes, v1)",
    "statements": 12,
    "rowsRead": 24,
    "rowsWritten": 24
@@ -34,8 +34,8 @@
   }
  ],
  "payloadBytes": {
-  "d05": 3079,
+  "d05": 3679,
   "beforeD05Fields": 2721,
-  "withD05Fields": 3070
+  "withD05Fields": 3670
  }
 }
