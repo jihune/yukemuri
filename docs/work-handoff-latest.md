@@ -85,7 +85,8 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 인계 뒤 두 하위 세션의 질문에만 답한다. 보관하지 않는다 | 대기 |
 | `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션) | 진행 중 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, 부모는 새 상위 세션) | 진행 중 |
-| `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, 부모는 새 상위 세션) | 진행 중 |
+| `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, PR #76 병합·배포, 부모는 새 상위 세션) | 보관(15:09Z) |
+| `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67~). 부모는 이전 상위 세션이라 새 상위 세션 id로 직접 보낸다 | 진행 중 |
 | `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합, 후속 브랜치 `claude/d06-geo`) | 쉬는 중 |
 | `session_01Y1JhjKANZbPiLfETCBdRns` | P03 정적 스냅숏(PR #43·#44·#45·#52) | 보관 |
@@ -127,6 +128,11 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
   - PR 1(검색 엔진 색인 차단, 자동화 User-Agent 403)은 답을 기다리지 않고 구현한다. 배포 뒤에는 키 없는 `/api/*` 확인에 브라우저 UA가 필요하다(U05·D05에 전함).
 - PR #76(H02 PR 1): 하위 세션의 병합 준비 알림(13:31Z) 뒤 상위 세션이 확인했다. Codex 1회째(`1cf7bbe`) P2 1건(‘`/api/hotels/<id>/google`이 상세 제한 밖’)이 `f41c02b`에서 고쳐져 스레드가 해결됐고, 2회째(`f41c02b`)는 큰 문제 없음이었다. head의 CI·GitGuardian이 통과했고 main `fbc5389`과 충돌이 없었다. 상위 세션이 `lib/edge-guard.ts`에서 크롤 키 요청이 UA 거절·속도 제한보다 먼저 통과하는 것을 읽었다. 13:32Z에 병합했다(`68c54e6`). 배포 결과는 `deployments.md`에 있다. 부수 효과: 메신저 링크 미리보기 봇(이름에 scrap이 든 것 등, 이름은 추정)도 Worker가 답하는 경로에서는 막힌다. 정적 첫 화면은 Worker를 거치지 않아 막히지 않는다.
 - 13:4xZ 무렵 계정 5시간 한도에 닿아 이 세션의 턴이 끊겼고, 15:06Z(초기화 15:00Z 뒤)에 사용자 지시 ‘다시 시도’로 이어 갔다. 그때 5시간 창 0.12, 7일 창 0.41이었다.
+- 15:08Z에 L01 하위 세션(`session_01B1EMNXwBFR86E9fRdWbW1N`)을 열었다. 개발 세션은 운영 유지관리 키를 쓰지 않으므로, 공식 상태는 근거 파일을 PR로 검토받고 병합 뒤 Actions가 적용하는 경로로 설계하게 했다. 운영 쓰기 경로를 새로 여는 설계는 상위 세션 답을 받은 뒤 구현한다. H02는 남은 일이 없어 15:09Z에 보관했다.
+- L01 1단계 조사(하위 세션 메시지 15:18Z, 브랜치 `claude/l01-lifecycle` `fb8cc80`의 `L01-20261013.md`): `update-lifecycle.py`는 workers.dev를 받지만 부르는 workflow가 없다. 운영 스냅숏 13,217곳 가운데 lifecycle 행 없음 10,464, unverified 2,748, 영업 3, 휴관 1, 폐업 1이다. 10-05 Sites 사례 5건은 운영 D1에 근거와 함께 있다. 상위 세션 답(15:2xZ): 근거 파일 `data/lifecycle-official.json`과 새 `lifecycle.yml`(main push·수동 실행만, 기존 Secret을 적용 단계에만, 잠금 `yukemuri-catalog-updates`)을 받아들인다. 병합 한 번에 스냅숏을 두 번 만들지 않게 하고, 적용 뒤 한 번만 배포하게 한다.
+- 하위 세션 PR(16:5xZ까지): L01 PR #79(근거 파일·`lifecycle.yml`), U05 PR #80(2번 지도 모드), D05 PR #77(Codex 3회 끝). #77의 마지막 코드 수정 `cfde6a1`은 Codex가 다시 보지 않아, 상위 세션이 16:31Z에 이어 가는 Claude 검토 세션 `session_01UXw48gT9DkHR9DUymjRM6Z`(한 PR의 4회째)를 열었다.
+- 16:4xZ 멈춤 체크포인트: 사용자 지시 ‘지금 claude 한도 모자르니까 지금 작업중인거 잠깐 중단하거나 마무리하고 다음 작업은 예약 걸어둬’(16:4xZ). 상위 세션은 U05·D05·L01·#77 검토 세션에 정리 뒤 멈추고 20:10Z 재개를 예약하라고 보냈고, 하네스 점검 세션에도 알렸다. 자기 확인 예약은 20:15Z로 옮겼다. 그러나 5시간 창은 16:41Z 0.99, 16:42Z 1.0(거절)이 되어 이 세션의 턴도 기록 커밋 전에 끊겼다. U05(16:5xZ)·D05(17:2xZ)·#77 검토 세션(16:4xZ)도 한도에 걸려 failed로 멈췄다. 진행 중인 배경 작업은 없었고, 이 브랜치의 기록 커밋은 push돼 있었다.
+- 20:17Z 재개(초기화 20:00Z 뒤, 20:15Z 예약): 5시간 창 0.12, 7일 창 0.54. L01은 20:10Z 예약으로 다시 움직이고 있었다. 상위 세션이 U05·D05·#77 검토 세션에 재개를 지시했다. 7일 창은 하루 사이 0.29에서 0.54가 됐다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
