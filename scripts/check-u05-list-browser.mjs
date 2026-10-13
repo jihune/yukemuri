@@ -13,7 +13,7 @@
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-list-browser.mjs [base] [evidence.json]
 import {createRequire} from 'node:module';
-import {writeFileSync} from 'node:fs';
+import {writeFileSync,readFileSync} from 'node:fs';
 import {siteSearch} from './site-search-node.mjs';
 const require=createRequire(new URL('../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
@@ -21,6 +21,9 @@ const [base='http://127.0.0.1:8787',evidence]=process.argv.slice(2);
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const search=await siteSearch(base);
+// The onsen town with the most stays in the served snapshot (a town with none would compare 0 with 0).
+const towns=JSON.parse(readFileSync(new URL('../data/collection-priorities.json',import.meta.url))).towns;
+const town=towns.map(t=>({...t,total:search.list(new URLSearchParams({region:t.prefecture,q:t.query}).toString()).total})).sort((a,b)=>b.total-a.total)[0];
 // The rule, written here apart from lib/bath-columns.ts.
 const COLUMNS=[
  ['천연온천',['natural'],['natural']],
@@ -88,10 +91,10 @@ for(const w of [360,390,1280]){
  // An onsen town from the place picker: its prefecture and its search word.
  await tap(page.getByRole('combobox',{name:'검색 지역 · 온천마을'}));
  const groups=await page.locator('[role=listbox] [role=group]').evaluateAll(list=>list.map(g=>g.querySelector('[data-slot=select-label],div')?.textContent.trim()));
- await tap(page.getByRole('option',{name:'하코네',exact:true}));await page.waitForTimeout(600);
- const town=search.list('region=pref-kanagawa&q=箱根').total,shownTown=Number((await page.locator('.results-header h2 span').innerText()).replace(/[^0-9]/g,''));
+ await tap(page.getByRole('option',{name:town.name,exact:true}));await page.waitForTimeout(600);
+ const shownTown=Number((await page.locator('.results-header h2 span').innerText()).replace(/[^0-9]/g,''));
  const url=new URL(page.url()),picked=await page.getByRole('combobox',{name:'검색 지역 · 온천마을'}).innerText();
- check(`지역 선택의 첫 묶음이 온천마을이고, ‘하코네’를 고르면 가나가와현·箱根 결과 ${town}곳 = 스냅숏 값`,groups[0]==='온천마을'&&url.searchParams.get('region')==='pref-kanagawa'&&url.searchParams.get('q')==='箱根'&&shownTown===town&&picked.includes('하코네')&&lists.length===before,{groups,town,shownTown,url:url.search,picked});
+ check(`지역 선택의 첫 묶음이 온천마을이고, 온천마을 ‘${town.name}’ 선택: ${town.prefecture}·${town.query} 결과 ${town.total}곳 = 스냅숏 값`,groups[0]==='온천마을'&&town.total>0&&url.searchParams.get('region')===town.prefecture&&url.searchParams.get('q')===town.query&&shownTown===town.total&&picked.includes(town.name)&&lists.length===before,{groups,town:town.name,total:town.total,shownTown,url:url.search,picked});
  // The data status moved to the footer.
  const status=await page.evaluate(()=>{const s=document.querySelector('.site-footer .data-status');return{inFooter:!!s,heading:s?.querySelector('h2')?.textContent,refresh:!!s?.querySelector('.result-refresh'),panel:!!s?.querySelector('details,.coverage-panel,.collection-status'),coverage:/도도부현/.test(s?.textContent??''),above:[...document.querySelectorAll('.demo-banner,.onsen-town-nav,.region-nav')].length,beforeList:s?s.getBoundingClientRect().top<document.querySelector('.hotel-list').getBoundingClientRect().top:true}});
  check('자료 현황(집계·수집 현황·최신 자료 확인)은 바닥글에 있고 목록 위에는 없음',status.inFooter&&status.heading==='자료 현황'&&status.refresh&&status.panel&&status.coverage&&status.above===0&&!status.beforeList,status);

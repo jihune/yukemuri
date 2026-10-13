@@ -817,7 +817,9 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hotel-card>.favorite-button{top:10px;right:10px;left:auto;margin:0;color:var(--yk-text-3)}
 .hotel-card>.favorite-button.saved{color:#b4434e}
 .card-location{flex-wrap:wrap;gap:4px 8px;margin-bottom:2px;color:var(--yk-text-3)}
-.card-kind,.card-location .highclass-tag{border:1px solid var(--yk-line);border-radius:4px;padding:0 5px;color:var(--yk-text-2)}
+.card-kind{color:var(--yk-text-2)}
+.card-kind::before{content:'· ';color:var(--yk-text-3)}
+.card-location .highclass-tag{border:1px solid var(--yk-line);border-radius:4px;padding:0 5px;color:var(--yk-text-2)}
 .card-title{width:100%}
 .card-title h3{font-size:var(--yk-fs-lg);line-height:1.4}
 .name-ja{margin-top:0;color:var(--yk-text-3)}
