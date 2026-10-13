@@ -21,12 +21,17 @@ export async function prepareCollectionPriorities(){
   const input=seeds.map(seed=>({...seed,priority:collectionPriority(seed.prefecture,seed.url)}));
   await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at,priority) SELECT json_extract(value,'$.url'),'jalan',json_extract(value,'$.kind'),json_extract(value,'$.prefecture'),'pending',0,0,json_extract(value,'$.priority') FROM json_each(?) WHERE 1 ON CONFLICT(url) DO NOTHING").bind(JSON.stringify(input)).run();
  }
- const rows=await db.prepare(`SELECT j.url,COALESCE(j.prefecture,h.prefecture) AS prefecture,json_extract(h.payload,'$.names') AS names,json_extract(h.payload,'$.location') AS location FROM crawl_jobs j LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='jalan' THEN 'jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) ELSE 'trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) END WHERE j.url>? ORDER BY j.url LIMIT 500`).bind(cursor).all<{url:string;prefecture:string|null;names:string|null;location:string|null}>();
- const changes=rows.results.map(r=>({url:r.url,priority:collectionPriority(r.prefecture,r.url,r.names&&r.location?{names:JSON.parse(r.names),location:JSON.parse(r.location)}:undefined)}));
+ const rows=await db.prepare(`SELECT j.url,j.priority AS current,COALESCE(j.prefecture,h.prefecture) AS prefecture,json_extract(h.payload,'$.names') AS names,json_extract(h.payload,'$.location') AS location FROM crawl_jobs j LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='jalan' THEN 'jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) ELSE 'trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) END WHERE j.url>? ORDER BY j.url LIMIT 500`).bind(cursor).all<{url:string;current:number;prefecture:string|null;names:string|null;location:string|null}>();
+ // Only jobs whose priority changes are written, one statement per new value:
+ // a plan version change rereads every job, and rewriting unchanged rows (with a
+ // per-row lookup into the batch) cost about 127,000 rows read per batch of 500
+ // and 31,000 rows written over a production-size queue (L01, measure-d1-reads.mjs).
+ const changed=new Map<number,string[]>();
+ for(const r of rows.results){const priority=collectionPriority(r.prefecture,r.url,r.names&&r.location?{names:JSON.parse(r.names),location:JSON.parse(r.location)}:undefined);if(priority!==r.current)changed.set(priority,[...changed.get(priority)??[],r.url])}
  const next=rows.results.length<500?'done':rows.results.at(-1)!.url;
- const update=db.prepare("WITH changes AS (SELECT json_extract(value,'$.url') AS url,json_extract(value,'$.priority') AS priority FROM json_each(?)) UPDATE crawl_jobs SET priority=(SELECT priority FROM changes WHERE changes.url=crawl_jobs.url) WHERE url IN (SELECT url FROM changes)").bind(JSON.stringify(changes));
+ const updates=[...changed].map(([priority,urls])=>db.prepare('UPDATE crawl_jobs SET priority=? WHERE url IN (SELECT value FROM json_each(?))').bind(priority,JSON.stringify(urls)));
  const progress=db.prepare("INSERT INTO catalog_meta(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!='done' AND (excluded.value='done' OR catalog_meta.value<excluded.value)").bind(key,next);
- const statements=changes.length?[update]:[];
+ const statements=updates;
  if(next==='done')statements.push(db.prepare("UPDATE crawl_jobs SET next_at=? WHERE status='failed' AND next_at=0").bind(Date.now()/1000));
  statements.push(progress);await db.batch(statements);
  return {done:next==='done',processed:rows.results.length,cursor:next};

@@ -172,12 +172,18 @@ try{
   // settle: the first call after growing also runs the per-row maintenance
   // (place search, collection priorities, external bath scope) over the copied
   // rows; recorded apart, since a loaded database carries those cursors done.
-  for(const [name,keys] of [['settle',[]],['none',[]],...once.map(k=>[k,[k]]),['all',once]]){
+  // priority: the per-row priority pass alone from its start, as after a change of
+  // data/collection-priorities.json's version (its done key is per version), with
+  // 1% of the jobs off their computed priority (the rows a rule change moves).
+  const priority='collection-priority:'+JSON.parse(readFileSync('data/collection-priorities.json','utf8')).version;
+  for(const [name,keys] of [['settle',[]],['none',[]],...once.map(k=>[k,[k]]),['all',once],['priority',[priority]]]){
    const fresh=start();
    try{
     await undo(await fresh.getD1Database('DB'),keys);
+    const moved=name==='priority'?(await (await fresh.getD1Database('DB')).prepare('UPDATE crawl_jobs SET priority=99 WHERE rowid%100=0').run()).meta.changes:undefined;
     const total={calls:0,rowsRead:0,rowsWritten:0,ms:0};
     for(;;){const r=await call(fresh,'/api/crawl-prepare',{method:'POST'});total.calls++;total.rowsRead+=r.meter.rowsRead;total.rowsWritten+=r.meter.rowsWritten;total.ms+=Math.round(r.ms);if(r.body.done)break;assert(total.calls<60,name+': crawl-prepare did not finish')}
+    if(moved!==undefined)total.moved=moved;
     prepare[name]=total;console.log(JSON.stringify({prepare:name,...total}));
    }finally{await fresh.dispose()}
   }

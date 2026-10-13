@@ -259,5 +259,25 @@ try{
  await setReady(0);
  await db.prepare("UPDATE crawl_jobs SET next_at=? WHERE status='retry'").bind(readyAt+3600).run();
  assert.equal((await claimDetail('national')).jobs[0].url,'https://www.jalan.net/yad999160/','Future retries and failed pages leave normal discovery available');
- console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment and protected health.');
+ // A plan version change (data/collection-priorities.json) rereads every job and
+ // writes only the jobs whose priority changes (L01: rewriting every row cost about
+ // 3.9 million rows read at production size). A test-only trigger counts the writes.
+ await db.prepare('CREATE TABLE priority_writes(n INTEGER NOT NULL)').run();await db.prepare('INSERT INTO priority_writes VALUES (0)').run();
+ await db.prepare('CREATE TRIGGER count_priority_writes AFTER UPDATE OF priority ON crawl_jobs BEGIN UPDATE priority_writes SET n=n+1; END').run();
+ const priorityKey='collection-priority:'+JSON.parse(readFileSync('data/collection-priorities.json','utf8')).version;
+ const rerunPriorities=async()=>{
+  await db.prepare('DELETE FROM catalog_meta WHERE key=?').bind(priorityKey).run();await db.prepare('UPDATE priority_writes SET n=0').run();
+  for(let i=0;i<20&&!(await api('/api/crawl-prepare','POST')).done;i++);
+  assert.equal((await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(priorityKey).first())?.value,'done');
+  return (await db.prepare('SELECT n FROM priority_writes').first()).n;
+ };
+ await rerunPriorities();
+ const settled=(await db.prepare('SELECT url,priority FROM crawl_jobs ORDER BY url').all()).results;
+ assert(settled.length>3);
+ assert.equal(await rerunPriorities(),0,'An unchanged plan rereads the jobs without writing them');
+ const moved=settled.slice(0,3);
+ for(const job of moved)await db.prepare('UPDATE crawl_jobs SET priority=99 WHERE url=?').bind(job.url).run();
+ assert.equal(await rerunPriorities(),moved.length,'Only the jobs whose priority changes are written');
+ assert.deepEqual((await db.prepare('SELECT url,priority FROM crawl_jobs ORDER BY url').all()).results,settled,'Every job is back at its computed priority');
+ console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment, protected health and priority writes only where the plan changes them.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
