@@ -6,6 +6,8 @@ export const CORE_FEATURE_LABELS = {
 export const EXTRA_FEATURE_LABELS = {
   communalOutdoor:'공용 대욕장 노천탕', privateOutdoor:'전세·가족 노천탕', roomIndoorOnsen:'객실 실내 온천탕', roomOutdoorOnsen:'객실 노천 온천탕',
   nigori:'니고리유 · 탁한 온천', freeFlow:'카케나가시 · 흘려보내는 온천', jalanHighClass:'자란 하이클래스',
+  // Last, so the search columns' feature bits 0-12 keep their order (D05).
+  viewBath:'전망 욕탕',
 } as const;
 export const FEATURE_LABELS={...CORE_FEATURE_LABELS,...EXTRA_FEATURE_LABELS};
 export const FEATURE_GROUPS=[
@@ -29,8 +31,10 @@ export const REGIONS = [
   {id:'akan',name:'아칸호',ja:'阿寒湖',en:'Lake Akan'},
 ] as const;
 export type RegionId = string;
-export type Provenance = { sourceId:string; sourceType:'seed'|'api'|'manual'|'asset'|'web'; label:string; retrievedAt:string; verifiedAt:string|null; url:string|null; isMock:boolean; nameLocaleUrl?:string; bathDataVersion?:'v1' };
+export type Provenance = { sourceId:string; sourceType:'seed'|'api'|'manual'|'asset'|'web'; label:string; retrievedAt:string; verifiedAt:string|null; url:string|null; isMock:boolean; nameLocaleUrl?:string; bathDataVersion?:'v1'|'v2' };
 export type FeatureFact = { value:boolean|null; sourceId:string; verifiedAt:string|null; scope?:'property'|'someRooms'|'allRooms'; note?:string };
+// The source's stated room count (D05). Missing means unknown; byType: Jalan's 洋室·和室·和洋室·その他.
+export type RoomCount = { total:number; byType?:{western:number;japanese:number;japaneseWestern:number;other:number}; sourceId:string; verifiedAt:string; note:string };
 export type ExternalLink = { provider:'trip'|'jalan'|'official'|'maps'; url:string|null; kind:'search'|'property'|'unavailable'|'coordinates'; label:string };
 export type HotelLifecycle={state:'unverified'|'operating'|'temporarily_closed'|'closed';firstSeenAt:string;lastSeenAt:string;lastDetailAt:string|null;reviewNeeded:boolean;checkedAt:string|null;evidence?:import('./lifecycle-contract').LifecyclePatch};
 export type Hotel = {
@@ -40,7 +44,7 @@ export type Hotel = {
   id:string; names:{ko:string;ja:string;en:string}; aliases?:string[]; kind:'ryokan'|'hotel'|'unknown';
   regionId:RegionId; prefecture?:string|null; location:{label:string;address:string;latitude:number|null;longitude:number|null;isApproximate:boolean};
   description:string; descriptionTranslation?:{text:string;translatedAt:string}; image:{url:string;alt:string;sourceId:string;isRepresentative:boolean;alternatives?:string[]};
-  features:Record<CoreFeatureKey,FeatureFact>&Partial<Record<ExtraFeatureKey,FeatureFact>>; spring:{types:string[];waterNotes:string;useNotes:string};
+  features:Record<CoreFeatureKey,FeatureFact>&Partial<Record<ExtraFeatureKey,FeatureFact>>; rooms?:RoomCount; spring:{types:string[];waterNotes:string;useNotes:string};
   ratings:{sourceId:string;provider?:'trip'|'google'|'jalan'|'rakuten';score:number;scale:5|10;reviewCount:number;summary:string;highlights:string[];isMock:boolean;verifiedAt:string|null}[];
   links:ExternalLink[]; sources:Provenance[];
 };

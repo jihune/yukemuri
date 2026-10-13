@@ -36,6 +36,7 @@ commands = [
     ['node', 'scripts/check-local-search.mjs'],
     ['node', 'scripts/check-map-bounds.mjs'],
     ['node', 'scripts/check-comparison-differences.mjs'],
+    ['node', 'scripts/check-source-policy.mjs'],
     ['node', 'scripts/check-snapshot-geo.mjs'],
 ]
 if args.full:

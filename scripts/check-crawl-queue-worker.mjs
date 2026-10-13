@@ -125,6 +125,17 @@ try{
  // Enrichment uses an indexed hotel identity lookup, including completed jobs.
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").run();
  const baths=await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()});assert.equal(baths.jobs[0].url,url);
+ // D05: the phase revisits a Jalan detail saved by an older parser (v1) and
+ // leaves one saved by the current parser (v2) alone.
+ const bathsAgain=async version=>{
+  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].bathDataVersion',?) WHERE id=?").bind(version,h.id).run();
+  await db.prepare('UPDATE crawl_jobs SET lease_token=NULL,lease_until=0 WHERE url=?').bind(url).run();
+  return (await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs[0]?.url??null;
+ };
+ assert.equal(await bathsAgain('v1'),url,'A v1 Jalan detail is revisited');
+ assert.equal(await bathsAgain('v2'),null,'A v2 Jalan detail is not revisited');
+ assert.equal((await api('/api/crawl?provider=jalan&kind=detail&baths=1&limit=5')).jobs.length,0,'The queue view agrees');
+ await db.prepare("UPDATE hotels SET payload=json_remove(payload,'$.sources[0].bathDataVersion') WHERE id=?").bind(h.id).run();
  const trip=fixture('trip','999110');await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail','pref-tokyo','pending',0,0)").bind(trip.sources[0].url).run();
  const tripPut=await api('/api/crawl','PUT',{url:trip.sources[0].url,status:'done',observations:[trip],links:[]});
  assert.equal(tripPut.coverage.records,result.coverage.records+1,'Only the new property is counted; updates and rejected observations are not');
@@ -138,6 +149,20 @@ try{
  // the collector reads at the end of each run.
  await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
  assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
+ assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
+ // D05: a room count and a view bath reach the hotel row and the detail API.
+ // A count that names another source, or no rooms, is refused.
+ const counted=fixture('jalan','999155'),countedUrl=counted.sources[0].url;
+ counted.rooms={total:123,byType:{western:31,japanese:42,japaneseWestern:38,other:12},sourceId:counted.id,verifiedAt:'2026-10-05',note:'자란 객실 수 표'};
+ counted.features.viewBath={value:true,sourceId:counted.id,verifiedAt:'2026-10-05',scope:'property',note:'자란 욕탕 항목: その他の風呂施設: 展望風呂'};
+ counted.sources[0].bathDataVersion='v2';
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','pending',0,0)").bind(countedUrl).run();
+ for(const rooms of [{...counted.rooms,sourceId:'jalan-999156'},{...counted.rooms,total:0}])await api('/api/crawl','PUT',{url:countedUrl,status:'done',observations:[{...counted,rooms}],links:[]},400);
+ assert.equal((await api('/api/crawl','PUT',{url:countedUrl,status:'done',observations:[counted],links:[]})).accepted,1);
+ const countedDetail=await api('/api/hotels/'+counted.id);
+ assert.deepEqual(countedDetail.rooms,counted.rooms);assert.equal(countedDetail.features.viewBath.value,true);
+ const viewBit=1<<13,countedRow=await db.prepare('SELECT bath_features,bath_known FROM hotels WHERE id=?').bind(counted.id).first();
+ assert.equal(countedRow.bath_features&viewBit,viewBit);assert.equal(countedRow.bath_known&viewBit,viewBit);
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
  // Overlapping collector runs: a full-count GET racing new-property PUTs must
  // not drop their increments (Codex review on PR #28).

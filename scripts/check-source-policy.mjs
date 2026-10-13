@@ -16,6 +16,13 @@ try{
  assert.equal(composePreferredHotel(jalan,[trip]).image.sourceId,trip.id);
  const curated=structuredClone(trip);curated.id='existing-curated';assert.equal(composePreferredHotel(curated,[jalan]).features.natural.value,false,'Jalan priority also applies to curated records while the original payload is preserved');
  const newerTrip=structuredClone(trip);newerTrip.sources[0].retrievedAt='2026-10-05T13:00:00Z';newerTrip.ratings[0].score=9.3;assert.equal(composePreferredHotel(trip,[newerTrip]).ratings[0].score,9.3,'Fresh ratings win within their own provider');
+ // D05: a stated room count follows the facility order (Jalan, then Trip.com), then the newer observation.
+ const counted=(h,total,day)=>({...structuredClone(h),rooms:{total,sourceId:h.id,verifiedAt:day,note:'test'}});
+ assert.equal(composePreferredHotel(counted(trip,120,'2026-10-06'),[counted(jalan,118,'2026-10-05')]).rooms.total,118,'Jalan room count wins over a newer Trip.com one');
+ assert.equal(composePreferredHotel(counted(trip,120,'2026-10-06'),[jalan]).rooms.total,120,'Trip.com room count fills a missing Jalan one');
+ const newerCount=counted(jalan,121,'2026-10-07');newerCount.sources[0].retrievedAt='2026-10-07T12:00:00Z';
+ assert.equal(composePreferredHotel(counted(jalan,118,'2026-10-05'),[newerCount]).rooms.total,121,'Within one provider the newer room count wins');
+ assert.equal('rooms' in composePreferredHotel(trip,[jalan]),false,'No room count stays unknown');
  const mixed=structuredClone(jalan);mixed.image.alternatives=[trip.image.url];mixed.sources.push(...trip.sources);assert.equal(composePreferredHotel(mixed,[]).image.url,trip.image.url,'Historical Trip alternatives outrank the main Jalan image');
  const placeId='ChIJSourcePolicyOnly123',key='test-key-not-real';let calls=[];
  const detail={id:placeId,rating:4.6,userRatingCount:321,googleMapsUri:'https://maps.google.com/?cid=123',photos:[{name:'places/'+placeId+'/photos/MockPhoto123',googleMapsUri:'https://www.google.com/maps/photo?x=1',authorAttributions:[{displayName:'Test Author',uri:'https://www.google.com/maps/contrib/123',photoUri:'https://lh3.googleusercontent.com/avatar'}]}]};

@@ -1,7 +1,8 @@
 // The claim POST must pick the same job as the single-query selection it
 // replaced (main 274f687, lib/crawl-queue.ts), for every provider, phase, lane
 // and kind, over random queue states in a disposable D1. The reference query
-// below is that former selection, copied verbatim.
+// below is that former selection, copied verbatim, except that its baths
+// condition follows the current Jalan parser version (v2 since D05).
 import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
@@ -16,7 +17,7 @@ function formerSelection(claim,now){
  const kind=claim.phase==='refresh'?(claim.kind??'any'):['names','baths'].includes(claim.phase)?'detail':claim.phase;
  const kindWhere=kind==='any'?"j.kind IN ('list','detail')":'j.kind=?';
  const kinds=kind==='any'?[]:[kind];
- const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NULL AND h.id NOT IN (SELECT value FROM json_each(?)))":'';
+ const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NOT 'v2' AND h.id NOT IN (SELECT value FROM json_each(?)))":'';
  const statuses=claim.phase==='refresh'?"('done','failed')":['names','baths'].includes(claim.phase)?"('done','pending','retry')":"('pending','retry')";
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
@@ -57,7 +58,7 @@ try{
    jobs.set(url,{url,provider,kind,status:pick(['pending','pending','retry','done','done','failed','skipped','running']),priority:pick([0,10,10,20,40,60,90,90,55]),fetched_at:fetched,attempts:Math.floor(random()*4),next_at:pick([0,0,now-100-random()*5000,now+100+random()*5000]),lease_until:pick([0,0,now-100-random()*500])});
    if(kind==='detail'&&random()<0.6){
     const hotelId=provider+'-'+(url.match(/yad(\d+)\//)?.[1]??url.match(/-hotel-detail-(\d+)\/[^/]+\/$/)?.[1]);
-    const source={label:random()<0.5?'숙소 상세':'숙소 목록',...(random()<0.5?{bathDataVersion:'v1'}:{}),...(random()<0.5?{nameLocaleUrl:'https://kr.trip.com/hotels/x-hotel-detail-1/y/'}:{})};
+    const source={label:random()<0.5?'숙소 상세':'숙소 목록',...(random()<0.5?{bathDataVersion:random()<0.5?'v1':'v2'}:{}),...(random()<0.5?{nameLocaleUrl:'https://kr.trip.com/hotels/x-hotel-detail-1/y/'}:{})};
     hotels.set(hotelId,{id:hotelId,payload:JSON.stringify({links:[{url:random()<0.85?url:url+'other/'}],sources:[source]})});
    }
   }

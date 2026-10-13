@@ -33,9 +33,12 @@ export function composePreferredHotel(base:Hotel,linked:Hotel[]):Hotel{
   });
   if(candidates[0])features[key]=hotelFeature(candidates[0],key);
  }
+ // A stated room count follows the facility order too (D05).
+ const roomRank=(h:Hotel)=>{const url=h.sources.find(s=>s.sourceId===h.rooms?.sourceId&&!s.isMock)?.url??'',i=(SOURCE_POLICY.facilities as readonly string[]).indexOf(url.includes('jalan.net/yad')?'jalan':url.includes('trip.com/hotels/')?'trip':'official');return i<0?10:i};
+ const rooms=all.filter(h=>h.rooms).sort((a,b)=>roomRank(a)-roomRank(b)||stamp(b,b.rooms!.sourceId,b.rooms!.verifiedAt)-stamp(a,a.rooms!.sourceId,a.rooms!.verifiedAt))[0]?.rooms;
  const jalan=all.find(h=>h.sources.some(s=>!s.isMock&&s.url?.includes('jalan.net/yad')&&s.label.includes('상세'))&&h.id.startsWith('jalan-'));
  const photos=preferredPhotos(all),image=photos[0]?{...base.image,url:photos[0].url,sourceId:photos[0].sourceId,alternatives:photos.slice(1).map(p=>p.url)}:base.image;
  const sources=new Map(base.sources.map(s=>[s.sourceId,s]));for(const h of linked)for(const s of h.sources){const old=sources.get(s.sourceId);if(!old||Date.parse(s.retrievedAt)>Date.parse(old.retrievedAt))sources.set(s.sourceId,s)}
  const links=new Map(base.links.map(l=>[l.provider,l]));for(const h of linked)for(const l of h.links)if(!links.has(l.provider))links.set(l.provider,l);
- return{...base,features,spring:jalan?.spring??base.spring,image,photoCandidates:photos,ratings:[...ratings.values()].map(r=>r.rating).sort((a,b)=>(SOURCE_POLICY.ratings as readonly string[]).indexOf(a.provider!)-(SOURCE_POLICY.ratings as readonly string[]).indexOf(b.provider!)),sources:[...sources.values()],links:[...links.values()],...(jalan?{description:jalan.description,descriptionTranslation:jalan.descriptionTranslation}:{})};
+ return{...base,features,...(rooms?{rooms}:{}),spring:jalan?.spring??base.spring,image,photoCandidates:photos,ratings:[...ratings.values()].map(r=>r.rating).sort((a,b)=>(SOURCE_POLICY.ratings as readonly string[]).indexOf(a.provider!)-(SOURCE_POLICY.ratings as readonly string[]).indexOf(b.provider!)),sources:[...sources.values()],links:[...links.values()],...(jalan?{description:jalan.description,descriptionTranslation:jalan.descriptionTranslation}:{})};
 }
