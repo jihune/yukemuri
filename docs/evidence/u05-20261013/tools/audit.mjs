@@ -1,11 +1,16 @@
 // Read-only UI audit of the live site. GET loads and read-only clicks only.
 // Never clicks favourite hearts. Logs any non-GET request to the site (must stay empty).
 import {createRequire} from 'node:module';
-const require=createRequire('/home/user/yukemuri/.sites-runtime/u01-browser/package.json');
+const require=createRequire(new URL('../../../../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
 const out=process.argv[2];
 const base='https://yukemuri.jihune.workers.dev';
-const AXE='/home/user/yukemuri/node_modules/.pnpm/axe-core@4.11.4/node_modules/axe-core/axe.min.js';
+// axe-core is a transitive dependency of the repository (pnpm store), not a direct one.
+const {readdirSync}=await import('node:fs');
+const PNPM=new URL('../../../../node_modules/.pnpm/',import.meta.url);
+const axeDir=readdirSync(PNPM).filter(name=>name.startsWith('axe-core@')).sort().pop();
+if(!axeDir)throw new Error('axe-core not found under node_modules/.pnpm (run the repository install first)');
+const AXE=new URL(axeDir+'/node_modules/axe-core/axe.min.js',PNPM).pathname;
 const browser=await chromium.launch();
 const report={writes:[],errors:[],views:{}};
 async function ctxFor(w){

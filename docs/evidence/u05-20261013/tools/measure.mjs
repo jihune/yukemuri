@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
-const require=createRequire('/home/user/yukemuri/.sites-runtime/u01-browser/package.json');
+const require=createRequire(new URL('../../../../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
-const dir=process.argv[2];const browser=await chromium.launch();
+const dir=(await import('node:path')).resolve(process.argv[2]);const browser=await chromium.launch();
 for(const [name,sel] of [['mockup-a-noren','.card'],['mockup-b-checklist','.card'],['mockup-c-map','.row']]){
  const ctx=await browser.newContext({viewport:{width:390,height:844}});const page=await ctx.newPage();
  await page.goto('file://'+dir+'/'+name+'.html',{waitUntil:'networkidle'});

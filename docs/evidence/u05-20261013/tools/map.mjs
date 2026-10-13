@@ -1,5 +1,5 @@
 import {createRequire} from 'node:module';
-const require=createRequire('/home/user/yukemuri/.sites-runtime/u01-browser/package.json');
+const require=createRequire(new URL('../../../../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
 const out=process.argv[2],base='https://yukemuri.jihune.workers.dev';
 const browser=await chromium.launch();const writes=[];

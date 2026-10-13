@@ -1,6 +1,6 @@
 // One page view per public site at 390px for design reference. No crawling, no form submits.
 import {createRequire} from 'node:module';
-const require=createRequire('/home/user/yukemuri/.sites-runtime/u01-browser/package.json');
+const require=createRequire(new URL('../../../../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
 const out=process.argv[2];
 const sites=[
