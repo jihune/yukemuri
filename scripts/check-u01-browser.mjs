@@ -141,7 +141,8 @@ async function run(page,cdp){
  // Collection status: loading, failure, retry, empty and the table on a narrow screen.
  const panel=page.locator('.coverage-panel'),summary=panel.locator('summary');
  await page.route('**/snapshot/v/*/status.json',async route=>{await new Promise(done=>setTimeout(done,1200));await route.continue()});
- await summary.scrollIntoViewIfNeeded();await summary.tap();
+ // The panel is in the footer (U05): bring it to the middle, clear of the floating buttons.
+ await summary.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));await summary.tap();
  const loading=panel.getByText('저장된 수집 기록을 확인하고 있습니다');
  check('수집 현황 로딩 안내',await loading.isVisible().catch(()=>false)||await loading.waitFor({timeout:1000}).then(()=>true,()=>false));
  const statusRegion=panel.locator('.collection-table-region');
