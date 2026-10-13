@@ -36,12 +36,16 @@ const focusedMarker=page=>page.evaluate(()=>{
 });
 // U05 draws only the stays inside the view, so a marker over the map's edge needs a move:
 // pan with the arrow keys (each pan redraws) until some drawn marker sticks out of the map.
+// A direction that finds none pans back, so the map keeps its markers in view.
 const markerToEdge=async page=>{
+ const back={ArrowRight:'ArrowLeft',ArrowLeft:'ArrowRight',ArrowDown:'ArrowUp',ArrowUp:'ArrowDown'};
  for(const key of ['ArrowRight','ArrowLeft','ArrowDown','ArrowUp']){
-  for(let i=0;i<12;i++){
-   const stops=await tabStops(page);if(stops.outside>0)return true;
+  let steps=0;
+  for(;steps<12;steps++){
+   const stops=await tabStops(page);if(stops.outside>0)return true;if(stops.inside===0)break;
    await page.locator('.map-canvas').focus();await page.keyboard.press(key);await page.waitForTimeout(450);
   }
+  for(;steps>0;steps--){await page.locator('.map-canvas').focus();await page.keyboard.press(back[key]);await page.waitForTimeout(450)}
  }
  return (await tabStops(page)).outside>0;
 };
@@ -49,6 +53,15 @@ const markerToEdge=async page=>{
 const tabToMarker=async(page,want)=>{
  await page.locator('.map-canvas').focus();
  for(let i=0;i<40;i++){await page.keyboard.press('Tab');const m=await focusedMarker(page);if(!m.ids)return null;if(want(m))return m}
+ return null;
+};
+// U05 merges groups whose icons would overlap, so a view can hold only groups: zoom in
+// (the zoom button, not a pan) until a single stay is a Tab stop.
+const tabToSingle=async page=>{
+ for(let i=0;i<6;i++){
+  const m=await tabToMarker(page,m=>!m.cluster);if(m)return m;
+  await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(600);
+ }
  return null;
 };
 const onPreviewName=page=>page.evaluate(()=>document.activeElement?.matches('.map-preview button:not(.icon-button)')??false);
@@ -274,7 +287,12 @@ async function desktopHover(page){
  await markerToEdge(page);
  const stops=await tabStops(page);
  check('데스크톱에서 확대하면 지도 안에 다 보이는 지점만 Tab 정지(가장자리에 걸친 지점 포함)',stops.wrong===0&&stops.inside>0&&stops.outside>0,stops);
- // A narrower window resizes the map without the user moving it.
+ // A narrower window resizes the map without the user moving it. Start again from the
+ // stays at the centre (the edge search above leaves a marker at the map's edge, which a
+ // narrower map would push out of view).
+ await page.goto(base+'/',{waitUntil:'networkidle'});await canvas.waitFor();await page.waitForTimeout(500);
+ await page.mouse.move(1279,795);
+ for(let i=0;i<2;i++){await page.getByRole('button',{name:'지도 확대'}).focus();await page.keyboard.press('Enter');await page.waitForTimeout(500)}
  const wideMap=(await box(canvas)).width;
  await page.setViewportSize({width:1100,height:640});await page.waitForTimeout(800);
  const narrowMap=(await box(canvas)).width,afterResize=await tabStops(page);
@@ -283,7 +301,7 @@ async function desktopHover(page){
  const edge=await markerToEdge(page),resized=await tabStops(page);
  check('창 크기가 바뀌어 지도가 줄어든 뒤에도 지도 안에 다 보이는 지점만 Tab 정지',narrowMap<wideMap&&afterResize.wrong===0&&afterResize.inside+afterResize.outside>0&&resized.wrong===0,{afterResize,edge,...resized,wideMap,narrowMap});
  await page.setViewportSize({width:1280,height:800});await page.waitForTimeout(800);
- const single=await tabToMarker(page,m=>!m.cluster);
+ const single=await tabToSingle(page);
  const trip=single?await previewRoundTrip(page,single,'Enter'):null;
  check('데스크톱에서 Enter로 지점의 미리보기를 열면 포커스가 미리보기로 가고 닫으면 지점으로 돌아옴',!!trip?.pass,{trip});
  // The opener may leave the map while its preview is open: closing must not focus it unseen.
