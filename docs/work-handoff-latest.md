@@ -843,3 +843,12 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 배포 뒤 운영 확인: 키 없는 `/api/*`는 브라우저 형식 UA가 필요하다(`cloudflare-deploy.md` ‘공개 사이트 보호’).
 - 미확인: 실제 Cloudflare에서 `_headers`의 `/*`가 `/`에도 붙는지(배포 smoke가 확인), 1027의 상태 코드.
 - 재개 예약: `trig_019ymamW4itAtbxLm49Yfrm6`(2026-10-13T15:10Z, 5시간 사용량 초기화 뒤).
+
+## L01 — 신규·폐업·휴관 반영
+
+기록: 2026-10-13T15:20Z / 2026-10-14 00:20 KST. 하위 세션 `session_01B1EMNXwBFR86E9fRdWbW1N`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/l01-lifecycle`, 시작 기준 main `b577cc8`. 상세는 `L01-20261013.md`.
+
+- 1단계(지금 상태 조사) 끝: 운영 확인은 공개 GET만 했다. `update-lifecycle.py`는 옛 Sites 주소에 고정되어 있지 않고 workers.dev 주소를 받는다. 그러나 운영에서 이 도구를 부르는 workflow가 없어 키를 가진 사람만 공식 상태를 바꿀 수 있다.
+- 운영 스냅숏 `df6ddf58032a7dcb`(13,217곳): 공식 상태는 휴관 1·폐업 1·영업(개업일) 3이다. 다섯 건 모두 2026-10-05 Sites에서 넣은 근거이고 운영 D1에 그대로 있다. 하코네 363~389곳, 유후인 167곳, 구로카와 35곳(공급자별 기록). 값은 `docs/evidence/l01-snapshot-20261013.json`, 명령은 `scripts/lifecycle-survey.py`.
+- 2단계 설계(근거 파일 `data/lifecycle-official.json` → main push 뒤 `lifecycle.yml`이 기존 Secret `YUKEMURI_CRAWL_ACCESS_KEY`로 적용)를 상위 세션에 보내고 답을 기다린다. 새 Secret·사용자 조치는 없다.
+- 다음: 상위 세션 답을 기다리는 동안 3단계(하코네·유후인·구로카와 공식 안내 대조)를 한다.
