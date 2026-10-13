@@ -81,3 +81,6 @@ __pycache__/
 
 # Local search snapshot for the dev server (scripts/prepare-local-site.mjs).
 /public/snapshot/
+
+# Pretendard font subsets (OFL, public/fonts/pretendard/LICENSE.txt), restored from source-assets/.
+/public/fonts/pretendard/woff2-dynamic-subset/
