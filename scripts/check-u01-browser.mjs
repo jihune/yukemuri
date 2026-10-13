@@ -42,6 +42,8 @@ async function run(page,cdp){
  // At the real end the content cannot move further up, so a covered control stays covered.
  const covered=await page.evaluate(()=>[...document.querySelectorAll('main a,main button,footer a,footer button')].filter(e=>{
   if(e.closest('.comparison-dock,.mobile-map-toggle'))return false;
+  // A control inside a closed <details> (the collection status panel in the footer, U05) is not shown.
+  if(!e.checkVisibility())return false;
   const r=e.getBoundingClientRect();if(!r.width||r.top<0||r.bottom>innerHeight)return false;
   const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return !hit||!(hit===e||e.contains(hit));
  }).map(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return {control:e.getAttribute('aria-label')||e.innerText.trim().slice(0,30),top:Math.round(r.top),coveredBy:String(hit?.closest('[class]')?.className).slice(0,40)}}));
