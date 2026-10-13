@@ -130,9 +130,15 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - `collect.yml`: `workflow_dispatch`만, 입력 `mode`는 `check-access`(수동 기본값)·`gentle`. 실행 이름은 `Yukemuri collection (<mode>)`이다. 감시는 이 이름으로 gentle 실행만 센다.
   - 대상은 `cloudflare-deploy.json`의 `publicOrigin`이다. `null`이거나 `autoDeploy`·`databaseId`가 꺼져 있으면 요청 전에 실패한다(`scripts/runner/run-collection.py`).
   - 크롤 키는 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 env로 받아 수집기 표준입력으로만 넘긴다. 자식 환경·인자·로그에 넣지 않는다.
-  - 상한은 실행기(`jihune/yukemuri-script-runner` `b7f9c64`의 `run-updates.py`·`yukemuri-catalog.yml`)와 같다. gentle은 `--gentle --max-pages 16`, 모든 단계에 `--interval 8 --jitter 4`, 전체 240초, job 6분이다. check-access는 `--health-only`다. `check_collection.py`가 이 값을 단언한다.
+  - 속도(같은 원출처 사이트 사이 `--interval 8 --jitter 4`)는 실행기(`jihune/yukemuri-script-runner` `b7f9c64`의 `run-updates.py`)와 같다. check-access는 `--health-only`, 240초다.
+  - 수집량(C03, 2026-10-13 사용자 ‘무료 한도 안에서 최대한’): gentle 실행 앞 단계 `scripts/collection-budget.mjs`가 그날(UTC) 계정 D1 사용량(`cloudflare-usage.mjs`의 GraphQL, Secret `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`, 이 단계에만)을 읽어 쪽수를 정한다.
+    - 계산: 쪽수 = min(120, (쓰기 한도 10만의 85% − 오늘 쓰기) ÷ 90, (읽기 한도 500만의 85% − 오늘 읽기 − 끝 스냅숏 13만) ÷ 3,000). 0보다 작으면 0이다. 쪽당 쓰기 90·읽기 3,000은 10-13 gentle 두 번(32쪽)에서 잰 값(쓰기 약 77, 읽기 약 2,900 이하)에 여유를 둔 것이다. 스냅숏 생성 1회는 읽기 114,598행이었다.
+    - 0쪽이면 수집기를 부르지 않고 성공으로 끝나며 스냅숏 배포도 건너뛴다(`needs.collect.outputs.pages != '0'`). 사용량을 못 읽으면(권한·네트워크·설정 오류) C03 전 크기인 16쪽으로 돈다.
+    - 시간: 실행 한도는 쪽당 11초 + 60초(최소 240초, 120쪽 1,380초), job 26분이다. 10-13 측정은 16쪽 146초(두 사이트를 번갈아 약 9초/쪽)였다.
+    - 하루 기대량: 실행기 cron 3시간(하루 8번) × 최대 120쪽 = 960쪽. 이때 쓰기는 960×90 = 86,400행으로 85% 예산(85,000)을 조금 넘어 마지막 실행이 줄어든다. 읽기는 960×3,000 + 8×130,000 = 3,920,000행(78%)이다. 백업·방문·배포가 쓰는 몫은 나머지 15%에 둔다. 매일 `usage.yml` 기록으로 쪽당 값을 다시 맞춘다.
+    - `check_collection.py`·`check-collection-budget.mjs`·`check-collect-workflow.mjs`가 값과 단계 구성을 단언한다.
   - 수집기는 Sites release를 받지 않고 이 커밋의 `scripts/crawler/update-site.py`를 실행한다. 주소 허용은 `source_safety.site_api()`가 한다(workers.dev에는 `X-Yukemuri-Crawl-Key`만).
-  - gentle 수집이 성공하면 `uses: ./.github/workflows/deploy.yml`(`after_collection: true`, `secrets: inherit`)로 같은 커밋의 스냅숏을 다시 만들어 배포한다. 배포가 실패하면 그 수집 실행도 실패로 끝난다.
+  - gentle 수집이 성공하고 1쪽 이상을 맡았으면 `uses: ./.github/workflows/deploy.yml`(`after_collection: true`, `secrets: inherit`)로 같은 커밋의 스냅숏을 다시 만들어 배포한다. 배포가 실패하면 그 수집 실행도 실패로 끝난다.
 - 동시 실행 잠금(P03 규칙): `collect.yml`은 최상위에서 `yukemuri-catalog-updates`를 실행 전체 동안 잡는다(`cancel-in-progress: false`). 수집끼리, 그리고 push·수동 배포와 겹치지 않는다. job 단위 잠금은 두지 않는다. 계정 잠금(`cloudflare-account`)은 불린 배포 job 안에서만 잡으므로 잠금 순서가 push 배포와 같다. 불린 배포의 최상위 그룹은 `yukemuri-snapshot-after-collection`이다.
 - 대기 실행 보존(P03 다음 작업 5번, PR #48 Codex 검토 P2): GitHub 동시 실행 그룹은 기본(`queue: single`)으로 대기 실행을 하나만 둔다. 새 실행이 들어오면 앞의 대기 실행은 시작 전에 취소된다. 그러면 push 배포가 대기 수집을 취소하거나, 수집 부르기가 대기 배포를 취소할 수 있다. 뒤의 경우 새 수집이 아직 배포되지 않은 커밋의 수집기로 이전 Worker를 부를 수 있다. 그래서 세 그룹(`yukemuri-catalog-updates`, `yukemuri-snapshot-after-collection`, `cloudflare-account`)에 들어가는 모든 실행에 `queue: max`를 둔다(`collect.yml`, `deploy.yml` 최상위·job, `d1-setup.yml`). GitHub 문서(`github/docs` `data/reusables/actions/actions-group-concurrency.md`, 2026-10-12 확인, github.com·GHEC 적용)와 SchemaStore `github-workflow.json`(`queue`: `single`|`max`)에 따르면 대기 실행을 100개까지 두고, 기다리기 시작한 시각 순(FIFO)으로 돈다. 순서는 보장되지 않는다고 적혀 있다. `cancel-in-progress: true`와 함께 쓸 수 없다.
   - 결과: 대기 수집도 대기 배포도 취소되지 않는다. 수집 부르기 전에 대기하던 push 배포가 먼저 돈다. 대가로 연속 push가 더는 하나로 합쳐지지 않는다. push마다 배포(스냅숏 생성 1회 약 10.4만 행 읽기)가 차례로 돈다. 병합이 몰리는 날의 D1 읽기를 5단계 실측에서 본다.
