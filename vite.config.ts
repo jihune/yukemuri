@@ -42,6 +42,8 @@ const localBindingConfig = {
       simple: { limit: 120, period: 60 as const },
     },
   ],
+  // Refuse requests from tools and crawlers without the maintenance key (lib/edge-guard.ts).
+  vars: { REJECT_AUTOMATED_AGENTS: "1" },
   d1_databases: d1
     ? [
         {
