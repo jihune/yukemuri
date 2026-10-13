@@ -41,10 +41,11 @@ def entry(hotel_id, **changes):
 class Worker:
     """PUT /api/hotel-lifecycle and GET /api/hotels/<id>, as lib/hotel-lifecycle.ts answers them."""
 
-    def __init__(self, stored=None, refuse=None, readback=None):
+    def __init__(self, stored=None, refuse=None, readback=None, readback_error=None):
         self.stored = dict(stored or {})
         self.refuse = refuse or {}
         self.readback = readback or {}
+        self.readback_error = readback_error or {}
         self.sent = []
 
     def open(self, request, timeout):
@@ -59,6 +60,8 @@ class Worker:
             self.stored[body['id']] = body
             return Response({'result': result})
         hotel_id = path.rsplit('/', 1)[1]
+        if hotel_id in self.readback_error:
+            raise urllib.error.HTTPError(request.full_url, self.readback_error[hotel_id], 'unavailable', {}, io.BytesIO(b'{}'))
         evidence = self.readback.get(hotel_id, self.stored.get(hotel_id))
         return Response({'id': hotel_id, 'lifecycle': {'state': evidence['state'], 'evidence': evidence} if evidence else None})
 
@@ -87,15 +90,16 @@ class UpdateLifecycleChecks(unittest.TestCase):
         replay = entry('jalan-2')
         mismatch = entry('jalan-6')
         worker = Worker(stored={'jalan-2': replay}, refuse={'jalan-3': 409, 'jalan-4': 404, 'jalan-5': 400},
-                        readback={'jalan-6': dict(mismatch, evidence='Something else entirely.')})
-        patches = [entry('jalan-1'), replay, entry('jalan-3'), entry('jalan-4'), entry('jalan-5'), mismatch, entry('jalan-7')]
+                        readback={'jalan-6': dict(mismatch, evidence='Something else entirely.')}, readback_error={'jalan-8': 503})
+        patches = [entry('jalan-1'), replay, entry('jalan-3'), entry('jalan-4'), entry('jalan-5'), mismatch, entry('jalan-7'), entry('jalan-8')]
         code, out = run_update(worker, {'url': ORIGIN, 'token': KEY, 'patches': patches})
         rows = [json.loads(line) for line in out.splitlines()]
         self.assertEqual(code, 1)
         self.assertEqual([(r['id'], r['result']) for r in rows], [
             ('jalan-1', 'saved'), ('jalan-2', 'replayed'), ('jalan-3', 'stale'), ('jalan-4', 'unknown'),
-            ('jalan-5', 'invalid'), ('jalan-6', 'saved'), ('jalan-7', 'saved')])
-        self.assertEqual([r.get('readbackVerified') for r in rows], [True, True, None, None, None, False, True])
+            ('jalan-5', 'invalid'), ('jalan-6', 'saved'), ('jalan-7', 'saved'), ('jalan-8', 'saved')])
+        self.assertEqual([r.get('readbackVerified') for r in rows], [True, True, None, None, None, False, True, False])
+        self.assertEqual(rows[-1].get('readbackStatus'), 503, 'a store stays reported when only its read back fails')
         puts = [url for url, _, data in worker.sent if data is not None]
         self.assertEqual(len(puts), len(patches), 'a refused patch does not stop the ones after it')
         self.assertNotIn(KEY, out)
@@ -135,7 +139,7 @@ class ApplyLifecycleChecks(unittest.TestCase):
     def outputs(self):
         return dict(line.split('=', 1) for line in self.output.read_text().splitlines())
 
-    def test_key_only_on_stdin_and_counts_from_readback(self):
+    def test_key_only_on_stdin_and_counts(self):
         patches = [entry('jalan-1'), entry('jalan-2'), entry('jalan-3')]
         printed = '\n'.join(json.dumps(row) for row in [
             {'id': 'jalan-1', 'result': 'saved', 'readbackVerified': True},
@@ -153,7 +157,7 @@ class ApplyLifecycleChecks(unittest.TestCase):
         self.assertNotIn('YUKEMURI_CRAWL_ACCESS_KEY', os.environ)
         self.assertNotIn(KEY, out)
         self.assertIn('[REDACTED]', out)
-        self.assertEqual(self.outputs(), {'saved': '1', 'failed': '1'})
+        self.assertEqual(self.outputs(), {'saved': '2', 'failed': '1'}, 'a store with a failed read back is still a store')
 
     def test_a_child_that_stops_early_counts_the_rest_as_failed(self):
         patches = [entry('jalan-1'), entry('jalan-2'), entry('jalan-3')]

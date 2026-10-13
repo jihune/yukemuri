@@ -5,12 +5,12 @@ name: Yukemuri lifecycle
 # is public) and no schedule. The same entry again is 'replayed' with no write;
 # older evidence than the stored one is refused (409). The key is used only for
 # main, after the whole file passed the Worker's contract and the checks the
-# contract does not hold (check-lifecycle-official.mjs). When anything was saved,
-# and on every manual run or rerun (the snapshot after an earlier store may have
-# failed), the search snapshot is rebuilt once after the evidence is stored: through
-# deploy.yml here, as collect.yml does, unless a push deploy of this commit is
-# still waiting (it runs after this run and builds it). deploy.yml ignores
-# pushes that change only this file (docs/L01-20261013.md).
+# contract does not hold (check-lifecycle-official.mjs). Then this run deploys
+# main through deploy.yml, as collect.yml does, so the search snapshot is built
+# once, after the evidence: deploy.yml leaves every push that changes this file
+# to this run (paths-ignore, and scripts/lifecycle-push.mjs for a push with
+# other files). A manual run or a rerun deploys again, which also recovers a
+# snapshot deploy that failed after an earlier store (docs/L01-20261013.md).
 run-name: Yukemuri lifecycle
 on:
   push:
@@ -39,9 +39,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
-      saved: ${{ steps.apply.outputs.saved }}
       failed: ${{ steps.apply.outputs.failed }}
-      deploy_pending: ${{ steps.pending.outputs.deploy_pending }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -60,16 +58,12 @@ jobs:
         env:
           YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
         run: python3 scripts/runner/apply-lifecycle.py
-      - name: Leave the snapshot to a push deploy of this commit still waiting
-        id: pending
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/pending-push-deploy.mjs | tee -a "$GITHUB_OUTPUT"
-  # Also on a manual run or a rerun, where everything replays: the evidence may
-  # be stored while the snapshot that should follow failed (Codex review 2).
+  # Every push of the evidence file: deploy.yml skipped it, so this is the
+  # deploy of that merge (also when the apply failed, for the code it carries).
+  # A manual run deploys after a successful apply.
   snapshot:
     needs: apply
-    if: (needs.apply.outputs.saved != '0' || github.event_name == 'workflow_dispatch' || github.run_attempt != '1') && needs.apply.outputs.deploy_pending != 'true'
+    if: ${{ !cancelled() && (github.event_name == 'push' || needs.apply.result == 'success') }}
     uses: ./.github/workflows/deploy.yml
     with:
       after_collection: true

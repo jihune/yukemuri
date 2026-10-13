@@ -10,8 +10,9 @@ name: Cloudflare deploy
 # the database_id but not autoDeploy or publicOrigin. A push that changes only
 # Markdown or docs (the same paths web-checks.yml ignores) does not redeploy;
 # the next code push or collection deploys main HEAD with it. Nor does a push
-# that changes only data/lifecycle-official.json: lifecycle.yml stores that
-# evidence first and then calls this workflow once (L01).
+# that changes data/lifecycle-official.json (alone: paths-ignore; with other
+# files: the gate skips): lifecycle.yml stores that evidence first and then
+# calls this workflow once, so the snapshot carries it (L01).
 on:
   push:
     branches: [main]
@@ -70,9 +71,21 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      # A main push that also changes data/lifecycle-official.json is deployed by
+      # lifecycle.yml after it stores the evidence, so the snapshot is built once,
+      # after the evidence (L01). A push of that file alone never starts this run.
+      # Not when called (after_collection): a called run sees its caller's event,
+      # and lifecycle.yml's own call is the deploy this one leaves to it.
+      - id: lifecycle
+        if: github.event_name == 'push' && !inputs.after_collection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE: ${{ github.event.before }}
+        run: node scripts/lifecycle-push.mjs | tee -a "$GITHUB_OUTPUT"
       - id: gate
         env:
           PREFLIGHT: ${{ inputs.preflight == true }}
+          DEFERRED: ${{ steps.lifecycle.outputs.deferred == 'true' }}
         run: node scripts/cloudflare-deploy-gate.mjs >> "$GITHUB_OUTPUT"
       - if: steps.gate.outputs.mode == 'skip'
         env:

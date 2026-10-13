@@ -29,13 +29,15 @@ for patch in access.get('patches',[]):
  # record, 400 refused by the contract. The run still fails at the end.
  try:
   result=api('/api/hotel-lifecycle',patch)
-  life=api('/api/hotels/'+urllib.parse.quote(patch['id'],safe='')).get('lifecycle') or {}
  except urllib.error.HTTPError as error:
   failed+=1
   print(json.dumps({'id':patch.get('id'),'result':{409:'stale',404:'unknown',400:'invalid'}.get(error.code,'http_error'),'httpStatus':error.code},ensure_ascii=False),flush=True)
   continue
+ # A failed read back does not hide a store that happened: the result line keeps it.
+ try:life,readback=api('/api/hotels/'+urllib.parse.quote(patch['id'],safe='')).get('lifecycle') or {},None
+ except urllib.error.HTTPError as error:life,readback={},error.code
  verified=life.get('state')==patch['state'] and life.get('evidence')==patch
  failed+=not verified
- print(json.dumps({'id':patch['id'],'result':result['result'],'state':life.get('state'),'readbackVerified':verified},ensure_ascii=False),flush=True)
+ print(json.dumps({'id':patch['id'],'result':result['result'],'state':life.get('state'),'readbackVerified':verified,**({'readbackStatus':readback} if readback else {})},ensure_ascii=False),flush=True)
 if not access.get('seeds') and not access.get('patches'):print(json.dumps(api('/api/hotel-lifecycle'),ensure_ascii=False),flush=True)
 if failed:sys.exit(1)

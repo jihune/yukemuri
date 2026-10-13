@@ -10,8 +10,9 @@ undo a state: newer evidence does.
 The target and the key handling are run-collection.py's: publicOrigin from
 cloudflare-deploy.json, the key from YUKEMURI_CRAWL_ACCESS_KEY, passed to the child
 only on stdin and never in arguments, the child environment or logs.
-Writes saved=<n> and failed=<n> to GITHUB_OUTPUT. A refused or unconfirmed entry
-does not fail this step; the workflow fails the run after the snapshot.
+Writes saved=<n> (stores, also when the read back failed) and failed=<n> (entries
+not confirmed) to GITHUB_OUTPUT. A refused or unconfirmed entry does not fail
+this step; the workflow fails the run after the deploy.
 """
 import argparse
 import importlib.util
@@ -37,17 +38,17 @@ def load_patches(path):
     return data['patches']
 
 
-def confirmed(stdout):
-    """Result lines of entries saved or replayed and read back unchanged."""
-    lines = []
+def results(stdout, ids):
+    """The last result line per entry of this file, by id."""
+    rows = {}
     for line in (stdout or '').splitlines():
         try:
             row = json.loads(line)
         except ValueError:
             continue
-        if isinstance(row, dict) and row.get('result') in ('saved', 'replayed') and row.get('readbackVerified') is True:
-            lines.append(row)
-    return lines
+        if isinstance(row, dict) and row.get('id') in ids:
+            rows[row['id']] = row
+    return rows
 
 
 def write_outputs(saved, failed):
@@ -84,8 +85,12 @@ def main(argv=None):
         if output:
             print(collection.safe_output(output, access), flush=True)
     ids = {patch.get('id') for patch in patches if isinstance(patch, dict)}
-    rows = {row['id']: row for row in confirmed(stdout if isinstance(stdout, str) else (stdout or b'').decode('utf-8', errors='replace')) if row.get('id') in ids}
-    write_outputs(sum(1 for row in rows.values() if row['result'] == 'saved'), len(patches) - len(rows))
+    rows = results(stdout if isinstance(stdout, str) else (stdout or b'').decode('utf-8', errors='replace'), ids)
+    # saved: stores that happened, also when the read back failed; failed: every
+    # entry not stored or replayed and read back unchanged.
+    saved = sum(1 for row in rows.values() if row.get('result') == 'saved')
+    confirmed = sum(1 for row in rows.values() if row.get('result') in ('saved', 'replayed') and row.get('readbackVerified') is True)
+    write_outputs(saved, len(patches) - confirmed)
     return 0
 
 

@@ -105,10 +105,11 @@ const WRITES=[/migrations apply/,/cloudflare-deploy-worker\.sh(?! --dry-run)/,/c
 const order=['cloudflare-deploy-gate.mjs','d1 time-travel info yukemuri','d1 migrations apply yukemuri --remote','build-search-snapshot.mjs --remote --report','bash scripts/cloudflare-deploy-worker.sh |','cloudflare-smoke.mjs'].map(stepOf);
 assert(order.every((v,i)=>i===0||v>order[i-1]),'deploy order: gate, time travel, migrations, search snapshot, deploy, smoke');
 // Every write (migrations, secret, upload, prepare, the keyed smoke) runs only
-// in deploy mode; nothing but checkout and the gate runs without a mode.
+// in deploy mode; nothing but checkout, the gate and the read-only question
+// the gate asks on a push (lifecycle-push.mjs, L01) runs without a mode.
 for(const b of stepBlocks){
  if(WRITES.some(w=>w.test(b.text)))assert.match(b.cond??'',/^steps\.gate\.outputs\.mode == 'deploy'/,'a write outside deploy mode: '+b.text.split('\n').find(l=>/run:/.test(l)));
- if(!/actions\/checkout@|id: gate/.test(b.text))assert.match(b.cond??'',/steps\.gate\.outputs\.mode|steps\.checked\.outputs\.checked == 'true'/,'a step without a mode: '+b.text.slice(0,120));
+ if(!/actions\/checkout@|id: gate|id: lifecycle\n/.test(b.text))assert.match(b.cond??'',/steps\.gate\.outputs\.mode|steps\.checked\.outputs\.checked == 'true'/,'a step without a mode: '+b.text.slice(0,120));
 }
 // Preflight (B5): time travel, pending migrations listed, snapshot, catalog_meta
 // read with the write estimate, and deploy --dry-run. Reads only.
@@ -116,7 +117,7 @@ const preflight=stepBlocks.filter(b=>/mode == 'preflight'|mode != 'skip'/.test(b
 for(const needle of ['d1 time-travel info yukemuri','d1 migrations list yukemuri --remote','build-search-snapshot.mjs --remote --report','SELECT key, value FROM catalog_meta','preflight-report.mjs','cloudflare-deploy-worker.sh --dry-run'])assert(preflight.some(b=>b.text.includes(needle)),'preflight lacks '+needle);
 for(const b of preflight)assert(!WRITES.some(w=>w.test(b.text)),'preflight writes: '+b.text.slice(0,160));
 assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_dispatch:\n    inputs:\n      preflight:\n        description: .*\n        type: boolean\n        default: false\n/m,'manual preflight input, off by default');
-assert.match(deploy,/PREFLIGHT: \$\{\{ inputs\.preflight == true \}\}\n {8}run: node scripts\/cloudflare-deploy-gate\.mjs/,'the gate reads the preflight input');
+assert.match(deploy,/PREFLIGHT: \$\{\{ inputs\.preflight == true \}\}\n {10}DEFERRED: \$\{\{ steps\.lifecycle\.outputs\.deferred == 'true' \}\}\n {8}run: node scripts\/cloudflare-deploy-gate\.mjs/,'the gate reads the preflight input and whether lifecycle.yml deploys this push');
 // A failing command piped into tee fails its step; wrangler runs from node_modules
 // with an explicit --config (no wrangler-action: its secret upload has no --config).
 // Every workflow: an explicit shell, so GitHub runs bash -eo pipefail and a
@@ -186,6 +187,10 @@ assert.deepEqual(deployMode({...base,databaseId:id},{preflight:true}),{mode:'pre
 assert.equal(deployMode({...base,databaseId:id,publicOrigin:origin,autoDeploy:true},{preflight:true}).mode,'preflight','preflight never deploys');
 assert.equal(deployMode({...base,databaseId:id,publicOrigin:origin,autoDeploy:true}).mode,'deploy');
 assert.throws(()=>deployMode(base,{preflight:true}),/database_id/);
+// L01: a push that changes data/lifecycle-official.json is deployed by lifecycle.yml; a manual preflight still runs.
+assert.deepEqual(deployMode({...base,databaseId:id,publicOrigin:origin,autoDeploy:true},{deferred:true}),{mode:'skip',reason:'lifecycle.yml deploys this push after storing data/lifecycle-official.json'});
+assert.equal(deployMode({...base,databaseId:id,publicOrigin:origin,autoDeploy:true},{deferred:false}).mode,'deploy');
+assert.equal(deployMode({...base,databaseId:id},{preflight:true,deferred:true}).mode,'preflight');
 // The deploy script: key only in a 0600 file passed by --secrets-file, removed after.
 {
  const temp=mkdtempSync(join(tmpdir(),'deploy-worker-')),stub=join(temp,'wrangler.js'),log=join(temp,'calls.json'),KEY='deploy-check-key-0123456789';
