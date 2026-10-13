@@ -40,9 +40,11 @@ export function useHotelResults(snap:SnapshotState,filters:HotelFilters,sort:Sor
  const hasMore=response.page*response.pageSize<response.total;
  const loadMore=useCallback(()=>{if(hasMore)setPaging({list,pages:pages+1})},[hasMore,list,pages]);
  const error=snap.error??(textNeeded||result==='text'?snap.textError:null);
- if(preview)return{response:preview,preview:true,loading:false,searchError:snap.error?.message??'',reopenSearch:!!snap.error?.reload,loadMore:noMore,hasMore:false};
+ if(preview)return{response:preview,preview:true,loading:false,searchError:snap.error?.message??'',reopenSearch:!!snap.error?.reload,loadMore:noMore,hasMore:false,order:null};
  // The saved list waits for the favourites; when they cannot be read it stops
  // waiting (the page shows that error and its retry).
  const waitsForFailedFavorites=savedOnly&&!favoritesReady&&favoritesFailed;
- return{response,preview:false,loading:!error&&(!result||result==='text')&&!waitsForFailedFavorites,searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore};
+ // The whole result in list order: the map shows all of it, not the loaded pages (U05).
+ const order=result&&result!=='text'?result.order:null;
+ return{response,preview:false,loading:!error&&(!result||result==='text')&&!waitsForFailedFavorites,searchError:error?.message??'',reopenSearch:!!error?.reload,loadMore,hasMore,order};
 }
