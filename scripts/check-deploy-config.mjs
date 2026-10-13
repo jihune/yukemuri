@@ -171,8 +171,8 @@ assert(stepOf('run-framework.mjs build')<stepOf('d1 time-travel info'),'built be
 assert.match(deploy,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'actions: read for checked-commit.mjs only');
 const sha='0123456789abcdef0123456789abcdef01234567',ok={head_sha:sha,event:'push',head_branch:'main',status:'completed',conclusion:'success',path:'.github/workflows/web-checks.yml',id:1};
 assert.equal(checkedOnMain([ok],sha).checked,true);
-assert.equal(checkedOnMain([{...ok,path:'.github/workflows/deploy.yml'}],sha).checked,true);
-for(const bad of [{head_sha:'f'.repeat(40)},{event:'workflow_dispatch'},{head_branch:'feature'},{conclusion:'failure'},{status:'in_progress'},{path:'.github/workflows/collect.yml'}])assert.equal(checkedOnMain([{...ok,...bad}],sha).checked,false,JSON.stringify(bad));
+// A push deploy can succeed by skipping (deferred to lifecycle.yml) without any check.
+for(const bad of [{head_sha:'f'.repeat(40)},{event:'workflow_dispatch'},{head_branch:'feature'},{conclusion:'failure'},{status:'in_progress'},{path:'.github/workflows/collect.yml'},{path:'.github/workflows/deploy.yml'}])assert.equal(checkedOnMain([{...ok,...bad}],sha).checked,false,JSON.stringify(bad));
 // The deploy job (and its snapshot) waits for a collection run (P03, Codex review on PR #43).
 // Lock order: catalogue group at the top, account inside the job, so a push
 // deploy and the collection's call never hold one each while waiting on the other.

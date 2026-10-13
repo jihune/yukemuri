@@ -1,10 +1,13 @@
 // Did this commit already pass the full checks on a main push? deploy.yml asks
 // before a snapshot deploy that the collection workflow calls (after_collection):
 // that run deploys the commit the collection was dispatched at, which a main
-// push already checked with cloud-check.py --full (Cloud app checks, or the push
-// deploy itself). Then building is enough; otherwise, or when the API cannot
-// tell, the full checks run again. Prints GitHub step outputs; never fails.
-export const CHECK_WORKFLOWS=['.github/workflows/web-checks.yml','.github/workflows/deploy.yml'];
+// push already checked with cloud-check.py --full (Cloud app checks). Then
+// building is enough; otherwise, or when the API cannot tell, the full checks
+// run again. Prints GitHub step outputs; never fails.
+// Not the push deploy: deploy.yml ends a push it leaves to lifecycle.yml as a
+// successful skip without any check (L01). Cloud app checks runs on every main
+// push deploy.yml runs on (same paths-ignore, less the evidence file).
+export const CHECK_WORKFLOWS=['.github/workflows/web-checks.yml'];
 
 // runs: GitHub workflow runs for the commit (any order).
 export function checkedOnMain(runs,sha){

@@ -9,8 +9,9 @@ name: Yukemuri lifecycle
 # main through deploy.yml, as collect.yml does, so the search snapshot is built
 # once, after the evidence: deploy.yml leaves every push that changes this file
 # to this run (paths-ignore, and scripts/lifecycle-push.mjs for a push with
-# other files). A manual run or a rerun deploys again, which also recovers a
-# snapshot deploy that failed after an earlier store (docs/L01-20261013.md).
+# other files). A manual run deploys main again, which also recovers a snapshot
+# deploy that failed after an earlier store. A rerun deploys its push's commit:
+# use it only while no later deploy happened (docs/L01-20261013.md).
 run-name: Yukemuri lifecycle
 on:
   push:

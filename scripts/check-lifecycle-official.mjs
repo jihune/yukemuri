@@ -6,8 +6,9 @@
 // workflow that applies the file: main push of this file or a manual run, the
 // crawl key in the apply step only, the catalogue lock, and one snapshot after
 // the evidence is stored (deploy.yml ignores pushes of this file alone).
-import {spawnSync} from 'node:child_process';
+import {execFile,spawnSync} from 'node:child_process';
 import {mkdtempSync,readFileSync,rmSync,symlinkSync,existsSync} from 'node:fs';
+import {createServer} from 'node:http';
 import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
@@ -89,8 +90,24 @@ try{
  assert.equal(EVIDENCE,FILE);
  for(const files of [[{filename:FILE}],[{filename:'lib/x.ts'},{filename:FILE,status:'modified'}],[{filename:'data/other.json',previous_filename:FILE,status:'renamed'}]])assert.equal(changesEvidence(files),true,JSON.stringify(files));
  for(const files of [[],[{filename:'lib/x.ts'}],[{filename:'data/lifecycle-official.json.bak'}],[{filename:'docs/'+FILE}]])assert.equal(changesEvidence(files),false,JSON.stringify(files));
- const sha='0123456789abcdef0123456789abcdef01234567',unreachable=spawnSync(process.execPath,['scripts/lifecycle-push.mjs'],{encoding:'utf8',env:{...process.env,GITHUB_API_URL:'http://127.0.0.1:9',GITHUB_REPOSITORY:'jihune/yukemuri',GITHUB_SHA:sha,BEFORE:'f'.repeat(40),GH_TOKEN:'test-only'}});
- assert.equal(unreachable.status,0);assert.match(unreachable.stdout,/^deferred=false\nreason=could not tell/,'when the API cannot tell, deploy.yml deploys the push itself');
+ // lifecycle-push.mjs against a local compare API: before 'a'x40 changes the
+ // evidence and code, 'b'x40 code only, 'c'x40 is refused, 'd'x40 has no file list.
+ const sha='0123456789abcdef0123456789abcdef01234567';
+ const compare=createServer((req,res)=>{
+  const m=req.url.match(/^\/repos\/jihune\/yukemuri\/compare\/([0-9a-f])\1{39}\.\.\.([0-9a-f]{40})$/);
+  const answer=m&&m[2]===sha&&req.headers.authorization==='Bearer test-only'?{a:{files:[{filename:'lib/x.ts'},{filename:FILE}]},b:{files:[{filename:'lib/x.ts'}]},d:{}}[m[1]]:undefined;
+  res.writeHead(answer?200:403,{'content-type':'application/json'});res.end(JSON.stringify(answer??{message:'denied'}));
+ });
+ await new Promise(done=>compare.listen(0,'127.0.0.1',done));
+ // Rejects (fails this check) unless the script exits 0.
+ const push=(api,before)=>new Promise((done,fail)=>execFile(process.execPath,['scripts/lifecycle-push.mjs'],{encoding:'utf8',env:{...process.env,GITHUB_API_URL:api,GITHUB_REPOSITORY:'jihune/yukemuri',GITHUB_SHA:sha,BEFORE:before.repeat(40),GH_TOKEN:'test-only'}},(error,stdout)=>error?fail(error):done(stdout)));
+ try{
+  const local=`http://127.0.0.1:${compare.address().port}`;
+  assert.match(await push(local,'a'),/^deferred=true\nreason=this push changes /,'a push that changes the evidence and code is left to lifecycle.yml');
+  assert.match(await push(local,'b'),/^deferred=false\nreason=this push does not change /,'a push without the evidence deploys here');
+  for(const before of ['c','d'])assert.match(await push(local,before),/^deferred=false\nreason=could not tell/,'a refused or empty answer deploys here');
+  assert.match(await push('http://127.0.0.1:9','f'),/^deferred=false\nreason=could not tell/,'when the API cannot tell, deploy.yml deploys the push itself');
+ }finally{compare.close()}
  assert.match(jobs,/  verdict:\n    needs: \[apply, snapshot\]\n    if: \$\{\{ !cancelled\(\) \}\}\n/,'refused evidence fails the run after the snapshot');
  assert.match(jobs,/test "\$APPLY" = success && test "\$FAILED" = 0 && \{ test "\$SNAPSHOT" = success \|\| test "\$SNAPSHOT" = skipped; \}/);
  // One snapshot per merge of this file alone: the push deploy skips it.
