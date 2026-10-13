@@ -882,4 +882,10 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
    - H02(claude/h02-protect)가 `app/layout.tsx` metadata에 robots(noindex) 한 줄을 넣는다. 이 파일을 고칠 때 그 줄을 지우지 않고, 충돌이 나면 두 쪽을 모두 살린다.
    - 상세 PR(5번) 추가 일: 상세 API가 1027·5xx·429·403으로 실패하면 스냅숏 카드 자료로 상세를 보여 주고 ‘자세한 정보를 지금 불러올 수 없음’을 안내한다(응답 모양은 `docs/H02-20261013.md`).
    - H02 배포 뒤에는 UA가 `Mozilla/`·`Opera/`로 시작하지 않는 `/api/*` 요청이 403이다. U05 검사 스크립트는 Node fetch로 정적 `/snapshot/`만 부르고 `/api/`는 브라우저로만 부른다(재확인 필요).
+   - 상위 세션 13:05Z·13:20Z 추가:
+     - 상세 대체 조건은 ‘404가 아님’이다(`ApiError.status`가 없으면 Worker·네트워크 문제, 429·503도 포함). 근거는 H02 PR #76 `docs/H02-20261013.md`의 ‘상세 API 실패 응답’ 표다.
+     - H02 배포 뒤 상세·비교 API는 IP별 60초 30회 제한이다. 브라우저 검사가 1분에 상세를 30번 넘게 열면 429가 난다.
+     - D05 PR #77: Jalan `roomTypes`는 name이 null인 한 항목에 사진이 최대 6장이고, caption은 일본어이며 빈 문자열일 수 있다. Trip.com caption은 ''이다. 사진은 원본 주소(cdn.jalan.jp, *.tripcdn.com)이고, 출처는 sourceId(trip-/jalan-)로 표기한다.
+     - `viewBath`는 `FEATURE_LABELS` 끝(비트 13, ‘전망 욕탕’)에만 있다. 필터·상세·비교에 넣을지는 U05가 정한다.
+     - `rooms.verifiedAt`은 YYYY-MM-DD이고, byType 합과 total(Jalan 総部屋数)이 다를 수 있다.
    - D05 객실 사진: 상세·비교 API의 `roomTypes: [{sourceId, verifiedAt, items:[{name, photos:[{url, caption}]}]}]`. Trip.com은 타입 이름과 사진 3장(최대 30개 타입), Jalan은 name이 null이고 caption은 숙소 설명이다. Trip.com → Jalan 순으로 이어 붙인다. 출처 표기는 대표 사진과 같은 방식이다. 상세 PR에서 있을 때와 없을 때 모두 동작하게 한다.
