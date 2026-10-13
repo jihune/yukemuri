@@ -55,17 +55,18 @@ for(const w of [390,1280]){
   };
   await audit('처음');
   const zoomIn=page.getByRole('button',{name:'지도 확대'}),zoomOut=page.getByRole('button',{name:'지도 축소'});
-  for(let i=0;i<3;i++){await tap(zoomIn);await audit('확대 '+(i+1))}
-  for(let i=0;i<5;i++){await tap(zoomOut);await audit('축소 '+(i+1))}
+  const press=l=>l.evaluate(e=>e.click());
+  for(let i=0;i<3;i++){await press(zoomIn);await audit('확대 '+(i+1))}
+  for(let i=0;i<5;i++){await press(zoomOut);await audit('축소 '+(i+1))}
   const bad=steps.filter(x=>!(x.shown===x.expected&&x.inView===x.expected&&x.list===x.expected&&x.inView+x.out+x.unknown===order.length&&x.total===order.length));
   check(`${label||'전국'}: 확대 단계마다 표지+묶음 합 = 이 화면 = 목록 = 스냅숏의 화면 안 수, 화면 안+밖+미확인 = 결과 ${order.length}곳`,steps.length===9&&bad.length===0,{steps,bad});
   // The stays without a point open as a list of that many.
   const unknownButton=page.locator('.map-coverage button',{hasText:'위치 미확인'});
   if(await unknownButton.count()){
-   await tap(unknownButton);await page.waitForTimeout(300);
+   await press(unknownButton);await page.waitForTimeout(300);
    const r=await read();
    check(`${label||'전국'}: 위치 미확인 목록 수 = 결과 중 위치 없는 숙소 ${order.length-located.length}곳`,r.list===order.length-located.length&&(await page.locator('.map-stay-list h3').innerText()).includes('위치 미확인'),{list:r.list,expected:order.length-located.length});
-   const back=page.locator('.map-stay-list-back');if(await back.count())await tap(back);
+   const back=page.locator('.map-stay-list-back');if(await back.count())await press(back);
   }
   // A group: zoom in to its stays, or open them as a list of the same count.
   const group=page.locator('.map-canvas .stay-marker.is-cluster').first();
