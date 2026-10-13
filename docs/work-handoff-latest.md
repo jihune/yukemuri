@@ -551,6 +551,16 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘롤백’의 ‘Secret이 그 버전 뒤에 바뀌었으면 wrangler가 비대화형 확인에서 멈출 수 있다(미확인)’는 틀렸다. wrangler 4.92.0은 오류 10220을 받으면 `CI=true`에서 확인을 기본값(yes)으로 넘기고 `deployments?force=true`로 강제로 되돌린다(검토 세션이 가짜 API로 재현). 되돌린 버전은 그때의 Secret(예: 바꾸기 전 `CRAWL_ACCESS_KEY`)을 쓸 수 있고 요약에는 표시가 없다. 문서를 고치고, 키를 바꾼 적이 있으면 롤백 뒤 수집 키를 확인하라는 주의와, 필요하면 출력의 `secrets have changed`를 요약 경고로 남기는 처리를 더한다. 이 절의 ‘미확인’ 첫 항목도 같은 내용으로 바꾼다. → 완료: 상위 세션 기록 PR에서 롤백 설명과 주의 4, 이 절 ‘미확인’을 고쳤다. 요약 경고 처리는 더하지 않았다(주의 4로 충분하고 코드 변경은 검토가 필요).
 - 다음 작업(P3, Claude 검토 1회째): `cloudflare-deploy.md` ‘사용량 측정’의 ‘그 밖의 실패 4종’은 5종이다(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음). → 완료: 상위 세션 기록 PR에서 고쳤다.
 
+## H01 4단계 — 백업에서 새 D1로 적재
+
+기록: 2026-10-13 UTC. 상위 세션이 맡긴 작업이다. 작성 세션 `session_018hDPrhXsbxgUEpWjeMBH8k`. 상세는 `H01-20261011.md`의 ‘4단계 결과’다.
+
+- 실행기 PR #3(`b7f9c64`)·#4(`9fb6e1d`)의 `cloudflare-load.yml`로 백업 run 38092128934의 13개 테이블을 10-11·10-12·10-13 UTC에 나눠 넣었다. 모든 테이블의 원격 행 수가 백업 manifest와 같다. D1 위치는 APAC다.
+- 10-12 첫 `hotels` 적재는 정확히 100,000바이트 문장에서 `SQLITE_TOOBIG`으로 실패했고, 상한을 90,000바이트로 낮춘 PR #4 뒤 다시 넣었다. 실패한 import는 쓰기 0, 행 0이었다.
+- 예상 쓰기(행 × (1 + 색인 수))가 `rows_written_24h`와 맞았다.
+- 이 기록 PR이 `publicOrigin`과 `autoDeploy: true`를 켠다. 병합이 첫 배포다. 10-13 UTC 쓰기 예상은 적재 43,095 + 0013 약 31,620 + prepare 약 2 = 약 74,717행(9만 이하).
+- 다음 작업: 상위 세션이 이 PR을 병합(첫 배포) → 배포 결과(Worker 버전 ID·bookmark·스냅숏 읽기·smoke)를 `deployments.md`에 기록. 수집기 User-Agent 주소(`source_safety.py`, 아직 Sites 주소)는 6단계 전에 정한다.
+
 ## H01 첫 배포 전 deploy.yml 보강(사전 점검·Secret 업로드)
 
 기록: 2026-10-12T11:39Z / 2026-10-12 20:39 KST. 상위 세션이 맡긴 작업이다(10:35Z 요청, 사전 검토 B1·B2·B3·B5·B6·C2·C3·A5). 작성 세션 `session_01DPWccvrTAVG5jay8KLJYLT`. 병합은 상위 세션이 한다. 운영 D1·Cloudflare 계정·Secret 값에 접속하지 않았다.
