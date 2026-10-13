@@ -35,7 +35,8 @@ export type ViewGroups={markers:MapMarker[];
  // The stays in view, in result order: what the list beside the map shows.
  inView:number[];outOfView:number;unknown:number;total:number};
 
-export const GROUP_CELL_PX=56;
+// A group marker is up to 60px wide; cells a little wider keep neighbours from overlapping much.
+export const GROUP_CELL_PX=72;
 
 const mercatorX=(lng:number)=>(lng+180)/360;
 const mercatorY=(lat:number)=>{const s=Math.sin(Math.max(-85.0511,Math.min(85.0511,lat))*Math.PI/180);return 0.5-Math.log((1+s)/(1-s))/(4*Math.PI)};

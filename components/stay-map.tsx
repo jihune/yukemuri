@@ -150,7 +150,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
  }
  return <div className={`stay-map ${compact?'compact-map':''}`}>
   <div ref={container} className="map-canvas" aria-label="숙소 위치 지도"/>
-  <div className="map-caption"><MapPin size={15}/><span>{compact?'숙소 위치':area?'이 지역':'지도 표시'} <b>{spots.length+cells.reduce((sum,c)=>sum+c.count,0)}곳</b></span></div>
+  {!result&&<div className="map-caption"><MapPin size={15}/><span>{compact?'숙소 위치':area?'이 지역':'지도 표시'} <b>{spots.length+cells.reduce((sum,c)=>sum+c.count,0)}곳</b></span></div>}
   {onSearchArea&&ready&&(moved||areaBusy||area||areaFailed)&&<button className="map-area-search" aria-disabled={areaBusy||undefined} onClick={searchArea}><Search size={15}/>{areaBusy?'이 지역 숙소를 찾는 중…':area?'이 지역에서 다시 검색':'이 지역에서 검색'}</button>}
   <div className="map-controls">
    <button aria-label="지도 확대" onClick={()=>mapRef.current?.zoomIn()}><Plus size={19}/></button>
