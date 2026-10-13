@@ -48,6 +48,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 한 가지 일로 연 세션(일회성 PR 하위 세션, Claude 검토 세션, 시험 세션)은 결과를 기록한 뒤 `archive_session`으로 보관한다. 후속 작업이 남은 하위 세션은 남긴다. 보관해도 `get_session`·`list_events`로 읽을 수 있고 `unarchive_session`으로 되살릴 수 있다(10-13 확인). 상위 세션은 연결된 세션을 아래 6의 목록처럼 기록해 둔다(사용자 10-13).
 - 모델과 추론 강도(사용자 10-13): 관리·계획을 맡아 오래 쓰는 세션과 리뷰·검토 세션은 그때의 상위 모델(10-13 기준 Opus 5.5)에 높은 추론 강도를 쓴다. 단순 검색이나 단순 작업은 하위 모델이나 낮은 강도를 쓴다. 하위 에이전트는 Agent 도구의 `model`·`effort`로, 하위 세션은 `create_session`의 `model`로 정한다. 추론 강도는 Default 환경의 `CLAUDE_CODE_EFFORT_LEVEL=xhigh`가 모든 세션에 건다(10-13 확인). 모델 이름은 룰에 고정하지 않는다.
 - 답변과 하위 세션 메시지는 한국어로 쓰고 한자를 출력하지 않는다.
+- 안 쓰는 세션 보관(사용자 10-13 21:5xZ): ‘이 세션의 상위 세션 및 "D06" 세션 등 이제 안쓰는 세션은 보관을 해도 되나? 너가 해줄래?’ 상위 세션이 이전 상위 세션과 D06 세션을 보관했다(21:5xZ). 보관한 세션도 `list_events`로 대화 기록을 읽을 수 있고 `unarchive_session`으로 되돌릴 수 있다. 작업의 연결은 세션 기억이 아니라 이 문서·roadmap·deployments·브랜치에 둔다.
 
 ### 3. 지금 상태(2026-10-13T10:22Z)
 
@@ -58,7 +59,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
   - H01 7단계(전환 뒤) 매일 사용량 점검: 첫 점검은 2026-10-14T01:20Z다(위 1-2의 예약).
   - C03 수집량: 10-14부터 실행당 최대 120쪽이다.
 - 대기·보류:
-  - D06 후속(Wikidata 한국어 이름 K1, 주소 사전 보강): 하위 세션 `session_01FFQYTnNr47q7K6k8RV3EXP`(쉬는 중, 브랜치 `claude/d06-geo`)에 맡기거나 새 세션을 연다. 남은 사용량을 보고 시작한다.
+  - D06 후속(Wikidata 한국어 이름 K1, 주소 사전 보강): 새 세션을 연다(D06 세션은 10-13 21:5xZ에 보관했다. 필요하면 `unarchive_session`으로 되살린다). 남은 사용량을 보고 시작한다.
   - PR #38(P02 B, 초안)을 닫을지 정해야 한다.
   - Sites(옛 주소) 정리.
   - 그 밖의 항목은 `docs/roadmap.md`에 있다.
@@ -82,13 +83,13 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | 세션 | 맡은 일 | 상태 |
 |---|---|---|
 | `session_01KfLU3P8YrmZdyxehAEp9rp` | 새 상위 세션(2026-10-13T11:57Z 시작, 브랜치 `claude/yukemuri-parent`, 부모는 이전 상위 세션) | 진행 중 |
-| `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 인계 뒤 두 하위 세션의 질문에만 답한다. 보관하지 않는다 | 대기 |
-| `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션) | 진행 중 |
+| `session_01BSbr1zrttr8mSibf5bfz2R` | 이전 상위 세션(10-10 시작). 브랜치 `claude/pensive-bell-odhgp8`은 모두 main에 있다. 그 하위 세션(U05)은 새 상위 세션 id로 직접 보낸다 | 보관(10-13 21:5xZ, 사용자 지시) |
+| `session_016BDUGgoyLcPam5xaVfnHXY` | 하네스 점검과 개선(`jihune/agent-harness`, 브랜치 `claude/harness-review`, 부모는 이전 상위 세션). 하네스 관리 세션 `session_01MYY4pY2yi7c3oixLgRRsjT`에 인계했다 | 보관 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(브랜치 `claude/d05-rooms`, PR #77 병합·배포, 부모는 새 상위 세션). 다음은 D04(7일 사용량이 허락할 때) | 대기 |
 | `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(브랜치 `claude/h02-protect`, PR #76 병합·배포, 부모는 새 상위 세션) | 보관(15:09Z) |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, 부모는 새 상위 세션) | 진행 중 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 2단계(브랜치 `claude/u05-ui`, PR #67~). 부모는 이전 상위 세션이라 새 상위 세션 id로 직접 보낸다 | 진행 중 |
-| `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합, 후속 브랜치 `claude/d06-geo`) | 쉬는 중 |
+| `session_01FFQYTnNr47q7K6k8RV3EXP` | D06 지도 좌표(PR #66 병합). 브랜치 `claude/d06-geo`는 모두 main에 있다. 후속은 새 세션이 `D06-20261013.md`에서 시작한다 | 보관(10-13 21:5xZ, 사용자 지시) |
 | `session_01Y1JhjKANZbPiLfETCBdRns` | P03 정적 스냅숏(PR #43·#44·#45·#52) | 보관 |
 | `session_01ApA7wHQgaSiouBZKS9pe2X` | P02 D1 읽기량 2차(PR #37, 초안 #38) | 보관 |
 | `session_01CxpfgqwqKjdEaEKeSpgNFQ` | P01 응답 속도(PR #28·#31) | 보관 |
@@ -135,7 +136,8 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 20:17Z 재개(초기화 20:00Z 뒤, 20:15Z 예약): 5시간 창 0.12, 7일 창 0.54. L01은 20:10Z 예약으로 다시 움직이고 있었다. 상위 세션이 U05·D05·#77 검토 세션에 재개를 지시했다. 7일 창은 하루 사이 0.29에서 0.54가 됐다.
 - PR #77(D05) 병합(21:11Z, `e88c14c`)과 배포: 이어 가는 Claude 검토 1회째(`b14f9b7`)는 P0–P2가 없고 P3가 2건이었다. roadmap 상태 칸은 D05가 기록 파일에서 고쳤다. 검사 단언 보강(`check-source-policy`)은 D04 첫 PR로 넘겼다. D05는 상위 세션의 답이 닿기 전에 그 보강을 `1fcbc42`로 push했다가 `a0511cc`에서 되돌렸다. 상위 세션이 `git diff b14f9b7 a0511cc -- . ':!docs'`로 코드가 검토본과 같음(빈 차이)을 확인하고 40자 SHA로 병합했다. 배포 run 38468641288과 main 검사 run 38468641274가 통과했고, 결과는 `deployments.md`에 있다. 이 배포부터 gentle 수집이 판 번호가 v3가 아닌 Jalan 상세를 다시 방문한다. 그만큼 D1 쓰기가 늘 수 있으나 하루 85% 상한(`collection-budget.mjs`)이 쪽 수를 줄인다. #77 검토 세션(`session_01UXw48gT9DkHR9DUymjRM6Z`)은 20:22Z에 이미 보관됐다.
 - PR #80(U05 2번 지도 모드): Codex 검토 3회를 다 써서 상위 세션이 21:10Z에 이어 가는 Claude 검토 세션 `session_01GrGohgfho7Qo9M6RHsMELR`(head `9659c5b`)을 열었다. P0–P2가 없으면 병합하고, 그 뒤 U05가 3번 목록 PR을 시작한다.
-- PR #80 병합(21:31Z, `9f90982`)과 배포: Claude 검토(`9659c5b`)는 P0–P2가 없고 P3가 1건이었다. 그 P3는 79d1368의 점선 구역과 지도 안내를 판정하는 저장소 검사가 없다는 것이다. #80의 CI는 #77 병합 전 main에서 돌았기 때문에, 상위 세션이 main(`a9fd9a9`)과 합친 트리를 로컬에서 만들어 빠른 검사 26개(`python3 scripts/cloud-check.py`, tsc·`check-map-groups` 포함)가 통과하는 것을 본 뒤 40자 SHA로 병합했다. 배포 run 38471267168과 main 검사 run 38471267267이 통과했고, 결과는 `deployments.md`에 있다. U05는 병합 소식이 닿기 전에 P3 검사를 `a4c3fc1`(검사·인수인계만)로 push했다. 이 커밋은 main에 없고, 상위 세션이 3번 목록 PR의 첫 커밋으로 가져가라고 지시했다. #80 검토 세션 `session_01GrGohgfho7Qo9M6RHsMELR`은 이 기록 뒤 보관한다.
+- PR #80 병합(21:31Z, `9f90982`)과 배포: Claude 검토(`9659c5b`)는 P0–P2가 없고 P3가 1건이었다. 그 P3는 79d1368의 점선 구역과 지도 안내를 판정하는 저장소 검사가 없다는 것이다. #80의 CI는 #77 병합 전 main에서 돌았기 때문에, 상위 세션이 main(`a9fd9a9`)과 합친 트리를 로컬에서 만들어 빠른 검사 26개(`python3 scripts/cloud-check.py`, tsc·`check-map-groups` 포함)가 통과하는 것을 본 뒤 40자 SHA로 병합했다. 배포 run 38471267168과 main 검사 run 38471267267이 통과했고, 결과는 `deployments.md`에 있다. U05는 병합 소식이 닿기 전에 P3 검사를 `a4c3fc1`(검사·인수인계만)로 push했다. 이 커밋은 main에 없고, 상위 세션이 3번 목록 PR의 첫 커밋으로 가져가라고 지시했다. #80 검토 세션 `session_01GrGohgfho7Qo9M6RHsMELR`은 21:5xZ에 보관했다.
+- 세션 보관(사용자 지시, 21:5xZ): 이전 상위 세션과 D06 세션을 보관했다. 보관 전에 두 세션의 브랜치(`claude/pensive-bell-odhgp8`, `claude/d06-geo`)가 모두 main에 들어가 있는지 `git merge-base --is-ancestor`로 확인했고, 두 세션에 걸린 예약이 없는지 `list_triggers`로 확인했다. 보관한 #80 검토 세션의 마지막 결과를 `list_events`로 다시 읽어, 보관 뒤에도 대화 기록을 읽을 수 있음을 확인했다. U05에는 '@parent' 대신 새 상위 세션 id로 보내라고 다시 알렸다. 이 프로젝트가 아닌 개인 상담비서 DB 세션 두 개와 하네스 관리 세션은 건드리지 않았다.
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
 
