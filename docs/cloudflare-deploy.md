@@ -162,7 +162,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - 검토된 근거 파일 `data/lifecycle-official.json`(Worker 계약 `lib/lifecycle-contract.ts`의 항목 목록)을 `lifecycle.yml`이 운영 Worker의 `PUT /api/hotel-lifecycle`에 보낸다. 시작은 이 파일을 바꾼 main push와 수동 실행뿐이다. PR·schedule에서는 돌지 않는다.
 - 크롤 키는 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 적용 단계 env로만 받는다. `scripts/runner/apply-lifecycle.py`가 `update-lifecycle.py` 표준입력으로만 넘긴다. 잠금은 수집과 같은 `yukemuri-catalog-updates`(`queue: max`)다.
 - 적용 job은 main 참조에서만 돈다. 키를 쓰기 전에 의존성을 설치하고 `check-lifecycle-official.mjs`로 파일 전체를 Worker 계약·예약 사이트 출처·중복·미래 확인일로 검사한다.
-- 같은 근거는 `replayed`(쓰기 0)다. 더 새 근거가 저장돼 있으면 409로 거절된다. 저장한 근거가 있으면 스냅숏을 한 번 다시 만든다. 같은 커밋의 push 배포가 아직 기다리고 있으면 그 배포가 이 실행 뒤에 만들므로 맡기고(`scripts/pending-push-deploy.mjs`), 아니면 `deploy.yml`(`after_collection: true`)을 부른다. `deploy.yml` push 트리거는 이 파일만 바꾼 병합을 건너뛴다(`paths-ignore`). 거절된 근거가 있으면 스냅숏 뒤에 판정 job이 실행을 실패로 끝낸다.
+- 같은 근거는 `replayed`(쓰기 0)다. 더 새 근거가 저장돼 있으면 409로 거절된다. 저장한 근거가 있으면 스냅숏을 한 번 다시 만든다. 같은 커밋의 push 배포가 아직 기다리고 있으면 그 배포가 이 실행 뒤에 만들므로 맡기고(`scripts/pending-push-deploy.mjs`), 아니면 `deploy.yml`(`after_collection: true`)을 부른다. 수동 실행과 재실행에서는 모두 `replayed`여도 다시 만든다(앞선 스냅숏 배포가 실패했을 때 복구). `deploy.yml` push 트리거는 이 파일만 바꾼 병합을 건너뛴다(`paths-ignore`). 거절된 근거가 있으면 스냅숏 뒤에 판정 job이 실행을 실패로 끝낸다.
 - 파일에서 항목을 지워도 운영 상태는 되돌아가지 않는다. 더 늦은 확인일의 새 근거로 바꾼다.
 - 검사: `check-lifecycle-official.mjs`, `runner/check_lifecycle.py`(`cloud-check.py` 기본 목록), `measure-d1-reads.mjs --check`의 lifecycle 상한.
 

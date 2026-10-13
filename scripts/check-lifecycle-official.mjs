@@ -81,8 +81,8 @@ try{
  assert.match(apply,/name: Leave the snapshot to a push deploy of this commit still waiting\n {8}id: pending\n {8}env:\n {10}GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/pending-push-deploy\.mjs \| tee -a "\$GITHUB_OUTPUT"\n/);
  assert.match(apply,/outputs:\n      saved: \$\{\{ steps\.apply\.outputs\.saved \}\}\n      failed: \$\{\{ steps\.apply\.outputs\.failed \}\}\n      deploy_pending: \$\{\{ steps\.pending\.outputs\.deploy_pending \}\}\n/);
  assert.equal(jobs.slice(jobs.indexOf('  snapshot:\n'),jobs.indexOf('  # Refused')),[
-  '  snapshot:','    needs: apply',"    if: needs.apply.outputs.saved != '0' && needs.apply.outputs.deploy_pending != 'true'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
-  'one snapshot through deploy.yml after the evidence is stored, when something was saved and no push deploy of this commit is waiting to build it');
+  '  snapshot:','    needs: apply',"    if: (needs.apply.outputs.saved != '0' || github.event_name == 'workflow_dispatch' || github.run_attempt != '1') && needs.apply.outputs.deploy_pending != 'true'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
+  'one snapshot through deploy.yml after the evidence is stored, when something was saved or the run is manual or a rerun (a failed snapshot is rebuilt), and no push deploy of this commit is waiting to build it');
  // A push deploy of the same commit that has not completed runs after this run
  // (catalogue lock) and builds the snapshot; one that completed ran before it.
  const sha='0123456789abcdef0123456789abcdef01234567',run={id:1,head_sha:sha,event:'push',head_branch:'main',path:DEPLOY,status:'queued'};
