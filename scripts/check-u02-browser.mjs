@@ -54,7 +54,7 @@ async function run(page){
  const titles=()=>page.locator('.hotel-list .card-title').allInnerTexts();
  await page.locator('.hotel-list .card-title').first().waitFor({timeout:2500}).catch(()=>{});
  const early=await titles(),expectedFirst=(await api('stable=1')).hotels.map(h=>h.names.ko);
- const earlyBanner=await page.locator('.demo-banner').innerText();
+ const earlyBanner=await page.locator('.site-footer .data-status').innerText();
  check('스냅숏을 받기 전에 정적 첫 쪽 40곳이 기본 결과와 같은 순서로 보이고 로딩 안내 없음',early.length===40&&JSON.stringify(early)===JSON.stringify(expectedFirst.slice(0,40))&&await page.locator('.catalog-loading').count()===0&&!earlyBanner.includes('불러오는 중'),{early:early.length,earlyBanner});
  await page.waitForLoadState('networkidle');await page.unroute(snapshotFiles);
  check('스냅숏을 받은 뒤에도 같은 첫 쪽',JSON.stringify(await titles())===JSON.stringify(early));
@@ -102,7 +102,7 @@ async function run(page){
  check('목록을 받으면 그 조건의 수로 안내',verified.unknownExcluded>0&&verifiedText.includes(count(verified.unknownExcluded)),{expected:verified.unknownExcluded,verifiedText});
  // Changing conditions computes in the browser: no request to the Worker.
  const before=workerLists.length;
- await page.locator('.mobile-quick button').first().tap();
+ await page.locator('.chip-bar .verified-chip').tap();
  await page.waitForTimeout(300);
  check('조건을 바꿔도 목록 요청이 Worker로 가지 않음',workerLists.length===before&&await page.locator('.catalog-loading').count()===0,{requests:workerLists.slice(before)});
 
