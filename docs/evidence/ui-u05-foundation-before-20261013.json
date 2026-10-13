@@ -1,0 +1,1669 @@
+{
+ "checkedAt": "2026-10-13T05:23:26.757Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": false,
+   "detail": {
+    "fonts": [],
+    "family": "Pretendard, \"Noto Sans KR\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", Arial, sans-serif",
+    "fontFiles": [],
+    "fontRequests": 0,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": false,
+   "detail": {
+    "violations": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 194,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Ex",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected c",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co",
+       "summary | Element has insufficient color contrast of 4.22 (foreground color: #617b83, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast ra",
+       ".eyebrow | Element has insufficient color contrast of 3.06 (foreground color: #78939a, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast r"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "axe critical 위반 0",
+   "pass": true,
+   "detail": {
+    "critical": [],
+    "other": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 194
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": false,
+   "detail": {
+    "controls": 275,
+    "exempt": 1,
+    "small": [
+     {
+      "name": "유케무리 전체 숙소",
+      "w": 114.4,
+      "h": 41.4,
+      "exempt": false
+     },
+     {
+      "name": "검색 지역",
+      "w": 100,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "w": 133,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "검색",
+      "w": 48,
+      "h": 37.5,
+      "exempt": false
+     },
+     {
+      "name": "하코네",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "유후인",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "구로카와",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "벳푸",
+      "w": 52,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "노보리베츠",
+      "w": 91,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "조잔케이",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "아리마",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "기노사키",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "일본 전국",
+      "w": 87.9,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "후쿠오카",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "구마모토",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오이타 · 유후인",
+      "w": 124.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "홋카이도",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오키나와",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오사카",
+      "w": 70,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "효고 · 고베",
+      "w": 96.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "도쿄",
+      "w": 56,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "가나가와 · 하코네",
+      "w": 138.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "전국 수집 현황",
+      "w": 328,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "숙소 비교 열기, 0곳 선택",
+      "w": 100.4,
+      "h": 40,
+      "exempt": false
+     },
+     {
+      "name": "필터",
+      "w": 62,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "숙소 정렬",
+      "w": 120.7,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "내 검증 기준",
+      "w": 120.8,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "온천 조건",
+      "w": 102.9,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영",
+      "w": 119.2,
+      "h": 36,
+      "exempt": false
+     },
+     {
+      "name": "긴린소 즐겨찾기 저장",
+      "w": 29,
+      "h": 29,
+      "exempt": false
+     }
+    ],
+    "smallCount": 211
+   }
+  },
+  {
+   "width": 360,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": false,
+   "detail": {
+    "count": 424,
+    "sample": [
+     {
+      "text": "YUKEMURI",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "숙소 찾기",
+      "size": 12,
+      "cls": "nav-active"
+     },
+     {
+      "text": "즐겨찾기 0",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "0",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "전통 온천마을부터 섬의 온천 숙소까지, 탕과 온천수 조",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "일본 전국",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "온천마을",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목 · 최근 출",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "전국 수집 현황",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "현재 47 / 47개 도도부현에 숙소 항목이 있습니다.",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "EXPLORE JAPAN",
+      "size": 12,
+      "cls": "eyebrow"
+     },
+     {
+      "text": "필터",
+      "size": 12,
+      "cls": "mobile-filter"
+     },
+     {
+      "text": "온천 확인 우선",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "온천 특징을 비교하고, 마음에 드는 곳을 저장하세요.",
+      "size": 12,
+      "cls": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "EXPLORE JAPAN",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": false,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": false,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "MY SAVED STAYS",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "필터 시트: 44px 미만 조작 0·13px 미만 글자 0",
+   "pass": false,
+   "detail": {
+    "small": [
+     {
+      "name": "필터 닫기",
+      "w": 38,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "평점 출처",
+      "w": 292.2,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "최소 평점",
+      "w": 292.2,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "최소 리뷰 수",
+      "w": 292.2,
+      "h": 38,
+      "exempt": false
+     }
+    ],
+    "tiny": [
+     {
+      "text": "Trip.com 9.0+ · 리뷰 50개+",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다.",
+      "size": 12,
+      "cls": "filter-hint bath-filter-intro"
+     },
+     {
+      "text": "24",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "2",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "6",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "34",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "32",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "13",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "8",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "2",
+      "size": 12,
+      "cls": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": false,
+   "detail": {
+    "size": {
+     "w": 51.34375,
+     "h": 18
+    },
+    "contrast": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 11,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Ex",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected c",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co",
+       ".eyebrow | Element has insufficient color contrast of 3.06 (foreground color: #78939a, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast r",
+       ".mobile-quick > button:nth-child(1) | Element has insufficient color contrast of 4.32 (foreground color: #5c7f8a, background color: #ffffff, font size: 10.5pt (14px), font weight: "
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  },
+  {
+   "width": 390,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": false,
+   "detail": {
+    "fonts": [],
+    "family": "Pretendard, \"Noto Sans KR\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", Arial, sans-serif",
+    "fontFiles": [],
+    "fontRequests": 0,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": false,
+   "detail": {
+    "violations": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 194,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Ex",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected c",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co",
+       "summary | Element has insufficient color contrast of 4.22 (foreground color: #617b83, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast ra",
+       ".eyebrow | Element has insufficient color contrast of 3.06 (foreground color: #78939a, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast r"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "axe critical 위반 0",
+   "pass": true,
+   "detail": {
+    "critical": [],
+    "other": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 194
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": false,
+   "detail": {
+    "controls": 275,
+    "exempt": 1,
+    "small": [
+     {
+      "name": "유케무리 전체 숙소",
+      "w": 114.4,
+      "h": 41.4,
+      "exempt": false
+     },
+     {
+      "name": "검색 지역",
+      "w": 100,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "w": 163,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "검색",
+      "w": 48,
+      "h": 37.5,
+      "exempt": false
+     },
+     {
+      "name": "하코네",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "유후인",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "구로카와",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "벳푸",
+      "w": 52,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "노보리베츠",
+      "w": 91,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "조잔케이",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "아리마",
+      "w": 65,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "기노사키",
+      "w": 78,
+      "h": 33.5,
+      "exempt": false
+     },
+     {
+      "name": "일본 전국",
+      "w": 87.9,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "후쿠오카",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "구마모토",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오이타 · 유후인",
+      "w": 124.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "홋카이도",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오키나와",
+      "w": 84,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "오사카",
+      "w": 70,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "효고 · 고베",
+      "w": 96.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "도쿄",
+      "w": 56,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "가나가와 · 하코네",
+      "w": 138.5,
+      "h": 35,
+      "exempt": false
+     },
+     {
+      "name": "전국 수집 현황",
+      "w": 358,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "숙소 비교 열기, 0곳 선택",
+      "w": 100.4,
+      "h": 40,
+      "exempt": false
+     },
+     {
+      "name": "필터",
+      "w": 62,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "숙소 정렬",
+      "w": 120.7,
+      "h": 34,
+      "exempt": false
+     },
+     {
+      "name": "내 검증 기준",
+      "w": 120.8,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "온천 조건",
+      "w": 102.9,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영",
+      "w": 119.2,
+      "h": 36,
+      "exempt": false
+     },
+     {
+      "name": "긴린소 즐겨찾기 저장",
+      "w": 29,
+      "h": 29,
+      "exempt": false
+     }
+    ],
+    "smallCount": 216
+   }
+  },
+  {
+   "width": 390,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": false,
+   "detail": {
+    "count": 424,
+    "sample": [
+     {
+      "text": "YUKEMURI",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "숙소 찾기",
+      "size": 12,
+      "cls": "nav-active"
+     },
+     {
+      "text": "즐겨찾기 0",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "0",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "전통 온천마을부터 섬의 온천 숙소까지, 탕과 온천수 조",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "일본 전국",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "온천마을",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목 · 최근 출",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "전국 수집 현황",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "현재 47 / 47개 도도부현에 숙소 항목이 있습니다.",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "EXPLORE JAPAN",
+      "size": 12,
+      "cls": "eyebrow"
+     },
+     {
+      "text": "필터",
+      "size": 12,
+      "cls": "mobile-filter"
+     },
+     {
+      "text": "온천 확인 우선",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "온천 특징을 비교하고, 마음에 드는 곳을 저장하세요.",
+      "size": 12,
+      "cls": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "EXPLORE JAPAN",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": false,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": false,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "MY SAVED STAYS",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "필터 시트: 44px 미만 조작 0·13px 미만 글자 0",
+   "pass": false,
+   "detail": {
+    "small": [
+     {
+      "name": "필터 닫기",
+      "w": 38,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "평점 출처",
+      "w": 319.8,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "최소 평점",
+      "w": 319.8,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "최소 리뷰 수",
+      "w": 319.8,
+      "h": 38,
+      "exempt": false
+     }
+    ],
+    "tiny": [
+     {
+      "text": "Trip.com 9.0+ · 리뷰 50개+",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다.",
+      "size": 12,
+      "cls": "filter-hint bath-filter-intro"
+     },
+     {
+      "text": "24",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "2",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "6",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "34",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "32",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "13",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "8",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "2",
+      "size": 12,
+      "cls": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": false,
+   "detail": {
+    "size": {
+     "w": 51.34375,
+     "h": 18
+    },
+    "contrast": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 11,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Ex",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected c",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co",
+       ".eyebrow | Element has insufficient color contrast of 3.06 (foreground color: #78939a, background color: #f6f8f9, font size: 9.0pt (12px), font weight: normal). Expected contrast r",
+       ".mobile-quick > button:nth-child(1) | Element has insufficient color contrast of 4.32 (foreground color: #5c7f8a, background color: #ffffff, font size: 10.5pt (14px), font weight: "
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Pretendard를 사이트 정적 파일에서 적재(외부 글꼴 요청 없음)",
+   "pass": false,
+   "detail": {
+    "fonts": [],
+    "family": "Pretendard, \"Noto Sans KR\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", Arial, sans-serif",
+    "fontFiles": [],
+    "fontRequests": 0,
+    "externalFont": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "axe 색 대비 위반 0(첫 화면)",
+   "pass": false,
+   "detail": {
+    "violations": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 212,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 11.3pt (15px), font weight: normal). E",
+       ".version | Element has insufficient color contrast of 4.35 (foreground color: #607e85, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast r",
+       ".version > b | Element has insufficient color contrast of 3.94 (foreground color: #607e85, background color: #edf5f6, font size: 9.0pt (12px), font weight: normal). Expected contra",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected ",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "axe critical 위반 0",
+   "pass": false,
+   "detail": {
+    "critical": [
+     {
+      "id": "aria-valid-attr-value",
+      "impact": "critical",
+      "nodes": 1,
+      "sample": [
+       "#radix-_R_29k6i_-trigger-split | "
+      ]
+     }
+    ],
+    "other": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 212
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "44px 미만 조작 0(문장 안 링크·지도 저작권 제외)",
+   "pass": false,
+   "detail": {
+    "controls": 307,
+    "exempt": 3,
+    "small": [
+     {
+      "name": "검색 지역",
+      "w": 107.9,
+      "h": 38,
+      "exempt": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "w": 222.1,
+      "h": 39,
+      "exempt": false
+     },
+     {
+      "name": "검색",
+      "w": 80,
+      "h": 42.5,
+      "exempt": false
+     },
+     {
+      "name": "하코네",
+      "w": 69,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "유후인",
+      "w": 69,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "구로카와",
+      "w": 82,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "벳푸",
+      "w": 56,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "노보리베츠",
+      "w": 95,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "조잔케이",
+      "w": 82,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "아리마",
+      "w": 69,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "기노사키",
+      "w": 82,
+      "h": 35.5,
+      "exempt": false
+     },
+     {
+      "name": "일본 전국",
+      "w": 91.9,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "후쿠오카",
+      "w": 88,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "구마모토",
+      "w": 88,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "오이타 · 유후인",
+      "w": 128.5,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "홋카이도",
+      "w": 88,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "오키나와",
+      "w": 88,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "오사카",
+      "w": 74,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "효고 · 고베",
+      "w": 100.5,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "도쿄",
+      "w": 60,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "가나가와 · 하코네",
+      "w": 142.5,
+      "h": 37,
+      "exempt": false
+     },
+     {
+      "name": "전국 수집 현황",
+      "w": 1216,
+      "h": 19.5,
+      "exempt": false
+     },
+     {
+      "name": "초기화",
+      "w": 36,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     },
+     {
+      "name": "peer size-4 shrink-0 rounded-[4px] borde",
+      "w": 18,
+      "h": 18,
+      "exempt": false
+     }
+    ],
+    "smallCount": 251
+   }
+  },
+  {
+   "width": 1280,
+   "name": "13px 미만 글자 0(사진 위 표지 제외)",
+   "pass": false,
+   "detail": {
+    "count": 368,
+    "sample": [
+     {
+      "text": "YUKEMURI",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "0",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "JAPAN v0.5",
+      "size": 12,
+      "cls": "version"
+     },
+     {
+      "text": "v0.5",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목 · 최근 출",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "47개 도도부현 · 숙소 1,655개 항목",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "초기화",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "Trip.com 9.0+ · 리뷰 50개+",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다.",
+      "size": 12,
+      "cls": "filter-hint bath-filter-intro"
+     },
+     {
+      "text": "24",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "2",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "6",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "34",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "32",
+      "size": 12,
+      "cls": ""
+     },
+     {
+      "text": "13",
+      "size": 12,
+      "cls": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "영어 대문자 소제목·버전 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "EXPLORE JAPAN",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드 초점이 보임(첫 Tab 6개)",
+   "pass": false,
+   "detail": {
+    "rings": [
+     {
+      "name": "유케무리 전체 숙소",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "숙소 찾기",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "즐겨찾기\n0",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "검색 지역",
+      "outline": true,
+      "ring": false
+     },
+     {
+      "name": "지역 또는 숙소 이름 검색",
+      "outline": false,
+      "ring": false
+     },
+     {
+      "name": "검색",
+      "outline": true,
+      "ring": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "즐겨찾기 화면에도 흔적 없음",
+   "pass": false,
+   "detail": {
+    "found": [
+     "MY SAVED STAYS",
+     "YUKEMURI",
+     "v0.5"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "탭이 실제 패널을 가리킴(또는 탭이 아님)",
+   "pass": false,
+   "detail": {
+    "tabs": [
+     {
+      "controls": "radix-_R_29k6i_-content-split",
+      "panel": false
+     },
+     {
+      "controls": "radix-_R_29k6i_-content-list",
+      "panel": false
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "실패 화면: 경고와 다시 시도(44px), 대비 위반 0",
+   "pass": false,
+   "detail": {
+    "size": {
+     "w": 59.890625,
+     "h": 21
+    },
+    "contrast": [
+     {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": 23,
+      "sample": [
+       "nav > button:nth-child(2) | Element has insufficient color contrast of 4.45 (foreground color: #667b80, background color: #ffffff, font size: 11.3pt (15px), font weight: normal). E",
+       ".version | Element has insufficient color contrast of 4.35 (foreground color: #607e85, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast r",
+       ".version > b | Element has insufficient color contrast of 3.94 (foreground color: #607e85, background color: #edf5f6, font size: 9.0pt (12px), font weight: normal). Expected contra",
+       ".search-title > p | Element has insufficient color contrast of 4.07 (foreground color: #6e8186, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected ",
+       ".demo-banner > p | Element has insufficient color contrast of 3.81 (foreground color: #687e86, background color: #edf3f5, font size: 9.0pt (12px), font weight: normal). Expected co"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "다시 시도로 목록 회복",
+   "pass": true,
+   "detail": {
+    "cards": 8
+   }
+  }
+ ]
+}
