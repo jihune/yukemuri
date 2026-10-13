@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-13T22:46:40.658Z",
+ "checkedAt": "2026-10-13T23:07:15.994Z",
  "base": "http://127.0.0.1:8787",
  "results": [
   {
@@ -117,6 +117,27 @@
   },
   {
    "width": 360,
+   "name": "목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도, 결과가 나온 뒤 목록이 늘지 않고 자료 현황·사진 출처에 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 0,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
+   }
+  },
+  {
+   "width": 360,
    "name": "페이지 오류 없음",
    "pass": true,
    "detail": {
@@ -238,6 +259,27 @@
   },
   {
    "width": 390,
+   "name": "목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도, 결과가 나온 뒤 목록이 늘지 않고 자료 현황·사진 출처에 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 0,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
+   }
+  },
+  {
+   "width": 390,
    "name": "페이지 오류 없음",
    "pass": true,
    "detail": {
@@ -315,6 +357,27 @@
     "tabs": 21,
     "at": {
      "top": 471,
+     "vh": 900,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도, 결과가 나온 뒤 목록이 늘지 않고 자료 현황·사진 출처에 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 0,
+    "at": {
+     "top": 565,
      "vh": 900,
      "focus": "data-status-title",
      "open": true,

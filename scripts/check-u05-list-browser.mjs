@@ -47,7 +47,7 @@ const workerList=url=>/^\/api\/hotels(?:\/(?:map|suggestions|search-index))?$/.t
 for(const w of [360,390,1280]){
  width=w;const mobile=w<900;
  const context=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});
- await context.route(url=>!url.href.startsWith(base),route=>route.abort());
+ await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
  const page=await context.newPage(),errors=[],lists=[];
  page.on('pageerror',e=>errors.push(String(e).slice(0,200)));page.on('request',r=>{if(workerList(new URL(r.url())))lists.push(r.url())});
  const tap=l=>mobile?l.tap():l.click();
@@ -101,14 +101,22 @@ for(const w of [360,390,1280]){
  check('자료 현황(집계·수집 현황·최신 자료 확인)은 바닥글에 있고 목록 위에는 없음',status.inFooter&&status.heading==='자료 현황'&&status.refresh&&status.panel&&status.coverage&&status.above===0&&!status.beforeList,status);
  // The data status (and the photo credits beside it) can be reached from above the list with the
  // keyboard and by touch: the list stops loading more on its own, so the footer stays put.
+ // early: pressed before the search result is ready (the snapshot arrives 2.5s late); the
+ // link waits for that result and then holds it.
+ const slow=url=>/\/snapshot\/v\/[^/]+\/(core|cards)\.json$/.test(url.pathname);
  const jump=async how=>{
-  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(400);
   let tabs=0;
+  if(how==='early'){
+   await page.route(slow,async route=>{await new Promise(done=>setTimeout(done,2500));await route.continue().catch(()=>{})});
+   await page.goto(base+'/',{waitUntil:'domcontentloaded'});await page.waitForTimeout(700);
+   await tap(page.locator('.data-status-link'));
+   await page.waitForTimeout(3500);await page.unroute(slow);
+  }else{await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(400)}
   if(how==='keyboard'){
    await page.locator('.chip-bar button').last().focus();
    for(;tabs<80;tabs++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link')))break}
    await page.keyboard.press('Enter');
-  }else await page.locator('.data-status-link').tap();
+  }else if(how==='touch')await page.locator('.data-status-link').tap();
   await page.waitForTimeout(900);
   const at=await page.evaluate(()=>{const s=document.getElementById('data-status'),r=s.getBoundingClientRect();return{top:Math.round(r.top),vh:innerHeight,focus:document.activeElement?.id??null,open:!!s.querySelector('details')?.open,cards:document.querySelectorAll('.hotel-list .hotel-card').length}});
   await page.evaluate(()=>window.scrollTo({top:document.scrollingElement.scrollHeight,behavior:'instant'}));await page.waitForTimeout(1500);
@@ -118,6 +126,8 @@ for(const w of [360,390,1280]){
  const keyboard=await jump('keyboard');
  check(`목록 위 ‘자료 현황’: Tab으로 닿고(${keyboard.tabs+1}번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음`,keyboard.pass,keyboard);
  if(mobile){const touch=await jump('touch');check('목록 위 ‘자료 현황’: 터치로 같은 동작',touch.pass,touch)}
+ const early=await jump('early');
+ check('목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도, 결과가 나온 뒤 목록이 늘지 않고 자료 현황·사진 출처에 닿음',early.pass,early);
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
 }
