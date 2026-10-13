@@ -15,7 +15,9 @@ def site_api(url,token):
  sites=host in SITE_HOSTS
  if site.scheme!='https' or not(sites or WORKER_HOST.fullmatch(host)) or site.username or site.password:
   raise ValueError('Expected the Yukemuri Site URL')
- headers={'X-Yukemuri-Crawl-Key':token}
+ # Cloudflare answers the urllib default User-Agent (Python-urllib) with error 1010
+ # before the Worker sees the request, so name the collector as for sources.
+ headers={'X-Yukemuri-Crawl-Key':token,'User-Agent':USER_AGENT}
  # Only the Sites access gateway reads this header; the Cloudflare Worker is public.
  if sites:headers['OAI-Sites-Authorization']='Bearer '+token
  return urllib.parse.urlunsplit((site.scheme,site.netloc,'','','')),headers

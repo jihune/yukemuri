@@ -10,12 +10,13 @@ import assert from 'node:assert/strict';
 
 const ORIGIN='https://yukemuri.smoke-check.workers.dev',KEY='smoke-check-key-0123456789',ID='0123456789abcdef',OLD='fedcba9876543210';
 let state,requests=[];
-const reset=over=>{state={staleManifest:0,staleRelease:false,detail:200,robots:'User-agent: *\nDisallow: /api/\n',...over};requests=[]};
+const reset=over=>{state={staleManifest:0,staleCore:0,staleRelease:false,detail:200,robots:'User-agent: *\nDisallow: /api/\n',...over};requests=[]};
 const server=createServer((req,res)=>{
  const url=new URL(req.url,'http://x'),key=req.headers['x-yukemuri-crawl-key'];requests.push(url.pathname+url.search);
  const json=(status,body)=>{res.writeHead(status,{'content-type':'application/json'});res.end(JSON.stringify(body))};
  if(url.pathname==='/snapshot/manifest.json'){const stale=state.staleManifest>0&&state.staleManifest--;return json(200,{format:1,hotels:2,id:stale?OLD:ID,files:{core:'/snapshot/core.json',cards:'/snapshot/cards.json'}})}
- if(url.pathname==='/snapshot/core.json')return json(200,{ids:['hotel-1','hotel-2']});
+ // A file the edge does not have yet: the single-page fallback (200, HTML).
+ if(url.pathname==='/snapshot/core.json'){if(state.staleCore>0&&state.staleCore--){res.writeHead(200,{'content-type':'text/html'});return res.end('<html></html>')}return json(200,{ids:['hotel-1','hotel-2']})}
  if(url.pathname==='/snapshot/cards.json')return json(200,[]);
  if(url.pathname==='/'){res.writeHead(200,{'content-type':'text/html'});return res.end(`<main data-first-page="${ID}"><h3 class="card-title">A</h3></main>`)}
  if(url.pathname==='/api/hotels/hotel-1')return json(state.detail,{id:'hotel-1'});
@@ -38,6 +39,9 @@ try{
  reset({staleManifest:3});r=await smoke();
  assert.equal(r.code,0,r.out);assert.equal(requests.filter(p=>p==='/snapshot/manifest.json').length,4,'retried until the new snapshot was served');
  reset({staleManifest:20});r=await smoke();assert.notEqual(r.code,0,'an old snapshot after 6 tries fails');
+ reset({staleCore:3});r=await smoke();
+ assert.equal(r.code,0,r.out);assert.equal(requests.filter(p=>p==='/snapshot/core.json').length,4,'retried while the file was the HTML fallback');
+ reset({staleCore:20});r=await smoke();assert.notEqual(r.code,0,'a file still served as HTML after 6 tries fails');
  reset({staleRelease:true});r=await smoke();assert.notEqual(r.code,0,'a release built for another origin fails');
  reset({detail:500});r=await smoke();assert.notEqual(r.code,0,'a failing detail fails');
  reset({robots:'User-agent: *\n'});r=await smoke();assert.notEqual(r.code,0,'robots.txt without /api/ fails');
@@ -47,4 +51,4 @@ try{
  writeFileSync(built,JSON.stringify({format:2,id:ID,hotels:2}));reset();r=await smoke();assert.notEqual(r.code,0,'a served format other than the build fails');
  writeFileSync(built,JSON.stringify({format:1,id:ID,hotels:2}));
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
-console.log('Smoke script passed: collector release as the keyed check (no /api/crawl), static retry until the new snapshot, failures for an empty or foreign SNAPSHOT_ID, another format, an old snapshot, a release for another origin, a failing detail, robots.txt and a missing key.');
+console.log('Smoke script passed: collector release as the keyed check (no /api/crawl), static retry until the new snapshot and until each snapshot file is JSON, failures for an empty or foreign SNAPSHOT_ID, another format, an old snapshot, a release for another origin, a failing detail, robots.txt and a missing key.');
