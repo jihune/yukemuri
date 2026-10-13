@@ -643,6 +643,10 @@ JavaScript CPU(handler, DB 대역 안 CPU 제외). cold는 새 프로세스 9개
 - Trip 우편번호·도시 대표점의 오차(기준 좌표 없음).
 - 배포 때 실제 payload 주소로 낸 결과(측정은 공개 context에서 되읽은 주소).
 
+### 검토
+
+- 1회째: CI가 `02cf3e4`에서 통과한 뒤 07:24Z에 Codex 검토를 요청했다. 07:28Z에 P1 1건이 달렸다. `actions/cache` 단계에 `continue-on-error`가 없어 캐시 복원 오류가 배포를 막을 수 있다는 지적이다. 캐시 단계도 실패를 허용하게 고치고, `check-deploy-config.mjs`가 지오코더 단계 전부의 `continue-on-error`를 판정하게 했다(변형으로 실패 확인).
+
 ### 다음 작업
 
 1. PR 검토(Codex) 뒤 상위 세션이 병합한다. 병합 뒤 첫 배포 요약에서 ‘map positions’ 줄과 ‘Geocoder ready’ 시간을 확인한다.

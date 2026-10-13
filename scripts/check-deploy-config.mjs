@@ -141,6 +141,8 @@ assert.match(deploy,/echo "prepared=.*unprepared\.length===0/,'the snapshot step
  const cache=stepBlocks[stepOf('actions/cache@')],prepare=stepBlocks[stepOf('scripts/geo/prepare.sh')];
  assert(cache.text.includes(`path: \${{ runner.temp }}/jageocoder/${pins.file}\n`)&&cache.text.split('\n').includes(`          key: jageocoder-${pins.file.replace(/\.zip$/,'')}-${pins.sha256}`),'dictionary cache keyed by the pinned file and SHA-256');
  assert.match(prepare.text,/^ {8}id: geo\n {8}continue-on-error: true\n/m,'a failed geocoder preparation does not fail the deploy');
+ assert.match(cache.text,/^ {8}uses: actions\/cache@v\d+\n {8}continue-on-error: true\n/m,'a failed dictionary cache restore does not fail the deploy');
+ assert(stepBlocks.filter(b=>/scripts\/geo\/|jageocoder/.test(b.text)&&!/build-search-snapshot/.test(b.text)).every(b=>/^ {8}continue-on-error: true$/m.test(b.text)),'every geocoder step is optional');
  assert(stepOf('actions/cache@')<stepOf('scripts/geo/prepare.sh')&&stepOf('scripts/geo/prepare.sh')<stepOf('build-search-snapshot.mjs --remote --report'),'cache, prepare, then the snapshot');
  for(const b of stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text))){
   assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" | tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');

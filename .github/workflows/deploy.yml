@@ -125,10 +125,12 @@ jobs:
       # D06 map positions: the offline geocoder (jageocoder, hash-pinned in
       # scripts/geo/requirements.txt) and its address dictionary, pinned by size
       # and SHA-256 in scripts/geo/pins.json and kept in actions/cache under that
-      # hash. Either step may fail without failing the run: the snapshot is then
+      # hash. Either step may fail (continue-on-error) without failing the run;
+      # a failed cache restore only means downloading again. The snapshot is then
       # built without geocoded points and says why. Nothing here touches D1.
       - if: steps.gate.outputs.mode != 'skip'
         uses: actions/cache@v5
+        continue-on-error: true
         with:
           path: ${{ runner.temp }}/jageocoder/gaiku_all_20250423_v22.zip
           key: jageocoder-gaiku_all_20250423_v22-31a7551467c209653de62051765442b3ad888530a8dc4e17b8fd123405301653
