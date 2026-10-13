@@ -43,7 +43,9 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    const tabStops=()=>layer.current?.eachLayer(m=>{
     const el=(m as Leaflet.Marker).getElement();if(!el)return;
     const p=map.latLngToContainerPoint((m as Leaflet.Marker).getLatLng()),size=map.getSize();
-    el.tabIndex=p.x>=26&&p.x<=size.x-26&&p.y>=18&&p.y<=size.y-18?0:-1;
+    // The icon is centred on its point: half its own size on each side must fit.
+    const w=el.offsetWidth/2,h=el.offsetHeight/2;
+    el.tabIndex=p.x>=w&&p.x<=size.x-w&&p.y>=h&&p.y<=size.y-h?0:-1;
    });
    // Enter and Space do what a click does; Leaflet 1.9.4 only handles Enter for popups.
    const add=(marker:Leaflet.Marker,data:Record<string,string>,open:(keyboard:boolean)=>void)=>{
