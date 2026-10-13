@@ -44,6 +44,10 @@ export function jobIdentity(url:string):string|null{
  const id=u.hostname==='www.jalan.net'?u.pathname.match(/^\/yad(\d+)\/$/)?.[1]:u.pathname.match(/-hotel-detail-(\d+)\//)?.[1];
  return id?(u.hostname==='www.jalan.net'?'jalan-':'trip-')+id:null;
 }
+// A Jalan detail job (alias j) saved by an older parser, as a hotel row
+// (verified hotels excluded; one JSON array argument) or as a curated group's
+// linked observation. The baths claim and the queue view share it (D05).
+export const BATHS_CANDIDATE="(EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NOT 'v3' AND h.id NOT IN (SELECT value FROM json_each(?))) OR EXISTS (SELECT 1 FROM hotel_source_observations o WHERE o.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(o.payload,'$.links[0].url')=j.url AND json_extract(o.payload,'$.sources[0].bathDataVersion') IS NOT 'v3'))";
 // The selection and lease write share one SQL statement. A provider has at
 // most one active claim, across processes/isolates and enrichment phases.
 export async function claimCrawlJob(claim:CrawlClaim){
@@ -51,7 +55,7 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
  if(repeated.results.length)return repeated.results;
- const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NULL AND h.id NOT IN (SELECT value FROM json_each(?)))":'';
+ const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
  const extraArgs=claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[];
  const statuses=claim.phase==='refresh'?['done','failed']:['names','baths'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';

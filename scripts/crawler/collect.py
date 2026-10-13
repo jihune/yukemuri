@@ -21,7 +21,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PREFS = json.loads((ROOT / 'data/prefectures.json').read_text())
-FEATURES = ['natural', 'largeBath', 'outdoor', 'privateBath', 'roomOnsen', 'roomOutdoor','communalOutdoor','privateOutdoor','roomIndoorOnsen','roomOutdoorOnsen','nigori','freeFlow','jalanHighClass']
+FEATURES = ['natural', 'largeBath', 'outdoor', 'privateBath', 'roomOnsen', 'roomOutdoor','communalOutdoor','privateOutdoor','roomIndoorOnsen','roomOutdoorOnsen','nigori','freeFlow','jalanHighClass','viewBath']
+# Jalan detail parser version. A Jalan detail saved by an older version is
+# revisited by the 'baths' phase (v3: room count, view bath and room photos, D05).
+BATH_DATA_VERSION = 'v3'
 JAPAN_COUNTRIES = ['JP', 'Japan', '日本', '일본']
 TRIP_CITY_PREF = {'tokyo':'tokyo','kyoto':'kyoto','osaka':'oosaka','fukuoka':'fukuoka','naha':'okinawa','chatan':'okinawa','nagoya':'aichi','narita':'chiba','urayasu':'chiba','sapporo':'hokkaido','hakodate':'hokkaido','otaru':'hokkaido','noboribetsu':'hokkaido','toyako':'hokkaido','sobetsu':'hokkaido','niseko':'hokkaido','kushiro':'hokkaido','kamikawa':'hokkaido','minami-ward':'hokkaido','hakone':'kanagawa','yokohama':'kanagawa','kamakura':'kanagawa','kanazawa':'ishikawa','kobe':'hyogo','sendai':'miyagi','matsumoto':'nagano','fujikawaguchiko':'yamanashi','izumisano':'oosaka','towada':'aomori','nago':'okinawa','beppu':'ooita','atami':'shizuoka','yufu':'ooita','yufuin':'ooita','kumamoto':'kumamoto','aso':'kumamoto','minamioguni':'kumamoto','ishigaki':'okinawa','miyakojima':'okinawa','miyako':'okinawa','tomigusuku':'okinawa','motobu':'okinawa','onnason':'okinawa','onna':'okinawa'}
 
@@ -91,6 +94,54 @@ def localized_names(doc, provider, raw, detail):
                 except (ValueError,TypeError):
                     pass
     return names,list(dict.fromkeys(str(a).strip()[:400] for a in aliases if a and isinstance(a,str)))[:30]
+
+
+def trip_property(raw, ident):
+    """This property's own SSR props on kr.trip.com, never another hotel's."""
+    def walk(value, depth=0):
+        if depth > 12:
+            return
+        if isinstance(value, dict):
+            if isinstance(value.get('hotelDetailResponse'), dict):
+                yield value
+            for child in value.values():
+                yield from walk(child, depth + 1)
+        elif isinstance(value, list):
+            for child in value:
+                yield from walk(child, depth + 1)
+    for payload in trip_page_data(raw):
+        for props in walk(payload):
+            base = props['hotelDetailResponse'].get('hotelBaseInfo')
+            if isinstance(base, dict) and str(base.get('masterHotelId')) == ident:
+                return props
+    return None
+
+
+def trip_room_count(props):
+    info = props['hotelDetailResponse'].get('hotelDescriptionInfo')
+    for label in (info.get('lables') if isinstance(info, dict) else None) or []:
+        match = re.fullmatch(r'객실 수:\s*(\d{1,4})', label.strip()) if isinstance(label, str) else None
+        if match and 0 < int(match[1]) <= 5000:
+            return int(match[1]), label.strip()
+    return None
+
+
+def trip_room_types(props):
+    """Room type names and up to three photos each, in the page's room order."""
+    rooms = ((props.get('seoSSRData') or {}).get('seoHotelRooms') or {}) if isinstance(props.get('seoSSRData'), dict) else {}
+    found = rooms.get('physicRoomMap') if isinstance(rooms, dict) else None
+    if not isinstance(found, dict):
+        return []
+    order = [str(r.get('key')) for r in rooms.get('roomList') or [] if isinstance(r, dict)]
+    items = []
+    for key in list(dict.fromkeys(order + list(found))):
+        room = found.get(key)
+        name = re.sub(r'\s+', ' ', room.get('name', '')).strip() if isinstance(room, dict) and isinstance(room.get('name'), str) else ''
+        if not name:
+            continue
+        photos = [u for u in (image_url(p.get('url')) for p in room.get('pictureInfo') or [] if isinstance(p, dict)) if re.fullmatch(r'[a-z0-9-]+\.tripcdn\.com', urllib.parse.urlsplit(u).hostname or '')]
+        items.append(dict(name=name[:200], photos=[dict(url=u, caption='') for u in list(dict.fromkeys(photos))[:3]]))
+    return items[:30]
 
 
 def source_request_url(url, kind):
@@ -252,6 +303,14 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     source = provider + '-' + ident
     facts = {k: {'value': None, 'sourceId': source, 'verifiedAt': None} for k in FEATURES}
     water = ''
+    rooms = None
+    room_types = []
+    props = trip_property(raw, ident) if detail and provider == 'trip' else None
+    if props:
+        stated_rooms = trip_room_count(props)
+        if stated_rooms:
+            rooms = dict(total=stated_rooms[0], sourceId=source, verifiedAt=fetched_at[:10], note='Trip.com 숙소 정보: ' + stated_rooms[1])
+        room_types = trip_room_types(props)
     if detail and provider == 'jalan':
         rows = {text(k): text(v) for k, v in re.findall(r'<th[^>]*>((?:(?!</th>).)*?)</th>\s*<td[^>]*>(.*?)</td>', raw, re.S)}
         own_description=text(str(doc.get('description','')))
@@ -278,6 +337,36 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
             facts['privateBath'].update(value=True, verifiedAt=fetched_at[:10], note=other)
         elif private_row.startswith(('なし','無し')):
             fact('privateBath',False,private_row)
+        # Jalan lists a view bath among the other bath facilities. It has no
+        # 'none' wording, so a missing entry stays unknown.
+        view_rows = [k + ': ' + rows[k] for k in ['その他の風呂施設', '風呂利用条件'] if re.search(r'展望(?:大浴場|浴場|風呂|露天)', rows.get(k, ''))]
+        if view_rows and not re.search(r'展望(?:大浴場|浴場|風呂|露天風呂|露天)(?:は)?(?:なし|無し|ございません|ありません)', ' '.join(view_rows)):
+            fact('viewBath', True, '자란 욕탕 항목: ' + ' / '.join(view_rows))
+        # The 部屋・部屋施設 table puts the room types and the counts on separate
+        # rows. Keep the stated total; Jalan's parts need not add up to it.
+        room_table = re.search(r'<table class="shisetsu-roomsetsubi_body">.*?<table>(.*?)</table>', raw, re.S)
+        if room_table:
+            heads = [text(c) for c in re.findall(r'<th[^>]*>(.*?)</th>', room_table[1], re.S)]
+            cells = [text(c) for c in re.findall(r'<td[^>]*>(.*?)</td>', room_table[1], re.S)]
+            stated = dict(zip(heads, cells)) if len(heads) == len(cells) else {}
+            room_counts = {k: int(m[1]) for k, v in stated.items() if (m := re.fullmatch(r'(\d{1,4})室', v))}
+            if 0 < room_counts.get('総部屋数', 0) <= 5000:
+                rooms = dict(total=room_counts['総部屋数'], sourceId=source, verifiedAt=fetched_at[:10], note='자란 객실 수 표: ' + ', '.join(k + ' ' + v for k, v in stated.items()))
+                parts = {'western': '洋室', 'japanese': '和室', 'japaneseWestern': '和洋室', 'other': 'その他'}
+                if all(v in room_counts for v in parts.values()):
+                    rooms['byType'] = {k: room_counts[v] for k, v in parts.items()}
+        # The 部屋・部屋施設 gallery shows a few of this property's room photos
+        # with its own captions; Jalan names no room type here.
+        gallery = re.search(r'<h3 class="jlnpc-title">部屋・部屋施設</h3>(.*?)<table class="shisetsu-roomsetsubi_body">', raw, re.S)
+        photos = []
+        for tag in re.findall(r'<img\b[^>]*>', gallery[1] if gallery else '', re.I):
+            src = re.search(r'\bsrc=["\']([^"\']+)', tag, re.I)
+            alt = re.search(r'\balt=["\']([^"\']*)', tag, re.I)
+            photo = image_url(src[1]) if src else ''
+            if re.fullmatch(r'https://cdn\.jalan\.jp/jalan/images/[^?#]*/Y' + re.escape(ident) + r'[^/?#]*\.jpg', photo) and photo not in [p['url'] for p in photos]:
+                photos.append(dict(url=photo, caption=text(alt[1])[:300] if alt else ''))
+        if photos:
+            room_types = [dict(name=None, photos=photos[:6])]
         water = ' / '.join(v for k, v in rows.items() if k in ['温泉', '風呂利用条件'])
         spring_row=rows.get('温泉','')
         if spring_row.startswith(('無し','なし')):
@@ -309,7 +398,7 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
         # Keep the source water/fee notice, but clear claims from that table.
         external_bath=bool(re.search(r'温泉施設はリゾート内の施設|温泉施設は(?:館外|敷地外|別施設)|(?:館外|敷地外|外部)の温泉施設',water))
         if external_bath:
-            for key in ['natural','largeBath','outdoor','privateBath','communalOutdoor','privateOutdoor','nigori','freeFlow']:
+            for key in ['natural','largeBath','outdoor','privateBath','communalOutdoor','privateOutdoor','nigori','freeFlow','viewBath']:
                 facts[key]={'value':None,'sourceId':source,'verifiedAt':None,'note':'리조트 공용 또는 외부 온천 안내입니다. 숙소 내 욕탕 여부는 별도 확인이 필요합니다.'}
         room_evidence=' '.join([own_description,rows.get('部屋補足',''),*captions])
         if re.search(r'露天風呂(?:付|付き)客室|客室(?:露天|に露天風呂)|露天(?:風呂)?付.{0,12}(?:客室|スイート|和洋室)',room_evidence):
@@ -356,10 +445,10 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     return dict(id=source, names=names, aliases=aliases, kind='ryokan' if re.search(r'旅館|Ryokan', name, re.I) else 'hotel' if re.search(r'ホテル|Hotel',name,re.I) else 'unknown', regionId=found or 'unassigned', prefecture=found,
                 location=dict(label=region or (next((p['name'] for p in PREFS if p['id'] == found), '일본')), address=full_address, latitude=lat, longitude=lng, isApproximate=False),
                 description=bounded_description(text(str(doc.get('description', ''))) or '예약 사이트에서 확인한 실제 숙소입니다. 상세 시설은 숙소 안내에서 확인하세요.'),
-                image=dict(url=image, alt=name + ' 숙소 사진', sourceId=source, isRepresentative=False), features=facts,
+                image=dict(url=image, alt=name + ' 숙소 사진', sourceId=source, isRepresentative=False), features=facts, **({'rooms': rooms} if rooms else {}), **({'roomTypes': [dict(sourceId=source, verifiedAt=fetched_at[:10], items=room_types)]} if room_types else {}),
                 spring=dict(types=[], waterNotes=water, useNotes='객실 온천·객실 노천탕은 확인된 객실 타입을 예약해야 이용할 수 있습니다.'), ratings=ratings,
                 links=[dict(provider=provider, url=prop_url, kind='property', label='숙소 페이지'), dict(provider='maps', url=maps, kind='coordinates', label='주소로 위치 확인')],
-                sources=[dict(sourceId=source, sourceType='web', label=('Trip.com' if provider == 'trip' else 'Jalan') + (' 숙소 상세' if detail else ' 숙소 목록'), retrievedAt=fetched_at, verifiedAt=fetched_at[:10], url=url, isMock=False,**({'bathDataVersion':'v1'} if detail and provider=='jalan' else {}))])
+                sources=[dict(sourceId=source, sourceType='web', label=('Trip.com' if provider == 'trip' else 'Jalan') + (' 숙소 상세' if detail else ' 숙소 목록'), retrievedAt=fetched_at, verifiedAt=fetched_at[:10], url=url, isMock=False,**({'bathDataVersion':BATH_DATA_VERSION} if detail and provider=='jalan' else {}))])
 
 
 def parse_source_page(raw, provider, url, fetched_at, pref=None, kind='detail'):

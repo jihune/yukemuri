@@ -13,7 +13,7 @@ def distance(a,b):
  x,y=a['location'],b['location'];lat1,lat2=math.radians(x['latitude']),math.radians(y['latitude']);dlat=lat2-lat1;dlon=math.radians(y['longitude']-x['longitude']);v=math.sin(dlat/2)**2+math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
  return round(6371000*2*math.asin(min(1,math.sqrt(v))))
 # Same bit order as FEATURE_LABELS / featureMasks in schema 0009.
-FEATURE_KEYS=['natural','largeBath','outdoor','privateBath','roomOnsen','roomOutdoor','communalOutdoor','privateOutdoor','roomIndoorOnsen','roomOutdoorOnsen','nigori','freeFlow','jalanHighClass']
+FEATURE_KEYS=['natural','largeBath','outdoor','privateBath','roomOnsen','roomOutdoor','communalOutdoor','privateOutdoor','roomIndoorOnsen','roomOutdoorOnsen','nigori','freeFlow','jalanHighClass','viewBath']
 def audit(path):
  db=sqlite3.connect('file:'+str(path.resolve())+'?mode=ro',uri=True);records=list(db.execute('SELECT payload,bath_known,bath_features FROM hotels ORDER BY id'));hotels=[json.loads(row[0]) for row in records]
  stats=collections.defaultdict(collections.Counter);feature_counts=collections.defaultdict(collections.Counter);prefectures=collections.defaultdict(collections.Counter);names=collections.defaultdict(list);addresses=collections.defaultdict(list);now=datetime.now(timezone.utc);ages=collections.Counter()
