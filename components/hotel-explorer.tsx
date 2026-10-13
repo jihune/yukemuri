@@ -158,11 +158,23 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const hoverCard=(id:string|null)=>setActiveId(id??pinnedId.current);
  const regionName=REGIONS.find(r=>r.id===filters.region)?.name??'일본 전국';
  const listEnd=useRef<HTMLDivElement>(null),listingPosition=useRef<ListingPosition|null>(null);
+ // The data status is in the footer, which the list's automatic loading would keep pushing
+ // away; its link above the list stops that for the current result (the ‘숙소 더 불러오기’
+ // button still loads more), opens the collection status and moves there.
+ const [statusFor,setStatusFor]=useState<number[]|null|undefined>(undefined),[statusJump,setStatusJump]=useState(0),statusPaused=statusFor!==undefined&&statusFor===order;
+ const statusJumped=useRef(0);
  useEffect(()=>{
-  if(!hasMore||loading||detailId||filterOpen||comparisonOpen||mode==='map'||!listEnd.current||typeof IntersectionObserver==='undefined')return;
+  if(!statusJump||loading||statusJumped.current===statusJump)return;
+  statusJumped.current=statusJump;
+  const section=document.getElementById('data-status'),details=section?.querySelector('details');
+  if(details&&!details.open)details.open=true;
+  section?.scrollIntoView({block:'start',behavior:'instant'});section?.querySelector<HTMLElement>('h2')?.focus({preventScroll:true});
+ },[statusJump,loading]);
+ useEffect(()=>{
+  if(!hasMore||loading||statusPaused||detailId||filterOpen||comparisonOpen||mode==='map'||!listEnd.current||typeof IntersectionObserver==='undefined')return;
   const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting))loadMore()},{rootMargin:'500px 0px'});
   observer.observe(listEnd.current);return()=>observer.disconnect();
- },[hasMore,loading,loadMore,detailId,filterOpen,comparisonOpen,mode,response.page]);
+ },[hasMore,loading,statusPaused,loadMore,detailId,filterOpen,comparisonOpen,mode,response.page]);
  useEffect(()=>{
   // Cards carry list fields only; the sheet opens with the hotel the API returns.
   setDetail(null);if(!detailId){setDetailLoading(false);return}
@@ -268,7 +280,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
    <div className="results-header"><div><h2>{savedOnly?'즐겨찾기':regionName}{!favoritesBlocked&&<> <span>{response.total.toLocaleString()}곳</span></>}</h2></div><div className="result-actions"><button ref={comparisonButton} className="compare-open" onClick={showComparison} aria-label={"숙소 비교 열기, "+comparisonIds.length+"곳 선택"}><ArrowLeftRight size={17}/><span className="compare-word">비교 </span>{comparisonIds.length}/4</button><Picker label="숙소 정렬" value={sort} onChange={v=>{setSort(v as SortOrder)}} options={[{value:'recommended',label:filters.query?'관련성 높은 순':'온천 확인 우선'},{value:'rating',label:'평점 높은 순'},{value:'reviews',label:'리뷰 많은 순'},{value:'name',label:'이름순'}]}/></div></div>
    {chips.length>0&&<div className="active-filters">{chips.map(c=><button key={c.label} onClick={c.clear}>{c.label}<X size={14}/></button>)}</div>}
    {!loading&&!searchError&&unknownExcluded>0&&<p className="unknown-excluded" role="note"><Info size={15}/><span>선택한 조건 중 확인되지 않은 정보가 있어 제외한 숙소가 <b>{unknownExcluded.toLocaleString()}곳</b> 더 있습니다. 미확인 정보는 추정하지 않습니다. 해당 조건을 해제하면 함께 볼 수 있습니다.</span></p>}
-   <div className="result-subtitle"><p className="bath-legend"><span><b className="is-yes" aria-hidden="true">✓</b>있음</span><span><b className="is-no" aria-hidden="true">–</b>없음</span><span><b className="is-unknown" aria-hidden="true">?</b>확인 전</span></p>{(loading||filters.query)&&<span>{loading?'숙소를 검색하는 중…':`이름·지역·오타의 관련성 순입니다.${response.similarCount?' 비슷한 이름 '+response.similarCount+'곳 포함.':''}`}</span>}<span className="result-count sr-only" aria-live="polite">{favoritesBlocked?'':response.total.toLocaleString()+'개 결과'}</span></div>
+   <div className="result-subtitle"><p className="bath-legend"><span><b className="is-yes" aria-hidden="true">✓</b>있음</span><span><b className="is-no" aria-hidden="true">–</b>없음</span><span><b className="is-unknown" aria-hidden="true">?</b>확인 전</span></p>{(loading||filters.query)&&<span>{loading?'숙소를 검색하는 중…':`이름·지역·오타의 관련성 순입니다.${response.similarCount?' 비슷한 이름 '+response.similarCount+'곳 포함.':''}`}</span>}<button type="button" className="data-status-link" onClick={()=>{setStatusFor(order);setStatusJump(n=>n+1)}}><Info size={15}/>자료 현황</button><span className="result-count sr-only" aria-live="polite">{favoritesBlocked?'':response.total.toLocaleString()+'개 결과'}</span></div>
    {savedOnly&&<p className="saved-browser-note">이 브라우저에서 저장한 숙소입니다. 다른 브라우저와 동기화되지 않으며, 사이트 저장소를 지우면 연결이 초기화됩니다.</p>}
    <div className="hotel-list">{results.map(h=>renderCard(h))}</div>
    {!loading&&!searchError&&!favoritesBlocked&&results.length===0&&<div className="empty-state"><Search size={32}/><h3>{savedOnly&&!favorites.length?'아직 저장한 숙소가 없어요':'조건에 맞는 숙소가 없어요'}</h3><p>{savedOnly&&!favorites.length?'마음에 드는 숙소의 하트를 눌러 저장하세요.':chips.length?'위의 조건을 하나씩 풀어 보세요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.':'다른 지역이나 이름으로 찾아보세요.'}</p><button onClick={()=>{setFilters(DEFAULT_FILTERS);setDraft('');if(savedOnly&&!favorites.length)setSavedOnly(false)}}><RotateCcw size={16}/>{savedOnly&&!favorites.length?'숙소 둘러보기':'조건 모두 풀기'}</button></div>}
@@ -297,6 +309,6 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady} booking={booking} onBooking={onBooking}/>
  {detailLoading&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
  {toast&&<div className="toast-message" role="status">{toast}</div>}
- <footer className="site-footer"><section className="data-status" aria-labelledby="data-status-title"><h2 id="data-status-title">자료 현황</h2>{snap.snapshot||preview?<><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p><button className="result-refresh" onClick={refreshResults} disabled={loading} aria-label="새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영"><RotateCcw size={15}/>최신 자료 확인</button><CollectionStatusPanel coverage={response.coverage} load={loadStatus}/></>:<p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p>}</section><span>유케무리 · 일본 온천 탐색</span><span><a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p></footer>
+ <footer className="site-footer"><section className="data-status" id="data-status" aria-labelledby="data-status-title"><h2 id="data-status-title" tabIndex={-1}>자료 현황</h2>{snap.snapshot||preview?<><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p><button className="result-refresh" onClick={refreshResults} disabled={loading} aria-label="새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영"><RotateCcw size={15}/>최신 자료 확인</button><CollectionStatusPanel coverage={response.coverage} load={loadStatus}/></>:<p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p>}</section><span>유케무리 · 일본 온천 탐색</span><span><a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p></footer>
  </>
 }

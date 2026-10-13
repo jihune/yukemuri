@@ -1,13 +1,13 @@
 {
- "checkedAt": "2026-10-13T22:13:02.472Z",
+ "checkedAt": "2026-10-13T22:46:40.658Z",
  "base": "http://127.0.0.1:8787",
  "results": [
   {
    "width": 360,
-   "name": "첫 카드가 278px에서 시작(300px 이하)",
+   "name": "첫 카드가 290px에서 시작(300px 이하)",
    "pass": true,
    "detail": {
-    "top": 278
+    "top": 290
    }
   },
   {
@@ -71,6 +71,48 @@
     "coverage": true,
     "above": 0,
     "beforeList": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록 위 ‘자료 현황’: Tab으로 닿고(3번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 2,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록 위 ‘자료 현황’: 터치로 같은 동작",
+   "pass": true,
+   "detail": {
+    "tabs": 0,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
    }
   },
   {
@@ -83,10 +125,10 @@
   },
   {
    "width": 390,
-   "name": "첫 카드가 278px에서 시작(300px 이하)",
+   "name": "첫 카드가 290px에서 시작(300px 이하)",
    "pass": true,
    "detail": {
-    "top": 278
+    "top": 290
    }
   },
   {
@@ -150,6 +192,48 @@
     "coverage": true,
     "above": 0,
     "beforeList": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 위 ‘자료 현황’: Tab으로 닿고(3번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 2,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 위 ‘자료 현황’: 터치로 같은 동작",
+   "pass": true,
+   "detail": {
+    "tabs": 0,
+    "at": {
+     "top": 0,
+     "vh": 800,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
    }
   },
   {
@@ -221,6 +305,27 @@
     "coverage": true,
     "above": 0,
     "beforeList": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록 위 ‘자료 현황’: Tab으로 닿고(22번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음",
+   "pass": true,
+   "detail": {
+    "tabs": 21,
+    "at": {
+     "top": 471,
+     "vh": 900,
+     "focus": "data-status-title",
+     "open": true,
+     "cards": 40
+    },
+    "credits": {
+     "inView": true,
+     "reachable": true,
+     "cards": 40
+    },
+    "pass": true
    }
   },
   {

@@ -8,7 +8,8 @@
 // - the card names are Korean and Japanese, no English name;
 // - a chip on the chip bar and an onsen town from the place picker give the snapshot's own
 //   count for those conditions, computed in the browser (no list request to the Worker);
-// - the data status (coverage, collection status, refresh) is in the footer, not above the list.
+// - the data status (coverage, collection status, refresh) is in the footer, not above the list,
+//   and its link above the list reaches it (and the photo credits) by keyboard and touch.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-list-browser.mjs [base] [evidence.json]
@@ -98,6 +99,25 @@ for(const w of [360,390,1280]){
  // The data status moved to the footer.
  const status=await page.evaluate(()=>{const s=document.querySelector('.site-footer .data-status');return{inFooter:!!s,heading:s?.querySelector('h2')?.textContent,refresh:!!s?.querySelector('.result-refresh'),panel:!!s?.querySelector('details,.coverage-panel,.collection-status'),coverage:/도도부현/.test(s?.textContent??''),above:[...document.querySelectorAll('.demo-banner,.onsen-town-nav,.region-nav')].length,beforeList:s?s.getBoundingClientRect().top<document.querySelector('.hotel-list').getBoundingClientRect().top:true}});
  check('자료 현황(집계·수집 현황·최신 자료 확인)은 바닥글에 있고 목록 위에는 없음',status.inFooter&&status.heading==='자료 현황'&&status.refresh&&status.panel&&status.coverage&&status.above===0&&!status.beforeList,status);
+ // The data status (and the photo credits beside it) can be reached from above the list with the
+ // keyboard and by touch: the list stops loading more on its own, so the footer stays put.
+ const jump=async how=>{
+  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(400);
+  let tabs=0;
+  if(how==='keyboard'){
+   await page.locator('.chip-bar button').last().focus();
+   for(;tabs<80;tabs++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link')))break}
+   await page.keyboard.press('Enter');
+  }else await page.locator('.data-status-link').tap();
+  await page.waitForTimeout(900);
+  const at=await page.evaluate(()=>{const s=document.getElementById('data-status'),r=s.getBoundingClientRect();return{top:Math.round(r.top),vh:innerHeight,focus:document.activeElement?.id??null,open:!!s.querySelector('details')?.open,cards:document.querySelectorAll('.hotel-list .hotel-card').length}});
+  await page.evaluate(()=>window.scrollTo({top:document.scrollingElement.scrollHeight,behavior:'instant'}));await page.waitForTimeout(1500);
+  const credits=await page.evaluate(()=>{const a=[...document.querySelectorAll('.site-footer a')].find(e=>e.textContent.includes('사진 출처'));const r=a.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return{inView:r.top>=0&&r.bottom<=innerHeight,reachable:hit===a||a.contains(hit),cards:document.querySelectorAll('.hotel-list .hotel-card').length}});
+  return{tabs,at,credits,pass:(how!=='keyboard'||tabs<80)&&at.top>=0&&at.top<=at.vh-60&&at.open&&(how!=='keyboard'||at.focus==='data-status-title')&&credits.inView&&credits.reachable&&credits.cards===at.cards};
+ };
+ const keyboard=await jump('keyboard');
+ check(`목록 위 ‘자료 현황’: Tab으로 닿고(${keyboard.tabs+1}번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음`,keyboard.pass,keyboard);
+ if(mobile){const touch=await jump('touch');check('목록 위 ‘자료 현황’: 터치로 같은 동작',touch.pass,touch)}
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
 }

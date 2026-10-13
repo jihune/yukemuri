@@ -865,3 +865,9 @@ body{word-break:keep-all;overflow-wrap:break-word}
   .compare-open .compare-word{display:none}
   .results-header .result-actions .picker{max-width:132px}
 }
+/* The way to the data status in the footer (the list loads more as the footer comes near). */
+.data-status-link{margin-left:auto;display:inline-flex;align-items:center;gap:5px;min-height:var(--yk-tap);padding:0 8px;color:var(--yk-primary);font-size:var(--yk-fs-xs);border-radius:var(--yk-radius-sm)}
+.data-status-link:hover{background:var(--yk-primary-soft)}
+.result-subtitle{margin-bottom:6px}
+.data-status h2:focus-visible{outline:2px solid var(--yk-primary);outline-offset:3px}
+@media (max-width:900px){.workspace{padding-top:8px}}
