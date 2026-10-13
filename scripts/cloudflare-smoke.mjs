@@ -12,9 +12,12 @@ const expectedId=process.env.SNAPSHOT_ID;
 assert.match(expectedId??'',/^[0-9a-f]{16}$/,'SNAPSHOT_ID of this run is required');
 const built=JSON.parse(readFileSync(process.env.SNAPSHOT_MANIFEST||'dist/client/snapshot/manifest.json','utf8'));
 assert.equal(built.id,expectedId,'the built manifest is not the snapshot of this run');
+// The Worker refuses a client that is not a browser unless it carries the
+// maintenance key (lib/edge-guard.ts), so the public checks name a browser-style agent.
+const AGENT='Mozilla/5.0 (compatible; YukemuriSmoke/1.0; +https://github.com/jihune/yukemuri)',ROBOTS='noindex, nofollow, noarchive';
 const get=async(path,headers={})=>{
- const response=await fetch(origin+path,{headers:{Accept:'application/json',...headers},redirect:'manual',signal:AbortSignal.timeout(60_000)});
- return {status:response.status,body:/json/.test(response.headers.get('Content-Type')??'')?await response.json():await response.text()};
+ const response=await fetch(origin+path,{headers:{Accept:'application/json','User-Agent':AGENT,...headers},redirect:'manual',signal:AbortSignal.timeout(60_000)});
+ return {status:response.status,robots:response.headers.get('X-Robots-Tag'),body:/json/.test(response.headers.get('Content-Type')??'')?await response.json():await response.text()};
 };
 // A new version can take a few seconds to reach every location: retry the
 // static checks briefly (6 tries, 5 s apart) before failing.
@@ -44,15 +47,22 @@ const ids=files.core?.ids;
 assert(Array.isArray(ids)&&ids.length>0,'core.json has no hotel ids');
 const detail=await get('/api/hotels/'+encodeURIComponent(ids[0]));
 assert.equal(detail.status,200,'/api/hotels/<id> status '+detail.status);
+// Not for search engines: static assets (public/_headers) and Worker responses (edge-guard).
+for(const [label,response] of [['/',page],['/snapshot/manifest.json',manifest],['/api/hotels/<id>',detail]])assert.equal(response.robots,ROBOTS,label+' X-Robots-Tag');
+// A tool without the key (here Node's own default agent) is refused before the app.
+const tool=await get('/api/hotels/'+encodeURIComponent(ids[0]),{'User-Agent':'node'});
+assert.equal(tool.status,403,'/api/hotels/<id> from a tool without the key must be refused');assert.equal(tool.robots,ROBOTS);
 // The maintenance key, on a route that reads no D1: the collector release
 // (built for this origin). /api/crawl?report=1 used to be checked here, but it
 // prepares an unprepared catalogue (writes) and scans the queue and hotels on
 // every deploy (docs/cloudflare-deploy.md).
 const denied=await get('/api/collector-release');
 assert.equal(denied.status,403,'/api/collector-release must reject a missing key');
-const release=await get('/api/collector-release',{'X-Yukemuri-Crawl-Key':key});
+// The maintenance key passes with the collector's own agent, as the collector and backup send it.
+const release=await get('/api/collector-release',{'X-Yukemuri-Crawl-Key':key,'User-Agent':'YukemuriCatalogUpdater/1.0 (+'+origin+')'});
 assert.equal(release.status,200,'/api/collector-release with key status '+release.status);
 assert.equal(release.body?.siteOrigin,origin,'the collector release is not built for this origin');
 const robots=await get('/robots.txt');
-assert.equal(robots.status,200);assert.match(String(robots.body),/^Disallow: \/api\/$/m);
-console.log(`Smoke passed: first page with ${cards} cards, a detail 200, snapshot ${manifest.body.id} with ${manifest.body.hotels} hotels and ${Object.keys(manifest.body.files).length} files, collector release without key 403 and with key 200 for this origin, robots.txt blocks /api/.`);
+// Every crawler: only the home page, so that search engines can read its noindex.
+assert.equal(robots.status,200);assert.match(String(robots.body),/^User-agent: \*\nAllow: \/\$\nDisallow: \/$/m);
+console.log(`Smoke passed: first page with ${cards} cards, a detail 200, snapshot ${manifest.body.id} with ${manifest.body.hotels} hotels and ${Object.keys(manifest.body.files).length} files, noindex on static and Worker responses, a tool without the key 403, collector release without key 403 and with key 200 for this origin, robots.txt opens only the home page.`);
