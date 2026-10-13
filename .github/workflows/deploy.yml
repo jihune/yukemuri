@@ -7,10 +7,13 @@ name: Cloudflare deploy
 # (workflow_call, after_collection: true) so the snapshot follows the catalogue.
 # A manual run with preflight: true only reads (time travel, pending
 # migrations, the snapshot, catalog_meta) and runs deploy --dry-run; it needs
-# the database_id but not autoDeploy or publicOrigin.
+# the database_id but not autoDeploy or publicOrigin. A push that changes only
+# Markdown or docs (the same paths web-checks.yml ignores) does not redeploy;
+# the next code push or collection deploys main HEAD with it.
 on:
   push:
     branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**', 'archives/**']
   workflow_dispatch:
     inputs:
       preflight:
