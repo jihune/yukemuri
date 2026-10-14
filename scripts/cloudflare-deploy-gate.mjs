@@ -20,9 +20,11 @@ export function deployGate(config){
 
 // What this run does: deploy (gate on), preflight (a manual read-only check,
 // which needs only the D1 database id) or skip. Preflight never deploys, even
-// with the gate on.
-export function deployMode(config,{preflight=false}={}){
+// with the gate on. deferred: a main push that changes the official evidence
+// file, which lifecycle.yml deploys after storing it (scripts/lifecycle-push.mjs).
+export function deployMode(config,{preflight=false,deferred=false}={}){
  const gate=deployGate(config);
+ if(deferred&&!preflight)return {mode:'skip',reason:'lifecycle.yml deploys this push after storing data/lifecycle-official.json'};
  if(preflight){
   if(!config.databaseId)throw new Error('preflight needs the D1 database_id in cloudflare-deploy.json');
   return {mode:'preflight',reason:'read-only preflight',databaseName:config.databaseName,databaseId:config.databaseId,publicOrigin:config.publicOrigin};
@@ -31,7 +33,7 @@ export function deployMode(config,{preflight=false}={}){
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){
- const run=deployMode(JSON.parse(readFileSync(process.argv[2]??'cloudflare-deploy.json','utf8')),{preflight:process.env.PREFLIGHT==='true'});
+ const run=deployMode(JSON.parse(readFileSync(process.argv[2]??'cloudflare-deploy.json','utf8')),{preflight:process.env.PREFLIGHT==='true',deferred:process.env.DEFERRED==='true'});
  console.log(`mode=${run.mode}`);console.log(`reason=${run.reason}`);
  if(run.mode!=='skip'){console.log(`database_name=${run.databaseName}`);console.log(`public_origin=${run.publicOrigin??''}`)}
 }

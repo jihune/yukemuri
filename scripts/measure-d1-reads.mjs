@@ -56,7 +56,7 @@ const start=()=>new Miniflare({modules,modulesRoot:server,compatibilityDate:'202
 const call=async(runtime,path,init={},expected=200)=>{
  await runtime.dispatchFetch('http://localhost/__d1meter');
  const t=performance.now();
- const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(path.startsWith('/api/crawl')||path.startsWith('/api/catalog-export')||path.startsWith('/api/collector-release')?{'X-Yukemuri-Crawl-Key':KEY}:{}),...init.headers}});
+ const r=await runtime.dispatchFetch('http://localhost'+path,{...init,headers:{'Content-Type':'application/json','X-Yukemuri-Visitor':VISITOR,...(path.startsWith('/api/crawl')||path.startsWith('/api/catalog-export')||path.startsWith('/api/collector-release')||path.startsWith('/api/hotel-lifecycle')?{'X-Yukemuri-Crawl-Key':KEY}:{}),...init.headers}});
  const body=await r.json(),ms=performance.now()-t;
  assert.equal(r.status,expected,path+' '+JSON.stringify(body).slice(0,300));
  const meter=await (await runtime.dispatchFetch('http://localhost/__d1meter')).json();
@@ -105,6 +105,8 @@ try{
   return JSON.stringify({url:listUrl,status:'done',observations:[...fresh,...known],links:fresh.map(h=>({url:'https://www.jalan.net/yad'+h.id.slice(6)+'/',kind:'detail',prefecture:h.prefecture}))});
  })();
  const sample=(await db.prepare("SELECT id FROM hotels WHERE id NOT LIKE '%-copy%' ORDER BY id LIMIT 4").all()).results.map(r=>r.id);
+ const proof={id:sample[0],state:'temporarily_closed',sourceUrl:'https://example.jp/official-notice',sourceKind:'official_property',sourceLabel:'Official notice',evidence:'The official notice announces a temporary closure for renovation.',identityEvidence:'Original name and address match the official notice.',checkedAt:new Date(Date.now()-60e3).toISOString(),effectiveDate:new Date().toISOString().slice(0,10)};
+ const lifecycleProof=JSON.stringify(proof),lifecycleNewer=JSON.stringify({...proof,checkedAt:new Date().toISOString(),evidence:'The official notice, checked again, still announces the closure.'});
  // A previous collector run ended with its full-count GET, as in production.
  await call(runtime,'/api/crawl?provider=jalan&kind=list&limit=1');
  await runtime.dispose();runtime=null;
@@ -139,6 +141,11 @@ try{
   ['crawlReport','수집 보고(report=1, 키)','/api/crawl?report=1'],
   ['collectorRelease','수집기 release(키)','/api/collector-release'],
   ['exportPage','catalog-export hotels 한 쪽(250행)','/api/catalog-export?table=hotels&limit=250'],
+  // L01: one official evidence entry as lifecycle.yml sends it, then the same
+  // entry again (the next run of an unchanged file). The read back is 'detail'.
+  ['lifecycleSave','공식 상태 저장(PUT, 새 근거)','/api/hotel-lifecycle',{method:'PUT',body:lifecycleProof}],
+  ['lifecycleReplay','공식 상태 저장(PUT, 같은 근거 다시)','/api/hotel-lifecycle',{method:'PUT',body:lifecycleProof}],
+  ['lifecycleNewer','공식 상태 저장(PUT, 더 새 근거)','/api/hotel-lifecycle',{method:'PUT',body:lifecycleNewer}],
  ];
  const results=[];
  const warm=start();
@@ -189,9 +196,15 @@ try{
   // Public routes (P03 PR C): fixed caps that hold at any catalogue size, and
   // no D1 write on a read. A favourite save writes its one row.
   const publicCaps={detailCold:50,detail:50,detailMissing:50,compare:120,compare4:160,favoritesPut:50,favoritesGet:50,photoCredits:60,photoCreditsNext:60,google:0,prices:0,collectionStatusPublic:0};
-  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),...publicCaps};
+  // L01 evidence: a lifecycle PUT reads its hotel and lifecycle rows and the
+  // hotel it returns, writes the lifecycle row and one event, and nothing when
+  // the same entry comes again.
+  const lifecycleCaps={lifecycleSave:60,lifecycleReplay:60,lifecycleNewer:60};
+  const bounds={...claims,crawlPut:bound(0.02,200),crawlPutCold:bound(0.02,200),...publicCaps,...lifecycleCaps};
   const failures=Object.entries(bounds).filter(([k,max])=>byKey[k].rowsRead>max).map(([k,max])=>`${k}: rowsRead ${byKey[k].rowsRead} > ${Math.floor(max)}`);
   for(const k of Object.keys(publicCaps))if(k!=='favoritesPut'&&byKey[k].rowsWritten!==0)failures.push(`${k}: a public read wrote ${byKey[k].rowsWritten} rows`);
+  if(byKey.lifecycleReplay.rowsWritten!==0)failures.push(`lifecycleReplay: the same evidence wrote ${byKey.lifecycleReplay.rowsWritten} rows`);
+  for(const k of ['lifecycleSave','lifecycleNewer'])if(!(byKey[k].rowsWritten>0&&byKey[k].rowsWritten<=8))failures.push(`${k}: rowsWritten ${byKey[k].rowsWritten}, expected 1-8`);
   console.log(failures.length?'D1 read bounds FAIL '+failures.length+': '+failures.join('; '):`D1 read bounds PASS (${Object.keys(bounds).length} requests, hotels=${h})`);
   if(failures.length)process.exitCode=1;
  }

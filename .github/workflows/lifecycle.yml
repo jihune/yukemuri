@@ -1,0 +1,87 @@
+name: Yukemuri lifecycle
+# L01: applies the reviewed official evidence in data/lifecycle-official.json
+# (opening, temporary closure, closure) to the Cloudflare Worker after a main
+# push that changes the file, or by hand. Never on pull requests (the repository
+# is public) and no schedule. The same entry again is 'replayed' with no write;
+# older evidence than the stored one is refused (409). The key is used only for
+# main, after the whole file passed the Worker's contract and the checks the
+# contract does not hold (check-lifecycle-official.mjs). Then this run deploys
+# main through deploy.yml, as collect.yml does, so the search snapshot is built
+# once, after the evidence: deploy.yml leaves every push that changes this file
+# to this run (paths-ignore, and scripts/lifecycle-push.mjs for a push with
+# other files). A manual run deploys main again, which also recovers a snapshot
+# deploy that failed after an earlier store. A rerun deploys its push's commit:
+# use it only while no later deploy happened (docs/L01-20261013.md).
+run-name: Yukemuri lifecycle
+on:
+  push:
+    branches: [main]
+    paths: ['data/lifecycle-official.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+# (actions: read passes on to the called deploy.yml for checked-commit.mjs.)
+# The catalogue lock for the whole run, as collect.yml: evidence writes and the
+# snapshot they call wait behind collection runs and push deploys. The called
+# deploy takes its own top group and then the account lock.
+concurrency:
+  group: yukemuri-catalog-updates
+  cancel-in-progress: false
+  queue: max
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
+jobs:
+  apply:
+    # A manual run from another branch applies nothing: only main is reviewed.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      failed: ${{ steps.apply.outputs.failed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify the launcher without credentials
+        run: python3 scripts/runner/check_lifecycle.py
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: bash scripts/cloud-setup.sh
+      - name: Verify the evidence file against the Worker contract
+        run: node scripts/check-lifecycle-official.mjs
+      - name: Apply the official evidence to the Worker
+        id: apply
+        env:
+          YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
+        run: python3 scripts/runner/apply-lifecycle.py
+  # Every push of the evidence file: deploy.yml skipped it, so this is the
+  # deploy of that merge (also when the apply failed, for the code it carries).
+  # A manual run deploys after a successful apply.
+  snapshot:
+    needs: apply
+    if: ${{ !cancelled() && (github.event_name == 'push' || needs.apply.result == 'success') }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      after_collection: true
+    secrets: inherit
+  # Refused or unconfirmed evidence fails the run, after the saved part reached
+  # the snapshot.
+  verdict:
+    needs: [apply, snapshot]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Fail on refused evidence or a failed job
+        env:
+          APPLY: ${{ needs.apply.result }}
+          FAILED: ${{ needs.apply.outputs.failed }}
+          SNAPSHOT: ${{ needs.snapshot.result }}
+        run: |
+          echo "apply=$APPLY failed=$FAILED snapshot=$SNAPSHOT"
+          test "$APPLY" = success && test "$FAILED" = 0 && { test "$SNAPSHOT" = success || test "$SNAPSHOT" = skipped; }

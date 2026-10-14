@@ -1,0 +1,241 @@
+{
+ "checkedBy": "L01 session, robots.txt read per host, 9 s or more between requests to one host",
+ "userAgent": "YukemuriLifecycleResearch/1.0 (+https://yukemuri.jihune.workers.dev)",
+ "snapshot": "df6ddf58032a7dcb",
+ "fetched": [
+  {
+   "at": "2026-10-13T15:18:49Z",
+   "url": "https://www.kurokawaonsen.or.jp/",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:19:15Z",
+   "url": "https://www.kurokawaonsen.or.jp/oyado/",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:20:04Z",
+   "url": "https://www.kurokawaonsen.or.jp/assets/function/makeInnList.php",
+   "method": "POST type=set_block&mode=set_block",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:21:04Z",
+   "url": "https://yufuin.gr.jp/spot/?sort=update",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:21:41Z",
+   "url": "https://yufuin.gr.jp/news",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:23:35Z",
+   "url": "https://www.odakyu.jp/news/h3de76000000cs8k-att/h3de76000000cs8r.pdf",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:24:17Z",
+   "url": "https://www.hakonenavi.jp/spot/1064",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:25:07Z",
+   "url": "https://www.hakone-yumotohotel.com/news/リニューアル工事に伴う休館のご案内.html",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:25:51Z",
+   "url": "https://gekkoujyu.com/",
+   "status": 200
+  },
+  {
+   "at": "2026-10-13T15:26:11Z",
+   "url": "https://www.hakone.or.jp/",
+   "status": 200
+  }
+ ],
+ "kurokawaAssociation": {
+  "source": "https://www.kurokawaonsen.or.jp/oyado/",
+  "members": [
+   {
+    "name": "いこい旅館",
+    "record": "jalan-354381"
+   },
+   {
+    "name": "旅館 壱の井",
+    "record": "jalan-321395"
+   },
+   {
+    "name": "いやしの里 樹やしき",
+    "record": "jalan-318007"
+   },
+   {
+    "name": "旅館 奥の湯",
+    "record": "jalan-310876"
+   },
+   {
+    "name": "お宿 玄河",
+    "record": "jalan-316385"
+   },
+   {
+    "name": "黒川荘",
+    "record": "jalan-313725"
+   },
+   {
+    "name": "月洸樹 黒川",
+    "record": null
+   },
+   {
+    "name": "こうの湯",
+    "record": "jalan-378806"
+   },
+   {
+    "name": "旅館 山河",
+    "record": "jalan-320028"
+   },
+   {
+    "name": "新明館",
+    "record": "jalan-308320"
+   },
+   {
+    "name": "瀬の本高原ホテル",
+    "record": "jalan-320148"
+   },
+   {
+    "name": "旅館 南城苑",
+    "record": "jalan-369175"
+   },
+   {
+    "name": "お宿 のし湯",
+    "record": "jalan-315969"
+   },
+   {
+    "name": "お宿 野の花",
+    "record": "jalan-375222"
+   },
+   {
+    "name": "ふじ屋",
+    "record": "jalan-357102"
+   },
+   {
+    "name": "ふもと旅館＆別館「麓庵」",
+    "record": "jalan-323983"
+   },
+   {
+    "name": "源流の宿 帆山亭",
+    "record": "jalan-309990"
+   },
+   {
+    "name": "旅館 美里",
+    "record": "jalan-377966"
+   },
+   {
+    "name": "山みず木別邸 深山山荘",
+    "record": "jalan-326340"
+   },
+   {
+    "name": "旅館 やまの湯",
+    "record": "jalan-313302"
+   },
+   {
+    "name": "やまびこ旅館",
+    "record": "jalan-377838"
+   },
+   {
+    "name": "山みず木",
+    "record": "jalan-356096"
+   },
+   {
+    "name": "優彩別館",
+    "record": "jalan-382012"
+   },
+   {
+    "name": "湯峡の響き 優彩",
+    "record": "jalan-311270"
+   },
+   {
+    "name": "夢龍胆",
+    "record": "jalan-306344"
+   },
+   {
+    "name": "夢龍胆 花泊まり",
+    "record": "jalan-301088"
+   },
+   {
+    "name": "旅館　湯本荘",
+    "record": "jalan-316798"
+   },
+   {
+    "name": "歴史の宿 御客屋",
+    "record": "jalan-328302"
+   },
+   {
+    "name": "旅館 わかば",
+    "record": "jalan-358212"
+   },
+   {
+    "name": "里の湯 和らく",
+    "record": "jalan-320316"
+   }
+  ],
+  "note": "Matched by original name and an address in Minamioguni (Manganji or Oku-Kurokawa). Membership is not used as operating evidence."
+ },
+ "confirmed": [
+  {
+   "record": "trip-1182118",
+   "state": "temporarily_closed",
+   "effectiveDate": "2025-05-08",
+   "sources": [
+    "https://www.odakyu.jp/news/h3de76000000cs8k-att/h3de76000000cs8r.pdf",
+    "https://www.hakonenavi.jp/spot/1064"
+   ],
+   "quotes": [
+    "従前のホテルは、２０２５年５月に営業を終了",
+    "１２月には、解体を含む工事に着手予定",
+    "２０２７年秋頃のリニューアルオープンを目指した計画を推進しています",
+    "箱根ハイランドホテル　※5月8日より休館",
+    "所在 神奈川県足柄下郡箱根町仙石原品の木 ９４０"
+   ]
+  },
+  {
+   "record": "jalan-348699",
+   "state": "temporarily_closed",
+   "reconfirmed": true,
+   "sources": [
+    "https://www.hakone-yumotohotel.com/news/リニューアル工事に伴う休館のご案内.html"
+   ],
+   "quotes": [
+    "【休館期間】　2026年３月１日（日）～　2027年6月30日(水)",
+    "〒250-0312 神奈川県足柄下郡箱根町湯本茶屋97"
+   ]
+  }
+ ],
+ "notApplied": [
+  {
+   "record": "jalan-358709",
+   "reason": "future opening (2026-11-10 in a press release title); official page not read"
+  },
+  {
+   "record": "jalan-300510",
+   "reason": "operator change from 2026-10-01 (search result); no closure evidence"
+  },
+  {
+   "record": "jalan-305649",
+   "reason": "operator change from 2026-10-01 (search result); no closure evidence"
+  },
+  {
+   "record": "trip-97354618",
+   "reason": "operator change from 2026-10-01 (search result); no closure evidence"
+  },
+  {
+   "record": "jalan-330040",
+   "reason": "no 2026 closure or reopening found"
+  },
+  {
+   "record": null,
+   "name": "月洸樹 黒川",
+   "reason": "not in the catalogue; official site still says 2016年春 OPEN（予定）; no OTA URL found yet"
+  }
+ ]
+}

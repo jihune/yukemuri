@@ -21,6 +21,8 @@ commands = [
     ['node', 'scripts/build-collector-release.mjs'],
     [sys.executable, 'scripts/runner/check_bootstrap.py'],
     [sys.executable, 'scripts/runner/check_collection.py'],
+    [sys.executable, 'scripts/runner/check_lifecycle.py'],
+    ['node', 'scripts/check-lifecycle-official.mjs'],
     ['node', 'scripts/check-collect-workflow.mjs'],
     ['node', 'scripts/check-rollback-workflow.mjs'],
     ['node', 'scripts/check-cloudflare-usage.mjs'],

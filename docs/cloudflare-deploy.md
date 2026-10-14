@@ -14,6 +14,7 @@
 | `.github/workflows/d1-setup.yml` | 수동 실행 전용. 아래 ‘3단계: D1 만들기’ |
 | `.github/workflows/rollback.yml` | 수동 실행 전용. 아래 ‘롤백’ |
 | `.github/workflows/usage.yml` | 수동 실행 전용. 아래 ‘사용량 측정’ |
+| `.github/workflows/lifecycle.yml` | `data/lifecycle-official.json`을 바꾼 main push·수동 실행. 아래 ‘공식 상태 반영(L01)’ |
 | `scripts/cloudflare-deploy-gate.mjs` | 배포 여부 판정 |
 | `scripts/cloudflare-d1-setup.mjs` | D1 찾기·만들기 |
 | `scripts/cloudflare-workers-subdomain.mjs` | `workers.dev` 서브도메인 읽기, 없을 때만 등록 |
@@ -78,10 +79,10 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 ## 자동 배포(deploy.yml)
 
-- 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). Markdown·`docs/`·`archives/`만 바꾼 main push는 배포하지 않는다(`web-checks.yml`과 같은 `paths-ignore`, 2026-10-13). 그 변경은 다음 코드 push나 수집 끝 배포가 main HEAD로 함께 배포한다. 이때 HEAD에 main push 검사 기록이 없으므로 수집 끝 배포는 전체 검사를 다시 돈다. `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. 동시 실행 잠금은 둘이고 언제나 같은 순서로 잡는다. 바깥은 workflow 최상위의 카탈로그 그룹(`yukemuri-catalog-updates`)이다. 6단계 수집 workflow도 이 그룹을 쓰므로 스냅숏 생성이 수집 쓰기와 겹치지 않는다. 수집 끝 호출은 `yukemuri-snapshot-after-collection`을 쓴다. 안쪽은 배포 job의 계정 그룹(`cloudflare-account`)이고 D1 setup과 같다. 수집 workflow는 계정 그룹을 먼저 잡으면 안 된다(순서가 엇갈리면 서로 기다린다, P03).
+- 시작: main push, 수동 실행, `workflow_call`(6단계 수집 workflow가 수집 끝에 불러 스냅숏을 갱신, P03). Markdown·`docs/`·`archives/`만 바꾼 main push는 배포하지 않는다(`web-checks.yml`과 같은 `paths-ignore`, 2026-10-13). 그 변경은 다음 코드 push나 수집 끝 배포가 main HEAD로 함께 배포한다. 이때 HEAD에 main push 검사 기록이 없으므로 수집 끝 배포는 전체 검사를 다시 돈다. `data/lifecycle-official.json`을 바꾼 push도 배포하지 않고 `lifecycle.yml`에 맡긴다(아래 ‘공식 상태 반영(L01)’). `pull_request`·`pull_request_target`에서는 실행하지 않는다. 레포가 public이므로 Secret은 이 세 경로에서만 쓴다. 토큰 권한은 `contents: read`다. 동시 실행 잠금은 둘이고 언제나 같은 순서로 잡는다. 바깥은 workflow 최상위의 카탈로그 그룹(`yukemuri-catalog-updates`)이다. 6단계 수집 workflow도 이 그룹을 쓰므로 스냅숏 생성이 수집 쓰기와 겹치지 않는다. 수집 끝 호출은 `yukemuri-snapshot-after-collection`을 쓴다. 안쪽은 배포 job의 계정 그룹(`cloudflare-account`)이고 D1 setup과 같다. 수집 workflow는 계정 그룹을 먼저 잡으면 안 된다(순서가 엇갈리면 서로 기다린다, P03).
 - 판정: `databaseId`가 `null`이거나 `autoDeploy`가 `false`면 checkout과 판정 뒤 모든 단계를 건너뛰고 이유를 요약에 쓴다. Cloudflare에 접속하지 않는다. `autoDeploy`가 `true`인데 `publicOrigin`이 없으면 실패한다. 수동 실행에서 `preflight`를 켜면 판정은 `preflight` 모드가 되고(아래), `databaseId`가 없으면 실패한다.
 - 켜졌을 때 순서:
-  1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다. 수집 끝 호출(`after_collection`)은 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사(`Cloud app checks` 또는 push 배포) 성공을 찾으면 빌드만 한다(C3). 수집은 부른 시점의 main에서 돌므로 그 커밋은 push 때 이미 `--full`을 통과했다. 성공 기록이 없거나 API가 답하지 않으면 `--full`을 다시 돌린다. 이를 위해 `deploy.yml`과 `collect.yml`에 `actions: read`를 더했다.
+  1. `bash scripts/cloud-setup.sh` 뒤 `python3 scripts/cloud-check.py --full`. 이 커밋을 CI와 같은 검사로 다시 확인하고 그 빌드를 배포한다. `YUKEMURI_SITE_ORIGIN=publicOrigin`이라 수집기 release의 `siteOrigin`이 새 주소가 된다. 수집 끝 호출(`after_collection`)은 `scripts/checked-commit.mjs`가 이 커밋의 main push 검사(`Cloud app checks`) 성공을 찾으면 빌드만 한다(C3). push 배포 성공은 세지 않는다. 근거 파일을 바꾼 push는 검사 없이 건너뛰고 성공으로 끝나기 때문이다(L01). 수집은 부른 시점의 main에서 돌므로 그 커밋은 push 때 이미 `--full`을 통과했다. 성공 기록이 없거나 API가 답하지 않으면 `--full`을 다시 돌린다. 이를 위해 `deploy.yml`과 `collect.yml`에 `actions: read`를 더했다.
   2. `d1 time-travel info yukemuri --json`으로 복구 지점(bookmark)을 요약에 남긴다. JSON의 `bookmark` 필드는 wrangler 4.92.0 소스에서 확인했다. 값이 없으면 배포 전에 멈춘다.
   3. `d1 migrations apply yukemuri --remote`. 새 마이그레이션이 없으면 아무것도 하지 않는다.
   3-1. `node scripts/build-search-snapshot.mjs --remote`: 마이그레이션된 D1을 Cloudflare API로 읽어 검색 스냅숏을 `dist/client/snapshot/`에 쓴다. D1에 쓰지 않는다. 운영 규모 복사본 기준 1회 읽기 약 10.4만 행(P03). 크기·읽기 행 수는 실행 요약에 남는다. 이 단계는 `/`의 정적 페이지도 다시 그린다(기본 보기 첫 쪽과 manifest를 넣는다). 카탈로그가 이 릴리스의 seed로 준비되지 않았으면(`catalog_meta`의 준비 표시 5개) 그 목록을 `prepared=false`로 알린다.
@@ -153,6 +154,17 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - actionlint 1.7.7–1.7.12는 `queue` 키를 모른다. `run-actionlint.py`는 이 키의 ‘unexpected key’ 오류만 무시하고, `check-deploy-config.mjs`·`check-collect-workflow.mjs`가 값(`queue: max`, `cancel-in-progress: false`)을 단언한다. 실제 GitHub의 수용 여부는 이 PR 병합 뒤 첫 main push 배포(설정 검증)와 6단계 수동 실행(gentle 중 하나 더 넣기)에서 확인한다.
 - `collect-watch.yml`: 6시간마다(`41 */6 * * *`) `GITHUB_TOKEN`(`actions: read`)으로 `collect.yml`의 성공 실행을 읽는다(`scripts/check-collection-freshness.mjs`). 마지막 성공 gentle이 12시간을 넘으면 실패한다. 성공이 하나도 없으면 통과하고, `publicOrigin`이 `null`이면 API를 부르지 않고 건너뛴다. 4단계 완료 PR에서 `publicOrigin`이 채워진 뒤 6단계 전까지는 성공이 없어 통과한다.
 - 검사: `check-collect-workflow.mjs`(두 workflow 설정, 이 레포에 다른 cron 없음, 감시 규칙과 로컬 GitHub API 대역), `runner/check_collection.py`(상한·대상·키 전달), `run-actionlint.py`(actionlint 1.7.7, 해시 고정 내려받기, shellcheck·pyflakes 끔). 모두 `cloud-check.py`에 들어 있다.
+
+## 공식 상태 반영(L01)
+
+기록: 2026-10-13T15:4xZ. 상세와 측정은 `L01-20261013.md` 2절이다.
+
+- 검토된 근거 파일 `data/lifecycle-official.json`(Worker 계약 `lib/lifecycle-contract.ts`의 항목 목록)을 `lifecycle.yml`이 운영 Worker의 `PUT /api/hotel-lifecycle`에 보낸다. 시작은 이 파일을 바꾼 main push와 수동 실행뿐이다. PR·schedule에서는 돌지 않는다.
+- 크롤 키는 Secret `YUKEMURI_CRAWL_ACCESS_KEY`를 적용 단계 env로만 받는다. `scripts/runner/apply-lifecycle.py`가 `update-lifecycle.py` 표준입력으로만 넘긴다. 잠금은 수집과 같은 `yukemuri-catalog-updates`(`queue: max`)다.
+- 적용 job은 main 참조에서만 돈다. 키를 쓰기 전에 의존성을 설치하고 `check-lifecycle-official.mjs`로 파일 전체를 Worker 계약·예약 사이트 출처·중복·미래 확인일로 검사한다.
+- 같은 근거는 `replayed`(쓰기 0)다. 더 새 근거가 저장돼 있으면 409로 거절된다. 근거를 저장한 뒤 `deploy.yml`(`after_collection: true`)을 한 번 불러 배포한다(push 실행은 적용이 실패해도, 수동 실행은 적용이 성공했을 때). `deploy.yml`은 근거 파일을 바꾼 push를 배포하지 않는다. 근거 파일만 바꾼 push는 `paths-ignore`로, 다른 파일도 바꾼 push는 `scripts/lifecycle-push.mjs`(compare API)와 배포 판정의 `deferred`로 건너뛴다. 그래서 병합 한 번에 스냅숏은 근거 저장 뒤 한 번이다. 거절된 근거가 있으면 배포 뒤에 판정 job이 실행을 실패로 끝낸다.
+- 파일에서 항목을 지워도 운영 상태는 되돌아가지 않는다. 더 늦은 확인일의 새 근거로 바꾼다.
+- 검사: `check-lifecycle-official.mjs`, `runner/check_lifecycle.py`(`cloud-check.py` 기본 목록), `measure-d1-reads.mjs --check`의 lifecycle 상한.
 
 ## 사용량 측정
 
