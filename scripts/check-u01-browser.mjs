@@ -42,6 +42,8 @@ async function run(page,cdp){
  // At the real end the content cannot move further up, so a covered control stays covered.
  const covered=await page.evaluate(()=>[...document.querySelectorAll('main a,main button,footer a,footer button')].filter(e=>{
   if(e.closest('.comparison-dock,.mobile-map-toggle'))return false;
+  // A control inside a closed <details> (the collection status panel in the footer, U05) is not shown.
+  if(!e.checkVisibility())return false;
   const r=e.getBoundingClientRect();if(!r.width||r.top<0||r.bottom>innerHeight)return false;
   const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return !hit||!(hit===e||e.contains(hit));
  }).map(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return {control:e.getAttribute('aria-label')||e.innerText.trim().slice(0,30),top:Math.round(r.top),coveredBy:String(hit?.closest('[class]')?.className).slice(0,40)}}));
@@ -137,9 +139,13 @@ async function run(page,cdp){
  await close.tap();await sheet.waitFor({state:'detached'});
 
  // Collection status: loading, failure, retry, empty and the table on a narrow screen.
+ // U05 moved it to the footer. With all 1,655 stays the list keeps loading pages as the footer
+ // comes near, so the footer is reached on a short result (handoff U05 3번: 7번 PR에서 진입점).
+ await page.goto(base+'/?q='+encodeURIComponent('노보리베츠'),{waitUntil:'networkidle'});
  const panel=page.locator('.coverage-panel'),summary=panel.locator('summary');
  await page.route('**/snapshot/v/*/status.json',async route=>{await new Promise(done=>setTimeout(done,1200));await route.continue()});
- await summary.scrollIntoViewIfNeeded();await summary.tap();
+ // The panel is in the footer (U05): bring it to the middle, clear of the floating buttons.
+ await summary.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));await summary.tap();
  const loading=panel.getByText('저장된 수집 기록을 확인하고 있습니다');
  check('수집 현황 로딩 안내',await loading.isVisible().catch(()=>false)||await loading.waitFor({timeout:1000}).then(()=>true,()=>false));
  const statusRegion=panel.locator('.collection-table-region');
