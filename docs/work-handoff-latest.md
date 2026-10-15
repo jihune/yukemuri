@@ -170,6 +170,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, PR #79·#93·#98 병합, 부모는 두 번째 상위 세션). 남은 일 없음 | 대기 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(PR #77)과 D04 시설 연도(PR #94). 브랜치 `claude/d05-rooms`, 부모는 두 번째 상위 세션. 다음은 D04 다음 단계 | 대기 |
 | `session_01Qktdn2dCv2gJn4Dwf8wKne` | R01 두 저장소 `.claude/settings.json`(브랜치 `claude/repo-language`, 10-15T07:37Z 시작, 부모는 세 번째 상위 세션). 두 PR 병합 뒤 보관한다 | 두 PR 병합(실행기 #10 `104e673`, yukemuri #103 `5f4d9b0`, 10-15T07:5xZ). 보관(아래 8) |
+| `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황 한눈에 보기(브랜치 `claude/u06-status`, 10-15T10:51Z 시작, 부모는 네 번째 상위 세션, 모델 Opus 5.5, Default 환경). 1단계 설계안을 상위 세션에 보내고 사용자 방향을 받은 뒤 구현한다 | 진행 중 |
 | `session_01Hb6mZa55hebUCaeC7z29mG` | 하네스 관리 세션(`jihune/agent-harness`, 10-15 인계). 이 프로젝트 세션이 관리하지 않는다. 하네스 교훈은 이 세션이나 사용자에게 전한다 | 07:4xZ에 idle |
 | `session_01MYY4pY2yi7c3oixLgRRsjT` | 이전 하네스 관리 세션(10-13 인계). 10-15에 위 세션에 인계했다 | 07:4xZ에 idle |
 | `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(PR #76 병합·배포) | 보관 |
@@ -239,6 +240,9 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
   - U05가 6번 비교 PR #108을 열었다(08:5xZ, head `0ab30f1`, Codex 1회째 요청).
 - 10-15T08:54Z 5시간 창 0.91(`surpassedThreshold` 0.9). 사용자 새 지시(위 2의 '사용량 기준에서 멈춤')대로 U05에 멈춤을 보냈다(push, PR #108 구독 해제, 11:00Z 재개 예약만 남김). 상위 세션도 새 일을 멈추고 11:00Z 재개 예약(`trig_01WYUkvb7S2tZLg6Wghg79jg`)으로 이어 간다.
 - 10-15T10:49Z 사용자: ‘예약 취소하고 지금 시작해.’ 상위 세션이 `trig_01WYUkvb7S2tZLg6Wghg79jg`를 지우고 그 예약에 적어 둔 순서(기록 PR, 하네스 관리 세션 알림, U06 시작, U05에 필터 의견과 재개)를 바로 시작했다. 5시간 창 초기화 시각(10:50Z) 1분 전이다.
+  - 10:50Z 기록 PR #110 병합(`43f2b4f`). 하네스 관리 세션에 사용자 원문 두 개와 어긋나는 하네스 규칙(전역 CLAUDE.md 「Session continuity」, `cloud-session-ops` 6절, `child-session-orchestration` 6절)을 보냈다. U05에 재개(11:00Z 예약은 지우라고 함), PR #108 다시 구독, 데스크톱 필터 진단과 고칠 방향 2~3개 시안, 단계마다 사용량 확인을 보냈다.
+  - 10:51Z U06 하위 세션 `session_015QRDYJDo2KtLmzZ681cnSe`를 열었다(위 6 표). brief에는 사용자 원문 두 개, 분모·분자 정의, status.json과 coverage의 완료 수 차이 확인, 스냅숏 생성 때 계산, 360/390/1280px 브라우저 검사, 설계안 먼저(docs/U06-20261015.md), 사용량 멈춤 규칙을 적었다.
+  - PR #108(U05 6번 비교): Codex 1회째가 08:55Z에 큰 문제 없음. 10:52Z head `80b2441`, mergeable_state unstable(CI 진행 중으로 보임). U05가 확인해 병합 준비를 알린다.
   - 확인한 지금 상태: 바닥글 ‘자료 현황’의 접힌 패널 ‘전국 수집 현황’이 숫자와 표만 보인다. 운영 스냅숏 `04c0aa1b509e6062`의 `status.json`(08:21Z)은 Jalan 상세 완료 1,088·대기 13,978, Trip.com 완료 798·대기 1,349·실패 1이다. 같은 manifest의 `coverage.providers`는 Jalan 완료 1,738·Trip.com 897로 세는 기준이 달라 보인다. U06이 두 수의 정의를 확인해야 한다. 한국어 이름과 설명 번역 비율은 `status.json`에 없다.
 
 
