@@ -14,7 +14,11 @@ and uses the whole context as both texts.
 
 D1 writes when the new plan version runs once (prepareCollectionPriorities):
 one row and one idx_crawl_jobs_claim_priority entry per moved job, and one
-catalog_meta progress row per batch of 500 jobs (queue size from status.json).
+catalog_meta progress row per batch of 500 jobs. The pass reads every crawl_jobs
+row; status.json counts only done detail, pending, running, retry and failed
+jobs (activePages overlaps them), so without --queue-jobs (the full count, from
+the maintenance-only /api/collection-status) the progress rows are a lower
+bound: each 500 uncounted jobs (done list pages, skipped) adds one row.
 """
 import argparse
 import collections
@@ -71,7 +75,7 @@ def town_of(plan, prefecture, text, address):
     return next((town['name'] for town in plan['towns'] if matches(town, prefecture, text, address)), None)
 
 
-def diff(old, new, core, cards, text, status):
+def diff(old, new, core, cards, text, status, queue_jobs=None):
     moved, uncut, records = [], 0, 0
     for i, hotel_id in enumerate(core['ids']):
         if not hotel_id.startswith(('jalan-', 'trip-')):
@@ -87,13 +91,16 @@ def diff(old, new, core, cards, text, status):
         if before != after:
             moved.append({'id': hotel_id, 'name': core['name'][i], 'address': cut[1], 'from': before, 'to': after,
                           'oldTown': town_of(old, prefecture, *cut), 'newTown': town_of(new, prefecture, *cut)})
-    jobs = sum(p['completedDetailPages'] + p['pendingPages'] + p['retryPages'] + p['failedPages'] + p['activePages'] for p in status['providers'])
+    counted = sum(p['completedDetailPages'] + p['pendingPages'] + p['retryPages'] + p['failedPages'] for p in status['providers'])
+    jobs = queue_jobs or counted
     batches = math.ceil(jobs / 500)
     return {
         'records': records, 'uncut': uncut, 'moved': len(moved),
         'byChange': dict(sorted(collections.Counter(f"{m['from']}->{m['to']} {m['oldTown'] or '-'}->{m['newTown'] or '-'}" for m in moved).items())),
-        'queueJobs': jobs, 'batches': batches,
-        'rowsWrittenEstimate': {'movedJobs': 2 * len(moved), 'progress': batches, 'total': 2 * len(moved) + batches},
+        'queueJobs': jobs, 'queueJobsSource': 'given' if queue_jobs else 'status.json (lower bound: done list pages and skipped jobs uncounted)',
+        'batches': batches,
+        'rowsWrittenEstimate': {'movedJobs': 2 * len(moved), 'progress': batches, 'total': 2 * len(moved) + batches,
+                                'lowerBound': not queue_jobs},
         'movedRecords': sorted(moved, key=lambda m: m['id']),
     }
 
@@ -103,6 +110,7 @@ def main(argv=None):
     parser.add_argument('--origin', default=ORIGIN)
     parser.add_argument('--old-ref', default='origin/main')
     parser.add_argument('--out', type=Path)
+    parser.add_argument('--queue-jobs', type=int, help='every crawl_jobs row, when known')
     args = parser.parse_args(argv)
     old = json.loads(subprocess.run(['git', 'show', f'{args.old_ref}:{PLAN}'], cwd=ROOT, capture_output=True, encoding='utf-8', check=True).stdout)
     new = json.loads((ROOT / PLAN).read_text(encoding='utf-8'))
@@ -111,7 +119,7 @@ def main(argv=None):
     files = {name: get(args.origin, manifest['files'][name]) for name in ('core', 'cards', 'text', 'status')}
     result = {'measuredAt': measured, 'origin': args.origin, 'snapshot': manifest['id'], 'generatedAt': manifest['generatedAt'],
               'oldVersion': old['version'], 'newVersion': new['version'],
-              **diff(old, new, files['core'], files['cards'], files['text'], files['status'])}
+              **diff(old, new, files['core'], files['cards'], files['text'], files['status'], args.queue_jobs)}
     body = json.dumps(result, ensure_ascii=False, indent=1) + '\n'
     if args.out:
         args.out.write_text(body, encoding='utf-8')

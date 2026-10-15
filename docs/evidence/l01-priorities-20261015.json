@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-15T01:40:57Z",
+ "measuredAt": "2026-10-15T02:06:57Z",
  "origin": "https://yukemuri.jihune.workers.dev",
  "snapshot": "4e22379a5ce3fe35",
  "generatedAt": "2026-10-14T22:18:52.609Z",
@@ -14,11 +14,13 @@
   "60->0 -->하코네": 19
  },
  "queueJobs": 16879,
+ "queueJobsSource": "status.json (lower bound: done list pages and skipped jobs uncounted)",
  "batches": 34,
  "rowsWrittenEstimate": {
   "movedJobs": 108,
   "progress": 34,
-  "total": 142
+  "total": 142,
+  "lowerBound": true
  },
  "movedRecords": [
   {
