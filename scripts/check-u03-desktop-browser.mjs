@@ -1,6 +1,8 @@
 // U03 desktop overlap checks in real Chromium at 1024, 1280 and 1440px with a mouse.
 // At the end of a short result list the sticky filter panel stays wholly on screen above the
-// footer, with and without the comparison dock, and its first and last controls can be reached.
+// footer, with and without the comparison dock, and its first and last controls can be reached
+// (since U05 filter C the groups start closed: they are all opened first, so the last control is
+// the last one of the panel, ‘최소 리뷰 수’).
 // A map preview opened from a card leaves the Leaflet attribution links visible and clickable.
 // Needs a running portable dev server and the isolated Playwright install in docs/ui-u01-20261010.md.
 // External requests are blocked, so map tiles and screen readers are not covered.
@@ -28,10 +30,15 @@ async function run(page,height){
   // The panel scrolls inside itself: its first control at the top, its last at the bottom.
   await page.locator('.desktop-filters').evaluate(e=>{e.scrollTop=0});
   const first=await reach('.desktop-filters .filter-title button');
+  const closed=page.locator('.desktop-filters .filter-group-toggle[aria-expanded=false]');
+  for(let i=0;i<10&&await closed.count();i++)await closed.first().click();
   await page.locator('.desktop-filters').evaluate(e=>{e.scrollTop=e.scrollHeight});await page.waitForTimeout(100);
-  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button,.desktop-filters input')];all.at(-1).dataset.u03Last='1';return all.length});
+  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button,.desktop-filters input')],shown=all.filter(e=>e.checkVisibility());all.at(-1).dataset.u03Last='1';return {controls:all.length,shown:shown.length,name:all.at(-1).getAttribute('aria-label')}});
   const end=await reach('[data-u03-last]');
-  check(`목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(${label})`,atEnd&&box.top>=0&&box.bottom<=box.footer&&first.ok&&end.ok,{atEnd,box,first,last:end,controls:last});
+  check(`목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고, 묶음을 모두 연 뒤 첫·마지막 조작 요소(‘최소 리뷰 수’)를 누를 수 있음(${label})`,atEnd&&box.top>=0&&box.bottom<=box.footer&&first.ok&&last.shown===last.controls&&last.name==='최소 리뷰 수'&&end.ok,{atEnd,box,first,last,end});
+  // Close the groups again so the next state starts like a visitor's.
+  const open=page.locator('.desktop-filters .filter-group-toggle[aria-expanded=true]');
+  for(let i=0;i<10&&await open.count();i++)await open.first().click();
   await shot('panel-end-'+(label==='비교 막대 없음'?'nodock':'dock'));
  };
 
