@@ -1324,6 +1324,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 고치기 전 CSS(`8268316`)에 패널 `overflow:visible` 변형을 더한 빌드: 새 `check-u05-filter` 8건 실패, 새 `check-u03-desktop` 4건 실패(1024px는 중단), 전 `check-u03-desktop`은 12건 통과.
 - `9c33500` 빌드: 브라우저 검사 13종 중 12종 통과(`check-u05-filter` 53, `check-u03-desktop` 12, `check-u05-foundation` 53, `check-u05-list` 28, `check-u02-map` 55, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57, `check-p03-followups` 9). `check-u05-map`은 1280px ‘지도 크게’ 지도가 588px이라 1건 실패했고, `3e2f8e3`에서 옆 목록을 320px로 줄였다.
 - `3e2f8e3` 빌드: `check-u05-map` 23, `check-u02-map` 55, `check-u05-filter` 53, `check-u03-desktop` 12 통과. 빠른 `cloud-check.py` 28개 통과(`9c33500`).
+- Codex 2회째(`81fd59f`, 13:11Z) 지적 없음. 같은 소스 빌드에서 나머지 9종도 통과(`check-u05-foundation` 53, `check-u05-list` 28, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57, `check-p03-followups` 9, 13:11–13:19Z). `cloud-check.py --full` 42개 통과(`81fd59f`, 13:19:08Z–13:24:25Z). CI `checks`·GitGuardian 통과. main `4bc3708`은 이미 포함. 병합 준비.
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
