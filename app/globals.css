@@ -862,9 +862,6 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-toggle.is-on .filter-switch{background:var(--yk-primary)}
 .filter-toggle.is-on .filter-switch::after{transform:translateX(14px)}
 .filter-toggle:focus-visible{outline:2px solid var(--yk-primary);outline-offset:2px;border-radius:var(--yk-radius-sm)}
-.filter-content>.filter-toggle{margin-bottom:16px;padding:8px 10px;border:1px solid var(--yk-line);border-radius:var(--yk-radius);background:var(--yk-primary-soft);color:var(--yk-primary);font-weight:650}
-.filter-content>.filter-toggle.is-on{background:var(--yk-primary);border-color:var(--yk-primary);color:var(--yk-on-primary)}
-.filter-content>.filter-toggle.is-on .filter-switch{background:#ffffff80}
 /* The phone's bottom sheet. */
 .filter-drawer[data-vaul-drawer-direction=bottom]{max-height:88dvh;border-radius:16px 16px 0 0}
 .filter-drawer .mobile-sheet-title{height:auto;padding:4px 16px 10px}

@@ -53,6 +53,8 @@ for(const w of [360,390,1280,1440]){
  const quickChip=name=>page.locator(`${panel} .filter-quick .filter-chip`,{has:page.locator('span',{hasText:new RegExp('^'+name+'$')})}).first();
  const groupToggle=name=>page.locator(`${panel} .filter-group-toggle`,{hasText:name}).first();
  const press=l=>mobile?l.tap():l.click();
+ // Opens a group only if it is closed, so a page that opens them all fails the checks, not the run.
+ const openGroup=async name=>{const t=groupToggle(name);if(await t.getAttribute('aria-expanded')!=='true')await press(t);await page.waitForTimeout(300)};
  if(mobile){
   const opener=page.locator('.chip-bar .mobile-filter');
   await press(opener);await page.waitForTimeout(800);
@@ -76,7 +78,7 @@ for(const w of [360,390,1280,1440]){
  const on=await read();
  check(`‘노천탕’ 버튼: 눌림${mobile?', 칩 막대의 ‘노천탕’도 눌림':''}, 결과 ${want}곳 = 스냅숏 값${mobile?'(시트 버튼)':'(목록 머리)'}, Worker 목록 요청 없음`,on.quick.find(q=>q.name==='노천탕')?.on&&(!mobile||on.chips['노천탕']===true)&&(mobile?on.apply===`${want.toLocaleString()}곳 보기`:on.heading===want)&&new URL(page.url()).searchParams.get('features')==='outdoor'&&lists.length===before,{quick:on.quick.find(q=>q.name==='노천탕'),chip:on.chips['노천탕'],apply:on.apply,heading:on.heading,want,requests:lists.slice(before)});
  // A group opens with its switches; a switch inside it counts on the group's heading.
- await press(groupToggle('공용·전세 목욕 시설 세부'));await page.waitForTimeout(300);
+ await openGroup('공용·전세 목욕 시설 세부');
  const opened=await read(),sub=['대욕장','공용 대욕장 노천탕','전세·가족 노천탕'];
  await press(sw('공용 대욕장 노천탕'));await page.waitForTimeout(500);
  const counted=await read(),wantBoth=total('features=outdoor,communalOutdoor');
@@ -113,7 +115,7 @@ for(const w of [360,390,1280,1440]){
   const reset=await read();
   check('‘초기화’로 버튼·토글·칩이 모두 꺼지고 결과는 전체',reset.allOn===0&&Object.values(reset.chips).every(v=>!v)&&reset.apply===`${total('').toLocaleString()}곳 보기`,{allOn:reset.allOn,chips:reset.chips,apply:reset.apply});
   // The rating pickers (Radix Select) sit in the closed ‘평점과 리뷰’ group; opened, they apply.
-  await press(groupToggle('평점과 리뷰'));await page.waitForTimeout(300);
+  await openGroup('평점과 리뷰');
   const picker=page.locator('.filter-drawer').getByRole('combobox',{name:'최소 리뷰 수'});
   await picker.scrollIntoViewIfNeeded();await press(picker);await page.waitForTimeout(400);
   await press(page.getByRole('option',{name:'50개 이상'}));await page.waitForTimeout(500);

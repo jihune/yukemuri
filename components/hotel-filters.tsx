@@ -10,8 +10,8 @@ import Picker from './picker';
 // 2-column grid of pressed buttons, in the cards' order; then the remaining conditions in groups
 // that start closed. Every row and button is 44px and up, its count beside it; a group's
 // explanation is behind its ‘?’.
-function Toggle({label,detail,count,on,onChange,icon}:{label:string;detail?:string;count?:number;on:boolean;onChange:(on:boolean)=>void;icon?:ReactNode}){
- return <button type="button" role="switch" aria-checked={on} className={'filter-toggle'+(on?' is-on':'')} onClick={()=>onChange(!on)}>{icon}<span className="filter-toggle-label">{label}{detail&&<small>{detail}</small>}</span>{count!==undefined&&<small>{count.toLocaleString()}</small>}<span className="filter-switch" aria-hidden="true"/></button>;
+function Toggle({label,detail,count,on,onChange}:{label:string;detail?:string;count?:number;on:boolean;onChange:(on:boolean)=>void}){
+ return <button type="button" role="switch" aria-checked={on} className={'filter-toggle'+(on?' is-on':'')} onClick={()=>onChange(!on)}><span className="filter-toggle-label">{label}{detail&&<small>{detail}</small>}</span>{count!==undefined&&<small>{count.toLocaleString()}</small>}<span className="filter-switch" aria-hidden="true"/></button>;
 }
 function Group({title,help,active,children}:{title:string;help?:string;active:number;children:ReactNode}){
  const [open,setOpen]=useState(false),[shown,setShown]=useState(false),id=useId();
