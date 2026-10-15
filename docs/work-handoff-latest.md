@@ -1196,6 +1196,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 기존 브라우저 검사: `a23fa08` 빌드(로컬 사이트)에서 모두 통과했다: `check-u05-foundation` 53(상세 시트의 대비·44px·13px 포함), `check-u05-list` 28, `check-u05-filter` 27, `check-u01` 64, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u03-comparison` 60, `check-u04` 57, `check-p03-followups` 9. 그 뒤 바꾼 것(‘탕 상세’ 제목 아이콘 빼기, 검사 자료의 객실 타입 이름을 한국어로)은 `f978004` 빌드에서 `check-u05-detail` 66과 `check-u05-foundation` 53을 다시 돌려 확인했다.
 - `cloud-check.py --full`: `d19e78a`에서 42개 통과(06:53:52Z–06:59:24Z, rc=0).
 - 수정 전후 캡처는 작업 세션 임시 폴더에만 있다(외부 사진은 빈 그림).
+- 최신 main `ff57c78`(L01 PR 3 요코하마 라벨, 기록)을 merge했다(`8f8ebb4`, 충돌은 로드맵 U05 줄 하나). merge 트리에서 `cloud-check.py --full` 42개(07:05:58Z 끝, rc=0), `check-u05-detail` 66, `check-u05-list` 28, `check-u04` 57이 통과했다.
 
 미확인·다음:
 
