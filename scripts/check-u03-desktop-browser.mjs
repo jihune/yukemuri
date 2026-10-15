@@ -1,6 +1,7 @@
 // U03 desktop overlap checks in real Chromium at 1024, 1280 and 1440px with a mouse.
 // At the end of a short result list the sticky filter panel stays wholly on screen above the
-// footer, with and without the comparison dock, and its first and last controls can be reached.
+// footer, with and without the comparison dock, and its first and last controls can be reached
+// (the visible ones: since U05 filter C the groups start closed).
 // A map preview opened from a card leaves the Leaflet attribution links visible and clickable.
 // Needs a running portable dev server and the isolated Playwright install in docs/ui-u01-20261010.md.
 // External requests are blocked, so map tiles and screen readers are not covered.
@@ -29,7 +30,7 @@ async function run(page,height){
   await page.locator('.desktop-filters').evaluate(e=>{e.scrollTop=0});
   const first=await reach('.desktop-filters .filter-title button');
   await page.locator('.desktop-filters').evaluate(e=>{e.scrollTop=e.scrollHeight});await page.waitForTimeout(100);
-  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button,.desktop-filters input')];all.at(-1).dataset.u03Last='1';return all.length});
+  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button,.desktop-filters input')].filter(e=>e.checkVisibility());all.at(-1).dataset.u03Last='1';return all.length});
   const end=await reach('[data-u03-last]');
   check(`목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고 첫·마지막 조작 요소를 누를 수 있음(${label})`,atEnd&&box.top>=0&&box.bottom<=box.footer&&first.ok&&end.ok,{atEnd,box,first,last:end,controls:last});
   await shot('panel-end-'+(label==='비교 막대 없음'?'nodock':'dock'));
