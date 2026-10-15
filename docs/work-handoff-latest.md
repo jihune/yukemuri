@@ -1250,6 +1250,8 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 이 PR 빌드(`21adf4f` 소스)에서: `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u01` 64, `check-u05-foundation` 53, `check-u05-detail` 69 통과. 같은 빌드에서 남은 기존 검사도 모두 통과했다: `check-u05-list` 28, `check-u05-filter` 27, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9.
 - 수정 전(main `7bc041c`) 휴대폰 비교표는 숙소 열 220px × 4 + 이름표 130px(CSS 값)이라 가로로 밀어야 했다. 이제 360px에서 표 너비 343px = 영역 너비다(가로 이동 없음).
 - `cloud-check.py --full`: `d54f7e9`에서 42개 통과(08:45:33Z–08:50:58Z, rc=0).
+- 최신 main `8dab529`(기록·README)을 merge했다(`0ab30f1`, 충돌은 로드맵 U05 줄 하나). 빠른 `cloud-check.py` 28개 통과.
+- PR #108(10-15T08:52Z). Codex 1회째(head `0ab30f1`, 08:55Z): 지적 없음. 남은 지적 없음, 병합 준비.
 
 미확인·다음:
 
