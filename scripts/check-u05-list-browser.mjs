@@ -84,7 +84,8 @@ for(const w of [360,390,1280]){
  check('6칸 설명(있음·없음·확인 전)이 목록 위에 있음',/있음/.test(legend)&&/없음/.test(legend)&&/확인 전/.test(legend),{legend});
  // A chip: the snapshot's count for that condition, computed in the browser.
  const before=lists.length;
- const chip=page.locator('.chip-bar button',{hasText:/^천연온천$/});
+ // A wide screen has no chip bar since the two-step filter panel (U05 filter C): the panel's chip.
+ const barChip=page.locator('.chip-bar button',{hasText:/^천연온천$/}),chip=await barChip.isVisible()?barChip:page.locator('.desktop-filters .filter-chip',{hasText:/^천연온천/});
  await tap(chip);await page.waitForTimeout(500);
  const natural=search.list('features=natural').total,shownNatural=Number((await page.locator('.results-header h2 span').innerText()).replace(/[^0-9]/g,''));
  check(`칩 ‘천연온천’: 눌림 상태, 결과 ${natural}곳 = 스냅숏 값, Worker 목록 요청 없음`,await chip.getAttribute('aria-pressed')==='true'&&shownNatural===natural&&lists.length===before&&new URL(page.url()).searchParams.get('features')==='natural',{natural,shownNatural,requests:lists.slice(before),url:page.url()});
