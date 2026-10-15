@@ -24,6 +24,7 @@ import {gzipSync,brotliCompressSync,constants} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 import {renderStaticPage} from './build-static-page.mjs';
 import {addGeo,loadWikidata,dictionaryGeocoder,geoSummary} from './snapshot-geo.mjs';
+import {usageToday} from './cloudflare-usage.mjs';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const HEADERS_RULE='/snapshot/v/*\n  Cache-Control: public, max-age=31536000, immutable\n';
@@ -117,7 +118,8 @@ export function compileLib(temp,entry='lib/search-snapshot-build.ts',more=[]){
 // once without compiling again (tests); compiled here when absent.
 // geocode: inputs => [lat,lng,grade]|null per input (dictionaryGeocoder), or
 // null with skipReason. wikidata: Trip id -> point (loadWikidata by default).
-export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata}){
+// usage: today's Cloudflare usage for the data status screen (usageToday), when given.
+export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata,usage}){
  const temp=mkdtempSync(join(tmpdir(),'yukemuri-snapshot-'));
  try{
   const guarded=readOnly(db);
@@ -131,6 +133,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
   const geo={...await addGeo({ids:data.core.ids,geo:data.geo,inputs:data.geocodeInputs,wikidata:points,geocode,skipReason}),wikidataError};
   // The data status counts map precision as published, after geocoding (U06).
   addFillGeo(data.status.fill,data.core.ids,data.geo.grade);
+  if(usage)data.status.fill.usage=usage;
   const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status),geo:JSON.stringify(data.geo)};
   const id=createHash('sha256').update(JSON.stringify(files)).digest('hex').slice(0,16);
   const folder=join(out,'snapshot'),dir=join(folder,'v',id);
@@ -168,10 +171,13 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const dbDir=arg('--geocoder-db'),installed=dbDir&&existsSync(join(resolve(dbDir),'README.md'));
   const geocode=installed?dictionaryGeocoder({dbDir:resolve(dbDir),python:process.env.GEOCODER_PYTHON||'python3'}):null;
   const skipReason=dbDir&&!installed?'no installed dictionary in '+dbDir:arg('--geocoder-skip')||'no --geocoder-db given';
-  const result=await buildSnapshot({db,out,geocode,skipReason});
+  // Read with the token --remote uses; a --sqlite build never asks Cloudflare and says so on the screen.
+  const usage=await usageToday({env:argv.includes('--remote')?process.env:{},config:join(ROOT,'cloudflare-deploy.json')});
+  const result=await buildSnapshot({db,out,geocode,skipReason,usage});
   const kb=n=>(n/1024).toFixed(1)+'KiB';
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
+  console.log(`  Cloudflare usage today: ${usage.account?'read':'not read (the screen says so)'}`);
   console.log(geoSummary(result.geo)+(result.geo.wikidataError?'\n  Wikidata points not used: '+result.geo.wikidataError:''));
   console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
   // Refuse before writing the report: a report is what deploy.yml reads the

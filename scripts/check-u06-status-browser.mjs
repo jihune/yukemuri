@@ -9,6 +9,10 @@
 // - no horizontal overflow, every control at least 44px tall, no Worker request while open;
 // - loading, failure and retry (focus to the first heading), a snapshot without fill and an
 //   empty collection each say what is going on.
+// - the trend (follow-up): dots where the date and value put them, the tooltip on hover, tap and
+//   arrow keys with the change from the row before, the table; today's usage meters against the
+//   limits with the 70% warning, the measuring time and the 09:00 KST reset; usage that could not
+//   be read and a single trend row say so.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start) and the isolated
 // Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u06-status-browser.mjs [base] [evidence.json] [screenshot dir]
@@ -31,6 +35,10 @@ const share=(part,whole)=>{if(!whole)return '0%';const p=part/whole*100;return p
 const ROWS=['detail','bath','rooms','years','rating','photo','nameKo','descKo'];
 const GEO=[[1,6],[2],[3],[4,5]],GEO_LABELS=['건물 위치','번지 블록','동네','넓은 범위'];
 const SCOPES={all:'전체',jalan:'자란넷',trip:'Trip.com'};
+// Trend rows (one with no run the day before it) and the gridline rule of the chart.
+const TREND=[['2026-10-09',1000,700,15000],['2026-10-10',1100,720,15100],['2026-10-12',1250,760,15300],['2026-10-13',1300,790,15400],['2026-10-15',1420,800,15600]].map(([date,jalan,trip,records])=>({date,records,pages:{jalan:{done:jalan,total:14000},trip:{done:trip,total:2100}}}));
+const dayOf=date=>Date.parse(date+'T00:00:00Z'),dateLabel=date=>`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일`;
+const gridTop=max=>{const raw=Math.max(max,1)/4,unit=10**Math.floor(Math.log10(raw)),step=[1,2,5,10].map(m=>m*unit).find(v=>v>=raw);return Math.ceil(Math.max(max,1)/step)*step};
 const browser=await chromium.launch();
 if(shots)mkdirSync(shots,{recursive:true});
 for(const w of [360,390,1280]){
@@ -60,7 +68,7 @@ for(const w of [360,390,1280]){
   hero:root.querySelector('.u06-hero b')?.textContent,heroSub:root.querySelector('.u06-hero span')?.textContent,
   scopeNote:root.querySelector('#u06-fill small')?.textContent,
   rows:Object.fromEntries([...root.querySelectorAll('.u06-row')].map(r=>[r.dataset.row,{strong:r.querySelector('.u06-head strong')?.textContent,text:r.querySelector('.u06-head span')?.textContent,label:r.getAttribute('aria-label')}])),
-  pages:Object.fromEntries([...root.querySelectorAll('.u06-meter')].map(m=>[m.dataset.provider,m.querySelector('.u06-head span')?.textContent])),
+  pages:Object.fromEntries([...root.querySelectorAll('.u06-meter[data-provider]')].map(m=>[m.dataset.provider,m.querySelector('.u06-head span')?.textContent])),
   geo:[...root.querySelectorAll('.u06-geo-legend li')].map(li=>li.querySelector('b')?.textContent),
   pressed:[...root.querySelectorAll('.u06-scope button')].map(b=>b.getAttribute('aria-pressed')),
  }));
@@ -87,12 +95,13 @@ for(const w of [360,390,1280]){
  await press(sheet.locator('.u06-scope button',{hasText:'전체'}));
 
  // 3. Table view and tooltip.
- await press(sheet.getByRole('button',{name:'표로 보기'}));
- const table=await sheet.locator('.u06-table tbody tr').evaluateAll(rows=>rows.map(r=>[...r.children].map(c=>c.textContent)));
+ const fillSection=sheet.locator('.u06-o3');
+ await press(fillSection.getByRole('button',{name:'표로 보기'}));
+ const table=await fillSection.locator('.u06-table tbody tr').evaluateAll(rows=>rows.map(r=>[...r.children].map(c=>c.textContent)));
  const tableWant=ROWS.map((k,i)=>{const c=fill.scopes.all.rows[k];return[table[i]?.[0],n(c.filled),n(c.none),n(c.empty)]});
- const region=await sheet.locator('.u06-table-region').evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));
+ const region=await fillSection.locator('.u06-table-region').evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));
  check('표로 보기: 8줄의 세 칸 수가 같고 표가 화면 폭 안에 들어감',JSON.stringify(table)===JSON.stringify(tableWant)&&region.scroll<=region.client+1,{table,region});
- await press(sheet.getByRole('button',{name:'표 닫기'}));
+ await press(fillSection.getByRole('button',{name:'표 닫기'}));
  const row=sheet.locator('.u06-row[data-row="nameKo"]');
  if(mobile)await row.tap();else await row.hover();
  const tip=row.locator('.u06-tip');const c=fill.scopes.all.rows.nameKo;
@@ -163,6 +172,61 @@ for(const w of [360,390,1280]){
  await press(opener);
  check('수집 기록이 없으면 빈 기록 안내',await sheet.getByText('아직 저장된 수집 기록이 없습니다',{exact:false}).waitFor({timeout:3000}).then(()=>true,()=>false));
  await page.unroute('**/snapshot/v/*/status.json');
+ // 11. The trend and today's usage (U06 follow-up), from an injected status.json: a day without a
+ // run, a row over 70% of its limit; then usage that could not be read and a single trend row.
+ await sheet.getByRole('button',{name:'자료 현황 닫기'}).click();await sheet.waitFor({state:'detached'});
+ before=requests.length;
+ const measured=new Date(Date.now()-3*3600000),usage={measuredAt:measured.toISOString(),date:measured.toISOString().slice(0,10),limits:{rowsRead:5000000,rowsWritten:100000,requests:100000},account:{rowsRead:1234567,rowsWritten:75000,requests:null}};
+ const inject=extra=>page.route('**/snapshot/v/*/status.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...status,fill:{...fill,...extra}})}));
+ await inject({trend:TREND,usage});
+ await press(opener);await sheet.locator('.u06-plot').waitFor();
+ await sheet.evaluate(e=>Promise.all(e.getAnimations().map(a=>a.finished)));
+ const trendSection=sheet.locator('.u06-o7'),first=TREND[0],last=TREND[TREND.length-1],spanMs=dayOf(last.date)-dayOf(first.date),span=Math.round(spanMs/86400000);
+ const legend=(await trendSection.locator('.u06-chart-legend li').allInnerTexts()).map(t=>t.replace(/\s+/g,' ')),lead=await trendSection.locator('.u06-lead').innerText();
+ const rate=`${dateLabel(first.date)}부터 ${dateLabel(last.date)}까지 ${span}일 동안 상세 페이지를 하루 평균 자란넷 ${n(Math.round((last.pages.jalan.done-first.pages.jalan.done)/span))}쪽, Trip.com ${n(Math.round((last.pages.trip.done-first.pages.trip.done)/span))}쪽 받았습니다.`;
+ check('추이: 범례가 마지막 기록의 출처별 상세 완료 수, 하루 평균 문장이 기록으로 계산한 값과 같음',legend[0]?.includes(`자란넷 상세 완료 ${n(last.pages.jalan.done)}쪽`)&&legend[1]?.includes(`Trip.com 상세 완료 ${n(last.pages.trip.done)}쪽`)&&lead===rate,{legend,lead,rate});
+ const plot=trendSection.locator('.u06-plot');await plot.scrollIntoViewIfNeeded();
+ const geom=await trendSection.evaluate(root=>{const box=root.querySelector('.u06-plot').getBoundingClientRect(),center=e=>{const r=e.getBoundingClientRect();return[r.left+r.width/2-box.left,r.top+r.height/2-box.top]};return{w:box.width,h:box.height,dots:Object.fromEntries([...root.querySelectorAll('.u06-dot')].map(d=>[d.dataset.series,center(d)])),points:[...root.querySelectorAll('polyline')].map(p=>p.getAttribute('points').trim().split(/\s+/).length),grid:[...root.querySelectorAll('.u06-gridline span')].map(s=>s.textContent)}});
+ const top=gridTop(Math.max(...TREND.flatMap(d=>[d.pages.jalan.done,d.pages.trip.done]))),spot=(d,k)=>[(dayOf(d.date)-dayOf(first.date))/spanMs*geom.w,(1-d.pages[k].done/top)*geom.h];
+ const dotsOff=['jalan','trip'].flatMap(k=>{const want=spot(last,k),got=geom.dots[k];return got&&Math.abs(got[0]-want[0])<=1.5&&Math.abs(got[1]-want[1])<=1.5?[]:[{k,got,want}]});
+ check('추이: 선마다 기록 수만큼 꼭짓점, 끝점 표시가 날짜·값 자리(±1.5px), 눈금이 0부터 가장 큰 값 위까지',geom.points.length===2&&geom.points.every(p=>p===TREND.length)&&dotsOff.length===0&&geom.grid[0]==='0'&&geom.grid[geom.grid.length-1]===n(top),{geom,dotsOff,top});
+ const box=await plot.boundingBox(),second=TREND[1],px=box.x+(dayOf(second.date)-dayOf(first.date))/spanMs*box.width,py=box.y+box.height/2;
+ if(mobile)await page.touchscreen.tap(px,py);else await page.mouse.move(px,py);
+ const tipBox=trendSection.locator('.u06-chart-tip'),trendTip=await tipBox.isVisible()?await tipBox.innerText():'',edge=await sheet.boundingBox(),tb=await tipBox.boundingBox();
+ const wantTip=[dateLabel(second.date)+'(UTC)',...['jalan','trip'].map(k=>`${n(second.pages[k].done)}쪽 (+${n(second.pages[k].done-first.pages[k].done)})`),`${n(second.records)}곳`];
+ check(`추이: ${mobile?'누르면':'마우스를 올리면'} 가장 가까운 날짜의 값과 앞 기록과의 차이가 툴팁에 보이고 화면 안에 있음`,wantTip.every(t=>trendTip.includes(t))&&!!tb&&tb.x>=edge.x&&tb.x+tb.width<=edge.x+edge.width,{trendTip,wantTip,tb,edge});
+ if(!mobile){
+  await plot.focus();await page.keyboard.press('End');await page.keyboard.press('ArrowLeft');
+  const moved=await tipBox.innerText().catch(()=>'');
+  check('추이: 키보드(End, ←)로 날짜를 옮기면 툴팁이 따라감',moved.includes(dateLabel(TREND[TREND.length-2].date)),{moved});
+  await page.mouse.move(0,0);
+ }
+ await press(trendSection.getByRole('button',{name:'표로 보기'}));
+ const trendRows=await trendSection.locator('.u06-table tbody tr').evaluateAll(rows=>rows.map(r=>[...r.children].map(c=>c.textContent)));
+ const trendWant=TREND.map((d,i)=>[dateLabel(d.date),...['jalan','trip'].map(k=>n(d.pages[k].done)+(i?` (+${n(d.pages[k].done-TREND[i-1].pages[k].done)})`:'')),n(d.records)]);
+ const trendRegion=await trendSection.locator('.u06-table-region').evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));
+ check('추이: 표로 보기의 날짜·출처별 완료와 차이·곳 수가 기록과 같고 화면 폭 안',JSON.stringify(trendRows)===JSON.stringify(trendWant)&&trendRegion.scroll<=trendRegion.client+1,{trendRows,trendWant,trendRegion});
+ const usageSection=sheet.locator('.u06-o8');await usageSection.scrollIntoViewIfNeeded();
+ const meters=await usageSection.locator('.u06-meter').evaluateAll(list=>list.map(m=>({key:m.dataset.usage,text:m.querySelector('.u06-head span')?.textContent,warn:!!m.querySelector('.u06-issue'),bar:m.querySelector('.u06-bar').getBoundingClientRect().width,parts:[...m.querySelectorAll('.u06-bar i')].map(i=>({cls:i.className,w:i.getBoundingClientRect().width}))})));
+ // A null count (no analytics row yet) reads ‘기록 없음’ with an empty bar, never 0.
+ const metersWant=[['rowsRead','행'],['rowsWritten','행'],['requests','건']].map(([key,unit])=>{const used=usage.account[key],limit=usage.limits[key];return used===null?{key,text:`기록 없음 · 한도 ${n(limit)}${unit}`,warn:false,used:0,limit}:{key,text:`${share(used,limit)} · ${n(used)} / ${n(limit)}${unit}`,warn:used>=0.7*limit,used,limit}});
+ const metersOff=meters.flatMap((m,i)=>{const w=metersWant[i];if(!w)return[{m}];const shown=[[w.used,'u06-filled'],[w.limit-w.used,'u06-empty']].filter(([c])=>c>0),free=m.bar-2*(shown.length-1);
+  if(m.parts.map(p=>p.cls).join()!==shown.map(s=>s[1]).join())return[{key:m.key,parts:m.parts}];
+  return m.parts.flatMap((p,j)=>Math.abs(p.w-shown[j][0]/w.limit*free)>1.5?[{key:m.key,p,want:shown[j][0]/w.limit*free}]:[])});
+ check('사용량: D1 읽기·쓰기와 Worker 요청 미터의 비율·수·한도가 status.json과 같고(막대 ±1.5px) 70%를 넘은 줄만 경고, 기록 없는 항목은 0이 아니라 ‘기록 없음’',meters.length===3&&JSON.stringify(meters.map(({key,text,warn})=>({key,text,warn})))===JSON.stringify(metersWant.map(({key,text,warn})=>({key,text,warn})))&&metersOff.length===0,{meters,metersWant,metersOff});
+ const usageLead=await usageSection.locator('.u06-lead').innerText(),reset=usage.date!==new Date().toISOString().slice(0,10);
+ check('사용량: 측정 시각과 ‘약 N시간 전 기준’, 09:00(KST) 초기화를 알림',usageLead.includes('약 3시간 전 기준')&&usageLead.includes(reset?'09:00(KST)에 한도가 초기화되어':'매일 09:00(KST)에 초기화'),{usageLead,reset});
+ const of2=await overflow();
+ check('추이·사용량이 있어도 가로 넘침 없음',of2.doc<=0&&of2.sheet<=0,of2);
+ if(shots){await trendSection.scrollIntoViewIfNeeded();await page.screenshot({path:join(shots,`status-trend-${w}.png`)})}
+ await sheet.getByRole('button',{name:'자료 현황 닫기'}).click();await sheet.waitFor({state:'detached'});await page.unroute('**/snapshot/v/*/status.json');
+ await inject({trend:TREND.slice(0,1),usage:{...usage,account:null}});
+ await press(opener);await sheet.locator('.u06-o8').waitFor();
+ const unread=await sheet.locator('.u06-o8').innerText(),single=await sheet.locator('.u06-o7').innerText();
+ check('사용량을 읽지 못한 검색 자료는 ‘사용량을 읽지 못함’만 보이고 미터는 그리지 않음, 기록이 하루뿐이면 꺾은선 대신 안내',unread.includes('사용량을 읽지 못함')&&await sheet.locator('.u06-o8 .u06-meter').count()===0&&single.includes('기록 하나만')&&await sheet.locator('.u06-plot').count()===0,{unread,single});
+ await sheet.getByRole('button',{name:'자료 현황 닫기'}).click();await sheet.waitFor({state:'detached'});await page.unroute('**/snapshot/v/*/status.json');
+ const api2=requests.slice(before).filter(p=>p.startsWith('/api/'));
+ check('추이·사용량을 보는 동안 Worker 요청 없음(/api/ 0건)',api2.length===0,{api2});
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
 }

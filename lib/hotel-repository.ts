@@ -8,6 +8,7 @@ import { providerRating } from './hotel-ratings';
 import { enrichHotel } from './hotel-enrichment';
 import { normalizeSearch, hotelNames, hotelSearchText } from './hotel-names';
 import {featureMasks,hotelFeature} from './hotel-bath-facts';
+import {DAILY_PROGRESS_KEY} from './collection-status';
 import {applyNamePatch, type HotelNamePatch} from './hotel-name-localization';
 import localizedNames from '../data/korean-hotel-names.json';
 import {needsKoreanDescription} from './hotel-description';
@@ -82,7 +83,10 @@ export async function readCoverage(){
  const [sequence,,counts,jobs]=await db.batch([db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value").bind(COVERAGE_SEQUENCE),db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
  const coverage=coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
  const seq=Number((sequence.results as {value:string}[])[0].value);
- await db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')").bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})).run();
+ // U06 trend: the same counts as the day's row (UTC day; the day's last run stays).
+ const pages=Object.fromEntries((['jalan','trip'] as const).map(p=>{const job=(jobs.results as CoverageJobs[]).find(j=>j.provider===p);return[p,{done:job?.details??0,total:job?.discovered??0}]}));
+ const newer="INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')";
+ await db.batch([db.prepare(newer).bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})),db.prepare(newer).bind(DAILY_PROGRESS_KEY+new Date().toISOString().slice(0,10),JSON.stringify({seq,records:coverage.records,pages}))]);
  return cacheCoverage(Promise.resolve(coverage));
 }
 // Exact record count over the aggregate of the last full count: from this

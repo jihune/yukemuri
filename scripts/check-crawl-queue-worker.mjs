@@ -222,6 +222,14 @@ try{
  await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.seq',1e9,'$.coverage.failed',-8) WHERE key='coverage-snapshot'").run();
  await api('/api/crawl?provider=trip&kind=detail&limit=1');
  assert.equal(storedCoverage(await db.prepare("SELECT value FROM catalog_meta WHERE key='coverage-snapshot'").first()).failed,-8,'An older aggregate must not replace a newer stored one');
+ // The day's trend row (U06) follows the same rule, and the GET writes it when there is none.
+ const dayKey='daily-progress:'+new Date().toISOString().slice(0,10),dayRow=async()=>JSON.parse((await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(dayKey).first()).value);
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.seq',1e9,'$.records',-8) WHERE key=?").bind(dayKey).run();
+ await api('/api/crawl?provider=trip&kind=detail&limit=1');
+ assert.equal((await dayRow()).records,-8,'An older day row must not replace a newer stored one');
+ await db.prepare('DELETE FROM catalog_meta WHERE key=?').bind(dayKey).run();
+ await api('/api/crawl?provider=trip&kind=detail&limit=1');
+ assert.equal((await dayRow()).records,await hotelCount(),'The end-of-run GET writes the day row');
  await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(newer).run();
  await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.coverage.failed',-7) WHERE key='coverage-snapshot'").run();
  const fresh=new Miniflare(options);
