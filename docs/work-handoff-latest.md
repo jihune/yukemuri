@@ -1332,6 +1332,24 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - Codex 2회째(`81fd59f`, 13:11Z) 지적 없음. 같은 소스 빌드에서 나머지 9종도 통과(`check-u05-foundation` 53, `check-u05-list` 28, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57, `check-p03-followups` 9, 13:11–13:19Z). `cloud-check.py --full` 42개 통과(`81fd59f`, 13:19:08Z–13:24:25Z). CI `checks`·GitGuardian 통과. main `4bc3708`은 이미 포함. 병합 준비.
 - 병합(상위 세션이 기록): 10-15T13:3xZ, main `e3fb633ee20a536ea6d2b7c9bf586f2a3182552f`. head `7462c74`, Codex 2회째(`81fd59f`) 지적 없음, 리뷰 스레드 3개 해결, CI `checks`·GitGuardian 통과, mergeable clean. 마지막 검토 뒤 변경은 기록 파일뿐이다(`git diff --stat 81fd59f 7462c74`). 운영 배포 결과는 `deployments.md`. 사용자에게 알릴 화면 변경: 901~1250px에서는 탕 조건 버튼이 1열이고 패널 안에서 스크롤한다(2열이면 ‘카케나가시’가 잘림). 1251px 이상 ‘지도 크게’의 옆 목록은 340 → 320px. 다음은 7번 즐겨찾기.
 
+### 7번 즐겨찾기 PR
+
+기록: 2026-10-15T14:05Z. 상위 세션 지시(13:36Z)로 PR #113 병합 뒤 `claude/u05-ui`를 main `e3fb633`에서 다시 시작했다. 범위는 즐겨찾기만이다(수집 현황 화면은 U06). 최신 main `8877180`을 merge했다(기록 문서만 바뀜).
+
+바꾼 것(`components/hotel-explorer.tsx`, `app/globals.css`):
+
+- 저장한 숙소가 없을 때: 하트 그림, ‘숙소 카드나 상세의 하트를 누르면 여기에 모입니다’와 이 브라우저에만 저장된다는 안내, ‘숙소 찾기’ 버튼을 보인다. 버튼은 숙소 찾기 화면으로 돌아가고 초점을 메뉴의 ‘숙소 찾기’로 옮긴다. 전에는 검색 돋보기 그림, 따로 된 두 줄 안내, ‘숙소 둘러보기’(되돌리기 화살표), ‘0 / 0곳 불러옴’ 목록 끝, 휴대폰 ‘지도 보기 0’ 버튼이 함께 있었다.
+- 저장한 숙소가 조건에 모두 빠질 때: ‘저장한 N곳 중 조건에 맞는 숙소가 없어요’와 ‘조건 모두 풀기’. 조건이 없는데 0곳이면(목록에서 빠진 숙소) ‘저장한 숙소를 지금 목록에서 찾지 못했어요’.
+- 브라우저 저장 안내는 아이콘과 짧은 문장으로, 저장한 숙소 목록 위에만 둔다(오류·빈 화면에서는 없음).
+- 주 메뉴는 지금 화면을 `aria-current="page"`로 표시한다.
+
+검사:
+
+- 새 `scripts/check-u05-favorites-browser.mjs` 18개 통과(실제 Chromium 360·390·1280px, `evidence/ui-u05-favorites-20261015.json`). 저장은 로컬 사이트의 임시 DB에만 한다. 보는 것: 빈 화면(안내·버튼 44px·목록 끝과 지도 버튼 없음·메뉴 현재 위치), ‘숙소 찾기’ 뒤 화면과 초점, 하트 두 개 저장 뒤 메뉴 수·목록·안내 줄·목록 끝, 두 곳 모두 맞지 않는 조건(스냅숏으로 고름)과 ‘조건 모두 풀기’, 즐겨찾기 읽기 실패(503) 때 오류와 다시 시도만.
+- main 빌드에서는 첫 상태부터 실패한다(세 폭 모두 6건).
+- 기존 브라우저 검사 13종 통과(`8db8741` 빌드): `check-p03-followups` 9, `check-u05-foundation` 53, `check-u05-list` 28, `check-u05-filter` 53, `check-u05-detail` 69, `check-u05-map` 23, `check-u02-map` 55, `check-u03-desktop` 12, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57.
+- 캡처(숙소 사진은 빈 그림): `evidence/u05-favorites-20261015/before-*.png`, `after-*.png`(390 빈 화면·저장 3곳·조건으로 0곳, 1280 저장 3곳).
+
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
 기록: 2026-10-13T12:45Z / 21:45 KST, 갱신 12:58Z. 하위 세션 `session_019yG8qw1WbTQEBYXDzk4D1Z`(부모 `session_01KfLU3P8YrmZdyxehAEp9rp`), 브랜치 `claude/h02-protect`, 시작 기준 main `00bcfdb`, main `fbc5389` merge. 상세는 `H02-20261013.md`.
