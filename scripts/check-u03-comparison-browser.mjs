@@ -4,6 +4,8 @@
 // "다른 항목만 보기" toggle keeps focus, announces its state and leaves the U01 sheet focus intact.
 // Needs a running portable dev server and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Uses the checked-in snapshot: the four Noboribetsu records, a record with nothing confirmed
+// The three D04/D05 rows (객실 수, 설립 연도, 리모델링 연도, U05 PR 6) have no values in the local
+// data, so they are held back for every candidate set: 22 rows, 3 more held back than before.
 // (jalan-305378) and an ID that has no record. External requests are blocked.
 import {createRequire} from 'node:module';
 import {writeFileSync,mkdirSync} from 'node:fs';
@@ -43,7 +45,7 @@ async function run(page,touch){
  check('없음 2곳과 미확인 2곳은 다름이 아니라 판단 보류 · 미확인 2곳',!!privateBath&&!privateBath.diff&&privateBath.undecided==='판단 보류 · 미확인 2곳',{privateBath});
  check('모두 확인되고 같은 행(천연온천)과 참고 행(Google Maps·주소·온천수 안내)은 표지 없음',!!natural&&!natural.diff&&!natural.undecided&&reference.length===3&&reference.every(r=>!r.diff&&!r.undecided),{natural,reference});
  const summary=await sheet.locator('.comparison-diff-bar p').innerText();
- check('요약: 값이 다른 항목 4개 · 미확인으로 판단 보류 9개',summary==='값이 다른 항목 4개 · 미확인으로 판단 보류 9개',{summary});
+ check('요약: 값이 다른 항목 4개 · 미확인으로 판단 보류 12개',summary==='값이 다른 항목 4개 · 미확인으로 판단 보류 12개',{summary});
  await toggle.scrollIntoViewIfNeeded();
  const toggleBox=await toggle.evaluate(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,vw:innerWidth,vh:innerHeight,reachable:!!hit&&(hit===e||e.contains(hit))}});
  check('전환 버튼이 화면 안에 있고 가려지지 않으며 높이 44px 이상',toggleBox.left>=0&&toggleBox.right<=toggleBox.vw&&toggleBox.top>=0&&toggleBox.bottom<=toggleBox.vh&&toggleBox.reachable&&toggleBox.height>=44,toggleBox);
@@ -53,11 +55,11 @@ async function run(page,touch){
  const live=()=>sheet.locator('.comparison-diff-bar [aria-live]').innerText();
  check(`${touch?'터치':'클릭'}로 켜면 다름 행 4개만 남고 aria-pressed·포커스·알림 문장이 맞음`,await toggle.getAttribute('aria-pressed')==='true'&&same(shown.map(r=>r.name),differing)&&shown.every(r=>r.diff)&&await focused()==='다른 항목만 보기'&&await live()==='다른 항목 4개만 표시 중',{shown:shown.map(r=>r.name),pressed:await toggle.getAttribute('aria-pressed'),focus:await focused(),live:await live()});
  const hidden=await sheet.locator('.comparison-diff-hidden').innerText();
- check('숨긴 수 안내: 같거나 판단 보류 12개와 참고 항목 3개',hidden.includes('12개')&&hidden.includes('참고 항목 3개'),{hidden});
+ check('숨긴 수 안내: 같거나 판단 보류 15개와 참고 항목 3개',hidden.includes('15개')&&hidden.includes('참고 항목 3개'),{hidden});
  await shot('four-diff');
  await toggle.focus();await page.keyboard.press('Space');await page.waitForTimeout(300);
  const offRows=(await rows()).length;
- check('Space로 끄면 모든 행(19행)이 돌아오고 포커스가 버튼에 남음',await toggle.getAttribute('aria-pressed')==='false'&&offRows===all.length&&all.length===19&&await focused()==='다른 항목만 보기'&&await live()==='모든 항목 표시 중',{offRows,focus:await focused(),live:await live()});
+ check('Space로 끄면 모든 행(22행)이 돌아오고 포커스가 버튼에 남음',await toggle.getAttribute('aria-pressed')==='false'&&offRows===all.length&&all.length===22&&await focused()==='다른 항목만 보기'&&await live()==='모든 항목 표시 중',{offRows,focus:await focused(),live:await live()});
  await page.keyboard.press('Enter');await page.waitForTimeout(300);
  check('Enter로 다시 켬',await toggle.getAttribute('aria-pressed')==='true'&&(await rows()).length===4,{rows:(await rows()).length});
  // U01: Tab stays inside the sheet with the new control in it.
@@ -76,7 +78,7 @@ async function run(page,touch){
  check('켠 채로 2곳(같은 Trip.com 점수)만 남으면 다름 1행(자란넷)만 보이고 알림 문장이 새 개수(1개)를 말함',same(pairRows.map(r=>r.name),['자란넷 · 5점'])&&pairLive==='다른 항목 1개만 표시 중',{rows:pairRows.map(r=>r.name),live:pairLive});
  await removeAt(0);
  const oneRows=await rows();
- check('후보가 1곳이 되면 전환 버튼과 표지가 사라지고 모든 행이 보임',await toggle.count()===0&&oneRows.length===19&&oneRows.every(r=>!r.diff&&!r.undecided),{toggle:await toggle.count(),rows:oneRows.length});
+ check('후보가 1곳이 되면 전환 버튼과 표지가 사라지고 모든 행이 보임',await toggle.count()===0&&oneRows.length===22&&oneRows.every(r=>!r.diff&&!r.undecided),{toggle:await toggle.count(),rows:oneRows.length});
  await page.keyboard.press('Escape');await page.waitForTimeout(600);
  check('Escape로 닫으면 비교 시트가 닫히고 비교 열기 버튼에 포커스(U01 유지)',await sheet.count()===0&&(await focused()).startsWith('숙소 비교 열기'),{focus:await focused()});
 
@@ -90,7 +92,7 @@ async function run(page,touch){
  // Almost nothing confirmed and a missing record: no row is called different.
  await open(['noboribetsu-grand','jalan-305378','jalan-0000001']);
  const sparse=await rows();
- check('확인된 값이 거의 없는 기록·기록 없는 ID: 다름 0개, 판단할 행은 모두 판단 보류',sparse.every(r=>!r.diff)&&sparse.filter(r=>r.undecided).length===16&&(await sheet.locator('.comparison-diff-bar p').innerText())==='값이 다른 항목 0개 · 미확인으로 판단 보류 16개'&&(await sheet.getByText('기록 없음').count())>0,{undecided:sparse.filter(r=>r.undecided).map(r=>[r.name,r.undecided])});
+ check('확인된 값이 거의 없는 기록·기록 없는 ID: 다름 0개, 판단할 행은 모두 판단 보류',sparse.every(r=>!r.diff)&&sparse.filter(r=>r.undecided).length===19&&(await sheet.locator('.comparison-diff-bar p').innerText())==='값이 다른 항목 0개 · 미확인으로 판단 보류 19개'&&(await sheet.getByText('기록 없음').count())>0,{undecided:sparse.filter(r=>r.undecided).map(r=>[r.name,r.undecided])});
  await press(toggle);await page.waitForTimeout(300);
  const noneText=await sheet.locator('.comparison-diff-none').innerText().catch(()=>'');
  check('다름이 0개일 때 켜면 ‘확인된 값이 다른 항목이 없습니다’와 미확인 비판단 안내',noneText.includes('확인된 값이 다른 항목이 없습니다')&&noneText.includes('미확인'),{noneText});

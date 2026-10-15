@@ -1,0 +1,15 @@
+/* B: a slimmer checklist, 260px: checkboxes in the ✓ look, one line per condition, the 4 sub-conditions folded,
+   rating pickers on top; no duplicate chip bar on wide screens. */
+@media (min-width:901px){
+ .workspace{grid-template-columns:260px minmax(390px,1fr) minmax(370px,1fr)!important}
+ .chip-bar{display:none!important}
+ .desktop-filters{border:0!important;background:transparent!important}
+ .desktop-filters .filter-toggle{border-bottom:0!important;min-height:40px;padding:4px 0}
+ .desktop-filters .filter-switch{order:-1;width:20px!important;height:20px!important;border-radius:5px!important;background:#fff!important;border:1.5px solid #7d9196}
+ .desktop-filters .filter-switch::after{display:none}
+ .desktop-filters .filter-toggle.is-on .filter-switch{background:#0a6670!important;border-color:#0a6670}
+ .desktop-filters .filter-toggle.is-on .filter-switch::before{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800}
+ .desktop-filters .filter-toggle small{margin-left:auto}
+ .desktop-filters .filter-content>.filter-toggle{background:#f3d77a!important;color:#4a3b06!important;border:0!important}
+ .desktop-filters .filter-group-head h3{font-size:13px;color:#566a70;letter-spacing:0}
+}

@@ -1,0 +1,11 @@
+/* C: keep the left panel but in two steps: the six bath columns and ‘내 기준’ as a 2-column chip grid that
+   matches the cards, then the rest folded by group (closed by default); no duplicate chip bar. */
+@media (min-width:901px){
+ .workspace{grid-template-columns:248px minmax(390px,1fr) minmax(370px,1fr)!important}
+ .chip-bar{display:none!important}
+ .desktop-filters .filter-group-items,.desktop-filters .filter-group .filter-hint,.desktop-filters .filter-group>.filter-select,.desktop-filters .filter-group .filter-select{display:none!important}
+ .desktop-filters .filter-group{border-top:1px solid #d9e0e1;margin:0!important;padding:4px 0}
+ .desktop-filters .filter-group-head{min-height:44px}
+ .desktop-filters .filter-group-head h3::before{content:'▸ ';color:#0a6670}
+ .desktop-filters .filter-content>.filter-toggle{display:none}
+}
