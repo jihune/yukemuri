@@ -126,6 +126,26 @@ def trip_room_count(props):
     return None
 
 
+def trip_facility_years(props, latest):
+    """Opening and renovation years when the field and the visible label agree (D04).
+    A field and a label that disagree (or one without the other) are reported, not stored."""
+    base = props['hotelDetailResponse'].get('hotelBaseInfo') or {}
+    info = props['hotelDetailResponse'].get('hotelDescriptionInfo')
+    labels = [l.strip() for l in (info.get('lables') if isinstance(info, dict) else None) or [] if isinstance(l, str)]
+    years, notes, mismatches = {}, [], []
+    for key, field, title in [('opened', 'openYear', '호텔 설립연도'), ('renovated', 'fitmentYear', '리모델링 연도')]:
+        value = base.get(field)
+        value = str(value) if isinstance(value, (str, int)) and not isinstance(value, bool) else ''
+        titled = [l for l in labels if re.fullmatch(re.escape(title) + r':\s*\S.*', l)]
+        label = next((l for l in titled if re.fullmatch(re.escape(title) + r':\s*' + re.escape(value), l)), None) if value else None
+        if (value or titled) and not label:
+            mismatches.append(dict(field=field, value=value or None, labels=titled[:3]))
+        if re.fullmatch(r'\d{4}', value) and 1000 <= int(value) <= latest and label:
+            years[key] = int(value)
+            notes.append(label)
+    return years, notes, mismatches
+
+
 def trip_room_types(props):
     """Room type names and up to three photos each, in the page's room order."""
     rooms = ((props.get('seoSSRData') or {}).get('seoHotelRooms') or {}) if isinstance(props.get('seoSSRData'), dict) else {}
@@ -305,12 +325,16 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     water = ''
     rooms = None
     room_types = []
+    facility_years = None
     props = trip_property(raw, ident) if detail and provider == 'trip' else None
     if props:
         stated_rooms = trip_room_count(props)
         if stated_rooms:
             rooms = dict(total=stated_rooms[0], sourceId=source, verifiedAt=fetched_at[:10], note='Trip.com 숙소 정보: ' + stated_rooms[1])
         room_types = trip_room_types(props)
+        years, year_notes, _ = trip_facility_years(props, int(fetched_at[:4]))
+        if years:
+            facility_years = dict(**years, sourceId=source, verifiedAt=fetched_at[:10], note='Trip.com 숙소 정보: ' + ' / '.join(year_notes))
     if detail and provider == 'jalan':
         rows = {text(k): text(v) for k, v in re.findall(r'<th[^>]*>((?:(?!</th>).)*?)</th>\s*<td[^>]*>(.*?)</td>', raw, re.S)}
         own_description=text(str(doc.get('description','')))
@@ -445,7 +469,7 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     return dict(id=source, names=names, aliases=aliases, kind='ryokan' if re.search(r'旅館|Ryokan', name, re.I) else 'hotel' if re.search(r'ホテル|Hotel',name,re.I) else 'unknown', regionId=found or 'unassigned', prefecture=found,
                 location=dict(label=region or (next((p['name'] for p in PREFS if p['id'] == found), '일본')), address=full_address, latitude=lat, longitude=lng, isApproximate=False),
                 description=bounded_description(text(str(doc.get('description', ''))) or '예약 사이트에서 확인한 실제 숙소입니다. 상세 시설은 숙소 안내에서 확인하세요.'),
-                image=dict(url=image, alt=name + ' 숙소 사진', sourceId=source, isRepresentative=False), features=facts, **({'rooms': rooms} if rooms else {}), **({'roomTypes': [dict(sourceId=source, verifiedAt=fetched_at[:10], items=room_types)]} if room_types else {}),
+                image=dict(url=image, alt=name + ' 숙소 사진', sourceId=source, isRepresentative=False), features=facts, **({'rooms': rooms} if rooms else {}), **({'roomTypes': [dict(sourceId=source, verifiedAt=fetched_at[:10], items=room_types)]} if room_types else {}), **({'facilityYears': facility_years} if facility_years else {}),
                 spring=dict(types=[], waterNotes=water, useNotes='객실 온천·객실 노천탕은 확인된 객실 타입을 예약해야 이용할 수 있습니다.'), ratings=ratings,
                 links=[dict(provider=provider, url=prop_url, kind='property', label='숙소 페이지'), dict(provider='maps', url=maps, kind='coordinates', label='주소로 위치 확인')],
                 sources=[dict(sourceId=source, sourceType='web', label=('Trip.com' if provider == 'trip' else 'Jalan') + (' 숙소 상세' if detail else ' 숙소 목록'), retrievedAt=fetched_at, verifiedAt=fetched_at[:10], url=url, isMock=False,**({'bathDataVersion':BATH_DATA_VERSION} if detail and provider=='jalan' else {}))])
@@ -475,6 +499,10 @@ def parse_source_page(raw, provider, url, fetched_at, pref=None, kind='detail'):
         if prop != url:
             links[prop] = ('detail', h['prefecture'])
     diagnostic = dict(hotelDocuments=document_count, matchingHotelDocuments=len(docs), observations=len(observations), links=len(links), outsideJapan=foreign, reviewReason=review_reason)
+    props = trip_property(raw, provider_id(url)[1]) if provider == 'trip' and kind == 'detail' and observations else None
+    mismatches = trip_facility_years(props, int(fetched_at[:4]))[2] if props else []
+    if mismatches:
+        diagnostic['facilityYearMismatch'] = mismatches
     return observations, links, foreign, diagnostic
 
 
