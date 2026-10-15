@@ -1035,3 +1035,9 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-title>.filter-help{margin:0 4px 0 0}
 .filter-quick{gap:4px;margin-bottom:8px}
 @media (prefers-reduced-motion:reduce){.filter-group-toggle svg{transition:none}}
+/* U05 7 favorites: the browser note is one short line with its icon above saved stays; an empty
+   favorites screen shows the heart it asks for. */
+.saved-browser-note{display:flex;gap:6px;align-items:flex-start;padding:4px 0 12px}
+.saved-browser-note svg{flex-shrink:0;margin-top:3px}
+.empty-state.is-saved>svg{color:#b4434e}
+.empty-state.is-saved h3{color:var(--yk-text)}
