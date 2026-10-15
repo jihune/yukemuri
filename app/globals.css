@@ -1003,6 +1003,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 @media (min-width:1251px){
   .workspace{grid-template-columns:248px minmax(390px,1fr) minmax(370px,1fr)}
   .workspace.view-list,.workspace.view-map{grid-template-columns:248px minmax(0,1fr)}
+  /* The wider panel would leave ‘지도 크게’ a map under 600px at 1280px; the stays beside it give 20px. */
+  .view-map .map-sticky{grid-template-columns:minmax(0,1fr) 320px}
 }
 /* Two columns while a button holds its name and count on one line (96px); a narrower panel
    (901-1250px with a scrollbar) lists them one per row instead of cutting ‘카케나가시’. */
