@@ -889,7 +889,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .detail-name{display:block}
 .detail-name [data-slot=sheet-title]{font-size:var(--yk-fs-2xl);line-height:1.35;font-weight:750}
 .detail-name [data-slot=sheet-title]:focus{outline:none}
-.detail-summary>.secondary{font-size:var(--yk-fs-xs);margin-top:4px}
+.other-names{font-size:var(--yk-fs-sm);color:var(--yk-text-3);margin-bottom:10px}
 .detail-summary .provider-ratings{margin-top:12px}
 .detail-summary .detail-rating{margin:6px 0;gap:2px 8px}
 .detail-summary .detail-rating small{background:none;padding:0}
@@ -939,18 +939,20 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .detail-action-row .icon-button{border:1px solid var(--yk-line);border-radius:var(--yk-radius-sm)}
 .detail-compare[aria-pressed=true]{background:var(--yk-primary-soft);border-color:#8fc0c6;color:var(--yk-primary)}
 @media (max-width:550px){
-  .detail-image{height:220px}
+  .detail-image{height:200px}
   .detail-summary{padding:16px 18px 0}
   .detail-cells .bath-cell{padding:6px 7px}
 }
 @media (min-width:641px){
   .detail-actions{grid-template-columns:auto minmax(0,1fr);padding:12px 24px}
 }
+/* Two columns only with the full detail; the snapshot card shown after a failure stays one column. */
+.detail-action-row:only-child{grid-column:1/-1}
 @media (min-width:901px){
-  .detail-scroll{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start}
-  .detail-lead .detail-image{height:200px}
-  .detail-lead .detail-cells{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .detail-summary{padding:18px 20px 24px}
+  .detail-scroll:has(>.detail-body){display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start}
+  .detail-scroll:has(>.detail-body) .detail-image{height:200px}
+  .detail-scroll:has(>.detail-body) .detail-cells{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .detail-scroll:has(>.detail-body) .detail-summary{padding:18px 20px 24px}
   .detail-body{padding:0 28px 28px 8px}
   .detail-body>.detail-section:first-child{border-top:0;margin-top:0;padding-top:22px}
 }

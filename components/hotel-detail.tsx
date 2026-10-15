@@ -50,7 +50,7 @@ function Fact({hotel,k}:{hotel:Hotel;k:FeatureKey}){
 }
 // The facility page to send a reader to when nothing is confirmed: Jalan's first.
 function facilityPage(hotel:Hotel){
- for(const source of [...hotel.sources].sort((a,b)=>Number(!b.sourceId.startsWith('jalan-'))-Number(!a.sourceId.startsWith('jalan-')))){
+ for(const source of [...hotel.sources].sort((a,b)=>Number(!a.sourceId.startsWith('jalan-'))-Number(!b.sourceId.startsWith('jalan-')))){
   const url=hotelFacilityUrl(hotel,source.sourceId);
   if(url)return{url,label:origin(hotel,source.sourceId).label+' 시설 안내'};
  }
@@ -119,7 +119,7 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
  const actionLinks=hotel?(['jalan','trip'] as const).flatMap(provider=>hotel.links.filter(link=>link.provider===provider&&link.url).slice(0,1)):[];
  const chosen=booking.checkIn&&booking.checkOut&&!bookingProblem?shortDate(booking.checkIn)+'–'+shortDate(booking.checkOut)+' · 성인 '+booking.adults+'명':booking.checkIn||booking.checkOut?'날짜 확인 필요':'고르지 않음';
  const renderRating=(rating:Hotel['ratings'][number])=>{const source=hotel?.sources.find(s=>s.sourceId===rating.sourceId);return <div className="detail-rating" key={rating.sourceId}><span className="score">{rating.score.toFixed(1)}</span><b>{rating.provider?ratingProviders[rating.provider]:source?.label}</b><span>/{rating.scale} · 리뷰 {rating.reviewCount.toLocaleString()}개</span><small>확인 {rating.verifiedAt??'미확인'}{source?.url&&<> · <a href={source.url} target="_blank" rel="noopener noreferrer">출처 ↗</a></>}</small></div>};
- const otherNames=card?[...new Set([card.names.en,...(hotel?.aliases??[])])].filter(name=>name&&name!==card.names.ko&&name!==card.names.ja):[];
+ const otherNames=hotel?[...new Set([hotel.names.en,...(hotel.aliases??[])])].filter(name=>name&&name!==hotel.names.ko&&name!==hotel.names.ja):[];
  return <Sheet open={!!card} onOpenChange={open=>{if(!open)onClose()}}><SheetContent showCloseButton={false} onOpenAutoFocus={e=>{e.preventDefault();closeButton.current?.focus({preventScroll:true})}} onCloseAutoFocus={e=>{e.preventDefault();onRestoreFocus()}} className="hotel-detail !w-full sm:!max-w-[720px] !gap-0">
   {card&&<>
    <div className="detail-top"><span><Waves size={18} aria-hidden="true"/> 숙소 살펴보기</span><SheetClose asChild><button ref={closeButton} className="icon-button" aria-label="숙소 상세 닫기"><X size={22}/></button></SheetClose></div>
@@ -130,7 +130,6 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
       {!hotel&&<div className="detail-unavailable"><p role="status">{loading?'자세한 정보를 다시 불러오는 중입니다…':'자세한 정보를 지금 불러올 수 없습니다. 목록에 있는 정보만 보여 줍니다.'}</p><button type="button" className="detail-retry" onClick={()=>{retried.current=true;onRetry()}} disabled={loading}><RotateCw size={17} aria-hidden="true"/>다시 시도</button></div>}
       <SheetDescription className="detail-eyebrow">{KIND[card.kind]} · {card.location.label}</SheetDescription>
       <div className="detail-name"><SheetTitle ref={title} tabIndex={-1}>{card.names.ko}</SheetTitle>{card.names.ja!==card.names.ko&&<p lang="ja">{card.names.ja}</p>}</div>
-      {otherNames.length>0&&<p className="secondary">다른 이름: {otherNames.join(' · ')}</p>}
       {hotel?<HotelLifecycleNote hotel={hotel}/>:<HotelLifecycleNote hotel={card} compact/>}
       {hotel?<div className="provider-ratings" aria-label="출처별 평점">{orderedRatings(hotel).filter(r=>r.provider==='trip').map(renderRating)}<GooglePlaceRating hotel={hotel} data={google}/>{orderedRatings(hotel).filter(r=>r.provider!=='trip'&&r.provider!=='google').map(renderRating)}{hotel.ratings.length===0&&<p className="secondary">확인된 평점이 없습니다.</p>}</div>
       :<div className="provider-ratings" aria-label="출처별 평점">{card.ratings.filter(r=>r.provider==='trip'||r.provider==='jalan').map(r=><div className="detail-rating" key={r.provider}><span className="score">{r.score.toFixed(1)}</span><b>{ratingProviders[r.provider!]}</b><span>/{r.scale} · 리뷰 {r.reviewCount.toLocaleString()}개</span></div>)}{card.ratings.length===0&&<p className="secondary">확인된 평점이 없습니다.</p>}</div>}
@@ -140,7 +139,7 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
     {hotel&&<div className="detail-body">
      <BathDetail hotel={hotel}/>
      <RoomsAndYears hotel={hotel}/>
-     <section className="detail-section"><h2>숙소 소개</h2><HotelDescription key={hotel.id} hotel={hotel}/></section>
+     <section className="detail-section"><h2>숙소 소개</h2>{otherNames.length>0&&<p className="other-names">다른 이름: {otherNames.join(' · ')}</p>}<HotelDescription key={hotel.id} hotel={hotel}/></section>
      {r&&(r.summary||r.highlights.length>0)&&<section className="detail-section"><h2>후기 키워드 <span>Trip.com</span></h2><p>{r.summary}</p><div className="review-tags">{r.highlights.map(t=><span key={t}>{t}</span>)}</div><p className="secondary">숙소 페이지에 표시된 키워드 기준 · 확인 {r.verifiedAt}</p></section>}
      <section className="detail-section"><h2>위치</h2><p className="secondary">{hotel.location.address||'주소 확인 필요'}</p>{hasCoordinates(hotel)?<><StayMap hotels={[hotel]} activeId={hotel.id} onSelect={()=>{}} compact/><p className="secondary coordinates">{hotel.location.latitude.toFixed(4)}, {hotel.location.longitude.toFixed(4)} · 예약 사이트 숙소 지도 좌표</p></>:<p className="secondary">지도 좌표는 아직 확인하지 못했습니다. 아래 Google Maps에서 숙소 주소를 확인하세요.</p>}</section>
      <section className="detail-section"><h2>공식 안내와 예약 사이트</h2><p className="secondary">최신 운영 안내와 요금·예약 가능 여부는 연결된 사이트에서 확인하세요.</p><div className="external-links">{hotel.links.map(link=>{const href=datedLink(link,booking);return href?<a key={link.provider} href={href} target="_blank" rel="noopener noreferrer"><div><b>{providers[link.provider]}</b><small>{href!==link.url?'고른 날짜·인원으로 열기':link.label}</small></div><ExternalLink size={17} aria-hidden="true"/></a>:<div key={link.provider} className="link-unavailable"><div><b>{providers[link.provider]}</b><small>연결된 페이지 없음</small></div><span>미연결</span></div>})}</div></section>
