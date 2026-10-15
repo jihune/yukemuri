@@ -182,7 +182,7 @@ for(const w of [360,390,1280]){
  await press(opener);await sheet.locator('.u06-plot').waitFor();
  await sheet.evaluate(e=>Promise.all(e.getAnimations().map(a=>a.finished)));
  const trendSection=sheet.locator('.u06-o7'),first=TREND[0],last=TREND[TREND.length-1],spanMs=dayOf(last.date)-dayOf(first.date),span=Math.round(spanMs/86400000);
- const legend=await trendSection.locator('.u06-chart-legend li').allInnerTexts(),lead=await trendSection.locator('.u06-lead').innerText();
+ const legend=(await trendSection.locator('.u06-chart-legend li').allInnerTexts()).map(t=>t.replace(/\s+/g,' ')),lead=await trendSection.locator('.u06-lead').innerText();
  const rate=`${dateLabel(first.date)}부터 ${dateLabel(last.date)}까지 ${span}일 동안 상세 페이지를 하루 평균 자란넷 ${n(Math.round((last.pages.jalan.done-first.pages.jalan.done)/span))}쪽, Trip.com ${n(Math.round((last.pages.trip.done-first.pages.trip.done)/span))}쪽 받았습니다.`;
  check('추이: 범례가 마지막 기록의 출처별 상세 완료 수, 하루 평균 문장이 기록으로 계산한 값과 같음',legend[0]?.includes(`자란넷 상세 완료 ${n(last.pages.jalan.done)}쪽`)&&legend[1]?.includes(`Trip.com 상세 완료 ${n(last.pages.trip.done)}쪽`)&&lead===rate,{legend,lead,rate});
  const plot=trendSection.locator('.u06-plot');await plot.scrollIntoViewIfNeeded();
@@ -192,9 +192,9 @@ for(const w of [360,390,1280]){
  check('추이: 선마다 기록 수만큼 꼭짓점, 끝점 표시가 날짜·값 자리(±1.5px), 눈금이 0부터 가장 큰 값 위까지',geom.points.length===2&&geom.points.every(p=>p===TREND.length)&&dotsOff.length===0&&geom.grid[0]==='0'&&geom.grid[geom.grid.length-1]===n(top),{geom,dotsOff,top});
  const box=await plot.boundingBox(),second=TREND[1],px=box.x+(dayOf(second.date)-dayOf(first.date))/spanMs*box.width,py=box.y+box.height/2;
  if(mobile)await page.touchscreen.tap(px,py);else await page.mouse.move(px,py);
- const tipBox=trendSection.locator('.u06-chart-tip'),tipText=await tipBox.isVisible()?await tipBox.innerText():'',edge=await sheet.boundingBox(),tb=await tipBox.boundingBox();
+ const tipBox=trendSection.locator('.u06-chart-tip'),trendTip=await tipBox.isVisible()?await tipBox.innerText():'',edge=await sheet.boundingBox(),tb=await tipBox.boundingBox();
  const wantTip=[dateLabel(second.date)+'(UTC)',...['jalan','trip'].map(k=>`${n(second.pages[k].done)}쪽 (+${n(second.pages[k].done-first.pages[k].done)})`),`${n(second.records)}곳`];
- check(`추이: ${mobile?'누르면':'마우스를 올리면'} 가장 가까운 날짜의 값과 앞 기록과의 차이가 툴팁에 보이고 화면 안에 있음`,wantTip.every(t=>tipText.includes(t))&&!!tb&&tb.x>=edge.x&&tb.x+tb.width<=edge.x+edge.width,{tipText,wantTip,tb,edge});
+ check(`추이: ${mobile?'누르면':'마우스를 올리면'} 가장 가까운 날짜의 값과 앞 기록과의 차이가 툴팁에 보이고 화면 안에 있음`,wantTip.every(t=>trendTip.includes(t))&&!!tb&&tb.x>=edge.x&&tb.x+tb.width<=edge.x+edge.width,{trendTip,wantTip,tb,edge});
  if(!mobile){
   await plot.focus();await page.keyboard.press('End');await page.keyboard.press('ArrowLeft');
   const moved=await tipBox.innerText().catch(()=>'');
