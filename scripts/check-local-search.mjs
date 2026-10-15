@@ -39,6 +39,11 @@ try{
  assert.equal(place('pref-kanagawa','Yokohama','가나가와 · 하코네'),'요코하마 · 가나가와');
  assert.equal(place('pref-kanagawa','','가나가와 · 하코네'),'가나가와');
  assert.equal(place('pref-aichi','Nagoya','아이치 · 나고야'),'나고야 · 아이치');
+ // The same label after an earlier PUT formatted it, town first (Codex review on PR #98).
+ assert.equal(place('pref-kanagawa','Yokohama','하코네 · 가나가와'),'요코하마 · 가나가와');
+ assert.equal(place('pref-kanagawa','','하코네 · 가나가와'),'가나가와');
+ assert(!hotelPlaceSearchText({prefecture:'pref-kanagawa',regionId:'pref-kanagawa',location:{address:'Yokohama',label:'하코네 · 가나가와'},names:{ja:'ホテル'}}).includes('하코네'),'A formatted fallback label is dropped too');
+ assert.equal(place('pref-hyogo','1-1 Chuo-ku, Kobe, Hyogo','고베 · 효고'),'고베 · 효고','A town label the address supports stays');
  assert(!hotelPlaceSearchText({prefecture:'pref-kanagawa',regionId:'pref-kanagawa',location:{address:'Yokohama',label:'가나가와 · 하코네'},names:{ja:'ホテル'}}).includes('하코네'),'A Yokohama hotel is not found as 하코네');
  // Town words in the search context (L01): Kurokawa Onsen is in 南小国町, not 黒川 in Aso city.
  const townContext=(pref,address,label)=>hotelPlaceSearchText({prefecture:pref,regionId:pref,location:{address,label},names:{ja:'旅館'}});

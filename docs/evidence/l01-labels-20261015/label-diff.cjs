@@ -4,7 +4,7 @@
 //   # snapshot there (/snapshot/manifest.json lists them), then compile both versions:
 //   T="node node_modules/typescript/bin/tsc lib/japan-place-labels.ts --module commonjs --target es2022 --moduleResolution node --resolveJsonModule --esModuleInterop --skipLibCheck"
 //   $T --outDir $D/new; git show b85e6c4:lib/japan-place-labels.ts > lib/japan-place-labels.ts; $T --outDir $D/old; git checkout lib/japan-place-labels.ts
-//   node docs/evidence/l01-labels-20261015/label-diff.js $D
+//   node docs/evidence/l01-labels-20261015/label-diff.cjs $D
 // The stored label and address are the start of the snapshot's search context
 // (before the list label), split at the leading 'A · B' run.
 const S=process.argv[2];

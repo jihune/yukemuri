@@ -96,13 +96,21 @@ function prefectureFor(hotel:PlaceInput){
     ?? PREFECTURES.find(p => hotel.location.address.startsWith(p.ja))
     ?? (REGIONS.some(r=>r.id===hotel.regionId&&!r.id.startsWith('pref-')&&r.id!=='all') ? PREFECTURES[0] : undefined);
 }
-// The collector stores the prefecture's display name as the label when a page
-// names no region (scripts/crawler/collect.py). Five of those names carry a
-// town ('가나가와 · 하코네'), which is not where the hotel is (L01: Trip.com
-// Yokohama hotels), so such a label says nothing beyond the prefecture.
+// The collector stored the prefecture's display name as the label when a page
+// named no region (scripts/crawler/collect.py before L01). Five of those names
+// carry a town ('가나가와 · 하코네'), which is not where the hotel is (Trip.com
+// Yokohama hotels), so such a label says nothing beyond the prefecture. A PUT
+// stores the label formatHotelLocation made of it (lib/hotel-enrichment.ts), the
+// town first ('하코네 · 가나가와'); that one is kept only when the address names
+// the town.
 function storedLabel(hotel: PlaceInput, pref: ReturnType<typeof prefectureFor>): string {
   const label = hotel.location.label ?? '';
-  return pref && label === pref.name && pref.name.includes(' · ') ? '' : label;
+  if (!pref?.name.includes(' · ')) return label;
+  const [name, town] = pref.name.split(' · ');
+  if (label === pref.name) return '';
+  if (label !== town + ' · ' + name) return label;
+  const row = cities.find(([p, ko]) => p === pref.slug && ko === town), address = (hotel.location.address ?? '').toLowerCase();
+  return (row ? row.slice(1) : [town]).some(word => address.includes(word.toLowerCase())) ? label : '';
 }
 
 export function formatHotelLocation(hotel: PlaceInput): string {
