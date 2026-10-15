@@ -55,9 +55,11 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
  // raw: the stored payload (the detail label, as status.quality counts it); h: the hotel the
  // card and detail show (sources, names, rating, photo, rooms, years, description).
  const add=(id:string,raw:Hotel,h:Hotel,bathKnown:number|null)=>{
+  // detail: the latest observation (status.quality's rule). A curated place's own source is its
+  // official page, so its detail is a linked one among the sources the detail shows.
   // v3: a Jalan detail read with the current rule (only the collector's Jalan details carry
   // bathDataVersion) among the sources the detail shows, a linked one included (curated places).
-  const own=scopeOf(id),detail=!!raw.sources[0]?.label.includes('상세'),v3=h.sources.some(s=>s.bathDataVersion==='v3'&&s.label.includes('상세'));
+  const own=scopeOf(id),detail=own?!!raw.sources[0]?.label.includes('상세'):h.sources.some(s=>s.label.includes('상세')),v3=h.sources.some(s=>s.bathDataVersion==='v3'&&s.label.includes('상세'));
   // The description the detail shows: a linked Jalan detail's, with its translation, replaces
   // the stored one (composePreferredHotel); otherwise the stored text and the translation table.
   const linked=h.description!==raw.description,description=h.description??'',translated=linked?!!h.descriptionTranslation:translations.get(id),stale=!linked&&translations.get(id)===false;
