@@ -249,6 +249,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 10-15T12:1xZ U05가 필터 C PR #113을 열었다(head `8268316`). 상위 세션이 수정 후 캡처(1280, 390 시트)를 사용자에게 보였다. 12:38Z U06이 구현 PR #114를 열었다(head `95c2d2c`, 스냅숏 생성 1회 D1 읽기 103,854 → 119,290행).
 - 10-15T12:4xZ 사용자 추가 요청: ‘그럼 D01 사용량도 혹시 수집현황에 표시 가능하면 표시해줘.’ 상위 세션은 Cloudflare D1 사용량으로 읽었다(roadmap의 D01 작업에는 사용량이 없다). U06에 #114 병합 뒤 날짜별 추이와 같은 후속 PR에서 그날 D1 읽기·쓰기(가능하면 Worker 요청)를 무료 한도와 함께 보이라고 보냈다. 값은 스냅숏 생성 시각 기준이고, deploy.yml에 이미 있는 Cloudflare 토큰과 `scripts/cloudflare-usage.mjs`를 다시 쓰는 방식을 먼저 확인한다.
 - 10-15T12:5xZ 사용자: ‘D1 사용량 표시는 가급적 사용자의 조회에도 실시간 연동되게 할 수는 없겠지? 어려우면 그냥 가능한 쪽으로만 간단히 해도 된다.’ 상위 세션 판단: 간단한 쪽(스냅숏 생성 때 한 번 읽음, 화면에 측정 시각과 ‘약 N시간 전 기준’). 실시간으로 하려면 Worker 런타임에 분석 읽기 전용 토큰을 새로 넣어야 하고(배포 토큰은 권한이 넓어 넣지 않음, 새 토큰은 사용자가 만들어야 함), 조회마다 Worker 요청과 외부 API 호출이 늘며, 분석 자료도 몇 분 늦다. U06에 전했다.
+- 10-15T13:3xZ PR #113(U05 필터 C) 병합(`e3fb633`, 근거는 U05 절 ‘필터 C PR’). 배포 run 38744084321 성공(13:36–13:45Z), Worker `c67452b6`, 스냅숏 `981617310d42f77b`(16,119곳), smoke 통과. U05에 7번(즐겨찾기) 시작을 보냈다. 13:40Z 안전망 점검: 5시간 창 0.81(초기화 15:50Z), 7일 창 0.37. PR #114가 #113 병합으로 충돌했고 U06이 13:41Z에 main을 합쳤다(`2caed52`, 충돌은 globals.css 끝의 두 블록이라 줄 수정 없음). 다음 안전망 점검은 16:00Z(`trig_01YYvp5V3Q5SmBNdBfkpU6XP`).
 - 10-15T11:2xZ PR #108(U05 6번 비교) 병합(`e807ea1`, 근거는 U05 절 ‘6번 비교 PR’). 배포 run 38727019418 성공(11:23–11:33Z), Worker `534da7eb`, smoke 통과.
   - 확인한 지금 상태: 바닥글 ‘자료 현황’의 접힌 패널 ‘전국 수집 현황’이 숫자와 표만 보인다. 운영 스냅숏 `04c0aa1b509e6062`의 `status.json`(08:21Z)은 Jalan 상세 완료 1,088·대기 13,978, Trip.com 완료 798·대기 1,349·실패 1이다. 같은 manifest의 `coverage.providers`는 Jalan 완료 1,738·Trip.com 897로 세는 기준이 달라 보인다. U06이 두 수의 정의를 확인해야 한다. 한국어 이름과 설명 번역 비율은 `status.json`에 없다.
 
@@ -1329,6 +1330,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - `9c33500` 빌드: 브라우저 검사 13종 중 12종 통과(`check-u05-filter` 53, `check-u03-desktop` 12, `check-u05-foundation` 53, `check-u05-list` 28, `check-u02-map` 55, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57, `check-p03-followups` 9). `check-u05-map`은 1280px ‘지도 크게’ 지도가 588px이라 1건 실패했고, `3e2f8e3`에서 옆 목록을 320px로 줄였다.
 - `3e2f8e3` 빌드: `check-u05-map` 23, `check-u02-map` 55, `check-u05-filter` 53, `check-u03-desktop` 12 통과. 빠른 `cloud-check.py` 28개 통과(`9c33500`).
 - Codex 2회째(`81fd59f`, 13:11Z) 지적 없음. 같은 소스 빌드에서 나머지 9종도 통과(`check-u05-foundation` 53, `check-u05-list` 28, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 64, `check-u04` 57, `check-p03-followups` 9, 13:11–13:19Z). `cloud-check.py --full` 42개 통과(`81fd59f`, 13:19:08Z–13:24:25Z). CI `checks`·GitGuardian 통과. main `4bc3708`은 이미 포함. 병합 준비.
+- 병합(상위 세션이 기록): 10-15T13:3xZ, main `e3fb633ee20a536ea6d2b7c9bf586f2a3182552f`. head `7462c74`, Codex 2회째(`81fd59f`) 지적 없음, 리뷰 스레드 3개 해결, CI `checks`·GitGuardian 통과, mergeable clean. 마지막 검토 뒤 변경은 기록 파일뿐이다(`git diff --stat 81fd59f 7462c74`). 운영 배포 결과는 `deployments.md`. 사용자에게 알릴 화면 변경: 901~1250px에서는 탕 조건 버튼이 1열이고 패널 안에서 스크롤한다(2열이면 ‘카케나가시’가 잘림). 1251px 이상 ‘지도 크게’의 옆 목록은 340 → 320px. 다음은 7번 즐겨찾기.
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
