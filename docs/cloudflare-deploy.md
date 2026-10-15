@@ -34,7 +34,7 @@
 
 사용자가 아래를 등록했다(2026-10-11T09:5xZ 사용자 보고, 상위 세션 전달). 값은 확인하지 않았다. Secret 값은 채팅·PR·로그에 붙여 넣지 않고 GitHub Secret 입력란에만 넣는다.
 
-1. API 토큰: 프로필의 API Tokens(사용자 토큰)에서 템플릿 ‘Edit Cloudflare Workers’에 Account `D1: Edit`를 더했다. Account Resources는 본인 계정, Zone Resources는 All zones, 만료 없음, IP 제한 없음이다. 템플릿의 다른 권한(KV·R2·Pages·Tail·Workers Routes 등)도 들어 있다. `Account Analytics: Read`는 없다. CPU·D1 사용량을 API로 읽는 `usage.yml`에 필요하다(아래 ‘사용량 측정’의 사용자 조치).
+1. API 토큰: 프로필의 API Tokens(사용자 토큰)에서 템플릿 ‘Edit Cloudflare Workers’에 Account `D1: Edit`를 더했다. Account Resources는 본인 계정, Zone Resources는 All zones, 만료 없음, IP 제한 없음이다. 템플릿의 다른 권한(KV·R2·Pages·Tail·Workers Routes 등)도 들어 있다. `Account Analytics: Read`는 처음에 없었고, CPU·D1 사용량을 API로 읽는 `usage.yml`에 필요해 사용자가 2026-10-12~13에 더했다(`usage.yml` run 38314558359로 확인, `work-handoff-latest.md` ‘사용자 조치’ 23번).
 2. GitHub Secret:
    - 앱 레포 `jihune/yukemuri`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `YUKEMURI_CRAWL_ACCESS_KEY`(새 Worker의 `CRAWL_ACCESS_KEY`로 올라간다).
    - 실행기 레포 `jihune/yukemuri-script-runner`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`(4단계 적재용, `hosting-review-20261011.md` 3.3절). `YUKEMURI_CLOUDFLARE_JSON`은 6단계에서 정한다. 기존 `YUKEMURI_ACCESS_JSON`은 Sites 정리 전까지 지우지 않는다.
@@ -176,7 +176,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - D1(`databaseId`): `d1AnalyticsAdaptiveGroups`의 `rowsRead`·`rowsWritten`·`readQueries`·`writeQueries`, `date` 필터는 그 UTC 날짜 하나다. D1 무료 한도가 초기화되는 단위와 같다.
   - 계정 전체: 같은 두 데이터셋을 `scriptName`·`databaseId` 필터 없이 한 번 더 읽어 모든 Worker 요청과 모든 D1의 `rowsRead`·`rowsWritten` 합계를 낸다. 무료 한도는 계정 단위라 한도 대비 비율과 70% 경고는 이 합계로 계산하고, 이 앱의 Worker·D1 값은 옆 열에 참고로 쓴다(PR #53 Codex 검토).
   - 계정 합계가 70% 이상이거나 `exceededResources`가 있으면 ‘주의’ 줄을 더한다. 분석 자료는 31일 보관이고 오늘 날짜는 진행 중인 값이다.
-- 권한: API 토큰에 **Account > Account Analytics > Read**가 필요하다(Cloudflare 문서 ‘Configure an Analytics API token’). 지금 토큰에는 없다(‘사용자가 한 일’ 1번). 권한이 없으면 API가 401·403 또는 권한 오류 메시지를 돌려주거나 계정 목록이 비어 온다. 스크립트는 이 경우 표를 쓰지 않고 실패하며, ‘이 오류는 사용량 0이 아니다’라고 적는다. 권한이 있는 조회에서 그날 행이 없으면 0이 아니라 ‘기록 없음’으로 쓴다.
+- 권한: API 토큰에 **Account > Account Analytics > Read**가 필요하다(Cloudflare 문서 ‘Configure an Analytics API token’). 사용자가 2026-10-12~13에 더했다(`usage.yml` run 38314558359로 확인, ‘사용자가 한 일’ 1번). 권한이 없으면 API가 401·403 또는 권한 오류 메시지를 돌려주거나 계정 목록이 비어 온다. 스크립트는 이 경우 표를 쓰지 않고 실패하며, ‘이 오류는 사용량 0이 아니다’라고 적는다. 권한이 있는 조회에서 그날 행이 없으면 0이 아니라 ‘기록 없음’으로 쓴다.
 - 사용자 조치(실행 전에 한 번): Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`으로 쓰는 토큰의 Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더하고 저장한다. 토큰 값은 바뀌지 않으므로 GitHub Secret은 그대로 둔다. 실행기 레포의 같은 이름 Secret이 다른 토큰이면 그 토큰은 바꿀 필요 없다.
 - 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 5종(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음)이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
 - 무료 한도(2026-10-15 UTC 확인, Cloudflare 문서 원본 markdown을 `curl`로 받음): D1 Pricing(`developers.cloudflare.com/d1/platform/pricing/index.md`) ‘Rows read 5 million / day’, ‘Rows written 100,000 / day’, ‘Free limits reset daily at 00:00 UTC’. Workers Limits(`developers.cloudflare.com/workers/platform/limits/index.md`) ‘daily request limit of 100,000 requests, resetting at midnight UTC’, 넘으면 오류 1027. `scripts/cloudflare-usage.mjs`의 `LIMITS`와 같다.
