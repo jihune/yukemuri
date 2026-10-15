@@ -163,7 +163,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`, PR #67·#80·#89·#95 병합, #101 진행 중). 부모는 이전 상위 세션이라 지금 상위 세션 id로 직접 보낸다 | 진행 중 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관 반영(브랜치 `claude/l01-lifecycle`, PR #79·#93·#98 병합, 부모는 두 번째 상위 세션). 남은 일 없음 | 대기 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 수·전망 온천·객실 사진(PR #77)과 D04 시설 연도(PR #94). 브랜치 `claude/d05-rooms`, 부모는 두 번째 상위 세션. 다음은 D04 다음 단계 | 대기 |
-| `session_01Qktdn2dCv2gJn4Dwf8wKne` | R01 두 저장소 `.claude/settings.json`(브랜치 `claude/repo-language`, 10-15T07:37Z 시작, 부모는 세 번째 상위 세션). 두 PR 병합 뒤 보관한다 | 진행 중 |
+| `session_01Qktdn2dCv2gJn4Dwf8wKne` | R01 두 저장소 `.claude/settings.json`(브랜치 `claude/repo-language`, 10-15T07:37Z 시작, 부모는 세 번째 상위 세션). 두 PR 병합 뒤 보관한다 | 두 PR 병합(실행기 #10 `104e673`, yukemuri #103 `5f4d9b0`, 10-15T07:5xZ). 보관(아래 8) |
 | `session_01Hb6mZa55hebUCaeC7z29mG` | 하네스 관리 세션(`jihune/agent-harness`, 10-15 인계). 이 프로젝트 세션이 관리하지 않는다. 하네스 교훈은 이 세션이나 사용자에게 전한다 | 07:4xZ에 idle |
 | `session_01MYY4pY2yi7c3oixLgRRsjT` | 이전 하네스 관리 세션(10-13 인계). 10-15에 위 세션에 인계했다 | 07:4xZ에 idle |
 | `session_019yG8qw1WbTQEBYXDzk4D1Z` | H02 공개 사이트 보호 강화(PR #76 병합·배포) | 보관 |
@@ -211,6 +211,14 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 7. 세 번째 상위 세션 알림(07:51Z): 인계를 받았다고 보내고 받은 메시지를 넘기거나 '넘길 것 없음'이라고 답해 달라고 적었다(`delivered`). 07:51:17Z에 '넘길 것 없음'이라는 답이 왔다. 그 앞에 세 번째 상위 세션이 R01의 메시지 두 건(07:48:44Z yukemuri PR #103, 07:50:36Z 실행기 PR #10)을 원문 그대로 넘겼다. 세 번째 상위 세션은 07:51Z `list_triggers`에서 자기에게 묶인 예약이 없는 것도 확인했다. 시각 정정: PR #102 병합은 '07:5xZ'가 아니라 10-15T07:47:57Z다(세 번째 상위 세션이 공개 API `pulls/102`의 `merged_at`으로 확인). U05와 R01은 앞으로 이 세션 id로 보낸다고 답했다.
 
 이 절의 6 표 첫 줄 '(네 번째 상위 세션이 아래 7에 적는다)'는 `session_012tbsAbaHuG1Xhs94L4LatJ`이다.
+
+### 8. 인계 뒤 기록(네 번째 상위 세션)
+
+- 10-15T07:54Z 사용량: 5시간 창이 07:48Z 0.52에서 07:54Z 0.64로 올랐다(7일 창 0.22). 이 속도면 10:50Z 초기화 전에 0.9에 닿을 수 있어서 U05와 R01에 미리 알렸다(단계마다 push, 새 하위 에이전트 없음, 11:00Z 재개를 각자 예약). 상위 세션도 11:00Z 재개를 예약했다(`trig_01WYUkvb7S2tZLg6Wghg79jg`). 새 흐름은 초기화 뒤에 연다.
+- 10-15T07:56Z 실행기 PR #10 병합(`104e67363da4882a8dfe5f2edf5c2c3361bad5f1`): Codex 1회(`d078ece`, 큰 문제 없음), 리뷰 스레드 없음, CI `verify` 두 실행과 GitGuardian 통과, mergeable clean. `project-files.json`에 새로 적힌 해시가 `{"language": "korean"}` 한 줄(23바이트)의 sha256 `35402de3…`과 같음을 상위 세션이 `sha256sum`으로 확인했다.
+- 10-15T07:59Z yukemuri PR #103 병합(`5f4d9b00d7e1cf4971b71b32efce1d1014b857dd`): Codex 1회(`459ea9f`, 큰 문제 없음), 리뷰 스레드 없음, CI `checks`와 GitGuardian 통과, mergeable clean. CI 뒤 main에 들어간 것은 기록 PR #102·#104(docs만)라 바뀐 파일이 겹치지 않았다. `.claude/settings.json`은 `deploy.yml`의 `paths-ignore` 밖이라 병합 push가 운영 배포를 다시 돌렸다(앱 코드 변경 없음). run 38702476247 성공(07:59–08:08Z), Worker `7daa96e0-d40b-4dc3-9156-eb7c12588e38`, 스냅숏 `f1b38054712e96ab`(15,678곳), smoke 통과. 자세한 것은 `deployments.md` 마지막 줄이다.
+- 10-15T08:00Z `language` 설정 관찰: 이 세션의 작업 트리를 #103 병합 뒤 main으로 옮긴 직후 세션에 'Always respond in korean' 언어 지시가 새로 나타났다. 저장소 `.claude/settings.json`을 읽은 것으로 보인다. 새로 연 세션에서 처음부터 적용되는지는 다음에 새 세션을 열 때 본다.
+- R01(`session_01Qktdn2dCv2gJn4Dwf8wKne`) 결과: 두 PR 병합, Codex 요청은 PR마다 1회, Claude 검토 세션은 쓰지 않았다. R01은 자기 예약 3개(08:16Z, 08:42Z, 11:00Z)를 지웠고 두 PR 구독은 병합으로 풀렸다고 보고했다. 한 가지 일로 연 세션이라 이 기록을 남긴 뒤 보관한다(위 6 표의 R01 줄 상태도 '보관'으로 고쳤다).
 
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
