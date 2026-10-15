@@ -6,7 +6,8 @@
 //   behind its ‘?’ (hidden until pressed);
 // - a switch, the chip bar and the count agree: switching ‘노천탕’ on presses its chip and the
 //   sheet's button reads the snapshot's own count for that condition (no list request to the
-//   Worker); a chip pressed outside shows as switched on inside; ‘초기화’ clears both;
+//   Worker); a chip pressed outside shows as switched on inside; ‘초기화’ clears both; the
+//   rating pickers open inside the sheet and apply;
 // - on a wide screen the left panel is the same switches and groups.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
@@ -93,6 +94,12 @@ for(const w of [360,390,1280]){
   await press(page.locator('.filter-drawer .filter-reset'));await page.waitForTimeout(400);
   const reset=await read();
   check('‘초기화’로 토글과 칩이 모두 꺼지고 결과는 전체',reset.switches.every(s=>!s.on)&&Object.values(reset.chips).every(v=>!v)&&reset.apply===`${total('').toLocaleString()}곳 보기`,{on:reset.switches.filter(s=>s.on),chips:reset.chips,apply:reset.apply});
+  // The rating pickers (Radix Select) open inside the sheet and apply.
+  const picker=page.locator('.filter-drawer').getByRole('combobox',{name:'최소 리뷰 수'});
+  await picker.scrollIntoViewIfNeeded();await press(picker);await page.waitForTimeout(400);
+  await press(page.getByRole('option',{name:'50개 이상'}));await page.waitForTimeout(500);
+  const reviews=await read(),want50=total('reviews=50');
+  check(`시트 안의 ‘최소 리뷰 수’ 선택 상자가 열리고 ‘50개 이상’이 적용됨(${want50}곳 = 스냅숏 값), 시트는 열린 채`,new URL(page.url()).searchParams.get('reviews')==='50'&&reviews.apply===`${want50.toLocaleString()}곳 보기`&&await page.locator('.filter-drawer').count()===1,{url:page.url(),apply:reviews.apply,want50});
  }else{
   // The wide screen: the left panel's ‘초기화’ clears the switches and the chips.
   await page.locator('.desktop-filters .filter-title button').click();await page.waitForTimeout(400);
