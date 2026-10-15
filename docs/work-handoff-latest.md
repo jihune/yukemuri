@@ -219,6 +219,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 10-15T07:59Z yukemuri PR #103 병합(`5f4d9b00d7e1cf4971b71b32efce1d1014b857dd`): Codex 1회(`459ea9f`, 큰 문제 없음), 리뷰 스레드 없음, CI `checks`와 GitGuardian 통과, mergeable clean. CI 뒤 main에 들어간 것은 기록 PR #102·#104(docs만)라 바뀐 파일이 겹치지 않았다. `.claude/settings.json`은 `deploy.yml`의 `paths-ignore` 밖이라 병합 push가 운영 배포를 다시 돌렸다(앱 코드 변경 없음). run 38702476247 성공(07:59–08:08Z), Worker `7daa96e0-d40b-4dc3-9156-eb7c12588e38`, 스냅숏 `f1b38054712e96ab`(15,678곳), smoke 통과. 자세한 것은 `deployments.md` 마지막 줄이다.
 - 10-15T08:00Z `language` 설정 관찰: 이 세션의 작업 트리를 #103 병합 뒤 main으로 옮긴 직후 세션에 'Always respond in korean' 언어 지시가 새로 나타났다. 저장소 `.claude/settings.json`을 읽은 것으로 보인다. 새로 연 세션에서 처음부터 적용되는지는 다음에 새 세션을 열 때 본다.
 - R01(`session_01Qktdn2dCv2gJn4Dwf8wKne`) 결과: 두 PR 병합, Codex 요청은 PR마다 1회, Claude 검토 세션은 쓰지 않았다. R01은 자기 예약 3개(08:16Z, 08:42Z, 11:00Z)를 지웠고 두 PR 구독은 병합으로 풀렸다고 보고했다. 한 가지 일로 연 세션이라 이 기록을 남긴 뒤 보관한다(위 6 표의 R01 줄 상태도 '보관'으로 고쳤다).
+- 10-15T08:1xZ R01 보관(PR #105 병합 뒤). PR #101(U05 5번 상세) 병합(08:14Z, `7bc041c`, 근거는 U05 절 '5번 상세 PR'). 5시간 창 0.72(08:14Z)로 0.9 아래라 U05에 6번(비교) 시작을 보냈다. U05는 기존 세션이라 새 하위 세션을 늘리는 일이 아니다. U05의 11:00Z 재개 예약은 남겨 두었다.
 
 
 ## 상위 세션 체크포인트(2026-10-11T22:32Z 멈춤 → 2026-10-12T09:03Z 재개)
@@ -1199,6 +1200,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
   - 고친 빌드에서 `check-u05-detail` 69, `check-u05-foundation` 53, 빠른 `cloud-check.py` 28개가 통과했다.
 - Codex 3회째(head `d1f3df7`, 07:52Z): 지적 없음. 검토 3회 끝, 남은 지적 없음.
 - 상위 세션이 바뀌었다(10-15T07:48Z, 네 번째 `session_012tbsAbaHuG1Xhs94L4LatJ`). 병합 준비 알림은 새 id로 보낸다.
+- 병합(상위 세션이 기록): 10-15T08:14Z, main `7bc041c1a139e517b3c6e7c8938674044d8d657d`. head `e96e534`, CI `checks`·GitGuardian 통과, mergeable clean, 리뷰 스레드 3개 해결. 마지막 검토(`d1f3df7`) 뒤 변경은 기록 파일과 main(`5f4d9b0`) merge뿐이다. `git merge-tree --write-tree 5f4d9b0 d1f3df7`로 만든 트리와 head의 차이가 `docs/roadmap.md`·`docs/work-handoff-latest.md`뿐인 것을 확인했다. 운영 배포 결과는 `deployments.md`. 상위 세션이 08:14Z에 U05에 6번(비교, D04 연도·D05 객실 정보 비교 행 포함) 시작을 보냈다.
 
 미확인·다음:
 
