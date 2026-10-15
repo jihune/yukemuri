@@ -1,7 +1,15 @@
 # Sample production hotel details by public GET (browser UA), paced under the 30/60s limit.
-import json,random,sys,time,urllib.request,urllib.error,re
+import json
+import random
+import re
+import sys
+import time
+import urllib.error
+import urllib.request
+
 PROD=sys.argv[1]; OUT=sys.argv[2]
-core=json.load(open(PROD+'/core.json',encoding='utf-8'))
+with open(PROD+'/core.json',encoding='utf-8') as f:
+  core=json.load(f)
 ids=core['ids'];known=core['known']
 rng=random.Random(20261015)
 uniform=rng.sample(range(len(ids)),150)
