@@ -1,5 +1,7 @@
 # 유케무리 사이트
 
+사이트 주소: https://yukemuri.jihune.workers.dev (Cloudflare Workers 무료 플랜, 2026-10-13 전환. 옛 Sites 주소는 더 이상 갱신하지 않는다.)
+
 새 세션은 [START_HERE.md](START_HERE.md)부터 읽는다. 2026-10-09 사용자 요청에 따라 Codex 웹·Claude Code 웹 공통 개발 레포를 준비했다. 기존 Sites 호스팅·운영 D1·Python 예약은 유지한다.
 개발 기준은 public [jihune/yukemuri](https://github.com/jihune/yukemuri)다(2026-10-11 private에서 전환). 실제 Sites 게시 커밋과 GitHub 커밋을 별도로 기록한다. 원래 Git 그래프는 [이력 보존 안내](docs/legacy-history.md)에 따라 복원할 수 있다.
 환경 설정은 [클라우드 개발](docs/cloud-development.md), 배포 전달은 [Sites 인수인계](docs/sites-handoff.md), 최신 보존 범위는 [대화 인계](docs/conversation-handoff.md)를 따른다. [2026-10-09 이관 기록](docs/migration-20261009.md)은 이전 준비 시점의 기록이다.
