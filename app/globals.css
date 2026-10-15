@@ -982,6 +982,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .u06-defs dl{margin:0;display:grid;gap:8px}
 .u06-defs dt{font-weight:700;color:var(--yk-text)}
 .u06-defs dd{margin:0}
+/* The phone header has no room for a third menu item (44px targets); the list's button and the footer open it there. */
+@media(max-width:550px){.header-inner nav .u06-nav{display:none}}
 .u06-open{display:inline-flex;align-items:center;gap:6px;min-height:var(--yk-tap);padding:0 12px;border:1px solid var(--yk-line);border-radius:8px;background:var(--yk-bg);color:var(--yk-text-2);font-size:var(--yk-fs-xs)}
 .u06-credits{font-size:var(--yk-fs-xs);color:var(--yk-text-3);line-height:1.7;overflow-wrap:anywhere}
 .u06-credits h2{font-size:var(--yk-fs-sm)}

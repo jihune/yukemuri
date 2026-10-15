@@ -114,9 +114,10 @@ for(const w of [360,390,1280]){
  await sheet.waitFor({state:'detached'});
  check(`${mobile?'닫기 버튼':'Esc'}로 닫히고 주소의 #status가 빠지며 초점이 목록 위 버튼으로 돌아감`,await page.evaluate(()=>location.hash)===''&&await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link')),{hash:await page.evaluate(()=>location.hash),focus:await focused()});
 
- // 6. The header menu, then the back button.
+ // 6. The header menu, then the back button. Phones (550px and less) have no room for it.
  const nav=page.locator('.u06-nav');
- if(await nav.isVisible()){
+ if(w<=550)check('휴대폰 머리 메뉴에는 ‘자료 현황’을 두지 않음(목록 위 버튼·바닥글로 엶)',!await nav.isVisible());
+ else if(await nav.isVisible()){
   if(mobile)await nav.tap();else{await nav.focus();await page.keyboard.press('Enter')}
   await sheet.locator('.u06-row').first().waitFor();
   await page.goBack();await sheet.waitFor({state:'detached'});

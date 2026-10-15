@@ -129,7 +129,7 @@ for(const w of [360,390,1280]){
   const credits=await link.evaluate(a=>{const r=a.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return{inView:r.top>=0&&r.bottom<=innerHeight,reachable:hit===a||a.contains(hit),geo:/jageocoder/.test(a.closest('section')?.textContent??'')}});
   await page.waitForTimeout(1200);
   const after=await page.locator('.hotel-list .hotel-card').count();
-  if(how==='keyboard')await page.keyboard.press('Escape');else await sheet.getByRole('button',{name:'자료 현황 닫기'}).tap();
+  if(how==='keyboard')await page.keyboard.press('Escape');else await tap(sheet.getByRole('button',{name:'자료 현황 닫기'}));
   await sheet.waitFor({state:'detached'});
   const back=await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link'));
   return{tabs,opened,at,credits,cards,after,back,pass:(how!=='keyboard'||tabs<80)&&opened&&at.hash==='#status'&&at.focus==='자료 현황 닫기'&&credits.inView&&credits.reachable&&credits.geo&&after===cards&&back};
