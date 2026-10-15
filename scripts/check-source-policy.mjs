@@ -18,14 +18,25 @@ try{
  const newerTrip=structuredClone(trip);newerTrip.sources[0].retrievedAt='2026-10-05T13:00:00Z';newerTrip.ratings[0].score=9.3;assert.equal(composePreferredHotel(trip,[newerTrip]).ratings[0].score,9.3,'Fresh ratings win within their own provider');
  // D05: a stated room count follows the facility order (Jalan, then Trip.com), then the newer observation.
  const counted=(h,total,day)=>({...structuredClone(h),rooms:{total,sourceId:h.id,verifiedAt:day,note:'test'}});
- assert.equal(composePreferredHotel(counted(trip,120,'2026-10-06'),[counted(jalan,118,'2026-10-05')]).rooms.total,118,'Jalan room count wins over a newer Trip.com one');
+ // Newness is the source's retrievedAt, so the Trip.com observation is made newer there.
+ const laterTrip=counted(trip,120,'2026-10-06');laterTrip.sources[0].retrievedAt='2026-10-06T12:00:00Z';
+ assert.equal(composePreferredHotel(laterTrip,[counted(jalan,118,'2026-10-05')]).rooms.total,118,'Jalan room count wins over a newer Trip.com one');
  assert.equal(composePreferredHotel(counted(trip,120,'2026-10-06'),[jalan]).rooms.total,120,'Trip.com room count fills a missing Jalan one');
  const newerCount=counted(jalan,121,'2026-10-07');newerCount.sources[0].retrievedAt='2026-10-07T12:00:00Z';
  assert.equal(composePreferredHotel(counted(jalan,118,'2026-10-05'),[newerCount]).rooms.total,121,'Within one provider the newer room count wins');
  assert.equal('rooms' in composePreferredHotel(trip,[jalan]),false,'No room count stays unknown');
+ // D04: stated opening/renovation years follow the same order, one source's statement kept whole.
+ const dated=(h,years,day)=>({...structuredClone(h),facilityYears:{...years,sourceId:h.id,verifiedAt:day,note:'test'}});
+ const laterTripYears=dated(trip,{opened:2016},'2026-10-06');laterTripYears.sources[0].retrievedAt='2026-10-06T12:00:00Z';
+ assert.deepEqual(composePreferredHotel(laterTripYears,[dated(jalan,{renovated:2020},'2026-10-05')]).facilityYears,{renovated:2020,sourceId:jalan.id,verifiedAt:'2026-10-05',note:'test'},'A Jalan statement wins over a newer Trip.com one, unmixed');
+ assert.equal(composePreferredHotel(dated(trip,{opened:2016},'2026-10-06'),[jalan]).facilityYears.opened,2016,'Trip.com years fill a missing Jalan statement');
+ const newerYears=dated(trip,{renovated:2024},'2026-10-07');newerYears.sources[0].retrievedAt='2026-10-07T12:00:00Z';
+ assert.deepEqual(composePreferredHotel(dated(trip,{opened:2016},'2026-10-05'),[newerYears]).facilityYears,newerYears.facilityYears,'Within one provider the newer statement wins');
+ assert.equal('facilityYears' in composePreferredHotel(trip,[jalan]),false,'No stated year stays unknown');
  // Room photos of every linked source, Trip.com first (the photo order).
  const shown=(h,name)=>({...structuredClone(h),roomTypes:[{sourceId:h.id,verifiedAt:'2026-10-05',items:[{name,photos:[]}]}]});
- assert.deepEqual(composePreferredHotel(shown(jalan,null),[shown(trip,'트윈룸')]).roomTypes.map(s=>s.sourceId),[trip.id,jalan.id],'Room photos keep both sources, Trip.com first');
+ const laterJalan=shown(jalan,null);laterJalan.roomTypes[0].verifiedAt='2026-10-06';
+ assert.deepEqual(composePreferredHotel(laterJalan,[shown(trip,'트윈룸')]).roomTypes.map(s=>s.sourceId),[trip.id,jalan.id],'Room photos keep both sources, Trip.com first even when the Jalan set is newer');
  assert.equal('roomTypes' in composePreferredHotel(trip,[jalan]),false,'No room photos stay absent');
  const self=shown(jalan,null);assert.equal(composePreferredHotel(self,[self]).roomTypes.length,1,'A group listing the base hotel again keeps one set per source');
  const mixed=structuredClone(jalan);mixed.image.alternatives=[trip.image.url];mixed.sources.push(...trip.sources);assert.equal(composePreferredHotel(mixed,[]).image.url,trip.image.url,'Historical Trip alternatives outrank the main Jalan image');

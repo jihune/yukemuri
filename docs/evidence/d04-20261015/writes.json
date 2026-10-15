@@ -1,0 +1,41 @@
+{
+ "measuredAt": "2026-10-15T01:37:16.733Z",
+ "environment": "Miniflare local D1 (not production D1), built dist/",
+ "rows": [
+  {
+   "label": "new hotel, parser before D04 (no facilityYears)",
+   "statements": 12,
+   "rowsRead": 27,
+   "rowsWritten": 33
+  },
+  {
+   "label": "new hotel, D04 parser",
+   "statements": 12,
+   "rowsRead": 27,
+   "rowsWritten": 33
+  },
+  {
+   "label": "update, parser before D04",
+   "statements": 12,
+   "rowsRead": 30,
+   "rowsWritten": 19
+  },
+  {
+   "label": "update, D04 parser",
+   "statements": 12,
+   "rowsRead": 30,
+   "rowsWritten": 19
+  },
+  {
+   "label": "refresh: a row without years updated by the D04 parser",
+   "statements": 12,
+   "rowsRead": 30,
+   "rowsWritten": 19
+  }
+ ],
+ "payloadBytes": {
+  "d04": 2994,
+  "beforeD04Fields": 2862,
+  "withD04Fields": 2984
+ }
+}
