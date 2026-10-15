@@ -1,0 +1,30 @@
+{
+ "measuredAt": "2026-10-15T02:41:32.838Z",
+ "environment": "Miniflare local D1 (not production D1), built dist/",
+ "rows": [
+  {
+   "label": "new hotel, old collector label",
+   "statements": 11,
+   "rowsRead": 26,
+   "rowsWritten": 31
+  },
+  {
+   "label": "new hotel, new collector label",
+   "statements": 11,
+   "rowsRead": 26,
+   "rowsWritten": 31
+  },
+  {
+   "label": "refetch, stored label already current",
+   "statements": 11,
+   "rowsRead": 29,
+   "rowsWritten": 17
+  },
+  {
+   "label": "refetch, stored label was the old fallback",
+   "statements": 11,
+   "rowsRead": 29,
+   "rowsWritten": 17
+  }
+ ]
+}

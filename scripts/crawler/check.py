@@ -123,6 +123,11 @@ kr_doc=next(json_hotels(korean))
 kr=normalize(kr_doc,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/','2026-10-04T01:00:00Z',korean,'pref-kumamoto',True)
 assert kr['names']==dict(ko='소잔쿄',ja='阿蘇内牧温泉 蘇山郷',en='Sozankyo')
 assert '소잔쿄(Sozankyo)' in kr['aliases']
+# A page without addressRegion gets the prefecture's own name as its label, not
+# the display name with a town ('가나가와 · 하코네' put Yokohama hotels in Hakone, L01).
+yokohama_url='https://www.trip.com/hotels/yokohama-hotel-detail-1181981/grace/'
+yokohama=normalize({**kr_doc,'url':yokohama_url,'address':{'streetAddress':'Yokohama','addressCountry':'Japan'}},'trip',yokohama_url,'2026-10-04T01:00:00Z','','pref-kanagawa')
+assert yokohama['prefecture']=='pref-kanagawa' and yokohama['location']['label']=='가나가와',yokohama['location']
 # Trip's streetAddress is already the whole formatted address and repeats its
 # addressLocality and addressRegion; joining all three doubled them (D01).
 assert kr['location']['address']=='145-1 Uchinomaki, 869-2301 아소, 구마모토 현, 일본',kr['location']['address']

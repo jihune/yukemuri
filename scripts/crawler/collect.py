@@ -467,7 +467,7 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
     full_address = street if provider == 'trip' and locality and region_part and locality in street and region_part in street else region_part + locality + street
     maps = 'https://www.google.com/maps/search/?api=1&query=' + urllib.parse.quote(full_address or name)
     return dict(id=source, names=names, aliases=aliases, kind='ryokan' if re.search(r'旅館|Ryokan', name, re.I) else 'hotel' if re.search(r'ホテル|Hotel',name,re.I) else 'unknown', regionId=found or 'unassigned', prefecture=found,
-                location=dict(label=region or (next((p['name'] for p in PREFS if p['id'] == found), '일본')), address=full_address, latitude=lat, longitude=lng, isApproximate=False),
+                location=dict(label=region or (next((p['name'].split(' · ')[0] for p in PREFS if p['id'] == found), '일본')), address=full_address, latitude=lat, longitude=lng, isApproximate=False),
                 description=bounded_description(text(str(doc.get('description', ''))) or '예약 사이트에서 확인한 실제 숙소입니다. 상세 시설은 숙소 안내에서 확인하세요.'),
                 image=dict(url=image, alt=name + ' 숙소 사진', sourceId=source, isRepresentative=False), features=facts, **({'rooms': rooms} if rooms else {}), **({'roomTypes': [dict(sourceId=source, verifiedAt=fetched_at[:10], items=room_types)]} if room_types else {}), **({'facilityYears': facility_years} if facility_years else {}),
                 spring=dict(types=[], waterNotes=water, useNotes='객실 온천·객실 노천탕은 확인된 객실 타입을 예약해야 이용할 수 있습니다.'), ratings=ratings,
