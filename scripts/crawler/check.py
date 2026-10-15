@@ -176,6 +176,16 @@ assert stated_years(years_raw.replace('호텔 설립연도: 2016','호텔 정보
 assert stated_years(years_raw,'2015-12-31T00:00:00Z') is None,'A year after the check is a plan, not a fact'
 assert stated_years(years_raw.replace(opened,'\\"openYear\\":\\"16\\"').replace('호텔 설립연도: 2016','호텔 설립연도: 16')) is None
 assert stated_years(years_raw.replace('\\"masterHotelId\\":10019167','\\"masterHotelId\\":10019168')) is None,"Another hotel's record"
+# A field and a label that disagree are not stored but reported in the page diagnostic
+# (without stopping the job); an agreeing or absent pair reports nothing.
+def year_diagnostic(page):
+ return parse_source_page(page,'trip',byakudan_url,stamp,kind='detail')[3]
+assert 'facilityYearMismatch' not in year_diagnostic(years_raw) and 'facilityYearMismatch' not in parse_source_page(trip_rooms_raw,'trip',fujiya_url,stamp,kind='detail')[3]
+for page,expected in [(years_raw.replace(opened,'\\"openYear\\":\\"2015\\"'),[{'field':'openYear','value':'2015','labels':['호텔 설립연도: 2016']}]),
+                      (years_raw.replace('호텔 설립연도: 2016','호텔 정보: 2016'),[{'field':'openYear','value':'2016','labels':[]}]),
+                      (years_raw.replace(','+opened,''),[{'field':'openYear','value':None,'labels':['호텔 설립연도: 2016']}])]:
+ diagnostic=year_diagnostic(page)
+ assert diagnostic['facilityYearMismatch']==expected and diagnostic['reviewReason'] is None,diagnostic
 assert 'facilityYears' not in parse_source_page(korean,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/',stamp,kind='detail')[0][0]
 # Jalan states no year field; its free-text years (mostly one room) are not read.
 assert not any('facilityYears' in h for h in [plaza,jalan_rooms('jalan-rooms-hanayu.html','321273'),jalan_rooms('jalan-rooms-shinanoki.html','312415'),jalan_rooms('jalan-sozankyo-baths.html','327522')])

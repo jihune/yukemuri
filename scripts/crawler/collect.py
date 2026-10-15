@@ -127,19 +127,23 @@ def trip_room_count(props):
 
 
 def trip_facility_years(props, latest):
-    """Opening and renovation years when the field and the visible label agree (D04)."""
+    """Opening and renovation years when the field and the visible label agree (D04).
+    A field and a label that disagree (or one without the other) are reported, not stored."""
     base = props['hotelDetailResponse'].get('hotelBaseInfo') or {}
     info = props['hotelDetailResponse'].get('hotelDescriptionInfo')
     labels = [l.strip() for l in (info.get('lables') if isinstance(info, dict) else None) or [] if isinstance(l, str)]
-    years, notes = {}, []
+    years, notes, mismatches = {}, [], []
     for key, field, title in [('opened', 'openYear', '호텔 설립연도'), ('renovated', 'fitmentYear', '리모델링 연도')]:
         value = base.get(field)
         value = str(value) if isinstance(value, (str, int)) and not isinstance(value, bool) else ''
-        label = next((l for l in labels if re.fullmatch(re.escape(title) + r':\s*' + re.escape(value), l)), None) if value else None
+        titled = [l for l in labels if re.fullmatch(re.escape(title) + r':\s*\S.*', l)]
+        label = next((l for l in titled if re.fullmatch(re.escape(title) + r':\s*' + re.escape(value), l)), None) if value else None
+        if (value or titled) and not label:
+            mismatches.append(dict(field=field, value=value or None, labels=titled[:3]))
         if re.fullmatch(r'\d{4}', value) and 1000 <= int(value) <= latest and label:
             years[key] = int(value)
             notes.append(label)
-    return years, notes
+    return years, notes, mismatches
 
 
 def trip_room_types(props):
@@ -328,7 +332,7 @@ def normalize(doc, provider, url, fetched_at, raw='', pref=None, detail=False):
         if stated_rooms:
             rooms = dict(total=stated_rooms[0], sourceId=source, verifiedAt=fetched_at[:10], note='Trip.com 숙소 정보: ' + stated_rooms[1])
         room_types = trip_room_types(props)
-        years, year_notes = trip_facility_years(props, int(fetched_at[:4]))
+        years, year_notes, _ = trip_facility_years(props, int(fetched_at[:4]))
         if years:
             facility_years = dict(**years, sourceId=source, verifiedAt=fetched_at[:10], note='Trip.com 숙소 정보: ' + ' / '.join(year_notes))
     if detail and provider == 'jalan':
@@ -495,6 +499,10 @@ def parse_source_page(raw, provider, url, fetched_at, pref=None, kind='detail'):
         if prop != url:
             links[prop] = ('detail', h['prefecture'])
     diagnostic = dict(hotelDocuments=document_count, matchingHotelDocuments=len(docs), observations=len(observations), links=len(links), outsideJapan=foreign, reviewReason=review_reason)
+    props = trip_property(raw, provider_id(url)[1]) if provider == 'trip' and kind == 'detail' and observations else None
+    mismatches = trip_facility_years(props, int(fetched_at[:4]))[2] if props else []
+    if mismatches:
+        diagnostic['facilityYearMismatch'] = mismatches
     return observations, links, foreign, diagnostic
 
 
