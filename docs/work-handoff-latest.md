@@ -1360,6 +1360,8 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - `check-u05-favorites`에 그 두 경우(조건으로 0곳일 때 휴대폰 지도 버튼, 저장한 숙소가 없는 지역)를 더해 23개가 됐다. `4cfbe0c` 빌드에서는 새 검사 5건이 실패했고, 고친 빌드에서는 23개와 `check-p03-followups`·`check-u05-foundation`·`check-u05-list`·`check-u02`·`check-u05-map`이 통과했다.
 - 14:17Z 5시간 사용량 0.9로 멈췄고, 16:01Z 재개했다(예약 `trig_01BpgHcy5iMivEpKRtbnaB6j`).
 - 최신 main `2ef332d`(U06 PR #114, 자료 현황 화면)를 merge했다(`17843b7`). `hotel-explorer.tsx`·`globals.css` 충돌은 둘 다 살렸다(U06의 자료 현황 화면과 메뉴 항목, U05 7번의 즐겨찾기 상태·메뉴 `aria-current`·짧은 저장 안내). 메뉴에 ‘자료 현황’이 붙어서 `check-u05-favorites`는 즐겨찾기 메뉴를 이름으로 찾는다. merge 빌드에서 `check-u05-favorites` 23개 통과.
+- merge 빌드(`17843b7`)에서 브라우저 검사 15종 통과(16:05–16:16Z): `check-u05-favorites` 23, `check-u06-status` 73, `check-p03-followups` 9, `check-u05-foundation` 53, `check-u05-list` 28, `check-u05-filter` 53, `check-u05-detail` 69, `check-u05-map` 23, `check-u02-map` 55, `check-u03-desktop` 12, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 50(U06에서 바뀜), `check-u04` 57.
+- Codex 2회째(`9e5ace3`, 16:18Z) 지적 없음. `cloud-check.py --full` 42개 통과(`9e5ace3`, 16:18:52Z–16:24:22Z). 그 뒤 main `618730a`(기록 문서만)를 merge했다. 병합 준비.
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
