@@ -59,7 +59,7 @@ const cities: City[] = [
   ['kagoshima','가고시마','鹿児島','Kagoshima'],['kagoshima','기리시마','霧島','Kirishima'],['kagoshima','이부스키','指宿','Ibusuki'],['kagoshima','야쿠시마','屋久島','Yakushima'],
   ['okinawa','나하','那覇','Naha'],['okinawa','나고','名護','Nago'],['okinawa','자탄','北谷','Chatan'],['okinawa','온나','恩納','Onna'],['okinawa','나키진','今帰仁','Nakijin'],['okinawa','모토부','本部','Motobu'],['okinawa','이시가키','石垣','Ishigaki'],['okinawa','미야코지마','宮古島','Miyakojima'],['okinawa','도미구스쿠','豊見城','Tomigusuku'],['okinawa','우루마','うるま','Uruma'],['okinawa','기노완','宜野湾','Ginowan'],['okinawa','요미탄','読谷','Yomitan'],
 ];
-const preparedCities=cities.map(city=>({city,labels:[city[1],city[2],city[2]+'市',city[3]].map(normalizeSearch),native:new RegExp('^(?:[^\\s]+郡)?'+city[2]+'[市町村区]'),english:new RegExp('\\b'+city[3]+'\\s+(?:City|Town|Village)\\b','i')}));
+const preparedCities=cities.map(city=>({city,labels:[city[1],city[2],city[2]+'市',city[3]].map(normalizeSearch),native:new RegExp('^(?:[^\\s]+郡)?'+city[2]+'[市町村区]'),english:new RegExp('\\b'+city[3]+'\\s+(?:City|Town|Village)\\b|^\\s*'+city[3]+'\\s*$','i')}));
 type Onsen = [prefecture: string, label: string, city: string, pattern: RegExp];
 const onsens: Onsen[] = [
   ['hokkaido','조잔케이 온천','삿포로',/定山渓|jozankei|조잔케이/i],['hokkaido','유노카와 온천','하코다테',/湯の川|湯川町|yunokawa|유노카와/i],['hokkaido','노보리베츠 온천','',/登別温泉|登別市登別温泉町|noboribetsu\s*onsen|노보리베츠\s*온천/i],['hokkaido','소운쿄 온천','가미카와',/層雲峡|sounkyo|소운쿄/i],['hokkaido','도야호 온천','',/洞爺湖温泉|toyako\s*onsen|도야호\s*온천/i],['hokkaido','아칸호 온천','구시로',/阿寒湖温泉|akanko\s*onsen|아칸호\s*온천/i],['hokkaido','시코쓰호 온천','치토세',/支笏湖温泉|shikotsuko\s*onsen|시코쓰호\s*온천/i],['hokkaido','도카치가와 온천','오토후케',/十勝川温泉|tokachigawa|도카치가와/i],['hokkaido','곤부 온천','니세코',/昆布温泉|konbu\s*onsen|곤부\s*온천/i],['hokkaido','히라이소 온천','오타루',/平磯温泉|히라이소\s*온천/i],
@@ -96,11 +96,20 @@ function prefectureFor(hotel:PlaceInput){
     ?? PREFECTURES.find(p => hotel.location.address.startsWith(p.ja))
     ?? (REGIONS.some(r=>r.id===hotel.regionId&&!r.id.startsWith('pref-')&&r.id!=='all') ? PREFECTURES[0] : undefined);
 }
+// The collector stores the prefecture's display name as the label when a page
+// names no region (scripts/crawler/collect.py). Five of those names carry a
+// town ('가나가와 · 하코네'), which is not where the hotel is (L01: Trip.com
+// Yokohama hotels), so such a label says nothing beyond the prefecture.
+function storedLabel(hotel: PlaceInput, pref: ReturnType<typeof prefectureFor>): string {
+  const label = hotel.location.label ?? '';
+  return pref && label === pref.name && pref.name.includes(' · ') ? '' : label;
+}
+
 export function formatHotelLocation(hotel: PlaceInput): string {
   const pref = prefectureFor(hotel);
   const slug = pref?.slug;
   const prefix = pref?.name.split(' · ')[0] ?? '';
-  const address = hotel.location.address ?? '', label = hotel.location.label ?? '';
+  const address = hotel.location.address ?? '', label = storedLabel(hotel, pref);
   const regionalOnsens=preparedOnsens.filter(area=>area.pref===slug),name=hotel.names?.ja??'';
   const onsen = regionalOnsens.find(area => area.pattern.test(address))
     ?? regionalOnsens.find(area => !label.includes('·') && area.pattern.test(label))
@@ -119,11 +128,11 @@ export function formatHotelLocation(hotel: PlaceInput): string {
 }
 
 export function hotelPlaceSearchText(hotel: PlaceInput): string {
-  const pref = prefectureFor(hotel),label=formatHotelLocation(hotel),parts=label.split(' · ');
+  const pref = prefectureFor(hotel),label=formatHotelLocation(hotel),parts=label.split(' · '),stored=storedLabel(hotel,pref);
   const city = cities.find(([p,ko]) => p === pref?.slug && parts.includes(ko));
-  const evidence=[hotel.location.label,hotel.location.address,hotel.names?.ja??''].join(' ').toLowerCase();
+  const evidence=[stored,hotel.location.address,hotel.names?.ja??''].join(' ').toLowerCase();
   const address=hotel.location.address.toLowerCase(),towns=plan.towns.filter(t=>t.prefecture===pref?.id&&(t.terms.some(term=>evidence.includes(term.toLowerCase()))||t.addressTerms?.some(term=>address.includes(term.toLowerCase())))).flatMap(t=>[t.name,t.query,...t.terms]);
-  return [hotel.location.label,hotel.location.address,label,pref?.name.split(' · ')[0],pref?.ja,pref?.en.split(' ')[0],city?.[2],city?.[3],[city?.[3],pref?.en.split(' ')[0]].filter(Boolean).join(' '),[city?.[2],pref?.ja].filter(Boolean).join(' '),...towns].filter(Boolean).join(' ');
+  return [stored,hotel.location.address,label,pref?.name.split(' · ')[0],pref?.ja,pref?.en.split(' ')[0],city?.[2],city?.[3],[city?.[3],pref?.en.split(' ')[0]].filter(Boolean).join(' '),[city?.[2],pref?.ja].filter(Boolean).join(' '),...towns].filter(Boolean).join(' ');
 }
 
 // The geocoder's input for a hotel without coordinates (D06, built into the
