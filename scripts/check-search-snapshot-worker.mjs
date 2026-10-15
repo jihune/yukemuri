@@ -1,6 +1,6 @@
 // The static search snapshot against the built Worker's own answers on a
 // temporary D1: search columns, cards, name-search text, coverage and the
-// collection status. Also: the generator never writes, the Cloudflare API
+// collection status, and the data status fill (U06) counted apart. Also: the generator never writes, the Cloudflare API
 // source gives the same files, and rebuilding is idempotent.
 // Usage: node scripts/check-search-snapshot-worker.mjs
 import assert from 'node:assert/strict';
@@ -33,7 +33,36 @@ try{
  assert.equal((await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.names.en','Stored English name') WHERE id=?").bind(curated).run()).meta.changes,1);
  await db.prepare('DELETE FROM hotel_lifecycle WHERE hotel_id=?').bind(curated).run();
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.location.latitude','35.1') WHERE id=(SELECT id FROM hotels WHERE json_type(payload,'$.location.latitude')='real' ORDER BY id LIMIT 1)").run();
- const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
+
+ // U06 data status: places and pages in every state the screen tells apart. A Jalan detail read
+ // with the current rule (v3) without bath or room facts (absent at the source), one with a room
+ // count, a Trip.com hotel with years, one whose Korean page gave no Korean name, two whose
+ // Korean name was looked for in vain, a current and an earlier translation, an empty
+ // description, and pages to retry, failed and checked within the last day.
+ const pick=async(sql,count)=>{const ids=(await db.prepare(sql+' ORDER BY id LIMIT '+count).all()).results.map(r=>r.id);assert.equal(ids.length,count,sql);return ids};
+ const [absent,rooms]=await pick("SELECT id FROM hotels WHERE id GLOB 'jalan-*' AND json_extract(payload,'$.sources[0].label') LIKE '%상세%'",2);
+ await db.prepare("UPDATE hotels SET bath_known=0,payload=json_set(json_remove(payload,'$.rooms','$.roomTypes'),'$.sources[0].bathDataVersion','v3') WHERE id=?").bind(absent).run();
+ await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].bathDataVersion','v3','$.rooms',json(?)) WHERE id=?").bind(JSON.stringify({total:12,sourceId:rooms,verifiedAt:'2026-10-11',note:'check'}),rooms).run();
+ // A curated place (no provider prefix) whose linked Jalan observation is that v3 detail
+ // without room facts: the detail shows it, so the place is detailed and its rooms are absent
+ // at the source (Codex P2, twice).
+ const group=await db.prepare("SELECT hotel_id,jalan_hotel_id FROM hotel_source_groups WHERE jalan_hotel_id IS NOT NULL AND hotel_id NOT GLOB 'jalan-*' AND hotel_id NOT GLOB 'trip-*' AND hotel_id NOT IN (SELECT value FROM json_each(?)) ORDER BY hotel_id LIMIT 1").bind(JSON.stringify([curated])).first();
+ assert(group,'a curated group with a Jalan id');
+ const peer=JSON.parse((await db.prepare('SELECT payload FROM hotels WHERE id=?').bind(absent).first()).payload);
+ peer.id=group.jalan_hotel_id;peer.sources[0].sourceId=group.jalan_hotel_id;peer.description='れんけいしたかんそくのせつめいです。';
+ await db.prepare('INSERT INTO hotel_source_observations (id,payload,observed_at) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload').bind(group.jalan_hotel_id,JSON.stringify(peer),peer.sources[0].retrievedAt).run();
+ const [years,noKorean]=await pick("SELECT id FROM hotels WHERE id GLOB 'trip-*' AND json_extract(payload,'$.names.ko') NOT GLOB '*[가-힣]*'",2);
+ await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.facilityYears',json(?)) WHERE id=?").bind(JSON.stringify({opened:1990,sourceId:years,verifiedAt:'2026-10-11',note:'check'}),years).run();
+ await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].nameLocaleUrl','https://kr.trip.com/hotels/check-hotel-detail-1/x/') WHERE id=?").bind(noKorean).run();
+ const [looked1,looked2,current,earlier,blank]=await pick("SELECT id FROM hotels WHERE id GLOB 'jalan-*' AND json_extract(payload,'$.names.ko') NOT GLOB '*[가-힣]*' AND length(json_extract(payload,'$.description'))>0 AND json_extract(payload,'$.description') NOT GLOB '*[가-힣]*'",5);
+ for(const id of [looked1,looked2])await db.prepare("INSERT INTO hotel_name_localizations (hotel_id,payload,checked_at) VALUES (?,NULL,'2026-10-11T00:00:00Z')").bind(id).run();
+ await db.prepare("INSERT INTO hotel_description_translations (hotel_id,source_text,text_ko,translated_at) SELECT id,json_extract(payload,'$.description'),'번역','2026-10-11T00:00:00Z' FROM hotels WHERE id=?").bind(current).run();
+ await db.prepare("INSERT INTO hotel_description_translations (hotel_id,source_text,text_ko,translated_at) VALUES (?,'바뀌기 전 원문','옛 번역','2026-10-11T00:00:00Z')").bind(earlier).run();
+ await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.description','') WHERE id=?").bind(blank).run();
+ await db.prepare("UPDATE crawl_jobs SET status='retry' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending' ORDER BY url LIMIT 1)").run();
+ await db.prepare("UPDATE crawl_jobs SET status='failed' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='trip' AND kind='list' AND status='pending' ORDER BY url LIMIT 1)").run();
+ await db.prepare("UPDATE crawl_jobs SET fetched_at='2026-10-11T12:00:00Z' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='done' ORDER BY url LIMIT 1)").run();
+ const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','hotel_name_localizations','hotel_description_translations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
  const fingerprint=async()=>{const out={};for(const t of tables)out[t]=JSON.stringify((await db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results);return out};
  const before=await fingerprint();
  const local=join(temp,'local');mkdirSync(local,{recursive:true});writeFileSync(join(local,'index.html'),'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');
@@ -76,10 +105,10 @@ try{
   const life=h.lifecycle;
   return JSON.parse(JSON.stringify({id:h.id,names:h.names,kind:h.kind,location:{label:h.location.label,latitude:h.location.latitude,longitude:h.location.longitude},image:{url:h.image.url,alt:h.image.alt,sourceId:h.image.sourceId,alternatives:h.image.alternatives},photoCandidates:h.photoCandidates,features,ratings:h.ratings.filter(r=>!r.isMock).map(r=>({provider:r.provider,score:r.score,scale:r.scale,reviewCount:r.reviewCount})),lifecycle:life&&{state:life.state,reviewNeeded:life.reviewNeeded,evidence:life.evidence?.openedAt?{openedAt:life.evidence.openedAt}:undefined}}));
  };
- assert.equal(cards.length,rows.length);
+ assert.equal(cards.length,rows.length);const workerHotels=new Map();
  for(let i=0;i<core.ids.length;i+=4){
   const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));
-  hotels.forEach((h,n)=>assert.deepEqual(cards[i+n],summary(h),h.id));
+  hotels.forEach((h,n)=>{assert.deepEqual(cards[i+n],summary(h),h.id);workerHotels.set(h.id,h)});
  }
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
 
@@ -112,7 +141,52 @@ try{
  // The collector's end-of-run read counts the same aggregate.
  assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
  const live=await api('/api/collection-status',{headers:{'X-Yukemuri-Crawl-Key':KEY}});
- assert.deepEqual({...status,measuredAt:undefined},{...live,measuredAt:undefined});
+ const {fill,...shared}=status;
+ assert.deepEqual({...shared,measuredAt:undefined},{...live,measuredAt:undefined});
+ assert.equal(live.fill,undefined,'the API has no data status fill');
+ // The data status fill (U06), counted here apart from lib/search-snapshot-build.ts: the stored
+ // payload from SQL, what the card and detail show from the Worker's own hotels (above), the
+ // name and translation tables, map grades from geo.json, pages from crawl_jobs.
+ {
+  const {needsKoreanDescription}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'desc-')),'lib/hotel-description.ts'));
+  const {BATH_FEATURE_MASK}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'bath-')),'lib/hotel-bath-facts.ts'));
+  const places=(await db.prepare(`SELECT h.id,h.bath_known,json_extract(h.payload,'$.sources[0].label') AS label,json_extract(h.payload,'$.sources[0].bathDataVersion') AS version,
+   json_extract(h.payload,'$.description') AS description,EXISTS(SELECT 1 FROM json_each(h.payload,'$.sources') s WHERE json_extract(s.value,'$.nameLocaleUrl') IS NOT NULL) AS locale,
+   EXISTS(SELECT 1 FROM hotel_name_localizations n WHERE n.hotel_id=h.id AND n.payload IS NULL) AS looked,
+   (SELECT t.source_text=json_extract(h.payload,'$.description') FROM hotel_description_translations t WHERE t.hotel_id=h.id) AS translation FROM hotels h ORDER BY h.id`).all()).results;
+  const ROWS=['detail','bath','rooms','years','rating','photo','nameKo','descKo'];
+  const scope=()=>({records:0,rows:Object.fromEntries(ROWS.map(k=>[k,{filled:0,none:0,empty:0}])),geo:[0,0,0,0,0,0,0],staleTranslations:0});
+  const want={scopes:{all:scope(),jalan:scope(),trip:scope()}};
+  places.forEach((p,i)=>{
+   const h=workerHotels.get(p.id),provider=p.id.startsWith('jalan-')?'jalan':p.id.startsWith('trip-')?'trip':null;
+   // As the detail shows it: a curated place's detail and v3 among its sources (a linked one
+   // too), and its description.
+   const detail=provider?/상세/.test(p.label??''):!!h&&h.sources.some(s=>/상세/.test(s.label));
+   const v3=!!h&&h.sources.some(s=>s.bathDataVersion==='v3'&&/상세/.test(s.label)),linked=!!h&&h.description!==p.description;
+   const translated=linked?!!h.descriptionTranslation:p.translation===1,stale=!linked&&p.translation===0,description=linked?h.description:p.description;
+   assert(h,p.id+' from the Worker');assert.equal(core.ids[i],p.id);
+   const state={detail:detail?'filled':'empty',bath:(p.bath_known??0)&BATH_FEATURE_MASK?'filled':v3?'none':'empty',
+    rooms:h.rooms||h.roomTypes?.some(t=>t.items.length)?'filled':v3?'none':'empty',years:h.facilityYears?'filled':provider==='jalan'?'none':'empty',
+    rating:h.ratings.some(r=>!r.isMock)?'filled':'none',photo:h.image.url?'filled':'none',
+    nameKo:/[가-힣]/.test(h.names.ko)?'filled':p.looked||p.locale?'none':'empty',
+    descKo:!(description??'').trim()?'none':!needsKoreanDescription(description)||translated?'filled':'empty'};
+   for(const s of provider?[want.scopes.all,want.scopes[provider]]:[want.scopes.all]){s.records++;for(const k of ROWS)s.rows[k][state[k]]++;if(stale&&state.descKo==='empty')s.staleTranslations++;s.geo[geo.grade[i]]++}
+  });
+  const zero=()=>({done:0,pending:0,retry:0,failed:0}),pages={jalan:{detail:zero(),list:zero(),detailChecked24h:0},trip:{detail:zero(),list:zero(),detailChecked24h:0}};
+  const STATE={done:'done',pending:'pending',running:'pending',retry:'retry',failed:'failed'};
+  for(const r of (await db.prepare("SELECT provider,kind,status,COUNT(*) AS n,SUM(CASE WHEN fetched_at>'2026-10-11T00:00:00Z' THEN 1 ELSE 0 END) AS recent FROM crawl_jobs GROUP BY provider,kind,status").all()).results){
+   if(!pages[r.provider]||!['detail','list'].includes(r.kind)||!STATE[r.status])continue;
+   pages[r.provider][r.kind][STATE[r.status]]+=r.n;if(r.kind==='detail'&&r.status==='done')pages[r.provider].detailChecked24h+=r.recent;
+  }
+  assert.deepEqual(fill,{...want,pages},'status.json fill');
+  const all=fill.scopes.all.rows;
+  for(const [k,part] of [['bath','none'],['rooms','filled'],['rooms','none'],['years','filled'],['years','none'],['nameKo','none'],['descKo','none'],['descKo','filled']])assert(all[k][part]>0,`the check reaches ${k} ${part}`);
+  const curatedOnly=(k,part)=>fill.scopes.all.rows[k][part]-fill.scopes.jalan.rows[k][part]-fill.scopes.trip.rows[k][part];
+  assert(curatedOnly('rooms','none')>0,'a curated place with a linked v3 Jalan detail and no rooms counts as absent at the source');
+  assert(curatedOnly('detail','filled')>0,'a curated place with a linked Jalan detail counts as detailed');
+  assert(fill.scopes.all.staleTranslations>0&&fill.pages.jalan.detail.retry>0&&fill.pages.trip.list.failed>0&&fill.pages.jalan.detailChecked24h>0,'the check reaches stale translations, retries, failures and the last day');
+  for(const s of Object.values(fill.scopes))for(const k of ROWS){const c=s.rows[k];assert.equal(c.filled+c.none+c.empty,s.records,k)}
+ }
  assert.equal(status.measuredAt,'2026-10-12T00:00:00.000Z','status describes the build time');
 
  // The guard refuses anything but a read before it reaches the database.
@@ -193,5 +267,5 @@ try{
   assert(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).unprepared.length>0,'without the flag the report lists the unprepared steps');
  }
  const kb=n=>(n/1024).toFixed(0)+'KiB';
- console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);
+ console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, the data status fill equals counts from SQL and the Worker's hotels, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}

@@ -89,8 +89,10 @@ try{
   await page.route(listFiles,async route=>{await new Promise(r=>setTimeout(r,3000));await route.continue()});
   await page.goto(base+'/',{waitUntil:'domcontentloaded'});
   const first=await page.locator('main.workspace').getAttribute('data-first-page');
-  await page.locator('.coverage-panel summary').tap();
-  await page.locator('.coverage-panel .collection-table-region').waitFor({timeout:15000}).catch(()=>{});
+  // U06: the data status screen opens from above the list (tapped again until the page has hydrated).
+  const sheet=page.locator('[role="dialog"].u06-sheet');
+  for(let i=0;i<5&&!await sheet.isVisible();i++){await page.locator('.data-status-link').tap();await sheet.waitFor({timeout:1500}).catch(()=>{})}
+  await sheet.locator('.u06-row').first().waitFor({timeout:15000}).catch(()=>{});
   await page.waitForLoadState('networkidle');
   const count=re=>seen.filter(p=>re.test(p)).length,statusPath=seen.find(p=>p.endsWith('/status.json'));
   check('수집 현황은 화면이 쥔 스냅숏의 status.json만 받고 core·cards를 다시 받지 않음',count(/\/core\.json$/)===1&&count(/\/cards\.json$/)===1&&!!first&&statusPath===`/snapshot/v/${first}/status.json`&&count(/manifest\.json$/)===0,{seen,first});

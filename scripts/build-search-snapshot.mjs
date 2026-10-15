@@ -123,12 +123,14 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
   const guarded=readOnly(db);
   globalThis.__SNAPSHOT_ENV={DB:guarded.db};
   const started=performance.now();
-  const {buildSearchSnapshot,SNAPSHOT_FORMAT}=builder??createRequire(import.meta.url)(compileLib(temp));
+  const {buildSearchSnapshot,addFillGeo,SNAPSHOT_FORMAT}=builder??createRequire(import.meta.url)(compileLib(temp));
   if(!Number.isInteger(SNAPSHOT_FORMAT))throw new Error('The snapshot builder exports no SNAPSHOT_FORMAT');
   const data=await buildSearchSnapshot(now);
   let points=wikidata,wikidataError=null;
   if(!points)try{points=loadWikidata()}catch(error){points=new Map();wikidataError=String(error.message).slice(0,200)}
   const geo={...await addGeo({ids:data.core.ids,geo:data.geo,inputs:data.geocodeInputs,wikidata:points,geocode,skipReason}),wikidataError};
+  // The data status counts map precision as published, after geocoding (U06).
+  addFillGeo(data.status.fill,data.core.ids,data.geo.grade);
   const files={core:JSON.stringify(data.core),cards:JSON.stringify(data.cards),text:JSON.stringify(data.text),status:JSON.stringify(data.status),geo:JSON.stringify(data.geo)};
   const id=createHash('sha256').update(JSON.stringify(files)).digest('hex').slice(0,16);
   const folder=join(out,'snapshot'),dir=join(folder,'v',id);

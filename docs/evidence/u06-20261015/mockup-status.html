@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U06 시안: 자료 현황</title>
+<!-- U06 1단계 시안. 값은 data.js(운영 스냅숏 04c0aa1b509e6062과 상세 API 표본에서 계산)에서 읽는다.
+     글꼴은 레포의 Pretendard 정적 파일(cloud-setup.sh가 복원)을 쓴다. 사이트 코드는 아니다. -->
+<link rel="stylesheet" href="../../../public/fonts/pretendard/pretendardvariable-dynamic-subset.css">
+<style>
+:root{
+  --yk-bg:#ffffff;--yk-surface:#f3f5f5;--yk-line:#d9e0e1;
+  --yk-text:#14272b;--yk-text-2:#3d5157;--yk-text-3:#566a70;
+  --yk-primary:#0a6670;--yk-primary-soft:#e3f0f1;
+  --yk-accent:#f3d77a;--yk-on-accent:#4a3b06;--yk-danger:#a23d34;
+  --yk-fs-xs:13px;--yk-fs-sm:14px;--yk-fs-md:15px;--yk-fs-base:16px;--yk-fs-lg:17px;--yk-fs-xl:21px;--yk-fs-2xl:24px;
+  --yk-tap:44px;
+  --yk-font:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  /* U06 chart roles (validated: docs/U06-20261015.md 5절) */
+  --u06-filled:#0a6670;      /* 채움 */
+  --u06-none:#7a8a8e;        /* 출처에 없음 */
+  --u06-empty:#d5e4e6;       /* 아직 비어 있음(트랙) */
+  --u06-geo-1:#08434a;--u06-geo-2:#0a6670;--u06-geo-3:#3f8f98;--u06-geo-4:#7aaeb4;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--yk-surface);color:var(--yk-text);font-family:var(--yk-font);font-size:var(--yk-fs-base);line-height:1.5;word-break:keep-all}
+h1,h2,h3,p{margin:0}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--yk-primary);outline-offset:3px}
+.num{white-space:nowrap}
+/* backdrop: a plain stand-in for the list behind the sheet (no hotel photos) */
+.backdrop{display:none}
+.sheet{background:var(--yk-bg);min-height:100vh}
+@media(min-width:901px){
+  .backdrop{display:block;position:fixed;inset:0;padding:24px 32px;pointer-events:none}
+  .backdrop .bar{height:76px;background:var(--yk-bg);border-bottom:1px solid var(--yk-line);margin:-24px -32px 24px}
+  .backdrop .card{height:150px;background:var(--yk-bg);border:1px solid var(--yk-line);border-radius:12px;margin:0 0 16px;width:360px}
+  .backdrop:after{content:"";position:fixed;inset:0;background:rgba(20,39,43,.42)}
+  .sheet{position:fixed;top:0;right:0;bottom:0;width:min(960px,calc(100vw - 120px));overflow:auto;box-shadow:-12px 0 32px rgba(20,39,43,.18);z-index:2}
+}
+.sheet-top{position:sticky;top:0;z-index:3;background:var(--yk-bg);border-bottom:1px solid var(--yk-line);padding:12px 16px 12px 20px;display:flex;align-items:flex-start;gap:12px}
+.sheet-top h1{font-size:var(--yk-fs-xl);font-weight:750;letter-spacing:-.3px}
+.sheet-top p{font-size:var(--yk-fs-xs);color:var(--yk-text-3);margin-top:2px}
+.close{margin-left:auto;width:var(--yk-tap);height:var(--yk-tap);display:grid;place-items:center;border-radius:8px;flex:none}
+.close svg{width:22px;height:22px}
+.scope{display:flex;gap:6px;padding:12px 20px 4px;max-width:480px}
+.scope button{flex:1 1 0;min-width:0;min-height:52px;padding:4px 6px;border:1px solid var(--yk-line);border-radius:10px;font-size:var(--yk-fs-sm);color:var(--yk-text-2);background:var(--yk-bg);display:grid;place-content:center;line-height:1.25}
+.scope button b{font-weight:650;white-space:nowrap}
+.scope button small{font-size:var(--yk-fs-xs);white-space:nowrap}
+.scope button[aria-pressed=true]{background:var(--yk-primary);border-color:var(--yk-primary);color:#fff}
+.body{padding:8px 20px 40px;display:grid;gap:28px}
+@media(min-width:901px){.body{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:40px;align-items:start}.col{display:grid;gap:28px}}
+@media(max-width:900px){.col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}}
+section h2{font-size:var(--yk-fs-lg);font-weight:750;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+section h2 small{font-size:var(--yk-fs-xs);font-weight:500;color:var(--yk-text-3);margin-left:auto}
+.help{width:28px;height:28px;border-radius:50%;border:1px solid var(--yk-line);font-size:var(--yk-fs-xs);color:var(--yk-text-3);display:inline-grid;place-items:center;position:relative}
+.help:after{content:"";position:absolute;inset:-8px}
+.lead{font-size:var(--yk-fs-sm);color:var(--yk-text-2)}
+.hero{display:flex;align-items:baseline;gap:10px;margin:2px 0 6px}
+.hero b{font-size:52px;line-height:1.1;font-weight:750;letter-spacing:-1.5px;color:var(--yk-text)}
+.hero span{font-size:var(--yk-fs-sm);color:var(--yk-text-2)}
+/* bars */
+.bar{display:flex;gap:2px;height:12px;margin-top:6px}
+.bar i{display:block;height:100%;min-width:0}
+.bar i:first-child{border-radius:4px 0 0 4px}.bar i:last-child{border-radius:0 4px 4px 0}.bar i:only-child{border-radius:4px}
+.bar.thick{height:16px}
+.s-filled{background:var(--u06-filled)}.s-none{background:var(--u06-none)}.s-empty{background:var(--u06-empty)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:var(--yk-fs-xs);color:var(--yk-text-2);margin:4px 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:10px;border-radius:2px;display:inline-block}
+.meter-row{margin:14px 0 0}
+.meter-row .head{display:flex;align-items:baseline;gap:8px;font-size:var(--yk-fs-md)}
+.meter-row .head b{font-weight:650}
+.meter-row .head .val{margin-left:auto;font-size:var(--yk-fs-sm);color:var(--yk-text-2)}
+.meter-row .head .val strong{color:var(--yk-text);font-weight:700;font-size:var(--yk-fs-md)}
+.meter-row .sub{font-size:var(--yk-fs-xs);color:var(--yk-text-3);margin-top:4px}
+.minor{font-size:var(--yk-fs-xs);color:var(--yk-text-3);margin-top:12px;line-height:1.7}
+.issue{display:inline-flex;align-items:center;gap:4px;color:var(--yk-danger);font-weight:600}
+/* fill rows */
+.group-title{font-size:var(--yk-fs-sm);font-weight:700;color:var(--yk-text-2);margin:14px 0 2px;padding-top:10px;border-top:1px solid var(--yk-line)}
+.group-title:first-of-type{border-top:0;padding-top:0}
+.row{padding:8px 0 6px;position:relative;border-radius:6px}
+.row:hover .bar,.row:focus-visible .bar{filter:brightness(1.08)}
+.row .head{display:flex;align-items:baseline;gap:8px}
+.row .head b{font-size:var(--yk-fs-md);font-weight:650}
+.row .head .val{margin-left:auto;font-size:var(--yk-fs-sm);color:var(--yk-text-2);text-align:right}
+.row .head .val strong{font-size:var(--yk-fs-md);color:var(--yk-text);font-weight:700}
+.row .note{font-size:var(--yk-fs-xs);color:var(--yk-text-3);margin-top:4px}
+.est{display:inline-block;font-size:12px;font-weight:650;background:var(--yk-accent);color:var(--yk-on-accent);border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px}
+.tip{position:absolute;z-index:5;left:0;top:100%;margin-top:4px;background:var(--yk-text);color:#fff;font-size:var(--yk-fs-xs);border-radius:8px;padding:8px 10px;display:none;min-width:220px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.tip-note{white-space:normal;max-width:280px;margin-bottom:6px;color:#dfe7e8}
+.tip div{display:flex;gap:8px;align-items:center;white-space:nowrap}
+.tip div i{width:12px;height:3px;border-radius:2px;display:inline-block}
+.tip div strong{margin-left:auto;font-weight:700}
+.row:hover .tip,.row:focus-visible .tip{display:block}
+.table-toggle{margin-top:10px;min-height:var(--yk-tap);padding:0 14px;border:1px solid var(--yk-line);border-radius:8px;font-size:var(--yk-fs-sm);color:var(--yk-text-2)}
+table{border-collapse:collapse;width:100%;font-size:var(--yk-fs-xs);margin-top:10px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--yk-line);padding:7px 6px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--yk-text-3);font-weight:600}
+/* geo */
+.geo-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-top:10px;font-size:var(--yk-fs-xs);color:var(--yk-text-2)}
+.geo-legend div{display:flex;gap:8px;align-items:flex-start}
+.geo-legend i{width:14px;height:10px;border-radius:2px;margin-top:4px;flex:none}
+.geo-legend b{display:block;color:var(--yk-text);font-size:var(--yk-fs-sm);font-weight:650}
+/* towns */
+.towns{display:grid;gap:2px;margin-top:6px}
+.town{display:grid;grid-template-columns:minmax(76px,1fr) repeat(3,minmax(0,1.2fr));gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--yk-line);font-size:var(--yk-fs-xs)}
+.town.headrow{color:var(--yk-text-3);font-weight:600;padding-top:0}
+.town b{font-size:var(--yk-fs-sm);font-weight:650;display:block}
+.town small{color:var(--yk-text-3)}
+.mini{display:grid;gap:3px}
+.mini .bar{height:6px;margin:0}
+.mini span{color:var(--yk-text-2);font-variant-numeric:tabular-nums}
+details.defs{font-size:var(--yk-fs-xs);color:var(--yk-text-2);line-height:1.7}
+details.defs summary{min-height:var(--yk-tap);display:flex;align-items:center;font-size:var(--yk-fs-sm);font-weight:650;color:var(--yk-text);cursor:pointer}
+details.defs dl{margin:0;display:grid;gap:8px}
+details.defs dt{font-weight:700;color:var(--yk-text)}
+details.defs dd{margin:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mock-note{font-size:var(--yk-fs-xs);color:var(--yk-on-accent);background:#fdf8ea;border:1px solid #e3d6ad;border-radius:8px;padding:8px 10px}
+</style>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"><div class="bar"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+<main class="sheet" role="dialog" aria-modal="true" aria-labelledby="t">
+  <div class="sheet-top">
+    <div><h1 id="t">자료 현황</h1><p id="asof"></p></div>
+    <button class="close" aria-label="자료 현황 닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="scope" id="scope" role="group" aria-label="출처 범위"></div>
+  <div class="body">
+    <div class="col">
+      <section class="o1" aria-labelledby="h-detail">
+        <h2 id="h-detail">상세까지 모은 숙소 <button class="help" aria-label="곳과 상세의 뜻">?</button></h2>
+        <div class="hero"><b id="hero"></b><span id="hero-sub"></span></div>
+        <p class="lead" id="hero-lead"></p>
+        <div class="bar thick" id="hero-bar" aria-hidden="true"></div>
+      </section>
+      <section class="o2" aria-labelledby="h-pages">
+        <h2 id="h-pages">출처별 페이지 수집 <small>페이지 기준</small></h2>
+        <div id="pages"></div>
+        <p class="minor" id="pages-minor"></p>
+      </section>
+      <section class="o4" aria-labelledby="h-geo">
+        <h2 id="h-geo">지도 위치의 정확도</h2>
+        <p class="lead" id="geo-lead"></p>
+        <div class="bar thick" id="geo-bar" aria-hidden="true"></div>
+        <div class="geo-legend" id="geo-legend"></div>
+      </section>
+    </div>
+    <div class="col">
+      <section class="o3" aria-labelledby="h-fill">
+        <h2 id="h-fill">무엇이 찼고 무엇이 비었나 <small id="fill-scope"></small></h2>
+        <div class="legend"><span><i class="s-filled"></i>채움</span><span><i class="s-none"></i>출처에 없음</span><span><i class="s-empty"></i>아직 비어 있음</span></div>
+        <div id="fill"></div>
+        <button class="table-toggle" id="table-toggle" aria-expanded="false">표로 보기</button>
+        <div id="fill-table" hidden></div>
+      </section>
+      <section class="o5" aria-labelledby="h-towns">
+        <h2 id="h-towns">온천마을별 <small>수집 우선 마을</small></h2>
+        <div class="towns" id="towns"></div>
+      </section>
+      <section class="o6">
+        <details class="defs"><summary>세는 기준</summary><dl id="defs"></dl></details>
+      </section>
+      <p class="mock-note o7" id="mock-note"></p>
+    </div>
+  </div>
+</main>
+<script src="data.js"></script>
+<script>
+const D=window.U06_DATA,fmt=n=>n.toLocaleString('ko-KR'),pct=(a,b)=>b?(a/b*100):0;
+const p1=(a,b)=>{const v=pct(a,b);return (v>0&&v<0.1?'0.1% 미만':v.toFixed(1)+'%')};
+let scope='all';
+function seg(parts,cls){return parts.map(([n,c,total])=>`<i class="${c}" style="flex:${n} 0 0"></i>`).filter((_,i)=>parts[i][0]>0).join('')}
+function render(){
+  const S=D.scopes[scope];
+  document.getElementById('asof').textContent=D.asOf;
+  document.getElementById('scope').innerHTML=Object.entries(D.scopes).map(([k,v])=>`<button aria-pressed="${k===scope}" data-k="${k}"><b>${v.label}</b><small>${fmt(v.items)}곳</small></button>`).join('');
+  document.querySelectorAll('#scope button').forEach(b=>b.onclick=()=>{scope=b.dataset.k;render()});
+  const det=S.rows.find(r=>r.key==='detail');
+  document.getElementById('hero').textContent=p1(det.filled,S.items);
+  document.getElementById('hero-sub').textContent=`${fmt(det.filled)} / ${fmt(S.items)}곳`;
+  document.getElementById('hero-lead').textContent=`목록의 ${fmt(S.items)}곳 중 ${fmt(det.filled)}곳은 출처의 상세 페이지까지 받았습니다. 나머지 ${fmt(S.items-det.filled)}곳은 목록에 나온 이름·주소·평점·사진만 있습니다.`;
+  document.getElementById('hero-bar').innerHTML=seg([[det.filled,'s-filled'],[S.items-det.filled,'s-empty']]);
+  document.getElementById('pages').innerHTML=D.pages.map(p=>`<div class="meter-row"><div class="head"><b>${p.label} 상세 페이지</b><span class="val"><strong>${p1(p.done,p.total)}</strong> · <span class="num">${fmt(p.done)} / ${fmt(p.total)}쪽</span></span></div><div class="bar" aria-hidden="true">${seg([[p.done,'s-filled'],[p.failed+p.retry,'s-none'],[p.pending,'s-empty']])}</div><p class="sub">대기 ${fmt(p.pending)}쪽 · 재시도 ${fmt(p.retry)}쪽 · 실패 ${fmt(p.failed)}쪽 · 마지막 수집 ${p.last}</p></div>`).join('');
+  document.getElementById('pages-minor').innerHTML=D.pagesMinor;
+  const G=S.geo,gt=G.reduce((a,g)=>a+g.n,0);
+  document.getElementById('geo-lead').textContent=`목록의 ${fmt(gt)}곳 모두 지도에 점이 있습니다. 그중 ${p1(G[0].n,gt)}만 건물 위치이고, 나머지는 주소로 찾은 대략 위치입니다.`;
+  document.getElementById('geo-bar').innerHTML=G.map((g,i)=>g.n>0?`<i style="background:var(--u06-geo-${i+1});flex:${g.n} 0 0"></i>`:'').join('');
+  document.getElementById('geo-legend').innerHTML=G.map((g,i)=>`<div><i style="background:var(--u06-geo-${i+1})"></i><span><b>${g.label} ${p1(g.n,gt)}</b>${fmt(g.n)}곳 · ${g.desc}</span></div>`).join('');
+  document.getElementById('fill-scope').textContent=`목록의 ${fmt(S.items)}곳 기준`;
+  let html='',group='';
+  for(const r of S.rows){
+    if(r.group!==group){group=r.group;html+=`<h3 class="group-title">${group}</h3>`}
+    const empty=S.items-r.filled-r.none;
+    html+=`<div class="row" tabindex="0" aria-label="${r.label}: 채움 ${fmt(r.filled)}곳, 출처에 없음 ${fmt(r.none)}곳, 아직 비어 있음 ${fmt(empty)}곳">
+      <div class="head"><b>${r.label}${r.est?'<span class="est">표본 추정</span>':''}</b><span class="val"><strong>${p1(r.filled,S.items)}</strong> · <span class="num">${fmt(r.filled)}곳</span></span></div>
+      <div class="bar" aria-hidden="true">${seg([[r.filled,'s-filled'],[r.none,'s-none'],[empty,'s-empty']])}</div>
+      <div class="tip" aria-hidden="true"><p class="tip-note">${r.note}</p><div><i class="s-filled"></i>${r.states[0]}<strong>${fmt(r.filled)}곳 · ${p1(r.filled,S.items)}</strong></div><div><i class="s-none"></i>${r.states[1]}<strong>${fmt(r.none)}곳 · ${p1(r.none,S.items)}</strong></div><div><i class="s-empty"></i>${r.states[2]}<strong>${fmt(empty)}곳 · ${p1(empty,S.items)}</strong></div></div>
+    </div>`;
+  }
+  document.getElementById('fill').innerHTML=html;
+  document.getElementById('fill-table').innerHTML=`<table><caption class="sr-only">목록의 ${fmt(S.items)}곳 기준 채움 상태</caption><thead><tr><th scope="col">항목</th><th scope="col">채움</th><th scope="col">출처에 없음</th><th scope="col">아직 비어 있음</th></tr></thead><tbody>${S.rows.map(r=>`<tr><th scope="row">${r.label}</th><td>${fmt(r.filled)}</td><td>${fmt(r.none)}</td><td>${fmt(S.items-r.filled-r.none)}</td></tr>`).join('')}</tbody></table>`;
+  const t=document.getElementById('table-toggle');t.onclick=()=>{const tb=document.getElementById('fill-table');tb.hidden=!tb.hidden;t.setAttribute('aria-expanded',String(!tb.hidden));t.textContent=tb.hidden?'표로 보기':'표 닫기'};
+  document.getElementById('towns').innerHTML=`<div class="town headrow"><span>마을</span><span>탕 조건</span><span>한국어 이름</span><span>건물·번지 위치</span></div>`+D.towns.map(w=>`<div class="town"><span><b>${w.name}</b><small>${fmt(w.n)}곳</small></span>${['bath','ko','geo'].map(k=>`<span class="mini"><span>${w.n?p1(w[k],w.n):'–'}</span><span class="bar" aria-hidden="true">${w.n?seg([[w[k],'s-filled'],[w.n-w[k],'s-empty']]):''}</span></span>`).join('')}</div>`).join('');
+  document.getElementById('defs').innerHTML=D.defs.map(([a,b])=>`<div><dt>${a}</dt><dd>${b}</dd></div>`).join('');
+  document.getElementById('mock-note').textContent=D.mockNote;
+}
+render();
+</script>
+</body>
+</html>

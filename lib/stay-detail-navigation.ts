@@ -10,6 +10,16 @@ export function closeStayHistory(){
  if(window.history.state?.yukemuriStay)window.history.back();
  else{const url=new URL(window.location.href);url.hash='';window.history.replaceState(window.history.state,'',url)}
 }
+// U06: the data status screen (#status), closed by the back button like a stay.
+export function openStatusHistory(){
+ const url=new URL(window.location.href);url.hash='status';
+ window.history.pushState({...window.history.state,yukemuriStatus:true},'',url);
+}
+export function closeStatusHistory(){
+ if(window.location.hash!=='#status')return;
+ if(window.history.state?.yukemuriStatus)window.history.back();
+ else{const url=new URL(window.location.href);url.hash='';window.history.replaceState(window.history.state,'',url)}
+}
 export function restoreListingPosition(position:ListingPosition|null){
  if(!position)return;
  requestAnimationFrame(()=>{
