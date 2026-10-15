@@ -33,12 +33,16 @@ for(const name of ['./stay-map','./retry-image','./hotel-photo','./hotel-lifecyc
 const hotels=JSON.parse(fs.readFileSync('lib/hotels.real.json','utf8')).slice(0,4);
 let statusMode='success',held=[],comparisonMode='success',calls=[];
 const status={measuredAt:'2026-10-08T17:00:00Z',quality:{records:4,detailRecords:4,bathKnownRecords:2,naturalOnsenRecords:1,roomOnsenRecords:0},providers:['jalan','trip'].map(provider=>({provider,lastSuccessAt:null,completedDetailPages:0,pendingPages:0,retryPages:0,failedPages:0,activePages:0,waitingUntil:null,issues:[]})),google:{connected:false,mode:'on_demand'}};
+// The data status fill (U06): one place filled in each row, the rest not yet filled.
+const fillScope=records=>({records,rows:Object.fromEntries(['detail','bath','rooms','years','rating','photo','nameKo','descKo'].map(k=>[k,{filled:1,none:0,empty:records-1}])),geo:[0,records,0,0,0,0,0],staleTranslations:0});
+const pagesOf=()=>({detail:{done:1,pending:1,retry:0,failed:0},list:{done:1,pending:0,retry:0,failed:0},detailChecked24h:0});
+status.fill={scopes:{all:fillScope(4),jalan:fillScope(2),trip:fillScope(2)},pages:{jalan:pagesOf(),trip:pagesOf()}};
 stubs.set('@/lib/api-client',{apiJson:async(url,options={})=>{
  calls.push(url);let value;
  if(url==='/api/collection-status'){
   if(statusMode==='hold')return new Promise((resolve,reject)=>{held.push(resolve);options.signal?.addEventListener('abort',()=>reject(new Error('aborted')),{once:true})});
   if(statusMode==='error')throw new Error('controlled failure');
-  value=structuredClone(status);if(statusMode==='empty')for(const key of Object.keys(value.quality))value.quality[key]=0;
+  value=structuredClone(status);if(statusMode==='empty'){for(const key of Object.keys(value.quality))value.quality[key]=0;for(const scope of Object.values(value.fill.scopes)){scope.records=0;for(const row of Object.values(scope.rows))Object.assign(row,{filled:0,none:0,empty:0});scope.geo=scope.geo.map(()=>0)}}
  }else if(url.startsWith('/api/hotel-comparison')){
   if(comparisonMode==='error')throw new Error('controlled comparison failure');
   const ids=new URL(url,'http://localhost').searchParams.get('ids').split(',');
@@ -49,9 +53,9 @@ stubs.set('@/lib/api-client',{apiJson:async(url,options={})=>{
  return value;
 }});
 // The list hooks return the fixed page below (the snapshot is not loaded here).
-stubs.set('./use-search-snapshot',{useSearchSnapshot:()=>({snapshot:{manifest:{coverage:initial.coverage},position:new Map(),cards:[]},loading:false,error:null,textReady:false,textError:null,wantText(){},refresh(){}})});
+stubs.set('./use-search-snapshot',{useSearchSnapshot:()=>({snapshot:{manifest:{coverage:initial.coverage,files:{}},position:new Map(),cards:[]},loading:false,error:null,textReady:false,textError:null,wantText(){},refresh(){}})});
 // The panel reads the snapshot's status.json (P03); the same controlled modes answer it.
-stubs.set('@/lib/snapshot-client',{loadSnapshot:async()=>({}),loadSnapshotText:async s=>s,loadSnapshotStatus:(_s,signal)=>stubs.get('@/lib/api-client').apiJson('/api/collection-status',{signal})});
+stubs.set('@/lib/snapshot-client',{loadSnapshot:async()=>({}),loadSnapshotText:async s=>s,loadSnapshotGeo:async()=>null,loadSnapshotStatus:(_s,signal)=>stubs.get('@/lib/api-client').apiJson('/api/collection-status',{signal})});
 stubs.set('./use-hotel-results',{useHotelResults:()=>({response:initial,loading:false,searchError:'',reopenSearch:false,hasMore:false,loadMore(){}})});
 const Explorer=load('components/hotel-explorer.tsx').default,{DEFAULT_FILTERS}=load('lib/hotel-types.ts');
 const initial={hotels,total:4,page:1,pageSize:24,featureCounts:{},ryokanCount:4,alternatives:[],coverage:{prefectures:1,records:4,discoveredDetailUrls:4,completedDetailPages:4,pending:0,failed:0,updatedAt:status.measuredAt}};
@@ -111,31 +115,23 @@ async function check(name,fn){console.error('Checking: '+name);try{await fn();re
   await click(document.querySelector('.comparison-remove'));assert(document.activeElement===button('숙소 비교 닫기'),'Last removal focuses close');
   await click(button('숙소 비교 닫기'));assert(document.activeElement===button('숙소 비교 열기, 0곳 선택'),'Removed dock opener falls back to listing control');
  });
- const summary=document.querySelector('.coverage-panel summary'),details=summary.parentElement;
- async function toggle(open){await act(async()=>{details.open=open;details.dispatchEvent(new Event('toggle'));await wait()})}
- statusMode='hold';await toggle(true);
- await check('collection loading state and duplicate request prevention',async()=>{
-  assert(document.querySelector('[role="status"]').textContent.includes('수집 기록'));const count=calls.length;
-  await click(button('출처별 수집 현황 새로고침'));assert.equal(calls.length,count);
- });
+ // The data status screen (U06): loading, the rows, closing back to its opener, failure and
+ // retry, and an empty collection.
+ const opener=document.querySelector('.data-status-link');
+ const reopen=async()=>{if(button('자료 현황 닫기'))await key(button('자료 현황 닫기'),'Escape');await click(opener)};
+ statusMode='hold';await click(opener);
+ await check('data status loading state',async()=>{assert(document.querySelector('.u06-sheet [role="status"]').textContent.includes('불러오는 중'));assert(!document.querySelector('.u06-row'))});
  await act(async()=>{held.splice(0).forEach(resolve=>resolve(structuredClone(status)));await wait()});
- statusMode='error';await click(button('출처별 수집 현황 새로고침'));
- await check('refresh failure keeps previous result and alert',async()=>{assert(document.querySelector('[role="alert"]').textContent.includes('마지막 조회 결과'));assert(document.querySelector('.collection-table'))});
- statusMode='success';await click(button('출처별 수집 현황 새로고침'));
- await check('retry success clears alert and retains refresh focus',async()=>{assert(!document.querySelector('[role="alert"]'));assert.equal(document.activeElement,button('출처별 수집 현황 새로고침'))});
- statusMode='empty';await click(button('출처별 수집 현황 새로고침'));
+ await check('data status rows and focus on close',async()=>{assert.equal(document.querySelectorAll('.u06-row').length,8);assert.equal(document.activeElement,button('자료 현황 닫기'))});
+ await check('Escape closes the data status and returns focus to its opener',async()=>{await key(button('자료 현황 닫기'),'Escape');assert(!document.querySelector('.u06-sheet'));assert.equal(document.activeElement,opener)});
+ statusMode='error';await click(opener);
+ await check('first failure shows an alert and no rows',async()=>{assert(document.querySelector('.u06-sheet [role="alert"]'));assert(!document.querySelector('.u06-row'))});
+ statusMode='success';
+ await check('retry recovers, clears the alert and focuses the first heading',async()=>{await click([...document.querySelectorAll('.u06-sheet button')].find(b=>b.textContent.includes('다시 시도')));assert(!document.querySelector('.u06-sheet [role="alert"]'));assert.equal(document.querySelectorAll('.u06-row').length,8);assert.equal(document.activeElement?.id,'u06-detail')});
+ statusMode='empty';await reopen();
  await check('zero-record collection result explains empty state',async()=>{assert(document.body.textContent.includes('아직 저장된 수집 기록이 없습니다.'))});
- await check('collection table is focusable and responds to horizontal keys',async()=>{const region=document.querySelector('.collection-table-region');assert(region);assert.equal(region.tabIndex,0);region.focus();await key(region,'ArrowRight');assert(region.scrollLeft>0)});
- await toggle(false);assert.equal(details.open,false);
+ await key(button('자료 현황 닫기'),'Escape');
  await act(async()=>{root.unmount();await wait()});
- // Initial failure must not show a successful result; retry recovers it.
- statusMode='error';const second=createRoot(document.getElementById('root'));
- await act(async()=>{second.render(React.createElement(load('components/collection-status-panel.tsx').default,{coverage:initial.coverage,load:signal=>stubs.get('@/lib/api-client').apiJson('/api/collection-status',{signal})}));await wait()});
- const fresh=document.querySelector('details');await act(async()=>{fresh.open=true;fresh.dispatchEvent(new Event('toggle'));await wait()});
- await check('initial collection failure and explicit retry recovery',async()=>{
-  assert(document.querySelector('[role="alert"]'));assert(!document.querySelector('.collection-table'));statusMode='success';await click(button('출처별 수집 현황 새로고침'));assert(document.querySelector('.collection-table'));assert(!document.querySelector('[role="alert"]'));
- });
- await act(async()=>{second.unmount();await wait()});
  console.log(JSON.stringify({kind:'simulated-component-DOM',browserLayoutTested:false,results},null,2));
  if(results.some(result=>!result.passed)&&!baseline)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>dom.window.close());

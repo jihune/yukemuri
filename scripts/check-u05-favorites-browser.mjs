@@ -39,7 +39,7 @@ for(const w of [360,390,1280]){
    cards:[...document.querySelectorAll('.hotel-list:not(.alternative-results .hotel-list) .hotel-card')].map(c=>c.id.replace(/^card-/,'')),
    firstCardTop:Math.round(document.querySelector('.hotel-card')?.getBoundingClientRect().top??0),
    listEnd:shown('.list-end')?.textContent??null,toggle:!!toggle,
-   banner:shown('.error-banner')?.textContent??null,menuCount:document.querySelector('nav[aria-label="주 메뉴"] button:last-child span')?.textContent,
+   banner:shown('.error-banner')?.textContent??null,menuCount:[...document.querySelectorAll('nav[aria-label="주 메뉴"] button')].find(b=>/^즐겨찾기/.test(b.textContent.trim()))?.querySelector('span')?.textContent,
    focus:document.activeElement?.closest('nav[aria-label="주 메뉴"]')?document.activeElement.textContent.trim():document.activeElement?.tagName}});
  try{
   // 1) Nothing saved yet.

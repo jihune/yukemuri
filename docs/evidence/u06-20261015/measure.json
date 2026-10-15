@@ -1,0 +1,377 @@
+{
+ "snapshot": "04c0aa1b509e6062",
+ "generatedAt": "2026-10-15T08:21:15.716Z",
+ "sample": {
+  "ok": 260,
+  "requests": 260
+ },
+ "pages": [
+  {
+   "label": "자란넷",
+   "done": 1088,
+   "pending": 13801,
+   "retry": 0,
+   "failed": 0,
+   "total": 14889,
+   "listDone": 650,
+   "listPending": 177,
+   "listFailed": 0,
+   "last": "10월 15일 14:36"
+  },
+  {
+   "label": "Trip.com",
+   "done": 798,
+   "pending": 1349,
+   "retry": 0,
+   "failed": 0,
+   "total": 2147,
+   "listDone": 99,
+   "listPending": 0,
+   "listFailed": 1,
+   "last": "10월 15일 14:36"
+  }
+ ],
+ "scopes": {
+  "all": {
+   "items": 15678,
+   "rows": {
+    "detail": {
+     "filled": 1881,
+     "none": 0,
+     "estimated": false
+    },
+    "bath": {
+     "filled": 1079,
+     "none": 0,
+     "estimated": false
+    },
+    "rooms": {
+     "filled": 453,
+     "none": 0,
+     "estimated": true
+    },
+    "years": {
+     "filled": 60,
+     "none": 14260,
+     "estimated": true
+    },
+    "rating": {
+     "filled": 10165,
+     "none": 5513,
+     "estimated": false
+    },
+    "photo": {
+     "filled": 15657,
+     "none": 21,
+     "estimated": false
+    },
+    "nameKo": {
+     "filled": 909,
+     "none": 0,
+     "estimated": false
+    },
+    "descKo": {
+     "filled": 1041,
+     "none": 0,
+     "estimated": true
+    }
+   },
+   "sampleSizes": {
+    "rooms": [
+     113,
+     147
+    ],
+    "years": [
+     113,
+     147
+    ],
+    "descKo": [
+     113,
+     147
+    ]
+   },
+   "geoGrades": {
+    "1": 1422,
+    "2": 9063,
+    "3": 4034,
+    "4": 527,
+    "5": 429,
+    "6": 203
+   }
+  },
+  "jalan": {
+   "items": 14260,
+   "rows": {
+    "detail": {
+     "filled": 1088,
+     "none": 0,
+     "estimated": false
+    },
+    "bath": {
+     "filled": 1059,
+     "none": 0,
+     "estimated": false
+    },
+    "rooms": {
+     "filled": 194,
+     "none": 0,
+     "estimated": true
+    },
+    "years": {
+     "filled": 0,
+     "none": 14260,
+     "estimated": true
+    },
+    "rating": {
+     "filled": 9114,
+     "none": 5146,
+     "estimated": false
+    },
+    "photo": {
+     "filled": 14239,
+     "none": 21,
+     "estimated": false
+    },
+    "nameKo": {
+     "filled": 137,
+     "none": 0,
+     "estimated": false
+    },
+    "descKo": {
+     "filled": 154,
+     "none": 0,
+     "estimated": true
+    }
+   },
+   "sampleSizes": {
+    "rooms": [
+     73,
+     120
+    ],
+    "years": [
+     73,
+     120
+    ],
+    "descKo": [
+     73,
+     120
+    ]
+   },
+   "geoGrades": {
+    "1": 1089,
+    "2": 9063,
+    "3": 3767,
+    "4": 331,
+    "5": 10
+   }
+  },
+  "trip": {
+   "items": 1398,
+   "rows": {
+    "detail": {
+     "filled": 798,
+     "none": 0,
+     "estimated": false
+    },
+    "bath": {
+     "filled": 0,
+     "none": 0,
+     "estimated": false
+    },
+    "rooms": {
+     "filled": 259,
+     "none": 0,
+     "estimated": true
+    },
+    "years": {
+     "filled": 60,
+     "none": 0,
+     "estimated": true
+    },
+    "rating": {
+     "filled": 1031,
+     "none": 367,
+     "estimated": false
+    },
+    "photo": {
+     "filled": 1398,
+     "none": 0,
+     "estimated": false
+    },
+    "nameKo": {
+     "filled": 752,
+     "none": 0,
+     "estimated": false
+    },
+    "descKo": {
+     "filled": 887,
+     "none": 0,
+     "estimated": true
+    }
+   },
+   "sampleSizes": {
+    "rooms": [
+     40,
+     27
+    ],
+    "years": [
+     40,
+     27
+    ],
+    "descKo": [
+     40,
+     27
+    ]
+   },
+   "geoGrades": {
+    "1": 313,
+    "3": 267,
+    "4": 196,
+    "5": 419,
+    "6": 203
+   }
+  }
+ },
+ "towns": [
+  {
+   "name": "하코네",
+   "n": 294,
+   "bath": 216,
+   "ko": 72,
+   "geo": 239
+  },
+  {
+   "name": "유후인",
+   "n": 34,
+   "bath": 34,
+   "ko": 0,
+   "geo": 34
+  },
+  {
+   "name": "구로카와",
+   "n": 30,
+   "bath": 1,
+   "ko": 0,
+   "geo": 4
+  },
+  {
+   "name": "벳푸",
+   "n": 168,
+   "bath": 0,
+   "ko": 0,
+   "geo": 98
+  },
+  {
+   "name": "노보리베츠",
+   "n": 17,
+   "bath": 5,
+   "ko": 6,
+   "geo": 16
+  },
+  {
+   "name": "조잔케이",
+   "n": 33,
+   "bath": 2,
+   "ko": 16,
+   "geo": 24
+  },
+  {
+   "name": "도야호",
+   "n": 29,
+   "bath": 5,
+   "ko": 3,
+   "geo": 20
+  },
+  {
+   "name": "유노카와",
+   "n": 11,
+   "bath": 1,
+   "ko": 3,
+   "geo": 11
+  },
+  {
+   "name": "아칸호",
+   "n": 16,
+   "bath": 2,
+   "ko": 2,
+   "geo": 2
+  },
+  {
+   "name": "소운쿄",
+   "n": 10,
+   "bath": 2,
+   "ko": 1,
+   "geo": 2
+  },
+  {
+   "name": "우레시노",
+   "n": 33,
+   "bath": 0,
+   "ko": 0,
+   "geo": 30
+  },
+  {
+   "name": "운젠",
+   "n": 35,
+   "bath": 1,
+   "ko": 0,
+   "geo": 32
+  },
+  {
+   "name": "이부스키",
+   "n": 28,
+   "bath": 1,
+   "ko": 0,
+   "geo": 22
+  },
+  {
+   "name": "기리시마",
+   "n": 74,
+   "bath": 0,
+   "ko": 0,
+   "geo": 44
+  },
+  {
+   "name": "아리마",
+   "n": 19,
+   "bath": 0,
+   "ko": 4,
+   "geo": 15
+  },
+  {
+   "name": "기노사키",
+   "n": 0,
+   "bath": 0,
+   "ko": 0,
+   "geo": 0
+  },
+  {
+   "name": "구사쓰",
+   "n": 105,
+   "bath": 5,
+   "ko": 2,
+   "geo": 89
+  },
+  {
+   "name": "긴잔",
+   "n": 5,
+   "bath": 0,
+   "ko": 0,
+   "geo": 0
+  },
+  {
+   "name": "게로",
+   "n": 0,
+   "bath": 0,
+   "ko": 0,
+   "geo": 0
+  },
+  {
+   "name": "도고",
+   "n": 21,
+   "bath": 0,
+   "ko": 1,
+   "geo": 19
+  }
+ ]
+}

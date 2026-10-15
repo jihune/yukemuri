@@ -8,8 +8,9 @@
 // - the card names are Korean and Japanese, no English name;
 // - a chip on the chip bar and an onsen town from the place picker give the snapshot's own
 //   count for those conditions, computed in the browser (no list request to the Worker);
-// - the data status (coverage, collection status, refresh) is in the footer, not above the list,
-//   and its link above the list reaches it (and the photo credits) by keyboard and touch.
+// - the data status summary (coverage, refresh, the screen's footer button) is in the footer, not
+//   above the list, and its link above the list opens the data status screen (U06) by keyboard
+//   and touch, where the photo credits and the address dictionary's credit are reachable.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-list-browser.mjs [base] [evidence.json]
@@ -97,38 +98,48 @@ for(const w of [360,390,1280]){
  const shownTown=Number((await page.locator('.results-header h2 span').innerText()).replace(/[^0-9]/g,''));
  const url=new URL(page.url()),picked=await page.getByRole('combobox',{name:'검색 지역 · 온천마을'}).innerText();
  check(`지역 선택의 첫 묶음이 온천마을이고, 온천마을 ‘${town.name}’ 선택: ${town.prefecture}·${town.query} 결과 ${town.total}곳 = 스냅숏 값`,groups[0]==='온천마을'&&town.total>0&&url.searchParams.get('region')===town.prefecture&&url.searchParams.get('q')===town.query&&shownTown===town.total&&picked.includes(town.name)&&lists.length===before,{groups,town:town.name,total:town.total,shownTown,url:url.search,picked});
- // The data status moved to the footer.
- const status=await page.evaluate(()=>{const s=document.querySelector('.site-footer .data-status');return{inFooter:!!s,heading:s?.querySelector('h2')?.textContent,refresh:!!s?.querySelector('.result-refresh'),panel:!!s?.querySelector('details,.coverage-panel,.collection-status'),coverage:/도도부현/.test(s?.textContent??''),above:[...document.querySelectorAll('.demo-banner,.onsen-town-nav,.region-nav')].length,beforeList:s?s.getBoundingClientRect().top<document.querySelector('.hotel-list').getBoundingClientRect().top:true}});
- check('자료 현황(집계·수집 현황·최신 자료 확인)은 바닥글에 있고 목록 위에는 없음',status.inFooter&&status.heading==='자료 현황'&&status.refresh&&status.panel&&status.coverage&&status.above===0&&!status.beforeList,status);
- // The data status (and the photo credits beside it) can be reached from above the list with the
- // keyboard and by touch: the list stops loading more on its own, so the footer stays put.
- // early: pressed before the search result is ready (the snapshot arrives 2.5s late); the
- // link waits for that result and then holds it.
+ // The data status: its summary, ‘최신 자료 확인’ and ‘수집 현황 자세히 보기’ are in the footer, not
+ // above the list (U06: the screen itself is check-u06-status-browser.mjs).
+ const status=await page.evaluate(()=>{const s=document.querySelector('.site-footer .data-status');return{inFooter:!!s,heading:s?.querySelector('h2')?.textContent,refresh:!!s?.querySelector('.result-refresh'),open:!!s?.querySelector('.u06-open'),coverage:/도도부현/.test(s?.textContent??''),above:[...document.querySelectorAll('.demo-banner,.onsen-town-nav,.region-nav')].length,beforeList:s?s.getBoundingClientRect().top<document.querySelector('.hotel-list').getBoundingClientRect().top:true}});
+ check('자료 현황(집계·최신 자료 확인·자세히 보기)은 바닥글에 있고 목록 위에는 없음',status.inFooter&&status.heading==='자료 현황'&&status.refresh&&status.open&&status.coverage&&status.above===0&&!status.beforeList,status);
+ // ‘자료 현황’ above the list opens the data status screen with the keyboard and by touch (U06),
+ // and the credits the footer carries (photo credits, the address dictionary's wording) are
+ // reachable there: the footer is not while the list keeps loading. The list does not grow
+ // behind the open screen. early: pressed before the search result is ready (the snapshot
+ // arrives 2.5s late).
  const slow=url=>/\/snapshot\/v\/[^/]+\/(core|cards)\.json$/.test(url.pathname);
+ const sheet=page.locator('[role="dialog"].u06-sheet');
  const jump=async how=>{
   let tabs=0;
   if(how==='early'){
    await page.route(slow,async route=>{await new Promise(done=>setTimeout(done,2500));await route.continue().catch(()=>{})});
    await page.goto(base+'/',{waitUntil:'domcontentloaded'});await page.waitForTimeout(700);
    await tap(page.locator('.data-status-link'));
-   await page.waitForTimeout(3500);await page.unroute(slow);
   }else{await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(400)}
   if(how==='keyboard'){
    await page.locator('.chip-bar button').last().focus();
    for(;tabs<80;tabs++){await page.keyboard.press('Tab');if(await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link')))break}
    await page.keyboard.press('Enter');
   }else if(how==='touch')await page.locator('.data-status-link').tap();
-  await page.waitForTimeout(900);
-  const at=await page.evaluate(()=>{const s=document.getElementById('data-status'),r=s.getBoundingClientRect();return{top:Math.round(r.top),vh:innerHeight,focus:document.activeElement?.id??null,open:!!s.querySelector('details')?.open,cards:document.querySelectorAll('.hotel-list .hotel-card').length}});
-  await page.evaluate(()=>window.scrollTo({top:document.scrollingElement.scrollHeight,behavior:'instant'}));await page.waitForTimeout(1500);
-  const credits=await page.evaluate(()=>{const a=[...document.querySelectorAll('.site-footer a')].find(e=>e.textContent.includes('사진 출처'));const r=a.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return{inView:r.top>=0&&r.bottom<=innerHeight,reachable:hit===a||a.contains(hit),cards:document.querySelectorAll('.hotel-list .hotel-card').length}});
-  return{tabs,at,credits,pass:(how!=='keyboard'||tabs<80)&&at.top>=0&&at.top<=at.vh-60&&at.open&&(how!=='keyboard'||at.focus==='data-status-title')&&credits.inView&&credits.reachable&&credits.cards===at.cards};
+  const opened=await sheet.locator('.u06-row').first().waitFor({timeout:8000}).then(()=>true,()=>false);
+  if(how==='early'){await page.waitForTimeout(3000);await page.unroute(slow)}
+  const cards=await page.locator('.hotel-list .hotel-card').count();
+  const at={hash:await page.evaluate(()=>location.hash),focus:await page.evaluate(()=>document.activeElement?.getAttribute('aria-label')??null)};
+  const link=sheet.locator('.u06-credits a',{hasText:'사진 출처'});
+  await link.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));await page.waitForTimeout(300);
+  const credits=await link.evaluate(a=>{const r=a.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return{inView:r.top>=0&&r.bottom<=innerHeight,reachable:hit===a||a.contains(hit),geo:/jageocoder/.test(a.closest('section')?.textContent??'')}});
+  await page.waitForTimeout(1200);
+  const after=await page.locator('.hotel-list .hotel-card').count();
+  if(how==='keyboard')await page.keyboard.press('Escape');else await tap(sheet.getByRole('button',{name:'자료 현황 닫기'}));
+  await sheet.waitFor({state:'detached'});
+  const back=await page.evaluate(()=>document.activeElement?.classList.contains('data-status-link'));
+  return{tabs,opened,at,credits,cards,after,back,pass:(how!=='keyboard'||tabs<80)&&opened&&at.hash==='#status'&&at.focus==='자료 현황 닫기'&&credits.inView&&credits.reachable&&credits.geo&&after===cards&&back};
  };
  const keyboard=await jump('keyboard');
- check(`목록 위 ‘자료 현황’: Tab으로 닿고(${keyboard.tabs+1}번) Enter로 바닥글 자료 현황이 열린 채 화면 안에 오며 초점이 옮겨 감, 그 아래 사진 출처까지 목록이 늘지 않고 닿음`,keyboard.pass,keyboard);
+ check(`목록 위 ‘자료 현황’: Tab으로 닿고(${keyboard.tabs+1}번) Enter로 자료 현황 화면이 열려 초점이 닫기 버튼에 오고, 그 안의 사진 출처·주소 사전 출처 표기에 닿으며 뒤 목록은 늘지 않고, Esc로 닫으면 초점이 버튼으로 돌아감`,keyboard.pass,keyboard);
  if(mobile){const touch=await jump('touch');check('목록 위 ‘자료 현황’: 터치로 같은 동작',touch.pass,touch)}
  const early=await jump('early');
- check('목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도, 결과가 나온 뒤 목록이 늘지 않고 자료 현황·사진 출처에 닿음',early.pass,early);
+ check('목록 위 ‘자료 현황’: 스냅숏이 늦게 와서 결과가 나오기 전에 눌러도 화면이 열리고, 결과가 나온 뒤에도 뒤 목록이 늘지 않으며 출처 표기에 닿음',early.pass,early);
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
 }
