@@ -1239,9 +1239,9 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 바뀐 화면에 맞춰 기존 검사를 고쳤다.
   - `check-u03-comparison`: 새 행 3개는 로컬 값이 없어 늘 판단 보류다. 그래서 행 22개(전 19), 판단 보류 12개(전 9), 숨김 15개(전 12), 확인된 값이 거의 없는 경우 19개(전 16)로 고쳤다.
   - `check-u01`: 휴대폰에서 ‘방향키·터치 가로 이동’ 대신 ‘4곳이 가로 이동 없이 들어가고 방향키·밀기에도 움직이지 않음’을 본다. 첫 열 고정은 그대로 본다.
-- 이 PR 빌드(`21adf4f` 소스)에서: `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u01` 64, `check-u05-foundation` 53, `check-u05-detail` 69 통과. 남은 기존 검사: 실행 중.
+- 이 PR 빌드(`21adf4f` 소스)에서: `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u01` 64, `check-u05-foundation` 53, `check-u05-detail` 69 통과. 같은 빌드에서 남은 기존 검사도 모두 통과했다: `check-u05-list` 28, `check-u05-filter` 27, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u04` 57, `check-p03-followups` 9.
 - 수정 전(main `7bc041c`) 휴대폰 비교표는 숙소 열 220px × 4 + 이름표 130px(CSS 값)이라 가로로 밀어야 했다. 이제 360px에서 표 너비 343px = 영역 너비다(가로 이동 없음).
-- `cloud-check.py --full`: 실행 전.
+- `cloud-check.py --full`: `d54f7e9`에서 42개 통과(08:45:33Z–08:50:58Z, rc=0).
 
 미확인·다음:
 
