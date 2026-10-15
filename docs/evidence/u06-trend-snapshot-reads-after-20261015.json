@@ -1,0 +1,71 @@
+{
+ "measuredAt": "2026-10-15T16:48:49.299Z",
+ "tables": {
+  "hotels": 12271,
+  "hotel_names": 13849,
+  "crawl_jobs": 15417,
+  "hotel_lifecycle": 1621
+ },
+ "rowsRead": 119291,
+ "queries": 71,
+ "ms": 20017,
+ "snapshot": "fea4e69e49eb5d80",
+ "sizes": {
+  "core": {
+   "raw": 1777731,
+   "gzip": 92000,
+   "brotli": 52151
+  },
+  "cards": {
+   "raw": 8692181,
+   "gzip": 246209,
+   "brotli": 134404
+  },
+  "text": {
+   "raw": 5182650,
+   "gzip": 289198,
+   "brotli": 124427
+  },
+  "status": {
+   "raw": 2244,
+   "gzip": 662,
+   "brotli": 535
+  },
+  "geo": {
+   "raw": 152069,
+   "gzip": 1228,
+   "brotli": 846
+  }
+ },
+ "estimateFromCheckedIn": {
+  "ratio": 7.415,
+  "sizes": {
+   "core": {
+    "raw": 1700649,
+    "gzip": 312469,
+    "brotli": 240252
+   },
+   "cards": {
+    "raw": 8530599,
+    "gzip": 955840,
+    "brotli": 640643
+   },
+   "text": {
+    "raw": 5309532,
+    "gzip": 1040796,
+    "brotli": 636780
+   },
+   "status": {
+    "raw": 16216,
+    "gzip": 4790,
+    "brotli": 3833
+   },
+   "geo": {
+    "raw": 152227,
+    "gzip": 5887,
+    "brotli": 4997
+   }
+  }
+ },
+ "note": "rowsRead: Miniflare D1 meta.rows_read summed over the build; sizes in bytes (gzip level 9, brotli quality 11)."
+}
