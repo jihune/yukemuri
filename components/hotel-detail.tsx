@@ -63,7 +63,7 @@ function BathDetail({hotel}:{hotel:Hotel}){
  const groups=(anyKnown?DETAIL_GROUPS:DETAIL_GROUPS.slice(3)).map(group=>({...group,keys:group.keys.filter(known)})).filter(group=>group.keys.length);
  const facts=(list:typeof groups)=>list.map(group=><div className="bath-detail-group" key={group.label}><h3>{group.label}</h3><div className="feature-grid">{group.keys.map(k=><Fact key={k} hotel={hotel} k={k}/>)}</div></div>);
  // Nothing confirmed: one sentence and the facility page, not a page of ‘확인 필요’.
- return <section className="detail-section" aria-labelledby="detail-bath-title"><h2 id="detail-bath-title"><Waves size={21} aria-hidden="true"/> 탕 상세</h2>
+ return <section className="detail-section" aria-labelledby="detail-bath-title"><h2 id="detail-bath-title">탕 상세</h2>
   {anyKnown?<p className="bath-guide">Jalan 시설 정보를 먼저 봅니다. 객실탕은 표시된 객실 타입에만 해당합니다.</p>:<p className="bath-unknown">이 숙소의 탕 정보는 아직 확인하지 못했습니다.{facility&&<> <a href={facility.url} target="_blank" rel="noopener noreferrer">{facility.label} ↗</a></>}</p>}
   {facts(groups)}
   {anyKnown&&count>0&&<details className="unknown-facts"><summary>확인 전 {count}개 보기<ChevronDown size={18} aria-hidden="true"/></summary>{facts(unknown)}</details>}

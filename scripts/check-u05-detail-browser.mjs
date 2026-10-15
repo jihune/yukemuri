@@ -55,14 +55,15 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGNgYGD4z8DAwMDAwMDAAAAMBAEBjgkz0wAAAABJRU5ErkJggg==','base64');
 const tripPhoto=i=>`https://ak-d.tripcdn.com/images/u05check/t${i}.jpg`,jalanPhoto=i=>`https://cdn.jalan.jp/jalan/img/u05check/j${i}.jpg`;
 // D05/D04 values the way the crawler stores them. The Jalan set comes first here; the page puts
-// Trip.com's first. Trip.com: four named types of three photos; Jalan: ten unnamed photos.
+// Trip.com's first. Trip.com: four named types (Korean, as D05 found) of three photos; Jalan: ten
+// unnamed photos with Japanese captions.
 function withRooms(h){
  const trip=h.sources.find(s=>s.sourceId.startsWith('trip-')),jalan=h.sources.find(s=>s.sourceId.startsWith('jalan-'));
  h.rooms={total:123,byType:{western:10,japanese:100,japaneseWestern:13,other:0},sourceId:jalan.sourceId,verifiedAt:'2026-10-05',note:'자란 객실 수 표: check'};
  h.facilityYears={opened:1858,sourceId:trip.sourceId,verifiedAt:'2026-10-06',note:'Trip.com 숙소 정보: check'};
  h.roomTypes=[
   {sourceId:jalan.sourceId,verifiedAt:'2026-10-05',items:[{name:null,photos:[0,1,2,3,4,5].map(i=>({url:jalanPhoto(i),caption:i%2?'':'和室10畳'}))},{name:null,photos:[6,7,8,9].map(i=>({url:jalanPhoto(i),caption:'露天風呂付客室'}))}]},
-  {sourceId:trip.sourceId,verifiedAt:'2026-10-06',items:['Japanese-Style Room','Western Twin Room','Deluxe Room','Suite'].map((name,t)=>({name,photos:[0,1,2].map(j=>({url:tripPhoto(t*3+j),caption:''}))}))},
+  {sourceId:trip.sourceId,verifiedAt:'2026-10-06',items:['주니어 스위트 (본관)','화실 10조','양실 트윈','노천탕 딸린 화양실'].map((name,t)=>({name,photos:[0,1,2].map(j=>({url:tripPhoto(t*3+j),caption:''}))}))},
  ];
  h.features.viewBath={value:true,sourceId:jalan.sourceId,verifiedAt:'2026-10-05'};
  return h;
@@ -146,7 +147,7 @@ for(const w of [360,390,1280]){
  check('객실과 시설: 객실 수 123실과 종류(0실 종류 생략), 설립 1858년, 출처는 대표 사진처럼 출처 이름과 그 페이지, 확인일',count?.value.includes('123실')&&same(count.small,['양실 10실 · 화실 100실 · 화양실 13실'])&&same(count.origin,[{text:'Jalan ↗ · 확인 2026-10-05',href:jalan.url}])&&opened?.value.includes('1858년')&&same(opened.origin,[{text:'Trip.com ↗ · 확인 2026-10-06',href:trip.url}]),{count,opened});
  check('없는 리모델링 연도는 ‘확인 필요’(오래됐다고 하지 않음)',s.rooms.missing==='리모델링 연도: 확인 필요'&&!s.rooms.facts.some(f=>f.label==='리모델링 연도'),{missing:s.rooms.missing});
  const [tripSet,jalanSet]=s.rooms.sets;
- check('객실 사진: Trip.com이 먼저, 타입 이름 3개와 사진 3장씩, 넷째 타입은 ‘객실 타입 1개 더 보기’ 안, 사진마다 ‘Trip.com’ 표기',s.rooms.sets.length===2&&tripSet.title==='Trip.com 객실 타입'&&same(tripSet.origin,{text:'Trip.com ↗ · 확인 2026-10-06',href:trip.url})&&same(tripSet.types.map(t=>[t.name,t.shown,t.photos]),[['Japanese-Style Room',true,3],['Western Twin Room',true,3],['Deluxe Room',true,3],['Suite',false,3]])&&same(tripSet.more,['객실 타입 1개 더 보기'])&&tripSet.photos.every(p=>p.credit==='Trip.com'),{tripSet});
+ check('객실 사진: Trip.com이 먼저, 타입 이름 3개와 사진 3장씩, 넷째 타입은 ‘객실 타입 1개 더 보기’ 안, 사진마다 ‘Trip.com’ 표기',s.rooms.sets.length===2&&tripSet.title==='Trip.com 객실 타입'&&same(tripSet.origin,{text:'Trip.com ↗ · 확인 2026-10-06',href:trip.url})&&same(tripSet.types.map(t=>[t.name,t.shown,t.photos]),[['주니어 스위트 (본관)',true,3],['화실 10조',true,3],['양실 트윈',true,3],['노천탕 딸린 화양실',false,3]])&&same(tripSet.more,['객실 타입 1개 더 보기'])&&tripSet.photos.every(p=>p.credit==='Trip.com'),{tripSet});
  const jalanShown=jalanSet?.photos.filter(p=>p.shown)??[];
  check('Jalan 객실 사진: 이름 없는 사진 6장을 한 묶음으로, 나머지 4장은 ‘사진 4장 더 보기’ 안, ‘Jalan’ 표기와 일본어 설명(lang=ja)',jalanSet?.title==='Jalan 객실 사진'&&same(jalanSet.origin,{text:'Jalan ↗ · 확인 2026-10-05',href:jalan.url})&&jalanSet.photos.length===10&&jalanShown.length===6&&same(jalanSet.more,['사진 4장 더 보기'])&&jalanSet.photos.every(p=>p.credit==='Jalan')&&jalanSet.photos.filter(p=>p.caption).every(p=>p.lang==='ja')&&jalanSet.photos[0].caption==='和室10畳',{jalanSet});
  // Folded photos are not fetched until opened.
