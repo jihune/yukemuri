@@ -1138,7 +1138,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 변형 확인: 빌드된 묶음에서 토글의 `aria-checked`를 늘 꺼짐으로 고정하면 5건이 실패한다(세 폭).
 - 처음 실행에서 화면 문제 하나를 찾아 고쳤다. 터치로 연 시트를 닫으면 초점이 칩으로 돌아오지 않았다(360·390px 2건).
 - 기존 브라우저 검사(`946bbd7` 빌드, 로컬 사이트)는 모두 통과했다: `check-u05-foundation` 53(휴대폰 필터 시트의 대비·44px·13px 포함), `check-u05-list` 28, `check-u01` 64, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u03-comparison` 60, `check-u04` 57, `check-p03-followups` 9. 기존 검사는 고친 것이 없다.
-- `cloud-check.py --full`: RECORDCLOUD4.
+- `cloud-check.py --full`: `49985b5`에서 42개 통과(01:57:25Z–02:07:11Z, rc=0).
 - 수정 전 캡처는 3번 PR 때의 main 캡처(필터 시트는 그 뒤로 바뀌지 않음)이고, 수정 후 캡처(foundation 검사의 캡처 폴더)와 함께 작업 세션 임시 폴더에만 있다.
 
 미확인·다음:
