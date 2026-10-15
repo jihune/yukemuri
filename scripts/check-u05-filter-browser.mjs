@@ -10,7 +10,9 @@
 //   Worker); a chip pressed outside shows as switched on inside; ‘초기화’ clears both; the
 //   rating pickers open inside the sheet and apply;
 // - on a wide screen the left panel is the same, the chip bar is gone and the panel fits
-//   1280x800 and 1440x900 without scrolling inside; the static first page names the chosen place.
+//   1280x800 and 1440x900 without scrolling inside; the static first page names the chosen place;
+// - at 945, 960, 1280 and 1440px the page is no wider than the screen, the list and the map keep their
+//   minimums beside each other, and ‘목록만’ and ‘지도 크게’ keep two columns.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-filter-browser.mjs [base] [evidence.json]
@@ -29,7 +31,32 @@ const workerList=url=>/^\/api\/hotels(?:\/(?:map|suggestions|search-index))?$/.t
 // cards' order, then the remaining conditions in groups that start closed.
 const QUICK=['내 기준','천연온천','노천탕','전세탕','객실 온천','카케나가시','니고리유'];
 const GROUPS=['공용·전세 목욕 시설 세부','객실 목욕 시설 세부','숙소 유형·등급','평점과 리뷰'];
+// The workspace's columns in each view (‘목록 + 지도’, ‘목록만’, ‘지도 크게’): no page wider than the
+// screen, the list and the map at their minimums beside each other, and two columns in the other
+// views with the shown part reaching the right edge and the panel as wide as beside the list.
+const layout=page=>page.evaluate(()=>{const w=document.querySelector('.workspace'),s=getComputedStyle(w),r=e=>e?.checkVisibility()?e.getBoundingClientRect():null,list=r(document.querySelector('.results-section')),map=r(document.querySelector('.map-column'));
+ return{columns:s.gridTemplateColumns.split(' ').map(v=>Math.round(parseFloat(v))),panel:Math.round(document.querySelector('.desktop-filters').getBoundingClientRect().width),right:Math.round((list&&map?Math.max(list.right,map.right):(list??map)?.right)??0),inner:Math.round(w.getBoundingClientRect().right-parseFloat(s.paddingRight)),overflow:document.documentElement.scrollWidth-innerWidth,chipsCut:[...document.querySelectorAll('.desktop-filters .filter-chip')].filter(e=>e.scrollWidth>e.clientWidth+1||e.getBoundingClientRect().height<44).map(e=>e.textContent)}});
+async function views(page){
+ await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(300);
+ const split=await layout(page);
+ check('‘목록 + 지도’는 세 열(목록 370px·지도 310px 이상)이고 작업 영역 안(화면보다 넓지 않음)에 들어가며, 패널 버튼이 잘리지 않음',split.columns.length===3&&split.columns[1]>=370&&split.columns[2]>=310&&split.right<=split.inner+1&&split.overflow<=0&&split.chipsCut.length===0,split);
+ for(const [view,label] of [['list','목록만'],['map','지도 크게']]){
+  await page.goto(base+'/?view='+view,{waitUntil:'networkidle'});await page.waitForTimeout(300);
+  const one=await layout(page);
+  check(`‘${label}’은 두 열(패널과 ${view==='list'?'목록':'지도'})이고 오른쪽 끝까지 차며, 패널 폭이 ‘목록 + 지도’ 때와 같음(${split.panel}px 이상)`,one.columns.length===2&&Math.abs(one.right-one.inner)<=1&&one.panel>=split.panel&&one.overflow<=0,one);
+ }
+}
 const browser=await chromium.launch();
+// A narrow desktop: the panel gives way before the list or the map does (Codex, PR #113).
+for(const w of [945,960]){
+ width=w;
+ const context=await browser.newContext({viewport:{width:w,height:800},deviceScaleFactor:1,locale:'ko-KR'});
+ await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e).slice(0,200)));
+ await views(page);
+ check('페이지 오류 없음',errors.length===0,{errors});
+ await context.close();
+}
 for(const w of [360,390,1280,1440]){
  width=w;const mobile=w<900;
  const context=await browser.newContext({viewport:{width:w,height:mobile||w===1280?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});
@@ -131,6 +158,7 @@ for(const w of [360,390,1280,1440]){
   await page.locator('.desktop-filters').getByRole('button',{name:'초기화'}).click();await page.waitForTimeout(400);
   const reset=await read();
   check('데스크톱 왼쪽 패널도 같은 버튼·묶음이고 ‘초기화’로 모두 꺼짐',reset.allOn===0&&reset.heading===total(''),{allOn:reset.allOn,heading:reset.heading});
+  await views(page);
  }
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
