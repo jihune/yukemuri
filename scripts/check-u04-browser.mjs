@@ -3,6 +3,7 @@
 // stay detail go into the Jalan and Trip.com links (no price lookup), survive a reload
 // through the page URL, and missing or invalid dates leave every link as stored.
 // The untranslated description caption no longer promises automatic translation.
+// Since U05 PR 5 the fields sit in the panel ‘날짜·인원’ opens above the detail's action bar.
 // Needs a running portable dev server and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Uses the checked-in snapshot: daiichi-takimotokan (Trip.com, Jalan, official and map links)
 // and jalan-300001 (Japanese description, no translation). Booking sites get a stub page;
@@ -30,7 +31,9 @@ async function run(page,context,touch){
  const detail=page.locator('.hotel-detail'),checkIn=page.locator('#detail-'+ID+'-in'),checkOut=page.locator('#detail-'+ID+'-out'),adults=detail.getByRole('combobox',{name:'성인 인원'}),help=detail.locator('.booking-link-fields .booking-help');
  const links=async()=>Object.fromEntries(await detail.locator('.external-links a').evaluateAll(as=>as.map(a=>[a.querySelector('b').textContent,{href:a.href,note:a.querySelector('small').textContent}])));
  const params=href=>Object.fromEntries(new URL(href).searchParams);
- const open=async url=>{await page.goto(base+url,{waitUntil:'networkidle'});await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400)};
+ // U05 detail: the date and guest fields open above the action bar from ‘날짜·인원’.
+ const expand=async()=>{const toggle=detail.locator('.booking-toggle');await toggle.waitFor({timeout:15000});if(await toggle.getAttribute('aria-expanded')!=='true')await press(toggle);await detail.locator('.booking-link-fields').waitFor({timeout:5000})};
+ const open=async url=>{await page.goto(base+url,{waitUntil:'networkidle'});await expand();await page.waitForTimeout(400)};
  // Type a date the way a keyboard user does. This headless Chromium lays the date field out
  // as month/day/year whatever the locale, and each part moves on once it is full; the value
  // read back is asserted, so a different layout fails rather than passing quietly.
@@ -77,7 +80,7 @@ async function run(page,context,touch){
  // The page URL keeps the conditions; a reload reopens the same dated links.
  const pageUrl=new URL(page.url());
  check('페이지 주소에 checkIn·checkOut·adults가 남음',pageUrl.searchParams.get('checkIn')===IN&&pageUrl.searchParams.get('checkOut')===OUT&&pageUrl.searchParams.get('adults')==='3'&&pageUrl.hash==='#stay/'+ID,{url:page.url()});
- await page.reload({waitUntil:'networkidle'});await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400);
+ await page.reload({waitUntil:'networkidle'});await expand();await page.waitForTimeout(400);
  const again=await links();
  check('새로고침 뒤에도 같은 날짜·인원과 날짜 포함 링크',await checkIn.inputValue()===IN&&await checkOut.inputValue()===OUT&&(await adults.innerText()).trim()==='3명'&&again['Jalan'].href===l['Jalan'].href&&again['Trip.com'].href===l['Trip.com'].href,{in:await checkIn.inputValue(),jalan:again['Jalan'].href});
  // Invalid: eight nights. Every link opens without dates and the reason is shown.
@@ -101,7 +104,7 @@ async function run(page,context,touch){
  // List -> detail -> dates -> close -> another stay: closing goes back to the list's history
  // entry, and the conditions must survive that and reach the next stay's links.
  await page.goto(base+'/?q='+encodeURIComponent('노보리베츠'),{waitUntil:'networkidle'});
- const openFromList=async name=>{const b=page.getByRole('button',{name:name+' 상세 보기'}).first();await b.scrollIntoViewIfNeeded();await press(b);await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400)};
+ const openFromList=async name=>{const b=page.getByRole('button',{name:name+' 상세 보기'}).first();await b.scrollIntoViewIfNeeded();await press(b);await expand();await page.waitForTimeout(400)};
  await openFromList('다이이치 타키모토칸');
  await checkIn.fill(IN);await checkOut.fill(OUT);await page.waitForTimeout(200);
  await page.keyboard.press('Escape');await page.waitForTimeout(800);
@@ -110,7 +113,7 @@ async function run(page,context,touch){
  const nextIn=page.locator('#detail-takinoya-in'),nextLinks=await links();
  check('목록에서 연 상세를 닫고 다른 숙소를 열어도 날짜·인원이 남고 링크에 들어감',listUrl.searchParams.get('checkIn')===IN&&await nextIn.inputValue()===IN&&params(nextLinks['Jalan'].href).stayCount==='2'&&params(nextLinks['Trip.com'].href).checkIn===IN,{listUrl:listUrl.toString(),in:await nextIn.inputValue(),jalan:nextLinks['Jalan'].href,trip:nextLinks['Trip.com'].href});
  // A Trip.com property link stored on the Korean host takes the same conditions.
- await page.goto(base+'/?checkIn='+IN+'&checkOut='+OUT+'&adults=2#stay/toya-manseikaku',{waitUntil:'networkidle'});await detail.locator('.booking-link-fields').waitFor({timeout:15000});await page.waitForTimeout(400);
+ await page.goto(base+'/?checkIn='+IN+'&checkOut='+OUT+'&adults=2#stay/toya-manseikaku',{waitUntil:'networkidle'});await expand();await page.waitForTimeout(400);
  const kr=(await links())['Trip.com'].href;
  check('kr.trip.com 숙소 링크에도 날짜·인원이 들어감',kr.startsWith('https://kr.trip.com/hotels/toyako-hotel-detail-993419/')&&params(kr).checkIn===IN&&params(kr).checkOut===OUT&&params(kr).adult==='2',{kr});
 
