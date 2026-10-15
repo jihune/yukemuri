@@ -279,5 +279,21 @@ try{
  for(const job of moved)await db.prepare('UPDATE crawl_jobs SET priority=99 WHERE url=?').bind(job.url).run();
  assert.equal(await rerunPriorities(),moved.length,'Only the jobs whose priority changes are written');
  assert.deepEqual((await db.prepare('SELECT url,priority FROM crawl_jobs ORDER BY url').all()).results,settled,'Every job is back at its computed priority');
+ // Town rules (L01): addressTerms match the stored address only. Trip.com labels
+ // many Yokohama hotels '가나가와 · 하코네'; a Korean Trip.com address names 하코네;
+ // 黒川 in Aso city is not Kurokawa Onsen, 南小国町 is.
+ const towns=[
+  ['trip','999301','pref-kanagawa','가나가와 · 하코네','Yokohama',60],
+  ['trip','999302','pref-kanagawa','하코네 온천 · 가나가와','하코네341 Yumoto, Ashigarashimo District, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본',0],
+  ['jalan','999303','pref-kumamoto','미나미오구니 · 구마모토','熊本県阿蘇郡南小国町満願寺6567',10],
+  ['jalan','999304','pref-kumamoto','아소 · 구마모토','熊本県阿蘇市黒川1230',20],
+ ];
+ for(const [provider,digits,prefecture,label,address] of towns){
+  const h=fixture(provider,digits);h.prefecture=prefecture;h.regionId='kyushu';h.names={ko:'큐 테스트 '+digits,ja:'キュー試験'+digits,en:'Queue Test '+digits};h.location={...h.location,label,address};
+  await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at,priority) VALUES (?,?,'detail',?,'pending',0,0,99)").bind(h.sources[0].url,provider,prefecture).run();
+  await api('/api/crawl','PUT',{url:h.sources[0].url,status:'done',observations:[h],links:[]});
+ }
+ await rerunPriorities();
+ for(const [provider,digits,,label,address,priority] of towns)assert.equal((await db.prepare('SELECT priority FROM crawl_jobs WHERE url=?').bind(fixture(provider,digits).sources[0].url).first()).priority,priority,`${label} / ${address}`);
  console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment, protected health and priority writes only where the plan changes them.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

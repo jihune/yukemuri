@@ -3,9 +3,12 @@ import plan from '../data/collection-priorities.json';
 import type {Hotel} from './hotel-types';
 import {favoritesDb} from './favorites-db';
 export {plan as collectionPlan};
+// terms match the names, the stored label and the address; addressTerms only the
+// address, for words a provider's own label can carry wrongly (L01: Trip.com
+// labels many Yokohama hotels '가나가와 · 하코네').
 export function collectionPriority(prefecture:string|null,url:string,hotel?:Pick<Hotel,'names'|'location'>){
- const text=hotel?Object.values(hotel.names).join(' ')+' '+hotel.location.label+' '+hotel.location.address:url;
- for(const town of plan.towns)if(prefecture===town.prefecture&&(town.listPrefix&&url.startsWith(town.listPrefix)||town.terms.some(term=>text.toLowerCase().includes(term.toLowerCase()))))return town.priority;
+ const text=(hotel?Object.values(hotel.names).join(' ')+' '+hotel.location.label+' '+hotel.location.address:url).toLowerCase(),address=(hotel?.location.address??'').toLowerCase();
+ for(const town of plan.towns)if(prefecture===town.prefecture&&(town.listPrefix&&url.startsWith(town.listPrefix)||town.terms.some(term=>text.includes(term.toLowerCase()))||town.addressTerms?.some(term=>address.includes(term.toLowerCase()))))return town.priority;
  return plan.primaryPrefectures.includes(prefecture??'')?20:plan.secondaryPrefectures.includes(prefecture??'')?40:plan.tertiaryPrefectures.includes(prefecture??'')?60:90;
 }
 export function refreshDays(priority:number){return priority<=10?plan.refreshDays.onsen:priority<=20?plan.refreshDays.primary:priority<=40?plan.refreshDays.secondary:priority<=60?plan.refreshDays.tertiary:plan.refreshDays.national}

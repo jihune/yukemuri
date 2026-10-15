@@ -1,0 +1,511 @@
+{
+ "measuredAt": "2026-10-15T01:40:57Z",
+ "origin": "https://yukemuri.jihune.workers.dev",
+ "snapshot": "4e22379a5ce3fe35",
+ "generatedAt": "2026-10-14T22:18:52.609Z",
+ "oldVersion": "onsen-first-20261005",
+ "newVersion": "onsen-first-20261015",
+ "records": 15305,
+ "uncut": 6,
+ "moved": 54,
+ "byChange": {
+  "10->20 구로카와->-": 6,
+  "20->10 -->구로카와": 29,
+  "60->0 -->하코네": 19
+ },
+ "queueJobs": 16879,
+ "batches": 34,
+ "rowsWrittenEstimate": {
+  "movedJobs": 108,
+  "progress": 34,
+  "total": 142
+ },
+ "movedRecords": [
+  {
+   "id": "jalan-300493",
+   "name": "流憩園",
+   "address": "熊本県阿蘇郡南小国町大字満願寺７０７５－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-302316",
+   "name": "阿蘇び心",
+   "address": "熊本県阿蘇市黒川２１１",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "jalan-305447",
+   "name": "おおぎ荘",
+   "address": "熊本県阿蘇郡南小国町満願寺2871-1",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-308920",
+   "name": "やすらぎの宿　宿房　あそ",
+   "address": "熊本県阿蘇市黒川1076",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "jalan-310876",
+   "name": "旅館　奥の湯",
+   "address": "熊本県阿蘇郡南小国町満願寺6567",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-311323",
+   "name": "離れの宿　花心",
+   "address": "熊本県阿蘇郡南小国町満願寺東長田５３４９",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-311462",
+   "name": "お宿　華坊",
+   "address": "熊本県阿蘇郡南小国町大字満願寺２８０５－３",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-311719",
+   "name": "旅館　湯之迫",
+   "address": "熊本県阿蘇郡南小国町大字満願寺田の原温泉7152-2",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-311825",
+   "name": "瀬の本テラス",
+   "address": "熊本県阿蘇郡南小国町満願寺５６２１－９０",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-313302",
+   "name": "旅館　やまの湯",
+   "address": "熊本県阿蘇郡南小国町満願寺６６０１－４",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-314917",
+   "name": "白川源泉　竹ふえ",
+   "address": "熊本県阿蘇郡南小国町大字満願寺5725",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-316596",
+   "name": "草太郎庵",
+   "address": "熊本県阿蘇郡南小国町小田温泉",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-318007",
+   "name": "いやしの里　樹やしき",
+   "address": "熊本県阿蘇郡南小国町満願寺6403-1",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-318827",
+   "name": "四季の里　はなむら",
+   "address": "熊本県阿蘇郡南小国町満願寺小田５８５０",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-320028",
+   "name": "旅館　山河",
+   "address": "熊本県阿蘇郡南小国町満願寺６９６１－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-320316",
+   "name": "里の湯　和らく　～大人2名様限定・全室半露天風呂付き旅館～",
+   "address": "熊本県阿蘇郡南小国町満願寺６３５１－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-326340",
+   "name": "山みず木別邸　深山山荘",
+   "address": "熊本県阿蘇郡南小国町満願寺６３９３",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-326353",
+   "name": "フェアフィールド・バイ・マリオット・熊本阿蘇",
+   "address": "熊本県阿蘇市黒川１４０７－１",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "jalan-327045",
+   "name": "離れ宿　山咲",
+   "address": "熊本県阿蘇郡南小国町満願寺５９６５",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-327684",
+   "name": "天空の湯　天河山荘",
+   "address": "熊本県阿蘇郡南小国町満願寺飛瀬２８２０",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-328302",
+   "name": "歴史の宿　御客屋",
+   "address": "熊本県阿蘇郡南小国町大字満願寺6546",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-332290",
+   "name": "Ａｓｏ　Ｃｏｕｎｔｒｙ　Ｌｉｆｅ　六月の風",
+   "address": "熊本県阿蘇市黒川１８８４",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "jalan-333314",
+   "name": "亀の井ホテル 阿蘇 パークリゾート",
+   "address": "熊本県阿蘇市黒川1230",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "jalan-335943",
+   "name": "全室離れの温泉宿　久邸",
+   "address": "熊本県阿蘇郡南小国町満願寺５８５３－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-343045",
+   "name": "蔵迫温泉さくら 貸コテージ＆キャンプ",
+   "address": "熊本県阿蘇郡南小国町満願寺蔵迫２８４９―１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-354988",
+   "name": "静寂な森の宿　山しのぶ",
+   "address": "熊本県阿蘇郡南小国町満願寺5960",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-358037",
+   "name": "志津の宿",
+   "address": "熊本県阿蘇郡南小国町満願寺２３２１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-359871",
+   "name": "ｉｎｎ　ＮＯＳＨＩＹＵ",
+   "address": "熊本県阿蘇郡南小国町満願寺６５９０－９",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-371996",
+   "name": "コンテナハウスヴィラくろかわ",
+   "address": "熊本県阿蘇郡南小国町満願寺6776‐1",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-375222",
+   "name": "お宿　野の花",
+   "address": "熊本県阿蘇郡南小国町満願寺6375-2",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-384804",
+   "name": "白川温泉　華匠庵",
+   "address": "熊本県阿蘇郡南小国町満願寺５７０４－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-386645",
+   "name": "るりの湯",
+   "address": "熊本県阿蘇郡南小国町満願寺滝の上５８８７‐１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-389688",
+   "name": "大人の隠れ宿　お宿花風月",
+   "address": "熊本県阿蘇郡南小国町満願寺滝の上５８９０－１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-395557",
+   "name": "夫婦湯遊びの宿　藤のや",
+   "address": "熊本県阿蘇郡南小国町満願寺６０６９―１",
+   "from": 20,
+   "to": 10,
+   "oldTown": null,
+   "newTown": "구로카와"
+  },
+  {
+   "id": "jalan-397352",
+   "name": "全室温泉付の離れでペットと過ごすひととき　御宿　小笠原",
+   "address": "熊本県阿蘇市黒川２３２３",
+   "from": 10,
+   "to": 20,
+   "oldTown": "구로카와",
+   "newTown": null
+  },
+  {
+   "id": "trip-10717929",
+   "name": "포사다 수이메이",
+   "address": "하코네698-4 Yumoto698-4 Yumoto, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-134034945",
+   "name": "호텔 네하코",
+   "address": "하코네341 Yumoto, Ashigarashimo District341 Yumoto, Ashigarashimo District, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-2057559",
+   "name": "이치노유 혼칸",
+   "address": "하코네90 Tōnosawa90 Tōnosawa, 250-0315 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-21830558",
+   "name": "그린 힐스 소안",
+   "address": "하코네1181-147 Sengokuhara1181-147 Sengokuhara, 250-0631 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-2200346",
+   "name": "유신테이",
+   "address": "하코네193 Yumotochaya193 Yumotochaya, 250-0312 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-23192351",
+   "name": "타키이 인",
+   "address": "하코네649 Ohiradai, Ashigarashimo District649 Ohiradai, Ashigarashimo District, 250-0405 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-2338368",
+   "name": "하타고 긴토엔",
+   "address": "하코네520 Yumoto520 Yumoto, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-2561314",
+   "name": "후쿠시마칸",
+   "address": "하코네139 Sengokuhara, Ashigarashimo District139 Sengokuhara, Ashigarashimo District, 250-0631 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-28801002",
+   "name": "오큐안",
+   "address": "하코네264-2 Miyagino264-2 Miyagino, 250-0401 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-2971465",
+   "name": "유사카소",
+   "address": "하코네35 Yumotochaya35 Yumotochaya, 250-0312 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-70417876",
+   "name": "교구 비에츠",
+   "address": "하코네386-64 Yumoto386-64 Yumoto, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-704264",
+   "name": "후지야 호텔",
+   "address": "하코네Miyanoshita 359Miyanoshita 359, 250-0404 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-704273",
+   "name": "하코네 유모토 온센 텐세이엔",
+   "address": "하코네682 Yumoto, Ashigarashimo District682 Yumoto, Ashigarashimo District, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-704276",
+   "name": "호텔 오카다",
+   "address": "하코네191 Yumotochaya, Ashigarashimo District191 Yumotochaya, Ashigarashimo District, 250-0312 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-704279",
+   "name": "유모토 후지야 호텔",
+   "address": "하코네256-1 Yumoto256-1 Yumoto, 250-0392 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-704719",
+   "name": "하츠하나",
+   "address": "하코네20-1 Sukumogawa, Ashigarashimo-Gun, 20-120-1 Sukumogawa, Ashigarashimo-Gun, 20-1, 250-0313 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-706131",
+   "name": "후쿠주미로",
+   "address": "하코네74 Tonosawa, Ashigarashimo District74 Tonosawa, Ashigarashimo District, 250-0315 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-85985803",
+   "name": "슌노 아시노코",
+   "address": "하코네317-1317-1, 250-0521 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  },
+  {
+   "id": "trip-8649664",
+   "name": "스스키노하라 이치노유",
+   "address": "하코네817-77 Sengokuhara, Ashigarashimo District817-77 Sengokuhara, Ashigarashimo District, 250-0631 하코네, 아시가라시모 군, 가나가와 현, 일본",
+   "from": 60,
+   "to": 0,
+   "oldTown": null,
+   "newTown": "하코네"
+  }
+ ]
+}
