@@ -92,16 +92,17 @@ async function run(page,cdp){
  await page.keyboard.press('Shift+Tab');
  check('닫기 버튼에서 Shift+Tab은 시트 마지막 요소로 이동',await page.evaluate(()=>!!document.activeElement?.closest('[role=dialog]'))&&await focused()===order.at(-2),{focused:await focused(),expected:order.at(-2)});
 
+ // U05 PR 6: on a phone the four candidates fit side by side (one mark or short value per cell),
+ // so the table no longer moves sideways; arrow keys and a swipe leave it where it is.
  const region=sheet.locator('.comparison-table-region');
  await region.evaluate(e=>{e.scrollLeft=0});await region.focus();
- const start=await scrollLeft(region);
+ const start=await scrollLeft(region),fit=await region.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));
  await page.keyboard.press('ArrowRight');const right=await scrollLeft(region);
- await page.keyboard.press('ArrowLeft');const back=await scrollLeft(region);
- check('비교표 방향키 가로 이동',right>start&&back===start,{start,right,back});
+ check('비교표 4곳이 가로 이동 없이 한 화면에 들어감(방향키에도 그대로)',fit.scroll<=fit.client&&right===start,{fit,start,right});
  const headerBefore=await box(region.locator('th').first());
  await swipe(region,200);await page.waitForTimeout(500);
  const swiped=await scrollLeft(region),regionBox=await box(region),headerAfter=await box(region.locator('th').first());
- check('비교표 터치 가로 스크롤',swiped>start,{start,swiped});
+ check('비교표 터치로 밀어도 가로로 움직이지 않음',swiped===start,{start,swiped});
  check('비교표 첫 열 고정',Math.abs(headerAfter.left-regionBox.left)<=1&&Math.abs(headerAfter.left-headerBefore.left)<=1,{regionLeft:regionBox.left,headerBefore:headerBefore.left,headerAfter:headerAfter.left});
  await shot('compare-swiped');
  await region.evaluate(e=>{e.scrollLeft=0});

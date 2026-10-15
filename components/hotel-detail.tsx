@@ -18,6 +18,7 @@ import HotelLifecycleNote from './hotel-lifecycle-note';
 import HotelDescription from './hotel-description';
 import BookingFields from './booking-fields';
 import { datedLink, bookingError, type BookingQuery } from '@/lib/booking-query';
+import {roomKindsText} from '@/lib/room-kinds';
 const providers={trip:'Trip.com',jalan:'Jalan',official:'공식 홈페이지',maps:'Google Maps'};
 const ratingProviders={trip:'Trip.com',google:'Google Maps',jalan:'Jalan',rakuten:'Rakuten Travel'};
 const KIND={ryokan:'료칸',hotel:'호텔',unknown:'숙소'};
@@ -30,7 +31,6 @@ const DETAIL_GROUPS:{label:string;keys:readonly FeatureKey[]}[]=[
  {label:'객실 목욕 시설',keys:['roomOnsen','roomIndoorOnsen','roomOutdoor','roomOutdoorOnsen']},
 ];
 const BATH_KEYS=DETAIL_GROUPS.flatMap(group=>group.keys);
-const ROOM_KINDS=[['western','양실'],['japanese','화실'],['japaneseWestern','화양실'],['other','기타']] as const;
 // Room types and unnamed room photos shown per source before the rest fold away.
 const ROOM_TYPES=3,ROOM_PHOTOS=6;
 // A value's source is named the way the representative photo's credit is: by the source it
@@ -74,7 +74,7 @@ function BathDetail({hotel}:{hotel:Hotel}){
 // ‘확인 필요’, never guessed (a hotel without years is not an old one).
 function RoomsAndYears({hotel}:{hotel:Hotel}){
  const rooms=hotel.rooms,years=hotel.facilityYears;
- const byType=rooms?.byType?ROOM_KINDS.filter(([k])=>rooms.byType![k]>0).map(([k,label])=>label+' '+rooms.byType![k].toLocaleString()+'실').join(' · '):'';
+ const byType=rooms?roomKindsText(rooms):'';
  const row=(label:string,value:string,source:{sourceId:string;verifiedAt:string},note?:string)=><div className="feature-fact available" key={label}><span>{label}</span><b><Check size={16} aria-hidden="true"/>{value}</b>{note&&<small>{note}</small>}<Origin hotel={hotel} sourceId={source.sourceId} verifiedAt={source.verifiedAt}/></div>;
  const facts=[rooms&&row('객실 수',rooms.total.toLocaleString()+'실',rooms,byType),years?.opened&&row('설립 연도',years.opened+'년',years),years?.renovated&&row('리모델링 연도',years.renovated+'년',years)].filter(Boolean);
  const missing=[!rooms&&'객실 수',!years?.opened&&'설립 연도',!years?.renovated&&'리모델링 연도'].filter((label):label is string=>!!label);
