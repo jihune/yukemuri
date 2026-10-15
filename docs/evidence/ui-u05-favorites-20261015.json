@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-15T13:48:04.643Z",
+ "checkedAt": "2026-10-15T14:11:33.489Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium",
  "viewport": "360x800, 390x800 touch · 1280x800 mouse",
@@ -93,6 +93,30 @@
       "ginrinsou",
       "chalet-ivy-jozankei"
      ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "조건으로 0곳일 때도 휴대폰 지도 버튼은 남음(저장한 숙소가 다른 후보로 지도에 나옴)",
+   "pass": true,
+   "detail": {
+    "toggle": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "저장한 숙소가 고른 지역(noboribetsu) 밖이면 ‘저장한 2곳 중 조건에 맞는 숙소가 없어요’와 ‘조건 모두 풀기’",
+   "pass": true,
+   "detail": {
+    "region": "noboribetsu",
+    "empty": {
+     "saved": false,
+     "heart": false,
+     "title": "저장한 2곳 중 조건에 맞는 숙소가 없어요",
+     "text": "조건을 풀면 저장한 숙소를 모두 볼 수 있어요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.",
+     "button": "조건 모두 풀기",
+     "buttonH": 44
     }
    }
   },
@@ -213,6 +237,30 @@
       "ginrinsou",
       "chalet-ivy-jozankei"
      ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "조건으로 0곳일 때도 휴대폰 지도 버튼은 남음(저장한 숙소가 다른 후보로 지도에 나옴)",
+   "pass": true,
+   "detail": {
+    "toggle": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "저장한 숙소가 고른 지역(noboribetsu) 밖이면 ‘저장한 2곳 중 조건에 맞는 숙소가 없어요’와 ‘조건 모두 풀기’",
+   "pass": true,
+   "detail": {
+    "region": "noboribetsu",
+    "empty": {
+     "saved": false,
+     "heart": false,
+     "title": "저장한 2곳 중 조건에 맞는 숙소가 없어요",
+     "text": "조건을 풀면 저장한 숙소를 모두 볼 수 있어요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.",
+     "button": "조건 모두 풀기",
+     "buttonH": 44
     }
    }
   },
@@ -333,6 +381,22 @@
       "ginrinsou",
       "chalet-ivy-jozankei"
      ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "저장한 숙소가 고른 지역(noboribetsu) 밖이면 ‘저장한 2곳 중 조건에 맞는 숙소가 없어요’와 ‘조건 모두 풀기’",
+   "pass": true,
+   "detail": {
+    "region": "noboribetsu",
+    "empty": {
+     "saved": false,
+     "heart": false,
+     "title": "저장한 2곳 중 조건에 맞는 숙소가 없어요",
+     "text": "조건을 풀면 저장한 숙소를 모두 볼 수 있어요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.",
+     "button": "조건 모두 풀기",
+     "buttonH": 44
     }
    }
   },
