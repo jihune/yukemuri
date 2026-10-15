@@ -13,7 +13,7 @@ import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 import {needsKoreanDescription} from './hotel-description';
-import {FILL_ROWS,type CollectionFill,type CollectionProvider,type FillScope,type FillScopeKey,type PageCounts} from './collection-status';
+import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type CollectionProvider,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
 // enrichHotel, then the linked source rows, then the lifecycle. Both lookups
@@ -51,7 +51,10 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
   pages[r.provider][r.kind]={done:r.done,pending:r.pending,retry:r.retry,failed:r.failed};
   if(r.kind==='detail')pages[r.provider].detailChecked24h=r.recent;
  }
- const fill:CollectionFill={scopes:{all:emptyScope(),jalan:emptyScope(),trip:emptyScope()},pages};
+ // The last 30 UTC days' rows of the collector's end-of-run read (lib/hotel-repository.ts readCoverage).
+ const day=(ms:number)=>new Date(ms).toISOString().slice(0,10);
+ const trend=(await db.prepare('SELECT key,value FROM catalog_meta WHERE key>=? AND key<=? ORDER BY key').bind(DAILY_PROGRESS_KEY+day(now.getTime()-29*86400000),DAILY_PROGRESS_KEY+day(now.getTime())).all<{key:string;value:string}>()).results.map(r=>{const v=JSON.parse(r.value) as Omit<TrendDay,'date'>;return{date:r.key.slice(DAILY_PROGRESS_KEY.length),records:v.records,pages:v.pages}});
+ const fill:CollectionFill={scopes:{all:emptyScope(),jalan:emptyScope(),trip:emptyScope()},pages,trend};
  // raw: the stored payload (the detail label, as status.quality counts it); h: the hotel the
  // card and detail show (sources, names, rating, photo, rooms, years, description).
  const add=(id:string,raw:Hotel,h:Hotel,bathKnown:number|null)=>{

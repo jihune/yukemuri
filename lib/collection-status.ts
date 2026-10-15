@@ -32,7 +32,16 @@ export type FillScopeKey='all'|'jalan'|'trip';
 // staleTranslations: places whose only translation is of an earlier source text (in descKo empty).
 export type FillScope={records:number;rows:Record<FillRowKey,FillCounts>;geo:number[];staleTranslations:number};
 export type PageCounts={done:number;pending:number;retry:number;failed:number};
-export type CollectionFill={scopes:Record<FillScopeKey,FillScope>;pages:Record<CollectionProvider,{detail:PageCounts;list:PageCounts;detailChecked24h:number}>};
+// trend: the last 30 UTC days' rows that the collector's end-of-run read keeps, one a day
+// (DAILY_PROGRESS_KEY): places and detail pages done and found per provider, as at the day's
+// last run. usage: the whole account's Cloudflare usage today (the free limits are per account),
+// read once when the snapshot is built; account is null when it could not be read. Both are
+// absent from snapshots built before them.
+export type TrendDay={date:string;records:number;pages:Record<CollectionProvider,{done:number;total:number}>};
+export type UsageCounts={rowsRead:number|null;rowsWritten:number|null;requests:number|null};
+export type UsageToday={measuredAt:string;date:string;limits:{rowsRead:number;rowsWritten:number;requests:number};account:UsageCounts|null};
+export type CollectionFill={scopes:Record<FillScopeKey,FillScope>;pages:Record<CollectionProvider,{detail:PageCounts;list:PageCounts;detailChecked24h:number}>;trend?:TrendDay[];usage?:UsageToday};
+export const DAILY_PROGRESS_KEY='daily-progress:';
 export const FILL_ROWS:{key:FillRowKey;group:string;label:string;states:[string,string,string];note:string}[]=[
  {key:'detail',group:'시설 정보',label:'상세 정보',states:['출처 상세 페이지를 받음','해당 없음','목록 정보만 있음'],note:'탕·객실·연도는 상세 페이지에서만 나옵니다.'},
  {key:'bath',group:'시설 정보',label:'탕 조건',states:['13개 탕 항목 중 하나 이상 확인(없음 포함)','지금 규칙으로 읽은 자란넷 상세에 탕 표기가 없음','확인 전'],note:'탕 조건은 자란넷 상세에서만 읽습니다. Trip.com 곳은 비어 있습니다.'},

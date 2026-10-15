@@ -2,9 +2,11 @@
 // asks for the right Worker and D1, values become a per-day report, and a missing
 // Analytics permission (HTTP 403, GraphQL authorization errors, an empty account
 // list) fails instead of reading as zero usage.
-import {readFileSync} from 'node:fs';
+import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
-import {queryDay,report,utcDays,UsageError,PERMISSION_HELP,ENDPOINT,QUERY} from './cloudflare-usage.mjs';
+import {queryDay,report,utcDays,usageToday,UsageError,PERMISSION_HELP,ENDPOINT,QUERY} from './cloudflare-usage.mjs';
 
 const text=readFileSync('.github/workflows/usage.yml','utf8');
 assert.equal((text.match(/^on:\n((?:[ #].*\n)+)/m)[1].match(/^  \w+:/gm)??[]).join(),'  workflow_dispatch:','manual only');
@@ -78,6 +80,26 @@ for(const [response,raw,label,pattern] of [
 assert.deepEqual(utcDays('2026-10-01',3),['2026-09-29','2026-09-30','2026-10-01']);
 assert.deepEqual(utcDays('2028-02-29',2),['2028-02-28','2028-02-29'],'leap day accepted');
 for(const [date,count] of [['2026-02-31',1],['2026-02-29',1],['2026-04-31',1],['2026-02-30',1],['2026-13-01',1],['12-10-2026',1],['2026-10-12',0],['2026-10-12',32],['2026-10-12',1.5]])assert.throws(()=>utcDays(date,count),UsageError);
+// The data status screen's read (usageToday, U06): today's account totals, or account null
+// without the token, the ids or the config, on any API failure and on a request that fails;
+// the error itself stays out, and nothing is asked when the token or ids are missing.
+{
+ const dir=mkdtempSync(join(tmpdir(),'usage-')),config=join(dir,'cloudflare-deploy.json');
+ writeFileSync(config,JSON.stringify({workerName:'yukemuri',databaseId:DB}));
+ const env={CLOUDFLARE_API_TOKEN:TOKEN,CLOUDFLARE_ACCOUNT_ID:ACCOUNT},now=new Date('2026-10-12T05:00:00Z');
+ const at={measuredAt:'2026-10-12T05:00:00.000Z',date:'2026-10-12',limits:{rowsRead:5_000_000,rowsWritten:100_000,requests:100_000}};
+ api=fake(ok(day));
+ assert.deepEqual(await usageToday({fetch:api.fetch,env,config,now}),{...at,account:{requests:75000,rowsRead:3_600_000,rowsWritten:72_345}});
+ assert.equal(api.calls[0].body.variables.date,'2026-10-12');assert(api.calls[0].init.signal instanceof AbortSignal,'a request that hangs is cut off');
+ for(const [label,options] of [['no token',{env:{CLOUDFLARE_ACCOUNT_ID:ACCOUNT}}],['no account id',{env:{CLOUDFLARE_API_TOKEN:TOKEN}}],['no config',{env,config:join(dir,'missing.json')}]]){
+  const asked=fake(ok(day));
+  assert.deepEqual(await usageToday({fetch:asked.fetch,config,now,...options}),{...at,account:null},label);
+  assert.equal(asked.calls.length,0,label+': nothing is asked');
+ }
+ for(const [label,fetch] of [['permission',fake(denied[0][0]).fetch],['rate limit',fake([429,{data:null,errors:[{message:'rate limited'}]}]).fetch],['network',async()=>{throw new TypeError('fetch failed')}]])
+  assert.deepEqual(await usageToday({fetch,env,config,now}),{...at,account:null},label);
+ rmSync(dir,{recursive:true,force:true});
+}
 // The token never reaches the report.
 assert(!report([result,empty]).lines.join('\n').includes(TOKEN));
-console.log('Usage checks passed: manual read-only workflow, query variables, CPU and D1 values per UTC day, 70% warnings, empty days shown as no record, account totals (not this app alone) decide the percentages and 70% warnings, 5 permission failures and 5 other failures never read as zero.');
+console.log('Usage checks passed: manual read-only workflow, the data status read (totals, or none without token, ids, config or on API and network failures), query variables, CPU and D1 values per UTC day, 70% warnings, empty days shown as no record, account totals (not this app alone) decide the percentages and 70% warnings, 5 permission failures and 5 other failures never read as zero.');

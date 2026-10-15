@@ -62,6 +62,10 @@ try{
  await db.prepare("UPDATE crawl_jobs SET status='retry' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending' ORDER BY url LIMIT 1)").run();
  await db.prepare("UPDATE crawl_jobs SET status='failed' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='trip' AND kind='list' AND status='pending' ORDER BY url LIMIT 1)").run();
  await db.prepare("UPDATE crawl_jobs SET fetched_at='2026-10-11T12:00:00Z' WHERE url=(SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='done' ORDER BY url LIMIT 1)").run();
+ // U06 trend: rows the collector's end-of-run read keeps (UTC day), three inside the build's last
+ // 30 days (2026-09-13 to 2026-10-12) and one on each side.
+ const daily=[['2026-09-12',1],['2026-09-13',2],['2026-10-11',3],['2026-10-12',4],['2026-10-13',5]],dayRow=seq=>({records:1000+seq,pages:{jalan:{done:10*seq,total:100},trip:{done:5*seq,total:50}}});
+ for(const [date,seq] of daily)await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind('daily-progress:'+date,JSON.stringify({seq,...dayRow(seq)})).run();
  const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','hotel_name_localizations','hotel_description_translations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
  const fingerprint=async()=>{const out={};for(const t of tables)out[t]=JSON.stringify((await db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results);return out};
  const before=await fingerprint();
@@ -125,9 +129,11 @@ try{
  // With the geocoder (a fixture): points only where there were none, core untouched.
  {
   const asked=[],out=join(temp,'geocoded');mkdirSync(out,{recursive:true});
-  const located=await buildSnapshot({db,out,now:new Date('2026-10-12T00:00:00Z'),geocode:async list=>{asked.push(...list);return list.map((_,n)=>n%3===2?null:[35+n*1e-5,139+n*1e-5,n%3?3:2])}});
+  const usage={measuredAt:'2026-10-12T00:00:00.000Z',date:'2026-10-12',limits:{rowsRead:5000000,rowsWritten:100000,requests:100000},account:{rowsRead:1,rowsWritten:2,requests:null}};
+  const located=await buildSnapshot({db,out,now:new Date('2026-10-12T00:00:00Z'),usage,geocode:async list=>{asked.push(...list);return list.map((_,n)=>n%3===2?null:[35+n*1e-5,139+n*1e-5,n%3?3:2])}});
   const m=read(out,'manifest.json'),g=JSON.parse(readFileSync(join(out,'snapshot','v',m.id,'geo.json'),'utf8'));
   assert.notEqual(m.id,manifest.id,'geocoded points make a new snapshot version');
+  assert.deepEqual(JSON.parse(readFileSync(join(out,'snapshot','v',m.id,'status.json'),'utf8')).fill.usage,usage,'today\'s Cloudflare usage goes into status.json as given');
   assert.deepEqual(JSON.parse(readFileSync(join(out,'snapshot','v',m.id,'core.json'),'utf8')),core,'core.json (list and search) unchanged');
   const open=geo.grade.flatMap((v,i)=>v===0?[i]:[]);
   assert.equal(asked.length,open.length,'every hotel with no point, and only those, is asked');
@@ -140,6 +146,16 @@ try{
  // Coverage as the list showed it; collection status as its API returned it.
  // The collector's end-of-run read counts the same aggregate.
  assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
+ // That read keeps the day's trend row (UTC day) from the counts it took; a later run the same
+ // day replaces it.
+ {
+  const key='daily-progress:'+new Date().toISOString().slice(0,10),row=async()=>JSON.parse((await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first()).value);
+  const jobs=(await db.prepare("SELECT provider,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS done,COUNT(*) AS total FROM crawl_jobs WHERE kind='detail' AND status!='skipped' GROUP BY provider").all()).results;
+  const first=await row();
+  assert.deepEqual({records:first.records,pages:first.pages},{records:(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n,pages:Object.fromEntries(['jalan','trip'].map(p=>{const j=jobs.find(r=>r.provider===p);return[p,{done:j?.done??0,total:j?.total??0}]}))},'the end-of-run read keeps the day row');
+  await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}});
+  assert((await row()).seq>first.seq,'a later run the same day replaces the row');
+ }
  const live=await api('/api/collection-status',{headers:{'X-Yukemuri-Crawl-Key':KEY}});
  const {fill,...shared}=status;
  assert.deepEqual({...shared,measuredAt:undefined},{...live,measuredAt:undefined});
@@ -178,7 +194,8 @@ try{
    if(!pages[r.provider]||!['detail','list'].includes(r.kind)||!STATE[r.status])continue;
    pages[r.provider][r.kind][STATE[r.status]]+=r.n;if(r.kind==='detail'&&r.status==='done')pages[r.provider].detailChecked24h+=r.recent;
   }
-  assert.deepEqual(fill,{...want,pages},'status.json fill');
+  const trend=daily.filter(([date])=>date>='2026-09-13'&&date<='2026-10-12').map(([date,seq])=>({date,...dayRow(seq)}));
+  assert.deepEqual(fill,{...want,pages,trend},'status.json fill');
   const all=fill.scopes.all.rows;
   for(const [k,part] of [['bath','none'],['rooms','filled'],['rooms','none'],['years','filled'],['years','none'],['nameKo','none'],['descKo','none'],['descKo','filled']])assert(all[k][part]>0,`the check reaches ${k} ${part}`);
   const curatedOnly=(k,part)=>fill.scopes.all.rows[k][part]-fill.scopes.jalan.rows[k][part]-fill.scopes.trip.rows[k][part];

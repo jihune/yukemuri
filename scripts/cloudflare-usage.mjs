@@ -9,7 +9,9 @@ import {readFileSync,appendFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
 export const ENDPOINT='https://api.cloudflare.com/client/v4/graphql';
-export const LIMITS={rowsRead:5_000_000,rowsWritten:100_000,requests:100_000}; // Workers Free + D1 Free, per UTC day
+// Workers Free + D1 Free, per UTC day, reset at 00:00 UTC (Cloudflare docs D1 Pricing and
+// Workers Limits, checked 2026-10-15 from their markdown pages; docs/cloudflare-deploy.md).
+export const LIMITS={rowsRead:5_000_000,rowsWritten:100_000,requests:100_000};
 export const WARN=0.7; // step 5 pass condition: under 70% of the daily limit
 export const PERMISSION_HELP='API 토큰에 Account > Account Analytics > Read 권한이 없다(또는 토큰·계정이 맞지 않는다). '
  +'사용자 조치: Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret CLOUDFLARE_API_TOKEN의 토큰 → Edit → '
@@ -81,6 +83,21 @@ export async function queryDay({fetch,token,accountId,scriptName,databaseId,date
   d1:d1?{...d1.sum}:null,
   account:{requests:a.accountWorkers.length?sum(a.accountWorkers,'requests'):null,
    rowsRead:a.accountD1.length?sum(a.accountD1,'rowsRead'):null,rowsWritten:a.accountD1.length?sum(a.accountD1,'rowsWritten'):null}};
+}
+
+// Today's account usage for the data status screen (U06), read once when the search
+// snapshot is built (build-search-snapshot.mjs). It never fails the build: account is null
+// when usage cannot be read (no token or ids, no Account Analytics permission, an API error,
+// no answer in 20 s), and the error itself is left out (it may carry the request).
+export async function usageToday({fetch=globalThis.fetch,env=process.env,config='cloudflare-deploy.json',now=new Date()}={}){
+ const date=now.toISOString().slice(0,10),base={measuredAt:now.toISOString(),date,limits:{...LIMITS}};
+ try{
+  const deploy=JSON.parse(readFileSync(config,'utf8'));
+  const token=env.CLOUDFLARE_API_TOKEN??'',accountId=(env.CLOUDFLARE_ACCOUNT_ID??'').trim();
+  if(!token||!ACCOUNT.test(accountId)||!UUID.test(deploy.databaseId??''))return {...base,account:null};
+  const day=await queryDay({fetch:(url,init)=>fetch(url,{...init,signal:AbortSignal.timeout(20000)}),token,accountId,scriptName:deploy.workerName,databaseId:deploy.databaseId,date});
+  return {...base,account:day.account};
+ }catch{return {...base,account:null}}
 }
 
 const num=n=>n.toLocaleString('en-US');
