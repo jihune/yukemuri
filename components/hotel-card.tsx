@@ -3,14 +3,12 @@ import {Heart,MapPin,ShieldCheck,ArrowLeftRight} from 'lucide-react';
 import type {RatingProvider} from '@/lib/hotel-types';
 import type {HotelSummary} from '@/lib/search-snapshot';
 import {hotelFeature} from '@/lib/hotel-bath-facts';
-import {BATH_COLUMNS,BATH_STATE_LABEL,bathColumn} from '@/lib/bath-columns';
 import {providerRating,displayRating,meetsVerifiedCriteria} from '@/lib/hotel-ratings';
 import HotelLifecycleNote from './hotel-lifecycle-note';
 import HotelPhoto from './hotel-photo';
-// U05 B ‘탕 체크리스트’: the six bath columns sit in the same place on every card, so cards
-// read down the page column by column. ✓ filled = confirmed, – struck = confirmed absent,
-// ? dashed = not checked yet; the shape says it as well as the colour.
-const MARK={yes:'✓',no:'–',unknown:'?'} as const;
+import BathCells from './bath-cells';
+// U05 B ‘탕 체크리스트’: the six bath columns (BathCells) sit in the same place on every
+// card, so cards read down the page column by column.
 export default function HotelCard({hotel:h,active,saved,pending,canSave,provider,onActive,onDetail,onFavorite,onMap,similar,unmetConditions,compared,onCompare}:{hotel:HotelSummary;active:boolean;saved:boolean;pending:boolean;canSave:boolean;provider:RatingProvider;onActive:(id:string|null)=>void;onDetail:(id:string)=>void;onFavorite:(id:string)=>void;onMap:(h:HotelSummary)=>void;similar?:boolean;unmetConditions?:string[];compared?:boolean;onCompare?:(id:string)=>void}){
  const r=providerRating(h,provider)??displayRating(h);
  return <article id={'card-'+h.id} className={`hotel-card ${active?'card-active':''} ${unmetConditions?'alternative-card':''}`} onMouseEnter={()=>onActive(h.id)} onMouseLeave={()=>onActive(null)}>
@@ -23,7 +21,7 @@ export default function HotelCard({hotel:h,active,saved,pending,canSave,provider
    <HotelLifecycleNote hotel={h} compact/>
    <div className="card-rating">{r?<><span className="score">{r.score.toFixed(1)}</span><b>{r.provider==='jalan'?'/5 Jalan':'/10 Trip.com'}</b><span>리뷰 {r.reviewCount.toLocaleString()}개</span>{meetsVerifiedCriteria(h)&&<span className="verified-badge"><ShieldCheck size={14} aria-hidden="true"/>내 기준</span>}</>:<span>평점 확인 전</span>}</div>
   </div>
-  <ul className="bath-cells" aria-label="탕 조건">{BATH_COLUMNS.map(column=>{const c=bathColumn(h,column);return <li key={column.id} className={'bath-cell is-'+c.state}><span className="bath-mark" aria-hidden="true">{MARK[c.state]}</span><span className="bath-label">{column.label}</span>{c.scope&&<small>{c.scope==='allRooms'?'전 객실':'일부'}</small>}<span className="sr-only"> {BATH_STATE_LABEL[c.state]}</span></li>})}</ul>
+  <BathCells hotel={h}/>
   {unmetConditions&&<div className="unmet-conditions"><b>맞지 않거나 확인되지 않은 조건</b>{unmetConditions.map(reason=><span key={reason}>{reason}</span>)}</div>}
   <div className="card-bottom"><button type="button" onClick={()=>onMap(h)}><MapPin size={14}/>{h.location.latitude!==null?'지도에서 보기':'주소 확인'}</button>{onCompare&&<button type="button" className="card-compare" onClick={()=>onCompare(h.id)} aria-pressed={!!compared} aria-label={h.names.ko+(compared?' 비교에서 빼기':' 비교 담기')}><ArrowLeftRight size={14}/>{compared?'비교에서 빼기':'비교 담기'}</button>}<button type="button" onClick={()=>onDetail(h.id)}>숙소 상세</button></div>
  </article>;

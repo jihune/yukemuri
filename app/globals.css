@@ -877,3 +877,83 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-reset{min-height:var(--yk-tap);padding:0 16px;border:1px solid var(--yk-line);border-radius:8px;color:var(--yk-text-2);font-size:var(--yk-fs-sm)}
 @media (prefers-reduced-motion:reduce){.filter-switch,.filter-switch::after{transition:none}}
 .filter-toggle-label small{display:block;font-size:var(--yk-fs-xs);font-weight:500;color:inherit;opacity:.9}
+/* U05 detail (PR 5, docs/U05-20261013.md 8.4): the summary (photos, two names, ratings, the six bath
+   columns), the bath detail with unconfirmed facts folded, rooms and years, and an action bar fixed at
+   the bottom with the dates and guests opening above it. Wide screens: the summary is a rail on the left. */
+.detail-lead,.detail-body{min-width:0}
+.detail-image .photo-nav{position:absolute;right:12px;bottom:10px;display:flex;align-items:center;background:#14272bd9;color:#fff;border-radius:999px;font-size:var(--yk-fs-xs);font-variant-numeric:tabular-nums}
+.photo-nav button{width:var(--yk-tap);height:var(--yk-tap);display:grid;place-items:center;color:inherit;border-radius:50%}
+.photo-nav button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+.detail-summary{padding:20px 32px 0}
+.detail-eyebrow{color:var(--yk-text-3);font-size:var(--yk-fs-sm)!important;margin:0 0 6px}
+.detail-eyebrow .highclass-tag{margin:0 0 0 8px;padding:0 5px;border:1px solid var(--yk-line);border-radius:4px;background:none;color:var(--yk-text-2);font-size:var(--yk-fs-xs);white-space:nowrap}
+.detail-name{display:block}
+.detail-name [data-slot=sheet-title]{font-size:var(--yk-fs-2xl);line-height:1.35;font-weight:750}
+.detail-name [data-slot=sheet-title]:focus{outline:none}
+.other-names{font-size:var(--yk-fs-sm);color:var(--yk-text-3);margin-bottom:10px}
+.detail-summary .provider-ratings{margin-top:12px}
+.detail-summary .detail-rating{margin:6px 0;gap:2px 8px}
+.detail-summary .detail-rating small{background:none;padding:0}
+.detail-summary .provider-ratings>.secondary{margin:6px 0}
+.facts-unknown{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:var(--yk-fs-sm);color:var(--yk-text-3)}
+.detail-cells{margin-top:14px}
+.detail-cells .bath-cell{min-height:var(--yk-tap);padding:6px 9px;font-size:var(--yk-fs-sm)}
+.detail-cells .bath-mark{width:22px;height:22px;font-size:var(--yk-fs-sm)}
+.detail-body{padding-top:4px}
+.unknown-facts,.room-more{margin-top:14px}
+.unknown-facts>summary,.room-more>summary{display:flex;align-items:center;gap:6px;min-height:var(--yk-tap);cursor:pointer;list-style:none;font-size:var(--yk-fs-sm);font-weight:650;color:var(--yk-primary)}
+.unknown-facts>summary::-webkit-details-marker,.room-more>summary::-webkit-details-marker{display:none}
+.unknown-facts[open]>summary svg,.room-more[open]>summary svg,.booking-toggle[aria-expanded=true]>svg:last-child{transform:rotate(180deg)}
+.unknown-facts>summary:focus-visible,.room-more>summary:focus-visible{outline:2px solid var(--yk-primary);outline-offset:2px}
+.unknown-facts .bath-detail-group:first-of-type{margin-top:6px}
+.bath-unknown{font-size:var(--yk-fs-base);line-height:1.8;color:var(--yk-text-2)}
+.bath-unknown a,.fact-origin a{text-decoration:underline;text-underline-offset:3px}
+.fact-origin a{display:inline-flex;align-items:center;min-height:var(--yk-tap)}
+.room-set{margin-top:20px}
+.room-set>h3{font-size:var(--yk-fs-base);font-weight:700;margin:0}
+.fact-origin>span{white-space:nowrap}
+.room-set>.fact-origin{display:block;font-size:var(--yk-fs-xs);color:var(--yk-text-3)}
+.room-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:14px}
+.room-set>.room-photos{margin-top:6px}
+.room-list b{display:block;font-size:var(--yk-fs-sm);font-weight:650;margin-bottom:6px}
+.room-photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.room-photos figure{margin:0;position:relative;min-width:0}
+.room-photos img,.room-photos .image-unavailable{display:flex;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--yk-radius-sm);background:var(--yk-surface)}
+.room-photos .image-unavailable{flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:var(--yk-fs-xs);color:var(--yk-text-3);text-align:center;padding:4px}
+.room-photos .photo-source-credit{position:absolute;left:4px;top:4px;background:#14272bd9;color:#fff;font-size:var(--yk-fs-xs);line-height:1.4;padding:1px 5px;border-radius:4px}
+.room-photos figcaption{font-size:var(--yk-fs-xs);color:var(--yk-text-3);margin-top:3px;line-height:1.4}
+.detail-unavailable{margin:0 0 16px;padding:12px 14px;border:1px dashed #7d9196;border-radius:var(--yk-radius-sm);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:var(--yk-fs-sm);line-height:1.6;color:var(--yk-text-2)}
+.detail-unavailable p{flex:1 1 180px}
+.detail-retry{justify-self:start;display:inline-flex;align-items:center;gap:6px;min-height:var(--yk-tap);padding:0 16px;border:1px solid var(--yk-primary);border-radius:var(--yk-radius-sm);color:var(--yk-primary);font-weight:650}
+.detail-retry:disabled{opacity:.6}
+.detail-actions{flex-shrink:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:8px 16px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--yk-line);background:var(--yk-bg);box-shadow:0 -6px 18px #14272b14}
+.detail-actions .booking-link-fields{order:-1;grid-column:1/-1;margin:0;padding:4px 0 10px;border-bottom:1px solid var(--yk-line)}
+.detail-actions .booking-link-fields[hidden]{display:none}
+.detail-actions .booking-help{margin-top:8px}
+.booking-toggle{display:flex;align-items:center;gap:8px;min-width:0;min-height:var(--yk-tap);padding:0 12px;border:1px solid var(--yk-line);border-radius:var(--yk-radius-sm);font-size:var(--yk-fs-sm);color:var(--yk-text-2)}
+.booking-toggle b{font-weight:650;color:var(--yk-text);white-space:nowrap}
+.booking-toggle span{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.detail-action-row{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:0}
+.detail-action-link{flex:1;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--yk-tap);padding:0 10px;border-radius:var(--yk-radius-sm);background:var(--yk-primary);color:var(--yk-on-primary);font-size:var(--yk-fs-sm);font-weight:650;white-space:nowrap;text-decoration:none}
+.detail-action-link:hover{background:var(--yk-primary-hover)}
+.detail-action-link:focus-visible{outline-offset:2px}
+.detail-action-row .icon-button{border:1px solid var(--yk-line);border-radius:var(--yk-radius-sm)}
+.detail-compare[aria-pressed=true]{background:var(--yk-primary-soft);border-color:#8fc0c6;color:var(--yk-primary)}
+@media (max-width:550px){
+  .detail-image{height:200px}
+  .detail-summary{padding:16px 18px 0}
+  .detail-cells .bath-cell{padding:6px 7px}
+}
+@media (min-width:641px){
+  .detail-actions{grid-template-columns:auto minmax(0,1fr);padding:12px 24px}
+}
+/* Two columns only with the full detail; the snapshot card shown after a failure stays one column. */
+.detail-action-row:only-child{grid-column:1/-1}
+@media (min-width:901px){
+  .detail-scroll:has(>.detail-body){display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start}
+  .detail-scroll:has(>.detail-body) .detail-image{height:200px}
+  .detail-scroll:has(>.detail-body) .detail-cells{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .detail-scroll:has(>.detail-body) .detail-summary{padding:18px 20px 24px}
+  .detail-body{padding:0 28px 28px 8px}
+  .detail-body>.detail-section:first-child{border-top:0;margin-top:0;padding-top:22px}
+}

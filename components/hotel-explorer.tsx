@@ -95,7 +95,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  // Once more when the first snapshot arrives: the summary above the map grows then.
  const shown=!!snap.snapshot;
  useEffect(()=>{if(isMobile&&mode==='map')document.querySelector('.map-column')?.scrollIntoView({block:'start',behavior:'instant'})},[isMobile,mode,shown]);
- const [detail,setDetail]=useState<Hotel|null>(null),[detailLoading,setDetailLoading]=useState(false);
+ const [detail,setDetail]=useState<Hotel|null>(null),[detailLoading,setDetailLoading]=useState(false),[detailFallback,setDetailFallback]=useState<HotelSummary|null>(null),[detailAttempt,setDetailAttempt]=useState(0);
  const [comparisonIds,setComparisonIds]=useState<string[]>([]),[comparisonReady,setComparisonReady]=useState(false),[comparisonOpen,setComparisonOpen]=useState(false);
  const comparisonButton=useRef<HTMLButtonElement>(null),comparisonOpener=useRef<HTMLElement|null>(null);
  useEffect(()=>{
@@ -165,12 +165,23 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   observer.observe(listEnd.current);return()=>observer.disconnect();
  },[hasMore,loading,statusPaused,loadMore,detailId,filterOpen,comparisonOpen,mode,response.page]);
  useEffect(()=>{
-  // Cards carry list fields only; the sheet opens with the hotel the API returns.
+  // Cards carry list fields only; the sheet opens with the hotel the API returns. When the
+  // API cannot answer (anything but 404: a Worker or network failure, 429, 503, 403) the sheet
+  // shows the stay's card from the list or snapshot instead, with a retry; a 404 means the
+  // stay is gone, so the sheet closes and the snapshot is checked again. A stay opened by its
+  // address before the snapshot arrived waits for it (the loader hands back the snapshot the
+  // page loads, or its preloaded files) rather than closing.
   setDetail(null);if(!detailId){setDetailLoading(false);return}
   const controller=new AbortController();setDetailLoading(true);
-  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(e=>{if(!controller.signal.aborted){setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail();if(e instanceof ApiError&&e.status===404)snap.refresh()}}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
+  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(async e=>{if(controller.signal.aborted)return;
+   const gone=e instanceof ApiError&&e.status===404;
+   let card=gone?undefined:displayHotels.find(h=>h.id===detailId)??(areaHotel?.id===detailId?areaHotel:undefined)??alternatives.find(a=>a.hotel.id===detailId)?.hotel;
+   if(!gone&&!card){const s=snap.snapshot??await loadSnapshot(controller.signal,firstPage?.manifest).catch(()=>null),at=s?.position.get(detailId);card=at===undefined?undefined:s!.cards[at]}
+   if(controller.signal.aborted)return;
+   if(card){setDetailFallback(card);return}
+   setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail();if(gone)snap.refresh()}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
   return()=>controller.abort();
- },[detailId]);
+ },[detailId,detailAttempt]);
 
  async function loadFavorites(){setFavoritesError('');try{const data=await apiJson<{ids:string[]}>('/api/favorites');setFavorites(data.ids);setFavoritesReady(true)}catch(e){setFavoritesError(e instanceof Error?e.message:'즐겨찾기를 불러오지 못했습니다.')}}
  async function saveFavorite(id:string,saved?:boolean){
@@ -178,6 +189,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   const next=saved??!favorites.includes(id);setPending(p=>[...p,id]);
   try{await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:id,saved:next})});setFavorites(f=>next?[...new Set([...f,id])]:f.filter(k=>k!==id));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
  }
+ const shownFallback=detailFallback&&detailFallback.id===detailId?detailFallback:null,detailShown=detail??shownFallback;
  function openDetail(id:string){if(!detailId)listingPosition.current={x:window.scrollX,y:window.scrollY,opener:document.activeElement instanceof HTMLElement?document.activeElement:null};openStayHistory(id,!!detailId);setDetailId(id)}
  function closeDetail(){setDetailId(null);closeStayHistory()}
  function restoreDetailFocus(){restoreListingPosition(listingPosition.current)}
@@ -296,8 +308,8 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  <Drawer open={filterOpen} onOpenChange={setFilterOpen} direction="bottom" autoFocus><DrawerContent className="filter-drawer" onCloseAutoFocus={e=>{e.preventDefault();filterButton.current?.focus()}}><div className="mobile-sheet-title"><div><DrawerTitle>숙소 필터</DrawerTitle><DrawerDescription>{favoritesBlocked?'즐겨찾기를 불러오지 못했어요':`조건에 맞는 ${response.total.toLocaleString()}곳`}</DrawerDescription></div><DrawerClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></DrawerClose></div><div className="mobile-sheet-body"><FilterPanel filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount} title={false}/></div><div className="filter-drawer-actions"><button type="button" className="filter-reset" onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button><DrawerClose asChild><button className="apply-filters">{favoritesBlocked?'목록으로 돌아가기':response.total.toLocaleString()+'곳 보기'}</button></DrawerClose></div></DrawerContent></Drawer>
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
  <HotelComparison open={comparisonOpen} ids={comparisonIds} onClose={()=>setComparisonOpen(false)} onRemove={id=>setComparisonIds(previous=>previous.filter(item=>item!==id))} onClear={()=>setComparisonIds([])} onRestoreFocus={restoreComparisonFocus} onDetail={openDetail}/>
- <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady} booking={booking} onBooking={onBooking}/>
- {detailLoading&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
+ <HotelDetail hotel={detail} fallback={detail?null:shownFallback} loading={detailLoading} onRetry={()=>setDetailAttempt(n=>n+1)} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detailShown&&favorites.includes(detailShown.id)} onFavorite={()=>detailShown&&saveFavorite(detailShown.id)} pending={!!detailShown&&pending.includes(detailShown.id)} canSave={favoritesReady} compared={!!detailShown&&comparisonIds.includes(detailShown.id)} onCompare={()=>detailShown&&compare(detailShown.id)} booking={booking} onBooking={onBooking}/>
+ {detailLoading&&!shownFallback&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
  {toast&&<div className="toast-message" role="status">{toast}</div>}
  <footer className="site-footer"><section className="data-status" id="data-status" aria-labelledby="data-status-title"><h2 id="data-status-title" tabIndex={-1}>자료 현황</h2>{snap.snapshot||preview?<><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p><button className="result-refresh" onClick={refreshResults} disabled={loading} aria-label="새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영"><RotateCcw size={15}/>최신 자료 확인</button><CollectionStatusPanel coverage={response.coverage} load={loadStatus}/></>:<p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p>}</section><span>유케무리 · 일본 온천 탐색</span><span><a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p></footer>
  </>
