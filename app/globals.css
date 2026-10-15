@@ -886,6 +886,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .photo-nav button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
 .detail-summary{padding:20px 32px 0}
 .detail-eyebrow{color:var(--yk-text-3);font-size:var(--yk-fs-sm)!important;margin:0 0 6px}
+.detail-eyebrow .highclass-tag{margin:0 0 0 8px;padding:0 5px;border:1px solid var(--yk-line);border-radius:4px;background:none;color:var(--yk-text-2);font-size:var(--yk-fs-xs);white-space:nowrap}
 .detail-name{display:block}
 .detail-name [data-slot=sheet-title]{font-size:var(--yk-fs-2xl);line-height:1.35;font-weight:750}
 .detail-name [data-slot=sheet-title]:focus{outline:none}

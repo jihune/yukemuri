@@ -21,16 +21,15 @@ import { datedLink, bookingError, type BookingQuery } from '@/lib/booking-query'
 const providers={trip:'Trip.com',jalan:'Jalan',official:'공식 홈페이지',maps:'Google Maps'};
 const ratingProviders={trip:'Trip.com',google:'Google Maps',jalan:'Jalan',rakuten:'Rakuten Travel'};
 const KIND={ryokan:'료칸',hotel:'호텔',unknown:'숙소'};
-// 탕 상세 (U05 B): the three bath groups, with 전망 욕탕 (viewBath, D05) among the shared baths,
-// then Jalan's grade. Every FEATURE_LABELS key appears once. Facts not yet confirmed fold away
-// under one ‘확인 전 N개 보기’.
+// 탕 상세 (U05 B): the three bath groups, with 전망 욕탕 (viewBath, D05) among the shared baths.
+// Every bath key of FEATURE_LABELS appears once; facts not yet confirmed fold away under one
+// ‘확인 전 N개 보기’. Jalan's grade is not a bath fact: the summary shows it, as the card does.
 const DETAIL_GROUPS:{label:string;keys:readonly FeatureKey[]}[]=[
  {label:'온천수와 사용 방식',keys:['natural','nigori','freeFlow']},
  {label:'공용·전세 목욕 시설',keys:['largeBath','outdoor','communalOutdoor','viewBath','privateBath','privateOutdoor']},
  {label:'객실 목욕 시설',keys:['roomOnsen','roomIndoorOnsen','roomOutdoor','roomOutdoorOnsen']},
- {label:'자란 숙소 등급',keys:['jalanHighClass']},
 ];
-const BATH_KEYS=DETAIL_GROUPS.slice(0,3).flatMap(group=>group.keys);
+const BATH_KEYS=DETAIL_GROUPS.flatMap(group=>group.keys);
 const ROOM_KINDS=[['western','양실'],['japanese','화실'],['japaneseWestern','화양실'],['other','기타']] as const;
 // Room types and unnamed room photos shown per source before the rest fold away.
 const ROOM_TYPES=3,ROOM_PHOTOS=6;
@@ -60,7 +59,7 @@ function BathDetail({hotel}:{hotel:Hotel}){
  const known=(k:FeatureKey)=>hotelFeature(hotel,k).value!==null,anyKnown=BATH_KEYS.some(known);
  const unknown=DETAIL_GROUPS.map(group=>({...group,keys:group.keys.filter(k=>!known(k))})).filter(group=>group.keys.length);
  const count=unknown.reduce((n,group)=>n+group.keys.length,0),facility=facilityPage(hotel);
- const groups=(anyKnown?DETAIL_GROUPS:DETAIL_GROUPS.slice(3)).map(group=>({...group,keys:group.keys.filter(known)})).filter(group=>group.keys.length);
+ const groups=DETAIL_GROUPS.map(group=>({...group,keys:group.keys.filter(known)})).filter(group=>group.keys.length);
  const facts=(list:typeof groups)=>list.map(group=><div className="bath-detail-group" key={group.label}><h3>{group.label}</h3><div className="feature-grid">{group.keys.map(k=><Fact key={k} hotel={hotel} k={k}/>)}</div></div>);
  // Nothing confirmed: one sentence and the facility page, not a page of ‘확인 필요’.
  return <section className="detail-section" aria-labelledby="detail-bath-title"><h2 id="detail-bath-title">탕 상세</h2>
@@ -128,7 +127,7 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
      <div className="detail-image"><HotelPhoto key={card.id} hotel={card} google={google} credit={hotel?true:'label'} carousel/></div>
      <div className="detail-summary">
       {!hotel&&<div className="detail-unavailable"><p role="status">{loading?'자세한 정보를 다시 불러오는 중입니다…':'자세한 정보를 지금 불러올 수 없습니다. 목록에 있는 정보만 보여 줍니다.'}</p><button type="button" className="detail-retry" onClick={()=>{retried.current=true;onRetry()}} disabled={loading}><RotateCw size={17} aria-hidden="true"/>다시 시도</button></div>}
-      <SheetDescription className="detail-eyebrow">{KIND[card.kind]} · {card.location.label}</SheetDescription>
+      <SheetDescription className="detail-eyebrow">{KIND[card.kind]} · {card.location.label}{hotelFeature(card,'jalanHighClass').value===true&&<span className="highclass-tag">자란 하이클래스</span>}</SheetDescription>
       <div className="detail-name"><SheetTitle ref={title} tabIndex={-1}>{card.names.ko}</SheetTitle>{card.names.ja!==card.names.ko&&<p lang="ja">{card.names.ja}</p>}</div>
       {hotel?<HotelLifecycleNote hotel={hotel}/>:<HotelLifecycleNote hotel={card} compact/>}
       {hotel?<div className="provider-ratings" aria-label="출처별 평점">{orderedRatings(hotel).filter(r=>r.provider==='trip').map(renderRating)}<GooglePlaceRating hotel={hotel} data={google}/>{orderedRatings(hotel).filter(r=>r.provider!=='trip'&&r.provider!=='google').map(renderRating)}{hotel.ratings.length===0&&<p className="secondary">확인된 평점이 없습니다.</p>}</div>

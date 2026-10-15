@@ -72,7 +72,10 @@ function withRooms(h){
  h.features.viewBath={value:true,sourceId:jalan.sourceId,verifiedAt:'2026-10-05'};
  return h;
 }
-function unconfirmed(h){for(const fact of Object.values(h.features))if(fact){fact.value=null;fact.verifiedAt=null}return h}
+// Every bath fact unconfirmed, Jalan's grade confirmed (the crawler can store the grade while
+// leaving the baths empty).
+function unconfirmed(h){for(const fact of Object.values(h.features))if(fact){fact.value=null;fact.verifiedAt=null}h.features.jalanHighClass={value:true,sourceId:h.id,verifiedAt:'2026-10-05'};return h}
+const BATH_LABELS=Object.entries(LABELS).filter(([k])=>k!=='jalanHighClass').map(([,label])=>label).sort();
 const FAILURES={360:'503',390:'network',1280:'429'};
 const browser=await chromium.launch();
 for(const w of [360,390,1280]){
@@ -104,7 +107,7 @@ for(const w of [360,390,1280]){
   const bath=d.querySelector('[aria-labelledby=detail-bath-title]'),rooms=d.querySelector('[aria-labelledby=detail-rooms-title]');
   const fact=e=>({label:e.querySelector('span').textContent,value:e.querySelector('b').textContent,group:e.closest('.bath-detail-group')?.querySelector('h3')?.textContent,folded:!!e.closest('details'),shown:visible(e),small:[...e.querySelectorAll('small:not(.fact-origin)')].map(s=>s.textContent),origin:[...e.querySelectorAll('.fact-origin')].map(o=>({text:o.textContent,href:o.querySelector('a')?.href??null}))});
   return{
-   title:d.querySelector('[data-slot=sheet-title]')?.textContent,names:[...d.querySelectorAll('.detail-name p')].map(p=>({lang:p.lang,text:p.textContent})),
+   title:d.querySelector('[data-slot=sheet-title]')?.textContent,grade:d.querySelector('.detail-summary .highclass-tag')?.textContent??null,names:[...d.querySelectorAll('.detail-name p')].map(p=>({lang:p.lang,text:p.textContent})),
    ratings:d.querySelectorAll('.detail-summary .detail-rating').length,
    cells:[...d.querySelectorAll('.detail-cells .bath-cell')].map(li=>({label:li.querySelector('.bath-label').textContent,state:(li.className.match(/is-(\w+)/)||[])[1],scope:li.querySelector('small')?.textContent??''})),
    photo:{counter:d.querySelector('.photo-nav>span')?.textContent.replace('사진 ','')??null,credit:d.querySelector('.detail-image .photo-source-credit')?.textContent??null},
@@ -141,7 +144,7 @@ for(const w of [360,390,1280]){
  check(`사진 넘기기(${mobile?'터치':'키보드 Enter'}): 1/2 Trip.com → 2/2 Jalan → 처음으로, 출처 표기가 사진을 따라감`,before.counter==='1/2'&&before.credit==='Trip.com'&&second.counter==='2/2'&&second.credit==='Jalan'&&third.counter==='1/2'&&third.credit==='Trip.com',{before,second,third});
  // The bath detail: every condition once, unconfirmed ones folded.
  const labels=s.bath.facts.map(f=>f.label).sort(),folded=s.bath.facts.filter(f=>f.folded),shown=s.bath.facts.filter(f=>!f.folded);
- check(`탕 상세: 탕 조건 ${Object.keys(LABELS).length}개가 한 번씩, 확인된 것만 펼쳐 보이고 나머지는 ‘확인 전 ${folded.length}개 보기’로 접힘`,same(labels,Object.values(LABELS).sort())&&s.bath.fold===`확인 전 ${folded.length}개 보기`&&!s.bath.open&&folded.length>0&&folded.every(f=>f.value==='확인 필요'&&!f.shown)&&shown.every(f=>f.value!=='확인 필요'&&f.shown),{labels,fold:s.bath.fold,folded:folded.map(f=>f.label),shown:shown.map(f=>f.label+' '+f.value)});
+ check(`탕 상세: 탕 조건 ${BATH_LABELS.length}개가 한 번씩, 확인된 것만 펼쳐 보이고 나머지는 ‘확인 전 ${folded.length}개 보기’로 접힘, 자란 등급은 요약에(값이 있음일 때만)`,same(labels,BATH_LABELS)&&s.grade===(h.features.jalanHighClass?.value===true?'자란 하이클래스':null)&&s.bath.fold===`확인 전 ${folded.length}개 보기`&&!s.bath.open&&folded.length>0&&folded.every(f=>f.value==='확인 필요'&&!f.shown)&&shown.every(f=>f.value!=='확인 필요'&&f.shown),{labels,grade:s.grade,fold:s.bath.fold,folded:folded.map(f=>f.label),shown:shown.map(f=>f.label+' '+f.value)});
  const view=s.bath.facts.find(f=>f.label===LABELS.viewBath);
  check('전망 욕탕(D05)이 ‘공용·전세 목욕 시설’ 묶음에 ‘있음’으로 보임(6칸에는 없음)',view&&!view.folded&&view.group==='공용·전세 목욕 시설'&&view.value.includes('있음')&&!s.cells.some(x=>x.label===LABELS.viewBath),{view});
  const summary=detail.locator('.unknown-facts>summary');await summary.scrollIntoViewIfNeeded();
@@ -192,7 +195,7 @@ for(const w of [360,390,1280]){
 
  // 3. Nothing about the baths confirmed: one sentence and the Jalan facility page.
  mode='unknown';await open(ID);s=await read();await shot('unknown');
- check('탕 정보가 모두 확인 전: 제목 아래 한 문장과 Jalan 시설 안내 링크만(접기·온천 종류 블록 없음), 6칸 모두 ?',same(s.bath.children,['h2','p.bath-unknown'])&&s.bath.unknown==='이 숙소의 탕 정보는 아직 확인하지 못했습니다. Jalan 시설 안내 ↗'&&s.bath.unknownLink===api.sources.find(x=>x.sourceId.startsWith('jalan-')).url&&s.bath.fold===null&&s.bath.facts.length===0&&s.cells.every(x=>x.state==='unknown'),{bath:s.bath,cells:s.cells.map(x=>x.state)});
+ check('탕 정보가 모두 확인 전(자란 등급만 있음): 제목 아래 한 문장과 Jalan 시설 안내 링크만(접기·온천 종류·등급 블록 없음), 등급은 요약에, 6칸 모두 ?',same(s.bath.children,['h2','p.bath-unknown'])&&s.grade==='자란 하이클래스'&&s.bath.unknown==='이 숙소의 탕 정보는 아직 확인하지 못했습니다. Jalan 시설 안내 ↗'&&s.bath.unknownLink===api.sources.find(x=>x.sourceId.startsWith('jalan-')).url&&s.bath.fold===null&&s.bath.facts.length===0&&s.cells.every(x=>x.state==='unknown'),{grade:s.grade,bath:s.bath,cells:s.cells.map(x=>x.state)});
 
  // 4. Opened by its address before the snapshot arrives: the detail fails first, the sheet waits
  // for the snapshot's card instead of closing (the stay is not on the static first page).
