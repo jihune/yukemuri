@@ -208,11 +208,12 @@ for(const w of [360,390,1280]){
  check('추이: 표로 보기의 날짜·출처별 완료와 차이·곳 수가 기록과 같고 화면 폭 안',JSON.stringify(trendRows)===JSON.stringify(trendWant)&&trendRegion.scroll<=trendRegion.client+1,{trendRows,trendWant,trendRegion});
  const usageSection=sheet.locator('.u06-o8');await usageSection.scrollIntoViewIfNeeded();
  const meters=await usageSection.locator('.u06-meter').evaluateAll(list=>list.map(m=>({key:m.dataset.usage,text:m.querySelector('.u06-head span')?.textContent,warn:!!m.querySelector('.u06-issue'),bar:m.querySelector('.u06-bar').getBoundingClientRect().width,parts:[...m.querySelectorAll('.u06-bar i')].map(i=>({cls:i.className,w:i.getBoundingClientRect().width}))})));
- const metersWant=[['rowsRead','행'],['rowsWritten','행'],['requests','건']].map(([key,unit])=>{const used=usage.account[key]??0,limit=usage.limits[key];return{key,text:`${share(used,limit)} · ${n(used)} / ${n(limit)}${unit}`,warn:used>=0.7*limit,used,limit}});
+ // A null count (no analytics row yet) reads ‘기록 없음’ with an empty bar, never 0.
+ const metersWant=[['rowsRead','행'],['rowsWritten','행'],['requests','건']].map(([key,unit])=>{const used=usage.account[key],limit=usage.limits[key];return used===null?{key,text:`기록 없음 · 한도 ${n(limit)}${unit}`,warn:false,used:0,limit}:{key,text:`${share(used,limit)} · ${n(used)} / ${n(limit)}${unit}`,warn:used>=0.7*limit,used,limit}});
  const metersOff=meters.flatMap((m,i)=>{const w=metersWant[i];if(!w)return[{m}];const shown=[[w.used,'u06-filled'],[w.limit-w.used,'u06-empty']].filter(([c])=>c>0),free=m.bar-2*(shown.length-1);
   if(m.parts.map(p=>p.cls).join()!==shown.map(s=>s[1]).join())return[{key:m.key,parts:m.parts}];
   return m.parts.flatMap((p,j)=>Math.abs(p.w-shown[j][0]/w.limit*free)>1.5?[{key:m.key,p,want:shown[j][0]/w.limit*free}]:[])});
- check('사용량: D1 읽기·쓰기와 Worker 요청 미터의 비율·수·한도가 status.json과 같고(막대 ±1.5px) 70%를 넘은 줄만 경고',meters.length===3&&JSON.stringify(meters.map(({key,text,warn})=>({key,text,warn})))===JSON.stringify(metersWant.map(({key,text,warn})=>({key,text,warn})))&&metersOff.length===0,{meters,metersWant,metersOff});
+ check('사용량: D1 읽기·쓰기와 Worker 요청 미터의 비율·수·한도가 status.json과 같고(막대 ±1.5px) 70%를 넘은 줄만 경고, 기록 없는 항목은 0이 아니라 ‘기록 없음’',meters.length===3&&JSON.stringify(meters.map(({key,text,warn})=>({key,text,warn})))===JSON.stringify(metersWant.map(({key,text,warn})=>({key,text,warn})))&&metersOff.length===0,{meters,metersWant,metersOff});
  const usageLead=await usageSection.locator('.u06-lead').innerText(),reset=usage.date!==new Date().toISOString().slice(0,10);
  check('사용량: 측정 시각과 ‘약 N시간 전 기준’, 09:00(KST) 초기화를 알림',usageLead.includes('약 3시간 전 기준')&&usageLead.includes(reset?'09:00(KST)에 한도가 초기화되어':'매일 09:00(KST)에 초기화'),{usageLead,reset});
  const of2=await overflow();

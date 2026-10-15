@@ -139,10 +139,11 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
       <h2 id="u06-usage">Cloudflare 무료 사용량 <small>{dateLabel(u.date)}(UTC) · 계정 전체</small></h2>
       {account?<>
        <p className="u06-lead">{formatCollectionTime(u.measuredAt)} 측정, {hours<1?'1시간 이내':`약 ${hours}시간 전`} 기준입니다. {reset?'그 뒤 09:00(KST)에 한도가 초기화되어 지금 쓴 양은 이와 다릅니다.':'한도는 매일 09:00(KST)에 초기화됩니다.'}</p>
-       {USAGE.map(item=>{const used=account[item.key]??0,limit=u.limits[item.key];return <div key={item.key} className="u06-meter" data-usage={item.key}>
-        <p className="u06-head"><b>{item.label}</b><span><strong>{share(used,limit)}</strong> · {n(used)} / {n(limit)}{item.unit}</span></p>
-        <Bar parts={[[Math.min(used,limit),'u06-filled'],[Math.max(limit-used,0),'u06-empty']]}/>
-        {used>=0.7*limit&&<p className="u06-sub u06-issue">무료 한도의 70%를 넘었습니다.</p>}
+       {/* null: the analytics had no row for it yet (a new UTC day, a late aggregate), never shown as 0. */}
+       {USAGE.map(item=>{const used=account[item.key],limit=u.limits[item.key];return <div key={item.key} className="u06-meter" data-usage={item.key}>
+        <p className="u06-head"><b>{item.label}</b><span>{used===null?<>기록 없음 · 한도 {n(limit)}{item.unit}</>:<><strong>{share(used,limit)}</strong> · {n(used)} / {n(limit)}{item.unit}</>}</span></p>
+        <Bar parts={used===null?[[limit,'u06-empty']]:[[Math.min(used,limit),'u06-filled'],[Math.max(limit-used,0),'u06-empty']]}/>
+        {used===null?<p className="u06-sub">측정 때 분석 자료에 오늘 기록이 아직 없었습니다. 날짜가 막 바뀌었거나 집계가 늦으면 생깁니다.</p>:used>=0.7*limit&&<p className="u06-sub u06-issue">무료 한도의 70%를 넘었습니다.</p>}
        </div>})}
       </>:<p className="u06-lead" role="status">사용량을 읽지 못함 · {formatCollectionTime(u.measuredAt)}에 검색 자료를 만들면서 Cloudflare 사용량을 조회하지 못했습니다. 한도는 매일 09:00(KST)에 초기화됩니다.</p>}
       <p className="u06-sub">무료 한도는 계정의 모든 Worker·D1을 합쳐 하루 D1 읽기 {n(u.limits.rowsRead)}행, 쓰기 {n(u.limits.rowsWritten)}행, Worker 요청 {n(u.limits.requests)}건입니다. 측정 뒤에 쓴 양은 다음 검색 자료를 만들 때 반영됩니다.</p>
