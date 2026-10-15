@@ -244,6 +244,31 @@ async function run(page,cdp){
  const cellBack=await cell.count()?await offCentre():null,cellFocus=await focusedMarker(page);
  check('Space로 구역 지점을 열면 그 구역으로 이동하고 포커스는 그 구역 지점에 남음(페이지 스크롤 없음)',!!focusedCell&&cellAway!==null&&cellBack!==null&&cellBack<cellAway&&cellFocus.cell===focusedCell.cell&&cellFocus.inside&&await page.evaluate(()=>scrollY)===cellScroll,{cellAway,cellBack,cellFocus});
  await page.unroute(url=>url.pathname==='/snapshot/manifest.json');await page.unroute(url=>url.pathname==='/snapshot/v/grid-check/core.json');
+ // U05: cells keep the approximate grade. The same 600 with geo.json grade 4 (as a seed point
+ // is), and 20 more in cell (row 4, col 10) of which half are grade 1; no other stay located.
+ // The new snapshot fits the map to them; an area search there gives a dashed cell of the
+ // 600, a solid mixed cell of the 20, and a note naming approximate points.
+ const geo={grade:[],lat:[],lng:[]},lngB=w+(e-w)/16*10.5;let b=0;
+ for(let i=0;i<core.ids.length;i++){
+  if(core.lat[i]!==null){geo.grade.push(4)}
+  else if(b<20&&!['closed','temporarily_closed'].includes(core.state[i])){core.lat[i]=lat+(b%5)*0.00001;core.lng[i]=lngB+(b%4)*0.00001;geo.grade.push(b%2?4:1);b++}
+  else geo.grade.push(0);
+  geo.lat.push(core.lat[i]);geo.lng.push(core.lng[i]);
+ }
+ let geoServed=false;
+ await page.route(url=>url.pathname==='/snapshot/manifest.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...manifest,id:'grid-geo-check',files:{...manifest.files,core:'/snapshot/v/grid-geo-check/core.json',geo:'/snapshot/v/grid-geo-check/geo.json'}})}));
+ await page.route(url=>url.pathname==='/snapshot/v/grid-geo-check/core.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(core)}));
+ await page.route(url=>url.pathname==='/snapshot/v/grid-geo-check/geo.json',route=>{geoServed=true;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(geo)})});
+ await coverage.getByRole('button',{name:'검색 결과 지도로 돌아가기'}).evaluate(e=>e.click());
+ await page.locator('.result-refresh').evaluate(e=>e.click());
+ for(let i=0;i<20&&!geoServed;i++)await page.waitForTimeout(250);
+ await page.waitForTimeout(800);
+ await nudge('ArrowRight');await nudge('ArrowLeft');await areaButton.tap();
+ await page.locator('.stay-marker.is-cluster').first().waitFor({timeout:8000}).catch(()=>{});
+ const graded=await page.locator('.stay-marker.is-cluster').evaluateAll(list=>list.map(e=>({n:Number(e.textContent.replace(/[^0-9]/g,'')),dashed:e.classList.contains('is-approximate')})));
+ const note=await page.locator('.map-note').innerText(),all=graded.find(x=>x.n===600),mixed=graded.find(x=>x.n===20);
+ check('구역도 대략 위치만 든 구역은 점선, 섞인 구역은 실선, 지도 안내는 대략 위치(점선)',geoServed&&(await text()).includes('구역별 개수로 표시')&&all?.dashed===true&&mixed?.dashed===false&&note.includes('대략 위치(점선)'),{geoServed,graded,note});
+ await page.unroute(url=>url.pathname==='/snapshot/manifest.json');await page.unroute(url=>url.pathname==='/snapshot/v/grid-geo-check/core.json');await page.unroute(url=>url.pathname==='/snapshot/v/grid-geo-check/geo.json');
  await shot('grid');
 
  // Back to the loaded list positions with the keyboard.
