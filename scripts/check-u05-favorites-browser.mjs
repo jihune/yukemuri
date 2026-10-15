@@ -4,7 +4,8 @@
 //   menu marks the current view; ‘숙소 찾기’ goes back to the search with focus on its menu item;
 // - two stays saved with their hearts: the menu counts them, the screen lists exactly them under a
 //   one-line browser note with its icon, and the list end counts 2 / 2;
-// - a condition no saved stay meets: ‘저장한 2곳 중 …’ and ‘조건 모두 풀기’ brings both back;
+// - a condition or a region no saved stay meets: ‘저장한 2곳 중 …’ and ‘조건 모두 풀기’ brings both
+//   back, and the phone keeps its map button (the saved stays show as other candidates);
 // - the favorites cannot be read: the error and its retry, no note, no empty state, no list end.
 // Saving goes to the local site's temporary database only (never the production site).
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -68,6 +69,16 @@ for(const w of [360,390,1280]){
    const cleared=await read();
    check(`저장한 숙소가 조건(${key})에 모두 빠지면 ‘저장한 2곳 중 조건에 맞는 숙소가 없어요’, ‘조건 모두 풀기’로 두 곳이 다시 나옴(즐겨찾기 화면 그대로)`,
     out.heading==='즐겨찾기 0곳'&&out.empty&&!out.empty.saved&&out.empty.title==='저장한 2곳 중 조건에 맞는 숙소가 없어요'&&out.empty.button==='조건 모두 풀기'&&out.listEnd===null&&out.note===null&&cleared.heading==='즐겨찾기 2곳'&&cleared.cards.length===2,{key,out:{heading:out.heading,empty:out.empty,listEnd:out.listEnd},cleared:{heading:cleared.heading,cards:cleared.cards}});
+   // The saved stays then show as other candidates, so the phone keeps its map button (Codex, PR #116).
+   if(mobile)check('조건으로 0곳일 때도 휴대폰 지도 버튼은 남음(저장한 숙소가 다른 후보로 지도에 나옴)',out.toggle,{toggle:out.toggle});
+  }
+  // A region the saved stays are not in narrows them to 0 the same way (Codex, PR #116).
+  const region=['beppu','yufuin','kusatsu','hakone','ibusuki','kurokawa','sapporo','noboribetsu'].find(r=>{try{return search.list('saved=1&region='+r,ids).total===0}catch{return false}});
+  if(!region)check('두 곳이 없는 지역을 찾음',false,{ids});
+  else{
+   await page.goto(base+'/?saved=1&region='+region,{waitUntil:'networkidle'});await page.waitForTimeout(600);
+   const away=await read();
+   check(`저장한 숙소가 고른 지역(${region}) 밖이면 ‘저장한 2곳 중 조건에 맞는 숙소가 없어요’와 ‘조건 모두 풀기’`,away.empty&&away.empty.title==='저장한 2곳 중 조건에 맞는 숙소가 없어요'&&away.empty.button==='조건 모두 풀기',{region,empty:away.empty});
   }
 
   // 4) The favorites cannot be read.

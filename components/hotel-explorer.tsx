@@ -146,6 +146,8 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const filterButton=useRef<HTMLButtonElement>(null);
  // The favorites screen with nothing saved explains the heart instead of a 0-result list (U05 7).
  const findNav=useRef<HTMLButtonElement>(null),noneSaved=savedOnly&&!favorites.length;
+ // Any condition that narrows the result (region and query included; the rating scale only displays).
+ const narrowed=(Object.keys(DEFAULT_FILTERS) as (keyof HotelFilters)[]).some(k=>k!=='ratingProvider'&&JSON.stringify(filters[k])!==JSON.stringify(DEFAULT_FILTERS[k]));
  // The data status is in the footer, which the list's automatic loading would keep pushing
  // away; its link above the list stops that for the current result (the ‘숙소 더 불러오기’
  // button still loads more), opens the collection status and moves there.
@@ -288,7 +290,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
    <div className="hotel-list">{results.map(h=>renderCard(h))}</div>
    {!loading&&!searchError&&!favoritesBlocked&&results.length===0&&(noneSaved
     ?<div className="empty-state is-saved"><Heart size={32} aria-hidden="true"/><h3>아직 저장한 숙소가 없어요</h3><p>숙소 카드나 상세의 하트를 누르면 여기에 모입니다.<br/>저장은 이 브라우저에만 남고, 다른 브라우저와 동기화되지 않습니다.</p><button onClick={()=>{setSavedOnly(false);findNav.current?.focus()}}><Search size={16}/>숙소 찾기</button></div>
-    :<div className="empty-state"><Search size={32}/><h3>{savedOnly?(chips.length||filters.query?`저장한 ${favorites.length.toLocaleString()}곳 중 조건에 맞는 숙소가 없어요`:'저장한 숙소를 지금 목록에서 찾지 못했어요'):'조건에 맞는 숙소가 없어요'}</h3><p>{savedOnly?(chips.length||filters.query?'조건을 풀면 저장한 숙소를 모두 볼 수 있어요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.':'목록에서 빠진 숙소일 수 있습니다.'):chips.length?'위의 조건을 하나씩 풀어 보세요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.':'다른 지역이나 이름으로 찾아보세요.'}</p>{(!savedOnly||chips.length>0||!!filters.query)&&<button onClick={()=>{setFilters(DEFAULT_FILTERS);setDraft('')}}><RotateCcw size={16}/>조건 모두 풀기</button>}</div>)}
+    :<div className="empty-state"><Search size={32}/><h3>{savedOnly?(narrowed?`저장한 ${favorites.length.toLocaleString()}곳 중 조건에 맞는 숙소가 없어요`:'저장한 숙소를 지금 목록에서 찾지 못했어요'):'조건에 맞는 숙소가 없어요'}</h3><p>{savedOnly?(narrowed?'조건을 풀면 저장한 숙소를 모두 볼 수 있어요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.':'목록에서 빠진 숙소일 수 있습니다.'):chips.length?'위의 조건을 하나씩 풀어 보세요. 확인 전인 조건은 ‘있음’으로 치지 않습니다.':'다른 지역이나 이름으로 찾아보세요.'}</p>{(!savedOnly||narrowed)&&<button onClick={()=>{setFilters(DEFAULT_FILTERS);setDraft('')}}><RotateCcw size={16}/>조건 모두 풀기</button>}</div>)}
    {loading&&<div className="catalog-loading" role="status">숙소를 찾는 중…</div>}
    <div ref={listEnd} className="catalog-sentinel" aria-hidden="true"/>
    {!loading&&hasMore&&<div className="catalog-load-more" role="status"><button onClick={loadMore}>숙소 더 불러오기</button></div>}
@@ -307,7 +309,7 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
 </div></aside>
   {mode==='list'&&<button className="restore-map" onClick={()=>setMode('split')}><Map size={17}/>지도 함께 보기</button>}
  </main>
- {!(savedOnly&&!loading&&response.total===0&&mode!=='map')&&<button className="mobile-map-toggle" onClick={()=>setMode(mode==='map'?'list':'map')}>{mode==='map'?<List size={18}/>:<Map size={18}/>} {mode==='map'?'목록 보기':'지도 보기'}<span>{response.total.toLocaleString()}</span></button>}
+ {!(noneSaved&&!loading&&mode!=='map')&&<button className="mobile-map-toggle" onClick={()=>setMode(mode==='map'?'list':'map')}>{mode==='map'?<List size={18}/>:<Map size={18}/>} {mode==='map'?'목록 보기':'지도 보기'}<span>{response.total.toLocaleString()}</span></button>}
  {/* U05 filter: on a phone the filters come up from the bottom (vaul); drag down, the close button or Escape closes it. */}
  <Drawer open={filterOpen} onOpenChange={setFilterOpen} direction="bottom" autoFocus><DrawerContent className="filter-drawer" onCloseAutoFocus={e=>{e.preventDefault();filterButton.current?.focus()}}><div className="mobile-sheet-title"><div><DrawerTitle>숙소 필터</DrawerTitle><DrawerDescription>{favoritesBlocked?'즐겨찾기를 불러오지 못했어요':`조건에 맞는 ${response.total.toLocaleString()}곳`}</DrawerDescription></div><DrawerClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></DrawerClose></div><div className="mobile-sheet-body"><FilterPanel filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount} title={false}/></div><div className="filter-drawer-actions"><button type="button" className="filter-reset" onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button><DrawerClose asChild><button className="apply-filters">{favoritesBlocked?'목록으로 돌아가기':response.total.toLocaleString()+'곳 보기'}</button></DrawerClose></div></DrawerContent></Drawer>
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
