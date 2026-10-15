@@ -52,11 +52,15 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
   if(r.kind==='detail')pages[r.provider].detailChecked24h=r.recent;
  }
  const fill:CollectionFill={scopes:{all:emptyScope(),jalan:emptyScope(),trip:emptyScope()},pages};
- // raw: the stored payload (detail label, parse version, description as the API joins it);
- // h: the hotel the card and detail show (names, rating, photo, rooms, years).
+ // raw: the stored payload (the detail label, as status.quality counts it); h: the hotel the
+ // card and detail show (sources, names, rating, photo, rooms, years, description).
  const add=(id:string,raw:Hotel,h:Hotel,bathKnown:number|null)=>{
-  const own=scopeOf(id),source=raw.sources[0],detail=!!source?.label.includes('상세'),v3=own==='jalan'&&detail&&source?.bathDataVersion==='v3';
-  const description=raw.description??'',translated=translations.get(id);
+  // v3: a Jalan detail read with the current rule (only the collector's Jalan details carry
+  // bathDataVersion) among the sources the detail shows, a linked one included (curated places).
+  const own=scopeOf(id),detail=!!raw.sources[0]?.label.includes('상세'),v3=h.sources.some(s=>s.bathDataVersion==='v3'&&s.label.includes('상세'));
+  // The description the detail shows: a linked Jalan detail's, with its translation, replaces
+  // the stored one (composePreferredHotel); otherwise the stored text and the translation table.
+  const linked=h.description!==raw.description,description=h.description??'',translated=linked?!!h.descriptionTranslation:translations.get(id),stale=!linked&&translations.get(id)===false;
   const state={
    detail:detail?'filled':'empty',
    bath:(bathKnown??0)&BATH_FEATURE_MASK?'filled':v3?'none':'empty',
@@ -70,7 +74,7 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
   for(const s of own?[fill.scopes.all,fill.scopes[own]]:[fill.scopes.all]){
    s.records++;
    for(const row of FILL_ROWS)s.rows[row.key][state[row.key]]++;
-   if(translated===false&&state.descKo==='empty')s.staleTranslations++;
+   if(stale&&state.descKo==='empty')s.staleTranslations++;
   }
  };
  return{fill,add};

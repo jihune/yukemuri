@@ -43,6 +43,13 @@ try{
  const [absent,rooms]=await pick("SELECT id FROM hotels WHERE id GLOB 'jalan-*' AND json_extract(payload,'$.sources[0].label') LIKE '%상세%'",2);
  await db.prepare("UPDATE hotels SET bath_known=0,payload=json_set(json_remove(payload,'$.rooms','$.roomTypes'),'$.sources[0].bathDataVersion','v3') WHERE id=?").bind(absent).run();
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].bathDataVersion','v3','$.rooms',json(?)) WHERE id=?").bind(JSON.stringify({total:12,sourceId:rooms,verifiedAt:'2026-10-11',note:'check'}),rooms).run();
+ // A curated place (no provider prefix) whose linked Jalan observation is that v3 detail
+ // without room facts: the detail shows it, so its rooms are absent at the source (Codex P2).
+ const group=await db.prepare("SELECT hotel_id,jalan_hotel_id FROM hotel_source_groups WHERE jalan_hotel_id IS NOT NULL AND hotel_id NOT GLOB 'jalan-*' AND hotel_id NOT GLOB 'trip-*' AND hotel_id NOT IN (SELECT value FROM json_each(?)) ORDER BY hotel_id LIMIT 1").bind(JSON.stringify([curated])).first();
+ assert(group,'a curated group with a Jalan id');
+ const peer=JSON.parse((await db.prepare('SELECT payload FROM hotels WHERE id=?').bind(absent).first()).payload);
+ peer.id=group.jalan_hotel_id;peer.sources[0].sourceId=group.jalan_hotel_id;peer.description='れんけいしたかんそくのせつめいです。';
+ await db.prepare('INSERT INTO hotel_source_observations (id,payload,observed_at) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload').bind(group.jalan_hotel_id,JSON.stringify(peer),peer.sources[0].retrievedAt).run();
  const [years,noKorean]=await pick("SELECT id FROM hotels WHERE id GLOB 'trip-*' AND json_extract(payload,'$.names.ko') NOT GLOB '*[가-힣]*'",2);
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.facilityYears',json(?)) WHERE id=?").bind(JSON.stringify({opened:1990,sourceId:years,verifiedAt:'2026-10-11',note:'check'}),years).run();
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.sources[0].nameLocaleUrl','https://kr.trip.com/hotels/check-hotel-detail-1/x/') WHERE id=?").bind(noKorean).run();
@@ -150,14 +157,17 @@ try{
   const scope=()=>({records:0,rows:Object.fromEntries(ROWS.map(k=>[k,{filled:0,none:0,empty:0}])),geo:[0,0,0,0,0,0,0],staleTranslations:0});
   const want={scopes:{all:scope(),jalan:scope(),trip:scope()}};
   places.forEach((p,i)=>{
-   const h=workerHotels.get(p.id),provider=p.id.startsWith('jalan-')?'jalan':p.id.startsWith('trip-')?'trip':null,detail=/상세/.test(p.label??''),v3=provider==='jalan'&&detail&&p.version==='v3';
+   const h=workerHotels.get(p.id),provider=p.id.startsWith('jalan-')?'jalan':p.id.startsWith('trip-')?'trip':null,detail=/상세/.test(p.label??'');
+   // As the detail shows it: v3 among its sources (a linked one too), and its description.
+   const v3=!!h&&h.sources.some(s=>s.bathDataVersion==='v3'&&/상세/.test(s.label)),linked=!!h&&h.description!==p.description;
+   const translated=linked?!!h.descriptionTranslation:p.translation===1,stale=!linked&&p.translation===0,description=linked?h.description:p.description;
    assert(h,p.id+' from the Worker');assert.equal(core.ids[i],p.id);
    const state={detail:detail?'filled':'empty',bath:(p.bath_known??0)&BATH_FEATURE_MASK?'filled':v3?'none':'empty',
     rooms:h.rooms||h.roomTypes?.some(t=>t.items.length)?'filled':v3?'none':'empty',years:h.facilityYears?'filled':provider==='jalan'?'none':'empty',
     rating:h.ratings.some(r=>!r.isMock)?'filled':'none',photo:h.image.url?'filled':'none',
     nameKo:/[가-힣]/.test(h.names.ko)?'filled':p.looked||p.locale?'none':'empty',
-    descKo:!(p.description??'').trim()?'none':!needsKoreanDescription(p.description)||p.translation===1?'filled':'empty'};
-   for(const s of provider?[want.scopes.all,want.scopes[provider]]:[want.scopes.all]){s.records++;for(const k of ROWS)s.rows[k][state[k]]++;if(p.translation===0&&state.descKo==='empty')s.staleTranslations++;s.geo[geo.grade[i]]++}
+    descKo:!(description??'').trim()?'none':!needsKoreanDescription(description)||translated?'filled':'empty'};
+   for(const s of provider?[want.scopes.all,want.scopes[provider]]:[want.scopes.all]){s.records++;for(const k of ROWS)s.rows[k][state[k]]++;if(stale&&state.descKo==='empty')s.staleTranslations++;s.geo[geo.grade[i]]++}
   });
   const zero=()=>({done:0,pending:0,retry:0,failed:0}),pages={jalan:{detail:zero(),list:zero(),detailChecked24h:0},trip:{detail:zero(),list:zero(),detailChecked24h:0}};
   const STATE={done:'done',pending:'pending',running:'pending',retry:'retry',failed:'failed'};
@@ -168,6 +178,8 @@ try{
   assert.deepEqual(fill,{...want,pages},'status.json fill');
   const all=fill.scopes.all.rows;
   for(const [k,part] of [['bath','none'],['rooms','filled'],['rooms','none'],['years','filled'],['years','none'],['nameKo','none'],['descKo','none'],['descKo','filled']])assert(all[k][part]>0,`the check reaches ${k} ${part}`);
+  const curatedOnly=k=>fill.scopes.all.rows[k].none-fill.scopes.jalan.rows[k].none-fill.scopes.trip.rows[k].none;
+  assert(curatedOnly('rooms')>0,'a curated place with a linked v3 Jalan detail and no rooms counts as absent at the source');
   assert(fill.scopes.all.staleTranslations>0&&fill.pages.jalan.detail.retry>0&&fill.pages.trip.list.failed>0&&fill.pages.jalan.detailChecked24h>0,'the check reaches stale translations, retries, failures and the last day');
   for(const s of Object.values(fill.scopes))for(const k of ROWS){const c=s.rows[k];assert.equal(c.filled+c.none+c.empty,s.records,k)}
  }
