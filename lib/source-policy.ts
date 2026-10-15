@@ -36,6 +36,9 @@ export function composePreferredHotel(base:Hotel,linked:Hotel[]):Hotel{
  // A stated room count follows the facility order too (D05).
  const roomRank=(h:Hotel)=>{const url=h.sources.find(s=>s.sourceId===h.rooms?.sourceId&&!s.isMock)?.url??'',i=(SOURCE_POLICY.facilities as readonly string[]).indexOf(url.includes('jalan.net/yad')?'jalan':url.includes('trip.com/hotels/')?'trip':'official');return i<0?10:i};
  const rooms=all.filter(h=>h.rooms).sort((a,b)=>roomRank(a)-roomRank(b)||stamp(b,b.rooms!.sourceId,b.rooms!.verifiedAt)-stamp(a,a.rooms!.sourceId,a.rooms!.verifiedAt))[0]?.rooms;
+ // Stated opening/renovation years follow the same order (D04): one source's pair, never mixed.
+ const yearRank=(h:Hotel)=>{const url=h.sources.find(s=>s.sourceId===h.facilityYears?.sourceId&&!s.isMock)?.url??'',i=(SOURCE_POLICY.facilities as readonly string[]).indexOf(url.includes('jalan.net/yad')?'jalan':url.includes('trip.com/hotels/')?'trip':'official');return i<0?10:i};
+ const facilityYears=all.filter(h=>h.facilityYears).sort((a,b)=>yearRank(a)-yearRank(b)||stamp(b,b.facilityYears!.sourceId,b.facilityYears!.verifiedAt)-stamp(a,a.facilityYears!.sourceId,a.facilityYears!.verifiedAt))[0]?.facilityYears;
  // Room photos of every linked source, in the photo order (Trip.com first),
  // one set per source: a group can list the base hotel among its peers.
  const roomPhotoRank=(set:{sourceId:string})=>rankPhoto(set.sourceId.startsWith('trip-')?'trip':set.sourceId.startsWith('jalan-')?'jalan':'unknown');
@@ -44,5 +47,5 @@ export function composePreferredHotel(base:Hotel,linked:Hotel[]):Hotel{
  const photos=preferredPhotos(all),image=photos[0]?{...base.image,url:photos[0].url,sourceId:photos[0].sourceId,alternatives:photos.slice(1).map(p=>p.url)}:base.image;
  const sources=new Map(base.sources.map(s=>[s.sourceId,s]));for(const h of linked)for(const s of h.sources){const old=sources.get(s.sourceId);if(!old||Date.parse(s.retrievedAt)>Date.parse(old.retrievedAt))sources.set(s.sourceId,s)}
  const links=new Map(base.links.map(l=>[l.provider,l]));for(const h of linked)for(const l of h.links)if(!links.has(l.provider))links.set(l.provider,l);
- return{...base,features,...(rooms?{rooms}:{}),...(roomTypes.length?{roomTypes}:{}),spring:jalan?.spring??base.spring,image,photoCandidates:photos,ratings:[...ratings.values()].map(r=>r.rating).sort((a,b)=>(SOURCE_POLICY.ratings as readonly string[]).indexOf(a.provider!)-(SOURCE_POLICY.ratings as readonly string[]).indexOf(b.provider!)),sources:[...sources.values()],links:[...links.values()],...(jalan?{description:jalan.description,descriptionTranslation:jalan.descriptionTranslation}:{})};
+ return{...base,features,...(rooms?{rooms}:{}),...(facilityYears?{facilityYears}:{}),...(roomTypes.length?{roomTypes}:{}),spring:jalan?.spring??base.spring,image,photoCandidates:photos,ratings:[...ratings.values()].map(r=>r.rating).sort((a,b)=>(SOURCE_POLICY.ratings as readonly string[]).indexOf(a.provider!)-(SOURCE_POLICY.ratings as readonly string[]).indexOf(b.provider!)),sources:[...sources.values()],links:[...links.values()],...(jalan?{description:jalan.description,descriptionTranslation:jalan.descriptionTranslation}:{})};
 }

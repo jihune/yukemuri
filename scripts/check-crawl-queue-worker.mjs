@@ -190,6 +190,13 @@ try{
  assert.deepEqual(countedDetail.rooms,counted.rooms);assert.equal(countedDetail.features.viewBath.value,true);assert.deepEqual(countedDetail.roomTypes,counted.roomTypes);
  const viewBit=1<<13,countedRow=await db.prepare('SELECT bath_features,bath_known FROM hotels WHERE id=?').bind(counted.id).first();
  assert.equal(countedRow.bath_features&viewBit,viewBit);assert.equal(countedRow.bath_known&viewBit,viewBit);
+ // D04: the opening year a Trip.com page states goes through the contract to the detail API.
+ const dated=JSON.parse(execFileSync('python3',['-c',"import json,sys\nsys.path.insert(0,'scripts/crawler')\nfrom collect import parse_source_page\nraw=open('scripts/crawler/fixtures/trip-detail-years.html',encoding='utf-8').read().replace('10019167','999158')\nprint(json.dumps(parse_source_page(raw,'trip','https://www.trip.com/hotels/hakone-hotel-detail-999158/hakone-gora-byakudan/','2026-10-05T05:00:00+00:00','pref-kanagawa','detail')[0][0],ensure_ascii=False))"],{encoding:'utf8'}));
+ const datedUrl=dated.sources[0].url;assert.equal(dated.facilityYears.opened,2016);assert.equal(dated.facilityYears.sourceId,'trip-999158');
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'trip','detail','pref-kanagawa','pending',0,0)").bind(datedUrl).run();
+ for(const facilityYears of [{...dated.facilityYears,sourceId:'trip-999159'},{...dated.facilityYears,opened:999},{sourceId:dated.id,verifiedAt:'2026-10-05',note:'no year'}])await api('/api/crawl','PUT',{url:datedUrl,status:'done',observations:[{...dated,facilityYears}],links:[]},400);
+ assert.equal((await api('/api/crawl','PUT',{url:datedUrl,status:'done',observations:[dated],links:[]})).accepted,1);
+ assert.deepEqual((await api('/api/hotels/'+dated.id)).facilityYears,dated.facilityYears);
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
  // Overlapping collector runs: a full-count GET racing new-property PUTs must
  // not drop their increments (Codex review on PR #28).

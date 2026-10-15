@@ -35,6 +35,8 @@ export type Provenance = { sourceId:string; sourceType:'seed'|'api'|'manual'|'as
 export type FeatureFact = { value:boolean|null; sourceId:string; verifiedAt:string|null; scope?:'property'|'someRooms'|'allRooms'; note?:string };
 // The source's stated room count (D05). Missing means unknown; byType: Jalan's 洋室·和室·和洋室·その他.
 export type RoomCount = { total:number; byType?:{western:number;japanese:number;japaneseWestern:number;other:number}; sourceId:string; verifiedAt:string; note:string };
+// Opening and renovation years a source states (D04). Missing means unknown, never 'old'.
+export type FacilityYears = { opened?:number; renovated?:number; sourceId:string; verifiedAt:string; note:string };
 // Room type names and room photos a source shows (D05). Jalan's room gallery names no type (name null).
 export type RoomTypeSet = { sourceId:string; verifiedAt:string; items:{ name:string|null; photos:{url:string;caption:string}[] }[] };
 export type ExternalLink = { provider:'trip'|'jalan'|'official'|'maps'; url:string|null; kind:'search'|'property'|'unavailable'|'coordinates'; label:string };
@@ -46,7 +48,7 @@ export type Hotel = {
   id:string; names:{ko:string;ja:string;en:string}; aliases?:string[]; kind:'ryokan'|'hotel'|'unknown';
   regionId:RegionId; prefecture?:string|null; location:{label:string;address:string;latitude:number|null;longitude:number|null;isApproximate:boolean};
   description:string; descriptionTranslation?:{text:string;translatedAt:string}; image:{url:string;alt:string;sourceId:string;isRepresentative:boolean;alternatives?:string[]};
-  features:Record<CoreFeatureKey,FeatureFact>&Partial<Record<ExtraFeatureKey,FeatureFact>>; rooms?:RoomCount; roomTypes?:RoomTypeSet[]; spring:{types:string[];waterNotes:string;useNotes:string};
+  features:Record<CoreFeatureKey,FeatureFact>&Partial<Record<ExtraFeatureKey,FeatureFact>>; rooms?:RoomCount; roomTypes?:RoomTypeSet[]; facilityYears?:FacilityYears; spring:{types:string[];waterNotes:string;useNotes:string};
   ratings:{sourceId:string;provider?:'trip'|'google'|'jalan'|'rakuten';score:number;scale:5|10;reviewCount:number;summary:string;highlights:string[];isMock:boolean;verifiedAt:string|null}[];
   links:ExternalLink[]; sources:Provenance[];
 };

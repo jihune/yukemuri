@@ -161,6 +161,24 @@ assert all(len(t['photos'])==3 and all(p['url'].startswith('https://aw-d.tripcdn
 other_hotel=trip_rooms_raw.replace('\\"masterHotelId\\":704264','\\"masterHotelId\\":704265')
 assert other_hotel!=trip_rooms_raw and not {'rooms','roomTypes'}&set(parse_source_page(other_hotel,'trip',fujiya_url,stamp,kind='detail')[0][0])
 assert not {'rooms','roomTypes'}&set(parse_source_page(korean,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/',stamp,kind='detail')[0][0])
+# D04: the opening/renovation year this property's Trip.com page states (reduced
+# from kr.trip.com, 2026-10-13), only when the field and the visible label agree.
+assert fujiya['facilityYears']=={'renovated':2020,'sourceId':'trip-704264','verifiedAt':stamp[:10],'note':'Trip.com 숙소 정보: 리모델링 연도: 2020'},fujiya.get('facilityYears')
+years_raw=(fixtures/'trip-detail-years.html').read_text()
+byakudan_url='https://www.trip.com/hotels/hakone-hotel-detail-10019167/hakone-gora-byakudan/'
+def stated_years(page,at=stamp):
+ return parse_source_page(page,'trip',byakudan_url,at,kind='detail')[0][0].get('facilityYears')
+assert stated_years(years_raw)=={'opened':2016,'sourceId':'trip-10019167','verifiedAt':stamp[:10],'note':'Trip.com 숙소 정보: 호텔 설립연도: 2016'},stated_years(years_raw)
+opened='\\"openYear\\":\\"2016\\"'
+assert opened in years_raw and '호텔 설립연도: 2016' in years_raw
+assert stated_years(years_raw.replace(opened,'\\"openYear\\":\\"2015\\"')) is None,'The field and the label must agree'
+assert stated_years(years_raw.replace('호텔 설립연도: 2016','호텔 정보: 2016')) is None,'No label, no year'
+assert stated_years(years_raw,'2015-12-31T00:00:00Z') is None,'A year after the check is a plan, not a fact'
+assert stated_years(years_raw.replace(opened,'\\"openYear\\":\\"16\\"').replace('호텔 설립연도: 2016','호텔 설립연도: 16')) is None
+assert stated_years(years_raw.replace('\\"masterHotelId\\":10019167','\\"masterHotelId\\":10019168')) is None,"Another hotel's record"
+assert 'facilityYears' not in parse_source_page(korean,'trip','https://www.trip.com/hotels/aso-hotel-detail-1458363/sozankyo/',stamp,kind='detail')[0][0]
+# Jalan states no year field; its free-text years (mostly one room) are not read.
+assert not any('facilityYears' in h for h in [plaza,jalan_rooms('jalan-rooms-hanayu.html','321273'),jalan_rooms('jalan-rooms-shinanoki.html','312415'),jalan_rooms('jalan-sozankyo-baths.html','327522')])
 with tempfile.TemporaryDirectory() as folder:
  db=open_db(Path(folder)/'queue.sqlite')
  url='https://www.jalan.net/yad307416/'
