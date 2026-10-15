@@ -34,6 +34,10 @@ try{
  assert.equal(place('pref-ooita','大分県速見郡日出町平道1','Hiji','Beppuwan Resort'),'히지 · 오이타');
  assert.equal(place('pref-kanagawa','神奈川県小田原市城山1','Odawara','Hakone Entrance Hotel'),'오다와라 · 가나가와');
  assert.equal(place('pref-hokkaido','1 Chome Yunokawara, Hakodate City, Hokkaido','Hakodate'),'하코다테 · 홋카이도','Romanized onsen names must not match inside longer words');
+ // Town words in the search context (L01): Kurokawa Onsen is in 南小国町, not 黒川 in Aso city.
+ const townContext=(pref,address,label)=>hotelPlaceSearchText({prefecture:pref,regionId:pref,location:{address,label},names:{ja:'旅館'}});
+ assert(townContext('pref-kumamoto','熊本県阿蘇郡南小国町満願寺6567','미나미오구니 · 구마모토').includes('구로카와'),'An address in Minamioguni carries the Kurokawa town words');
+ assert(!townContext('pref-kumamoto','熊本県阿蘇市黒川1230','아소 · 구마모토').includes('구로카와'),'黒川 in Aso city is not Kurokawa Onsen');
  const index=prepareSearchIndex(entries),suggest=(q,extra={})=>localHotelSuggestions(index,q,{...DEFAULT_FILTERS,...extra});
  for(const q of ['소잔쿄','SOZAN-KYO','Sozankoy','소잔코','蘇山鄕','호텔 소잔쿄','아소 소잔쿄','Sozankyo Aso'])assert.equal(suggest(q)[0].id,'jalan-327522',q);
  for(const q of ['타키노아','Noboribetsu Takinoya'])assert.equal(suggest(q)[0].id,'takinoya',q);

@@ -266,5 +266,41 @@ try{
  await setReady(0);
  await db.prepare("UPDATE crawl_jobs SET next_at=? WHERE status='retry'").bind(readyAt+3600).run();
  assert.equal((await claimDetail('national')).jobs[0].url,'https://www.jalan.net/yad999160/','Future retries and failed pages leave normal discovery available');
- console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment and protected health.');
+ // A plan version change (data/collection-priorities.json) rereads every job and
+ // writes only the jobs whose priority changes (L01: rewriting every row cost about
+ // 3.9 million rows read at production size). A test-only trigger counts the writes.
+ await db.prepare('CREATE TABLE priority_writes(n INTEGER NOT NULL)').run();await db.prepare('INSERT INTO priority_writes VALUES (0)').run();
+ await db.prepare('CREATE TRIGGER count_priority_writes AFTER UPDATE OF priority ON crawl_jobs BEGIN UPDATE priority_writes SET n=n+1; END').run();
+ const priorityKey='collection-priority:'+JSON.parse(readFileSync('data/collection-priorities.json','utf8')).version;
+ const rerunPriorities=async()=>{
+  await db.prepare('DELETE FROM catalog_meta WHERE key=?').bind(priorityKey).run();await db.prepare('UPDATE priority_writes SET n=0').run();
+  for(let i=0;i<20&&!(await api('/api/crawl-prepare','POST')).done;i++);
+  assert.equal((await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(priorityKey).first())?.value,'done');
+  return (await db.prepare('SELECT n FROM priority_writes').first()).n;
+ };
+ await rerunPriorities();
+ const settled=(await db.prepare('SELECT url,priority FROM crawl_jobs ORDER BY url').all()).results;
+ assert(settled.length>3);
+ assert.equal(await rerunPriorities(),0,'An unchanged plan rereads the jobs without writing them');
+ const moved=settled.slice(0,3);
+ for(const job of moved)await db.prepare('UPDATE crawl_jobs SET priority=99 WHERE url=?').bind(job.url).run();
+ assert.equal(await rerunPriorities(),moved.length,'Only the jobs whose priority changes are written');
+ assert.deepEqual((await db.prepare('SELECT url,priority FROM crawl_jobs ORDER BY url').all()).results,settled,'Every job is back at its computed priority');
+ // Town rules (L01): addressTerms match the stored address only. Trip.com labels
+ // many Yokohama hotels '가나가와 · 하코네'; a Korean Trip.com address names 하코네;
+ // 黒川 in Aso city is not Kurokawa Onsen, 南小国町 is.
+ const towns=[
+  ['trip','999301','pref-kanagawa','가나가와 · 하코네','Yokohama',60],
+  ['trip','999302','pref-kanagawa','하코네 온천 · 가나가와','하코네341 Yumoto, Ashigarashimo District, 250-0311 하코네, 아시가라시모 군, 가나가와 현, 일본',0],
+  ['jalan','999303','pref-kumamoto','미나미오구니 · 구마모토','熊本県阿蘇郡南小国町満願寺6567',10],
+  ['jalan','999304','pref-kumamoto','아소 · 구마모토','熊本県阿蘇市黒川1230',20],
+ ];
+ for(const [provider,digits,prefecture,label,address] of towns){
+  const h=fixture(provider,digits);h.prefecture=prefecture;h.regionId='kyushu';h.names={ko:'큐 테스트 '+digits,ja:'キュー試験'+digits,en:'Queue Test '+digits};h.location={...h.location,label,address};
+  await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at,priority) VALUES (?,?,'detail',?,'pending',0,0,99)").bind(h.sources[0].url,provider,prefecture).run();
+  await api('/api/crawl','PUT',{url:h.sources[0].url,status:'done',observations:[h],links:[]});
+ }
+ await rerunPriorities();
+ for(const [provider,digits,,label,address,priority] of towns)assert.equal((await db.prepare('SELECT priority FROM crawl_jobs WHERE url=?').bind(fixture(provider,digits).sources[0].url).first()).priority,priority,`${label} / ${address}`);
+ console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment, protected health and priority writes only where the plan changes them.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

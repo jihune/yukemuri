@@ -122,7 +122,7 @@ export function hotelPlaceSearchText(hotel: PlaceInput): string {
   const pref = prefectureFor(hotel),label=formatHotelLocation(hotel),parts=label.split(' · ');
   const city = cities.find(([p,ko]) => p === pref?.slug && parts.includes(ko));
   const evidence=[hotel.location.label,hotel.location.address,hotel.names?.ja??''].join(' ').toLowerCase();
-  const towns=plan.towns.filter(t=>t.prefecture===pref?.id&&t.terms.some(term=>evidence.includes(term.toLowerCase()))).flatMap(t=>[t.name,t.query,...t.terms]);
+  const address=hotel.location.address.toLowerCase(),towns=plan.towns.filter(t=>t.prefecture===pref?.id&&(t.terms.some(term=>evidence.includes(term.toLowerCase()))||t.addressTerms?.some(term=>address.includes(term.toLowerCase())))).flatMap(t=>[t.name,t.query,...t.terms]);
   return [hotel.location.label,hotel.location.address,label,pref?.name.split(' · ')[0],pref?.ja,pref?.en.split(' ')[0],city?.[2],city?.[3],[city?.[3],pref?.en.split(' ')[0]].filter(Boolean).join(' '),[city?.[2],pref?.ja].filter(Boolean).join(' '),...towns].filter(Boolean).join(' ');
 }
 

@@ -1,12 +1,12 @@
 {
-  "version": "onsen-first-20261005",
+  "version": "onsen-first-20261015",
   "primaryPrefectures": ["pref-fukuoka", "pref-saga", "pref-nagasaki", "pref-kumamoto", "pref-ooita", "pref-miyazaki", "pref-kagoshima", "pref-hokkaido", "pref-okinawa"],
   "secondaryPrefectures": ["pref-oosaka", "pref-hyogo"],
   "tertiaryPrefectures": ["pref-tokyo", "pref-kanagawa", "pref-chiba", "pref-saitama", "pref-yamanashi", "pref-shizuoka"],
   "towns": [
-    {"name":"하코네", "query":"箱根", "prefecture":"pref-kanagawa", "priority":0, "terms":["箱根","強羅","仙石原","Hakone"], "listPrefix":"https://www.jalan.net/140000/LRG_141600/"},
+    {"name":"하코네", "query":"箱根", "prefecture":"pref-kanagawa", "priority":0, "terms":["箱根","強羅","仙石原","Hakone"], "addressTerms":["하코네"], "listPrefix":"https://www.jalan.net/140000/LRG_141600/"},
     {"name":"유후인", "query":"由布院", "prefecture":"pref-ooita", "priority":0, "terms":["由布院","湯布院","Yufuin"], "listPrefix":"https://www.jalan.net/440000/LRG_440600/"},
-    {"name":"구로카와", "query":"黒川", "prefecture":"pref-kumamoto", "priority":10, "terms":["黒川","杖立","わいた","Kurokawa"], "listPrefix":"https://www.jalan.net/430000/LRG_430400/"},
+    {"name":"구로카와", "query":"黒川", "prefecture":"pref-kumamoto", "priority":10, "terms":["黒川温泉","Kurokawa Onsen","杖立","わいた","Tsuetate","Waita"], "addressTerms":["南小国町","Minamioguni","미나미오구니"], "listPrefix":"https://www.jalan.net/430000/LRG_430400/"},
     {"name":"벳푸", "query":"別府", "prefecture":"pref-ooita", "priority":10, "terms":["別府","鉄輪","Beppu"]},
     {"name":"노보리베츠", "query":"登別", "prefecture":"pref-hokkaido", "priority":10, "terms":["登別","Noboribetsu"]},
     {"name":"조잔케이", "query":"定山渓", "prefecture":"pref-hokkaido", "priority":10, "terms":["定山渓","Jozankei"]},
