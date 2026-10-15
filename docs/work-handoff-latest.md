@@ -251,6 +251,7 @@ U04(예약 링크 날짜·인원과 설명 번역 문구)는 동시에 진행해
 - 10-15T12:5xZ 사용자: ‘D1 사용량 표시는 가급적 사용자의 조회에도 실시간 연동되게 할 수는 없겠지? 어려우면 그냥 가능한 쪽으로만 간단히 해도 된다.’ 상위 세션 판단: 간단한 쪽(스냅숏 생성 때 한 번 읽음, 화면에 측정 시각과 ‘약 N시간 전 기준’). 실시간으로 하려면 Worker 런타임에 분석 읽기 전용 토큰을 새로 넣어야 하고(배포 토큰은 권한이 넓어 넣지 않음, 새 토큰은 사용자가 만들어야 함), 조회마다 Worker 요청과 외부 API 호출이 늘며, 분석 자료도 몇 분 늦다. U06에 전했다.
 - 10-15T13:3xZ PR #113(U05 필터 C) 병합(`e3fb633`, 근거는 U05 절 ‘필터 C PR’). 배포 run 38744084321 성공(13:36–13:45Z), Worker `c67452b6`, 스냅숏 `981617310d42f77b`(16,119곳), smoke 통과. U05에 7번(즐겨찾기) 시작을 보냈다. 13:40Z 안전망 점검: 5시간 창 0.81(초기화 15:50Z), 7일 창 0.37. PR #114가 #113 병합으로 충돌했고 U06이 13:41Z에 main을 합쳤다(`2caed52`, 충돌은 globals.css 끝의 두 블록이라 줄 수정 없음). 다음 안전망 점검은 16:00Z(`trig_01YYvp5V3Q5SmBNdBfkpU6XP`).
 - 10-15T14:15Z PR #114(U06 수집 현황 화면) 병합(`2ef332d`, 근거는 U06 절 ‘다음 작업’). 배포 run 38749810284 성공, Worker `821f9700`, smoke 통과. 14:17Z 5시간 창이 0.9에 닿아 U05(PR #116 Codex 1회째 P2 2건 수정 push 뒤)·U06(후속 PR 시작 전)·상위 세션이 멈췄다. 셋 다 16:00Z 재개 예약으로 이어 간다. 16:01Z 재개 때 5시간 창 0.01, 7일 창 0.39.
+- 10-15T16:3xZ PR #116(U05 7번 즐겨찾기) 병합(`0cbd848`, 근거는 U05 절 ‘7번 즐겨찾기 PR’). 배포 run 38770275895 성공(16:35–16:43Z), Worker `3b0d541e`, 스냅숏 `7914ce757aeecaf9`(16,119곳), smoke 통과. U05 2단계 7개 PR 끝. U06은 날짜별 추이·D1 사용량 후속 PR을 구현 중이다(16:03Z 설계 알림: 수집 끝 GET이 `daily-progress:<UTC 날짜>` 한 줄을 catalog_meta에 쓰고, 스냅숏이 최근 30일과 그날 D1·Worker 사용량을 읽는다).
 - 10-15T11:2xZ PR #108(U05 6번 비교) 병합(`e807ea1`, 근거는 U05 절 ‘6번 비교 PR’). 배포 run 38727019418 성공(11:23–11:33Z), Worker `534da7eb`, smoke 통과.
   - 확인한 지금 상태: 바닥글 ‘자료 현황’의 접힌 패널 ‘전국 수집 현황’이 숫자와 표만 보인다. 운영 스냅숏 `04c0aa1b509e6062`의 `status.json`(08:21Z)은 Jalan 상세 완료 1,088·대기 13,978, Trip.com 완료 798·대기 1,349·실패 1이다. 같은 manifest의 `coverage.providers`는 Jalan 완료 1,738·Trip.com 897로 세는 기준이 달라 보인다. U06이 두 수의 정의를 확인해야 한다. 한국어 이름과 설명 번역 비율은 `status.json`에 없다.
 
@@ -1362,6 +1363,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - 최신 main `2ef332d`(U06 PR #114, 자료 현황 화면)를 merge했다(`17843b7`). `hotel-explorer.tsx`·`globals.css` 충돌은 둘 다 살렸다(U06의 자료 현황 화면과 메뉴 항목, U05 7번의 즐겨찾기 상태·메뉴 `aria-current`·짧은 저장 안내). 메뉴에 ‘자료 현황’이 붙어서 `check-u05-favorites`는 즐겨찾기 메뉴를 이름으로 찾는다. merge 빌드에서 `check-u05-favorites` 23개 통과.
 - merge 빌드(`17843b7`)에서 브라우저 검사 15종 통과(16:05–16:16Z): `check-u05-favorites` 23, `check-u06-status` 73, `check-p03-followups` 9, `check-u05-foundation` 53, `check-u05-list` 28, `check-u05-filter` 53, `check-u05-detail` 69, `check-u05-map` 23, `check-u02-map` 55, `check-u03-desktop` 12, `check-u05-comparison` 24, `check-u03-comparison` 60, `check-u02` 52, `check-u01` 50(U06에서 바뀜), `check-u04` 57.
 - Codex 2회째(`9e5ace3`, 16:18Z) 지적 없음. `cloud-check.py --full` 42개 통과(`9e5ace3`, 16:18:52Z–16:24:22Z). 그 뒤 main `618730a`(기록 문서만)를 merge했다. 병합 준비.
+- 병합(상위 세션이 기록): 10-15T16:3xZ, main `0cbd8487e6a42062ab18143d6af5e9ec8fc1249e`. head `3f44217`, Codex 2회째(`9e5ace3`, PR #114 merge와 그 충돌 해결 포함) 지적 없음, 리뷰 스레드 2개 해결, CI `checks`·GitGuardian 통과, mergeable clean. 마지막 검토 뒤 변경은 기록 파일과 main(`618730a`, 기록만) merge뿐이다(`git merge-tree --write-tree 618730a 9e5ace3` 트리와 head 비교). 운영 배포 결과는 `deployments.md`. U05 2단계 PR 7개가 모두 끝났다. U05 세션은 보관하지 않고 쉰다(사용자 의견이 오면 이어 감).
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
