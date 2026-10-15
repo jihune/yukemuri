@@ -11,6 +11,9 @@ import {hotelSummary,GEO_GRADE,type HotelSummary,type SnapshotCore,type Snapshot
 export {SNAPSHOT_FORMAT} from './search-snapshot';
 import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
+import {BATH_FEATURE_MASK} from './hotel-bath-facts';
+import {needsKoreanDescription} from './hotel-description';
+import {FILL_ROWS,type CollectionFill,type CollectionProvider,type FillScope,type FillScopeKey,type PageCounts} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
 // enrichHotel, then the linked source rows, then the lifecycle. Both lookups
@@ -23,8 +26,58 @@ async function attach(hotels:Hotel[],members:Set<string>,lifecycles:Set<string>)
  const merge=async(list:Hotel[],has:Set<string>,run:(h:Hotel[])=>Promise<Hotel[]>,otherwise:(h:Hotel)=>Hotel)=>{const done=await run(list.filter(h=>has.has(h.id)));let i=0;return list.map(h=>has.has(h.id)?done[i++]:otherwise(h))};
  return merge(await merge(hotels,members,attachSourceGroups,h=>composePreferredHotel(h,[])),lifecycles,attachLifecycle,h=>h);
 }
+// U06 data status (docs/U06-20261015.md 4절): each place in its scopes, one state per row.
+// geo stays zero here; the builder fills it after geocoding (addFillGeo).
+const emptyScope=():FillScope=>({records:0,rows:Object.fromEntries(FILL_ROWS.map(r=>[r.key,{filled:0,none:0,empty:0}])) as FillScope['rows'],geo:[0,0,0,0,0,0,0],staleTranslations:0});
+const scopeOf=(id:string):Exclude<FillScopeKey,'all'>|null=>id.startsWith('jalan-')?'jalan':id.startsWith('trip-')?'trip':null;
+const HANGUL=/[가-힣]/;
+export function addFillGeo(fill:CollectionFill,ids:string[],grades:number[]){
+ ids.forEach((id,i)=>{const own=scopeOf(id);for(const s of own?[fill.scopes.all,fill.scopes[own]]:[fill.scopes.all])s.geo[grades[i]]++});
+ return fill;
+}
+// The Cloudflare API source sends every parameter as a string (build-search-snapshot.mjs), so
+// numbers are cast in SQL.
+async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
+ // Places whose Korean name was looked for and not found (hotel-names route, deferNameResearch).
+ const researched=new Set((await db.prepare('SELECT hotel_id FROM hotel_name_localizations WHERE payload IS NULL').all<{hotel_id:string}>()).results.map(r=>r.hotel_id));
+ // A translation counts when it is of the current source text, as the detail API joins it.
+ const translations=new Map((await db.prepare("SELECT t.hotel_id,CASE WHEN t.source_text=json_extract(h.payload,'$.description') THEN 1 ELSE 0 END AS current FROM hotel_description_translations t JOIN hotels h ON h.id=t.hotel_id").all<{hotel_id:string;current:number}>()).results.map(r=>[r.hotel_id,r.current===1]));
+ const zero=():PageCounts=>({done:0,pending:0,retry:0,failed:0});
+ const pages={jalan:{detail:zero(),list:zero(),detailChecked24h:0},trip:{detail:zero(),list:zero(),detailChecked24h:0}};
+ for(const r of (await db.prepare(`SELECT provider,kind,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS done,
+  SUM(CASE WHEN status IN ('pending','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='retry' THEN 1 ELSE 0 END) AS retry,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,
+  SUM(CASE WHEN status='done' AND unixepoch(fetched_at)>CAST(? AS REAL) THEN 1 ELSE 0 END) AS recent
+  FROM crawl_jobs WHERE provider IN ('jalan','trip') AND kind IN ('detail','list') AND status!='skipped' GROUP BY provider,kind`).bind(now.getTime()/1000-86400).all<{provider:CollectionProvider;kind:'detail'|'list';recent:number}&PageCounts>()).results){
+  pages[r.provider][r.kind]={done:r.done,pending:r.pending,retry:r.retry,failed:r.failed};
+  if(r.kind==='detail')pages[r.provider].detailChecked24h=r.recent;
+ }
+ const fill:CollectionFill={scopes:{all:emptyScope(),jalan:emptyScope(),trip:emptyScope()},pages};
+ // raw: the stored payload (detail label, parse version, description as the API joins it);
+ // h: the hotel the card and detail show (names, rating, photo, rooms, years).
+ const add=(id:string,raw:Hotel,h:Hotel,bathKnown:number|null)=>{
+  const own=scopeOf(id),source=raw.sources[0],detail=!!source?.label.includes('상세'),v3=own==='jalan'&&detail&&source?.bathDataVersion==='v3';
+  const description=raw.description??'',translated=translations.get(id);
+  const state={
+   detail:detail?'filled':'empty',
+   bath:(bathKnown??0)&BATH_FEATURE_MASK?'filled':v3?'none':'empty',
+   rooms:h.rooms||h.roomTypes?.some(set=>set.items.length)?'filled':v3?'none':'empty',
+   years:h.facilityYears?'filled':own==='jalan'?'none':'empty',
+   rating:h.ratings.some(r=>!r.isMock)?'filled':'none',
+   photo:h.image.url?'filled':'none',
+   nameKo:HANGUL.test(h.names.ko)?'filled':researched.has(id)||raw.sources.some(s=>s.nameLocaleUrl)?'none':'empty',
+   descKo:!description.trim()?'none':!needsKoreanDescription(description)||translated?'filled':'empty',
+  } as const;
+  for(const s of own?[fill.scopes.all,fill.scopes[own]]:[fill.scopes.all]){
+   s.records++;
+   for(const row of FILL_ROWS)s.rows[row.key][state[row.key]]++;
+   if(translated===false&&state.descKo==='empty')s.staleTranslations++;
+  }
+ };
+ return{fill,add};
+}
 export async function buildSearchSnapshot(now:Date){
  const db=favoritesDb();
+ const {fill,add}=await collectionFill(db,now);
  const core:SnapshotCore={ids:[],region:[],prefecture:[],name:[],kind:[],tripScore:[],tripReviews:[],jalanScore:[],jalanReviews:[],natural:[],features:[],known:[],lat:[],lng:[],state:[]};
  const text:SnapshotText={searchText:[],nameKeys:[],names:[],location:[],context:[]},cards:HotelSummary[]=[];
  // Map positions: the payload coordinates here; scripts/build-search-snapshot.mjs
@@ -59,13 +112,14 @@ export async function buildSearchSnapshot(now:Date){
    geo.grade.push(located?raw.location.isApproximate?GEO_GRADE.city:GEO_GRADE.source:GEO_GRADE.none);geo.lat.push(located?r.lat:null);geo.lng.push(located?r.lng:null);
    geocodeInputs.push(located?null:geocodeInput(place));
    cards.push(hotelSummary(h));
+   add(r.id,raw,h,r.bath_known);
   });
   if(rows.length<PAGE)break;cursor=rows.at(-1)!.id;
  }
  const [coverage,status,unprepared]=await Promise.all([queryCoverage(),readCollectionStatus(now.getTime()),catalogPreparation()]);
  // unprepared: seed steps crawl-prepare has not run on this database (a
  // deploy that changes the seed prepares it and builds again, deploy.yml).
- return{core,text,cards,geo,geocodeInputs,coverage,status,unprepared,first:firstPage(core,cards,coverage)};
+ return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,first:firstPage(core,cards,coverage)};
 }
 // The first page of the default view (no conditions, recommended order): put
 // in the static page so the list shows before core and cards arrive.

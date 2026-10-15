@@ -138,52 +138,18 @@ async function run(page,cdp){
  check('마지막 후보 제거 후 닫기 버튼 포커스',await focused()==='숙소 비교 닫기');
  await close.tap();await sheet.waitFor({state:'detached'});
 
- // Collection status: loading, failure, retry, empty and the table on a narrow screen.
- // U05 moved it to the footer. With all 1,655 stays the list keeps loading pages as the footer
- // comes near, so the footer is reached on a short result (handoff U05 3번: 7번 PR에서 진입점).
- await page.goto(base+'/?q='+encodeURIComponent('노보리베츠'),{waitUntil:'networkidle'});
- const panel=page.locator('.coverage-panel'),summary=panel.locator('summary');
- await page.route('**/snapshot/v/*/status.json',async route=>{await new Promise(done=>setTimeout(done,1200));await route.continue()});
- // The panel is in the footer (U05): bring it to the middle, clear of the floating buttons.
- await summary.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));await summary.tap();
- const loading=panel.getByText('저장된 수집 기록을 확인하고 있습니다');
- check('수집 현황 로딩 안내',await loading.isVisible().catch(()=>false)||await loading.waitFor({timeout:1000}).then(()=>true,()=>false));
- const statusRegion=panel.locator('.collection-table-region');
- await statusRegion.waitFor();await page.unroute('**/snapshot/v/*/status.json');
- check('수집 현황을 연 화면 가로 넘침 없음',await overflow()<=0,{overflow:await overflow()});
- const statusStart=await scrollLeft(statusRegion);
- await statusRegion.focus();await page.keyboard.press('ArrowRight');
- const statusArrow=await scrollLeft(statusRegion);
- await statusRegion.evaluate(e=>{e.scrollLeft=0});await swipe(statusRegion,150);await page.waitForTimeout(500);
- check('수집 현황 표 방향키·터치 가로 이동',statusArrow>statusStart&&await scrollLeft(statusRegion)>0,{statusStart,statusArrow,swiped:await scrollLeft(statusRegion)});
- const refresh=panel.getByRole('button',{name:'출처별 수집 현황 새로고침'});
- // The table swipe can leave the button above the viewport; bring it in before measuring.
- await refresh.scrollIntoViewIfNeeded();
- const refreshBox=await box(refresh);
- check('현황 새로고침 버튼이 화면 안에 보이고 가려지지 않으며 높이 44px 이상',inView(refreshBox)&&await reachable(refresh)&&refreshBox.height>=44,{refresh:refreshBox});
+ // Data status: U06 moved it from the footer panel to its own screen. Its loading, failure,
+ // retry, empty, table and keyboard checks are in check-u06-status-browser.mjs; here it opens
+ // by touch from above the list on a narrow screen without overflow, the close button in reach.
+ await page.goto(base+'/',{waitUntil:'networkidle'});
+ const statusSheet=page.locator('[role="dialog"].u06-sheet');
+ await page.locator('.data-status-link').tap();await statusSheet.locator('.u06-row').first().waitFor();
+ await statusSheet.evaluate(e=>Promise.all(e.getAnimations().map(a=>a.finished)));
+ check('자료 현황 화면을 연 화면 가로 넘침 없음',await overflow()<=0,{overflow:await overflow()});
+ const statusClose=statusSheet.getByRole('button',{name:'자료 현황 닫기'}),statusCloseBox=await box(statusClose);
+ check('자료 현황 닫기 버튼이 화면 안에 보이고 가려지지 않으며 44px 이상',inView(statusCloseBox)&&await reachable(statusClose)&&statusCloseBox.height>=44&&statusCloseBox.width>=44,{close:statusCloseBox});
  await shot('status');
- await page.route('**/snapshot/v/*/status.json',route=>route.fulfill({status:503,contentType:'application/json',body:'{"error":"test"}'}));
- await refresh.focus();await page.keyboard.press('Enter');
- const alert=panel.getByRole('alert');await alert.waitFor();
- check('새로고침 실패 시 오류 안내와 마지막 결과 유지',(await alert.innerText()).includes('마지막 조회 결과')&&await statusRegion.isVisible()&&await focused()==='출처별 수집 현황 새로고침');
- await page.unroute('**/snapshot/v/*/status.json');
- await page.keyboard.press('Space');await alert.waitFor({state:'detached'});
- check('Space로 재시도 성공 후 오류 안내 제거와 포커스 유지',await focused()==='출처별 수집 현황 새로고침');
-
- await page.route('**/snapshot/v/*/status.json',route=>route.fulfill({status:503,contentType:'application/json',body:'{"error":"test"}'}));
- await page.reload({waitUntil:'networkidle'});
- await summary.focus();await page.keyboard.press('Enter');
- await alert.waitFor();
- check('Enter로 열고 첫 조회 실패 시 오류 안내',!(await alert.innerText()).includes('마지막 조회 결과'));
- await page.unroute('**/snapshot/v/*/status.json');
- const empty={measuredAt:new Date().toISOString(),quality:{records:0,detailRecords:0,bathKnownRecords:0,naturalOnsenRecords:0,roomOnsenRecords:0},providers:[],google:{connected:false,mode:'on_demand'}};
- await page.route('**/snapshot/v/*/status.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(empty)}));
- await refresh.focus();await page.keyboard.press('Enter');
- await panel.getByText('아직 저장된 수집 기록이 없습니다',{exact:false}).waitFor();
- check('빈 기록 안내와 오류 안내 제거',await alert.count()===0);
- await page.unroute('**/snapshot/v/*/status.json');
- await summary.focus();await page.keyboard.press('Space');
- check('Space로 수집 현황 닫기',await panel.evaluate(e=>!e.open));
+ await statusClose.tap();await statusSheet.waitFor({state:'detached'});
 }
 
 const chromiumVersion=browser.version();
