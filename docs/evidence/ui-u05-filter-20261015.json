@@ -1,0 +1,358 @@
+{
+ "checkedAt": "2026-10-15T01:44:57.733Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "필터는 아래에서 올라오는 시트(화면 아래에 붙고 폭 전체, 화면의 90% 이하)이고 ‘숙소 필터’ 대화상자로 열리며 초점이 안으로 감",
+   "pass": true,
+   "detail": {
+    "bottom": 800,
+    "top": 96,
+    "vh": 800,
+    "width": 360,
+    "vw": 360,
+    "dialog": true,
+    "name": "숙소 필터",
+    "focusInside": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "조건 15개가 모두 줄 전체가 토글(44px 이상)이고 묶음 5개(온천수와 사용 방식·공용·전세 목욕 시설·객실 목욕 시설·숙소 유형·등급·평점과 리뷰)에 있음",
+   "pass": true,
+   "detail": {
+    "switches": 15,
+    "small": [],
+    "groups": [
+     "온천수와 사용 방식",
+     "공용·전세 목욕 시설",
+     "객실 목욕 시설",
+     "숙소 유형·등급",
+     "평점과 리뷰"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "묶음 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 대욕탕만 확인된 숙소는 천연온천 조건에 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다."
+    },
+    "helpBox": {
+     "x": 310,
+     "y": 255.84375,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘노천탕’ 토글: 켜짐, 칩 막대의 ‘노천탕’도 눌림, 결과 32곳 = 스냅숏 값(시트 버튼), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "outdoor": {
+     "name": "노천탕",
+     "on": true,
+     "h": 44
+    },
+    "chip": true,
+    "apply": "32곳 보기",
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "Tab 초점이 시트 안에서만 돎(40번)",
+   "pass": true,
+   "detail": {
+    "escaped": -1
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘N곳 보기’로 닫히고 초점은 ‘필터’ 칩으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "open": false,
+    "focus": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "칩에서 켠 ‘천연온천’이 시트 안에서도 켜져 있고, Escape로 닫히면 초점은 ‘필터’ 칩으로",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "on": true,
+     "h": 44
+    },
+    "esc": {
+     "open": false,
+     "focus": true
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "시트를 아래로 끌어내리면 닫힘",
+   "pass": true,
+   "detail": {
+    "open": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘초기화’로 토글과 칩이 모두 꺼지고 결과는 전체",
+   "pass": true,
+   "detail": {
+    "on": [],
+    "chips": {
+     "내 기준 9.0+ · 리뷰 50+": false,
+     "천연온천": false,
+     "노천탕": false,
+     "객실 온천": false,
+     "전세탕": false,
+     "니고리유": false,
+     "카케나가시": false
+    },
+    "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "필터는 아래에서 올라오는 시트(화면 아래에 붙고 폭 전체, 화면의 90% 이하)이고 ‘숙소 필터’ 대화상자로 열리며 초점이 안으로 감",
+   "pass": true,
+   "detail": {
+    "bottom": 800,
+    "top": 96,
+    "vh": 800,
+    "width": 390,
+    "vw": 390,
+    "dialog": true,
+    "name": "숙소 필터",
+    "focusInside": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "조건 15개가 모두 줄 전체가 토글(44px 이상)이고 묶음 5개(온천수와 사용 방식·공용·전세 목욕 시설·객실 목욕 시설·숙소 유형·등급·평점과 리뷰)에 있음",
+   "pass": true,
+   "detail": {
+    "switches": 15,
+    "small": [],
+    "groups": [
+     "온천수와 사용 방식",
+     "공용·전세 목욕 시설",
+     "객실 목욕 시설",
+     "숙소 유형·등급",
+     "평점과 리뷰"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "묶음 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 대욕탕만 확인된 숙소는 천연온천 조건에 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다."
+    },
+    "helpBox": {
+     "x": 340,
+     "y": 255.84375,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘노천탕’ 토글: 켜짐, 칩 막대의 ‘노천탕’도 눌림, 결과 32곳 = 스냅숏 값(시트 버튼), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "outdoor": {
+     "name": "노천탕",
+     "on": true,
+     "h": 44
+    },
+    "chip": true,
+    "apply": "32곳 보기",
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "Tab 초점이 시트 안에서만 돎(40번)",
+   "pass": true,
+   "detail": {
+    "escaped": -1
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘N곳 보기’로 닫히고 초점은 ‘필터’ 칩으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "open": false,
+    "focus": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "칩에서 켠 ‘천연온천’이 시트 안에서도 켜져 있고, Escape로 닫히면 초점은 ‘필터’ 칩으로",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "on": true,
+     "h": 44
+    },
+    "esc": {
+     "open": false,
+     "focus": true
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "시트를 아래로 끌어내리면 닫힘",
+   "pass": true,
+   "detail": {
+    "open": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘초기화’로 토글과 칩이 모두 꺼지고 결과는 전체",
+   "pass": true,
+   "detail": {
+    "on": [],
+    "chips": {
+     "내 기준 9.0+ · 리뷰 50+": false,
+     "천연온천": false,
+     "노천탕": false,
+     "객실 온천": false,
+     "전세탕": false,
+     "니고리유": false,
+     "카케나가시": false
+    },
+    "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "조건 15개가 모두 줄 전체가 토글(44px 이상)이고 묶음 5개(온천수와 사용 방식·공용·전세 목욕 시설·객실 목욕 시설·숙소 유형·등급·평점과 리뷰)에 있음",
+   "pass": true,
+   "detail": {
+    "switches": 15,
+    "small": [],
+    "groups": [
+     "온천수와 사용 방식",
+     "공용·전세 목욕 시설",
+     "객실 목욕 시설",
+     "숙소 유형·등급",
+     "평점과 리뷰"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "묶음 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 대욕탕만 확인된 숙소는 천연온천 조건에 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다."
+    },
+    "helpBox": {
+     "x": 183,
+     "y": 342.15625,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "‘노천탕’ 토글: 켜짐, 칩 막대의 ‘노천탕’도 눌림, 결과 32곳 = 스냅숏 값(목록 머리), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "outdoor": {
+     "name": "노천탕",
+     "on": true,
+     "h": 44
+    },
+    "chip": true,
+    "apply": null,
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "데스크톱 왼쪽 패널도 같은 토글·묶음이고 ‘초기화’로 토글과 칩이 모두 꺼짐",
+   "pass": true,
+   "detail": {
+    "on": [],
+    "chips": {
+     "내 기준 9.0+ · 리뷰 50+": false,
+     "천연온천": false,
+     "노천탕": false,
+     "객실 온천": false,
+     "전세탕": false,
+     "니고리유": false,
+     "카케나가시": false
+    },
+    "heading": 1655
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}
