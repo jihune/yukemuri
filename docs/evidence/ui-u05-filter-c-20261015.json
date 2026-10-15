@@ -1,0 +1,986 @@
+{
+ "checkedAt": "2026-10-15T11:55:07.849Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "필터는 아래에서 올라오는 시트(화면 아래에 붙고 폭 전체, 화면의 90% 이하)이고 ‘숙소 필터’ 대화상자로 열리며 초점이 안으로 감",
+   "pass": true,
+   "detail": {
+    "bottom": 800,
+    "top": 213,
+    "vh": 800,
+    "width": 360,
+    "vw": 360,
+    "dialog": true,
+    "name": "숙소 필터",
+    "focusInside": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "먼저 ‘내 기준’과 탕 조건 6개(카드와 같은 순서)가 2열 버튼(44px 이상, 눌림 상태)이고, 나머지는 묶음 4개(공용·전세 목욕 시설 세부·객실 목욕 시설 세부·숙소 유형·등급·평점과 리뷰)에 닫힌 채 있음",
+   "pass": true,
+   "detail": {
+    "quick": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "left": 16,
+      "top": 332,
+      "w": 328,
+      "h": 44
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "left": 16,
+      "top": 380,
+      "w": 162,
+      "h": 44
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "left": 182,
+      "top": 380,
+      "w": 162,
+      "h": 44
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "left": 16,
+      "top": 428,
+      "w": 162,
+      "h": 44
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "left": 182,
+      "top": 428,
+      "w": 162,
+      "h": 44
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "left": 16,
+      "top": 476,
+      "w": 162,
+      "h": 44
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "left": 182,
+      "top": 476,
+      "w": 162,
+      "h": 44
+     }
+    ],
+    "groups": [
+     {
+      "name": "공용·전세 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "객실 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "숙소 유형·등급",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "평점과 리뷰",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     }
+    ],
+    "visibleSwitches": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "탕 조건 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다."
+    },
+    "helpBox": {
+     "x": 310,
+     "y": 210.5,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘노천탕’ 버튼: 눌림, 칩 막대의 ‘노천탕’도 눌림, 결과 32곳 = 스냅숏 값(시트 버튼), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "quick": {
+     "name": "노천탕",
+     "on": true,
+     "left": 182,
+     "top": 380,
+     "w": 162,
+     "h": 44
+    },
+    "chip": true,
+    "apply": "32곳 보기",
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "묶음 ‘공용·전세 목욕 시설 세부’를 열면 토글 3개(44px 이상)가 보이고, ‘공용 대욕장 노천탕’을 켜면 묶음 머리에 ‘1개 켜짐’, 결과 13곳",
+   "pass": true,
+   "detail": {
+    "opened": {
+     "name": "공용·전세 목욕 시설 세부",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "",
+     "h": 44
+    },
+    "switches": [
+     {
+      "name": "대욕장",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "on": false,
+      "h": 44
+     }
+    ],
+    "count": "1개 켜짐",
+    "apply": "13곳 보기",
+    "heading": 13,
+    "wantBoth": 13
+   }
+  },
+  {
+   "width": 360,
+   "name": "Tab 초점이 시트 안에서만 돎(40번)",
+   "pass": true,
+   "detail": {
+    "escaped": -1
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘N곳 보기’로 닫히고 초점은 ‘필터’ 칩으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "open": false,
+    "focus": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "칩에서 켠 ‘천연온천’이 시트 안에서도 눌려 있고, Escape로 닫히면 초점은 ‘필터’ 칩으로",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "on": true,
+     "left": 16,
+     "top": 380,
+     "w": 162,
+     "h": 44
+    },
+    "esc": {
+     "open": false,
+     "focus": true
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "시트를 아래로 끌어내리면 닫힘",
+   "pass": true,
+   "detail": {
+    "open": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘초기화’로 버튼·토글·칩이 모두 꺼지고 결과는 전체",
+   "pass": true,
+   "detail": {
+    "allOn": 0,
+    "chips": {
+     "내 기준 9.0+ · 리뷰 50+": false,
+     "천연온천": false,
+     "노천탕": false,
+     "객실 온천": false,
+     "전세탕": false,
+     "니고리유": false,
+     "카케나가시": false
+    },
+    "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘평점과 리뷰’를 열면 ‘최소 리뷰 수’ 선택 상자가 시트 안에서 열리고 ‘50개 이상’이 적용됨(45곳 = 스냅숏 값), 시트는 열린 채, 묶음 머리에 ‘1개 켜짐’",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=50&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "apply": "45곳 보기",
+    "want50": 45,
+    "group": {
+     "name": "평점과 리뷰",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "1개 켜짐",
+     "h": 44
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "필터는 아래에서 올라오는 시트(화면 아래에 붙고 폭 전체, 화면의 90% 이하)이고 ‘숙소 필터’ 대화상자로 열리며 초점이 안으로 감",
+   "pass": true,
+   "detail": {
+    "bottom": 800,
+    "top": 213,
+    "vh": 800,
+    "width": 390,
+    "vw": 390,
+    "dialog": true,
+    "name": "숙소 필터",
+    "focusInside": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "먼저 ‘내 기준’과 탕 조건 6개(카드와 같은 순서)가 2열 버튼(44px 이상, 눌림 상태)이고, 나머지는 묶음 4개(공용·전세 목욕 시설 세부·객실 목욕 시설 세부·숙소 유형·등급·평점과 리뷰)에 닫힌 채 있음",
+   "pass": true,
+   "detail": {
+    "quick": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "left": 16,
+      "top": 332,
+      "w": 358,
+      "h": 44
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "left": 16,
+      "top": 380,
+      "w": 177,
+      "h": 44
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "left": 197,
+      "top": 380,
+      "w": 177,
+      "h": 44
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "left": 16,
+      "top": 428,
+      "w": 177,
+      "h": 44
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "left": 197,
+      "top": 428,
+      "w": 177,
+      "h": 44
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "left": 16,
+      "top": 476,
+      "w": 177,
+      "h": 44
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "left": 197,
+      "top": 476,
+      "w": 177,
+      "h": 44
+     }
+    ],
+    "groups": [
+     {
+      "name": "공용·전세 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "객실 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "숙소 유형·등급",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "평점과 리뷰",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     }
+    ],
+    "visibleSwitches": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "탕 조건 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다."
+    },
+    "helpBox": {
+     "x": 340,
+     "y": 210.5,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘노천탕’ 버튼: 눌림, 칩 막대의 ‘노천탕’도 눌림, 결과 32곳 = 스냅숏 값(시트 버튼), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "quick": {
+     "name": "노천탕",
+     "on": true,
+     "left": 197,
+     "top": 380,
+     "w": 177,
+     "h": 44
+    },
+    "chip": true,
+    "apply": "32곳 보기",
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "묶음 ‘공용·전세 목욕 시설 세부’를 열면 토글 3개(44px 이상)가 보이고, ‘공용 대욕장 노천탕’을 켜면 묶음 머리에 ‘1개 켜짐’, 결과 13곳",
+   "pass": true,
+   "detail": {
+    "opened": {
+     "name": "공용·전세 목욕 시설 세부",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "",
+     "h": 44
+    },
+    "switches": [
+     {
+      "name": "대욕장",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "on": false,
+      "h": 44
+     }
+    ],
+    "count": "1개 켜짐",
+    "apply": "13곳 보기",
+    "heading": 13,
+    "wantBoth": 13
+   }
+  },
+  {
+   "width": 390,
+   "name": "Tab 초점이 시트 안에서만 돎(40번)",
+   "pass": true,
+   "detail": {
+    "escaped": -1
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘N곳 보기’로 닫히고 초점은 ‘필터’ 칩으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "open": false,
+    "focus": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "칩에서 켠 ‘천연온천’이 시트 안에서도 눌려 있고, Escape로 닫히면 초점은 ‘필터’ 칩으로",
+   "pass": true,
+   "detail": {
+    "natural": {
+     "name": "천연온천",
+     "on": true,
+     "left": 16,
+     "top": 380,
+     "w": 177,
+     "h": 44
+    },
+    "esc": {
+     "open": false,
+     "focus": true
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "시트를 아래로 끌어내리면 닫힘",
+   "pass": true,
+   "detail": {
+    "open": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘초기화’로 버튼·토글·칩이 모두 꺼지고 결과는 전체",
+   "pass": true,
+   "detail": {
+    "allOn": 0,
+    "chips": {
+     "내 기준 9.0+ · 리뷰 50+": false,
+     "천연온천": false,
+     "노천탕": false,
+     "객실 온천": false,
+     "전세탕": false,
+     "니고리유": false,
+     "카케나가시": false
+    },
+    "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘평점과 리뷰’를 열면 ‘최소 리뷰 수’ 선택 상자가 시트 안에서 열리고 ‘50개 이상’이 적용됨(45곳 = 스냅숏 값), 시트는 열린 채, 묶음 머리에 ‘1개 켜짐’",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=50&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "apply": "45곳 보기",
+    "want50": 45,
+    "group": {
+     "name": "평점과 리뷰",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "1개 켜짐",
+     "h": 44
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "먼저 ‘내 기준’과 탕 조건 6개(카드와 같은 순서)가 2열 버튼(44px 이상, 눌림 상태)이고, 나머지는 묶음 4개(공용·전세 목욕 시설 세부·객실 목욕 시설 세부·숙소 유형·등급·평점과 리뷰)에 닫힌 채 있음",
+   "pass": true,
+   "detail": {
+    "quick": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "left": 47,
+      "top": 156,
+      "w": 203,
+      "h": 44
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "left": 47,
+      "top": 204,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "left": 151,
+      "top": 204,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "left": 47,
+      "top": 252,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "left": 151,
+      "top": 252,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "left": 47,
+      "top": 300,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "left": 151,
+      "top": 300,
+      "w": 100,
+      "h": 44
+     }
+    ],
+    "groups": [
+     {
+      "name": "공용·전세 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "객실 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "숙소 유형·등급",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "평점과 리뷰",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     }
+    ],
+    "visibleSwitches": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "탕 조건 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다."
+    },
+    "helpBox": {
+     "x": 158,
+     "y": 108,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "‘노천탕’ 버튼: 눌림, 결과 32곳 = 스냅숏 값(목록 머리), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "quick": {
+     "name": "노천탕",
+     "on": true,
+     "left": 151,
+     "top": 204,
+     "w": 100,
+     "h": 44
+    },
+    "chip": true,
+    "apply": null,
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "묶음 ‘공용·전세 목욕 시설 세부’를 열면 토글 3개(44px 이상)가 보이고, ‘공용 대욕장 노천탕’을 켜면 묶음 머리에 ‘1개 켜짐’, 결과 13곳",
+   "pass": true,
+   "detail": {
+    "opened": {
+     "name": "공용·전세 목욕 시설 세부",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "",
+     "h": 44
+    },
+    "switches": [
+     {
+      "name": "대욕장",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "on": false,
+      "h": 44
+     }
+    ],
+    "count": "1개 켜짐",
+    "apply": null,
+    "heading": 13,
+    "wantBoth": 13
+   }
+  },
+  {
+   "width": 1280,
+   "name": "넓은 화면에는 칩 막대가 없고(조건이 패널에만 한 번), 패널이 안쪽 스크롤 없이 들어감(1280×800)",
+   "pass": true,
+   "detail": {
+    "bar": false,
+    "fit": {
+     "scroll": 461,
+     "client": 461
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "정적 첫 화면의 장소 선택 상자에 ‘일본 전국’이 있음(페이지가 돌기 전에도)",
+   "pass": true,
+   "detail": {
+    "place": "일본 전국"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "데스크톱 왼쪽 패널도 같은 버튼·묶음이고 ‘초기화’로 모두 꺼짐",
+   "pass": true,
+   "detail": {
+    "allOn": 0,
+    "heading": 1655
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1440,
+   "name": "먼저 ‘내 기준’과 탕 조건 6개(카드와 같은 순서)가 2열 버튼(44px 이상, 눌림 상태)이고, 나머지는 묶음 4개(공용·전세 목욕 시설 세부·객실 목욕 시설 세부·숙소 유형·등급·평점과 리뷰)에 닫힌 채 있음",
+   "pass": true,
+   "detail": {
+    "quick": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "left": 47,
+      "top": 156,
+      "w": 203,
+      "h": 44
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "left": 47,
+      "top": 204,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "left": 151,
+      "top": 204,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "left": 47,
+      "top": 252,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "left": 151,
+      "top": 252,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "left": 47,
+      "top": 300,
+      "w": 100,
+      "h": 44
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "left": 151,
+      "top": 300,
+      "w": 100,
+      "h": 44
+     }
+    ],
+    "groups": [
+     {
+      "name": "공용·전세 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "객실 목욕 시설 세부",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "숙소 유형·등급",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     },
+     {
+      "name": "평점과 리뷰",
+      "expanded": "false",
+      "controls": true,
+      "hidden": true,
+      "count": "",
+      "h": 44
+     }
+    ],
+    "visibleSwitches": 0
+   }
+  },
+  {
+   "width": 1440,
+   "name": "탕 조건 설명은 ‘?’(44px) 안에 있고, 누르면 펼쳐짐",
+   "pass": true,
+   "detail": {
+    "hiddenBefore": {
+     "expanded": "false",
+     "hidden": true
+    },
+    "shown": {
+     "expanded": "true",
+     "text": "확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다."
+    },
+    "helpBox": {
+     "x": 158,
+     "y": 108,
+     "width": 44,
+     "height": 44
+    }
+   }
+  },
+  {
+   "width": 1440,
+   "name": "‘노천탕’ 버튼: 눌림, 결과 32곳 = 스냅숏 값(목록 머리), Worker 목록 요청 없음",
+   "pass": true,
+   "detail": {
+    "quick": {
+     "name": "노천탕",
+     "on": true,
+     "left": 151,
+     "top": 204,
+     "w": 100,
+     "h": 44
+    },
+    "chip": true,
+    "apply": null,
+    "heading": 32,
+    "want": 32,
+    "requests": []
+   }
+  },
+  {
+   "width": 1440,
+   "name": "묶음 ‘공용·전세 목욕 시설 세부’를 열면 토글 3개(44px 이상)가 보이고, ‘공용 대욕장 노천탕’을 켜면 묶음 머리에 ‘1개 켜짐’, 결과 13곳",
+   "pass": true,
+   "detail": {
+    "opened": {
+     "name": "공용·전세 목욕 시설 세부",
+     "expanded": "true",
+     "controls": true,
+     "hidden": false,
+     "count": "",
+     "h": 44
+    },
+    "switches": [
+     {
+      "name": "대욕장",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "on": false,
+      "h": 44
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "on": false,
+      "h": 44
+     }
+    ],
+    "count": "1개 켜짐",
+    "apply": null,
+    "heading": 13,
+    "wantBoth": 13
+   }
+  },
+  {
+   "width": 1440,
+   "name": "넓은 화면에는 칩 막대가 없고(조건이 패널에만 한 번), 패널이 안쪽 스크롤 없이 들어감(1440×900)",
+   "pass": true,
+   "detail": {
+    "bar": false,
+    "fit": {
+     "scroll": 461,
+     "client": 461
+    }
+   }
+  },
+  {
+   "width": 1440,
+   "name": "데스크톱 왼쪽 패널도 같은 버튼·묶음이고 ‘초기화’로 모두 꺼짐",
+   "pass": true,
+   "detail": {
+    "allOn": 0,
+    "heading": 1655
+   }
+  },
+  {
+   "width": 1440,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

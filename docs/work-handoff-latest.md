@@ -1312,8 +1312,8 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
   - `check-u05-list`: 넓은 화면에서는 패널의 ‘천연온천’ 버튼을 누른다.
   - `check-u03-desktop`: 마지막 조작 요소는 보이는 것만 센다(묶음이 닫혀 있어서).
 - 수정 전 캡처는 `evidence/u05-filter-review-20261015/current-*.png`, 수정 후는 `evidence/u05-filter-c-20261015/after-*.png`(숙소 사진 없음)다.
-- 기존 브라우저 검사 전체: 실행 중.
-- `cloud-check.py --full`: 실행 전.
+- 기존 브라우저 검사 전체(`1725648` 소스 빌드, 로컬 사이트) 통과: `check-u05-filter` 39(`evidence/ui-u05-filter-c-20261015.json`), `check-u05-foundation` 53, `check-u05-list` 28, `check-u05-detail` 69, `check-u05-comparison` 24, `check-u01` 64, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u03-comparison` 60, `check-u04` 57, `check-p03-followups` 9.
+- `cloud-check.py --full`: `f26417d`에서 42개 통과(12:04:45Z–12:10:26Z, rc=0).
 
 ## H02 — 공개 사이트 보호 강화(봇 수집·DDoS)
 
