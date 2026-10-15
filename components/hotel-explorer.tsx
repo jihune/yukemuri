@@ -1,15 +1,15 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Heart, Waves, Search, MapPin, SlidersHorizontal, ShieldCheck, X, List, Map, RotateCcw, Info, AlertCircle, ArrowLeftRight } from 'lucide-react';
-import { Hotel, HotelFilters, DEFAULT_FILTERS, FEATURE_LABELS, FEATURE_GROUPS, FeatureKey, REGIONS, RegionId, isVerifiedCriteria } from '@/lib/hotel-types';
+import { Hotel, HotelFilters, DEFAULT_FILTERS, FEATURE_LABELS, FeatureKey, REGIONS, RegionId, isVerifiedCriteria } from '@/lib/hotel-types';
 import { SortOrder } from '@/lib/hotel-search';
 import { providerRating, displayRating, meetsVerifiedCriteria } from '@/lib/hotel-ratings';
 import type { HotelSummary } from '@/lib/search-snapshot';
-import {searchSnapshot,needsText,PAGE_SIZE,type FirstPage,type SearchResponse} from '@/lib/static-search';
+import {searchSnapshot,needsText,PAGE_SIZE,type FirstPage} from '@/lib/static-search';
 import {loadSnapshot,loadSnapshotText,loadSnapshotStatus} from '@/lib/snapshot-client';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
+import Picker from './picker';
+import FilterPanel from './hotel-filters';
+import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerClose } from '@/components/ui/drawer';
 import HotelDetail from './hotel-detail';
 import StayMap from './stay-map';
 import { hasCoordinates } from '@/lib/hotel-location';
@@ -36,10 +36,6 @@ import {POPSTATE} from '@/lib/history-events';
 import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS} from '@/lib/geo-attribution';
 const NO_INDEX:PreparedSearchIndex=[];
 function writeBookingUrl(q:BookingQuery){const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
-type PickerOption={value:string;label:string};
-function Picker({value,onChange,options,groups,label}:{value:string;onChange:(v:string)=>void;options?:PickerOption[];groups?:{label:string;options:PickerOption[]}[];label:string}){
- return <Select value={value} onValueChange={onChange}><SelectTrigger className="picker" aria-label={label}><SelectValue/></SelectTrigger><SelectContent position="popper">{options?.map(o=><SelectItem value={o.value} key={o.value}>{o.label}</SelectItem>)}{groups?.map(g=><SelectGroup key={g.label}><SelectLabel>{g.label}</SelectLabel>{g.options.map(o=><SelectItem value={o.value} key={o.value}>{o.label}</SelectItem>)}</SelectGroup>)}</SelectContent></Select>
-}
 // U05 list: one place to choose where. Onsen towns are the first group (a town sets its
 // prefecture and its name as the search word), then all of Japan, prefectures and areas.
 const TOWN_PREFIX='town:';
@@ -49,18 +45,6 @@ const PLACE_GROUPS=[
 ];
 // The quick conditions on the chip bar: the bath conditions people pick most.
 const QUICK_FEATURES:{key:FeatureKey;label:string}[]=[{key:'natural',label:'천연온천'},{key:'outdoor',label:'노천탕'},{key:'roomOnsen',label:'객실 온천'},{key:'privateBath',label:'전세탕'},{key:'nigori',label:'니고리유'},{key:'freeFlow',label:'카케나가시'}];
-function Filters({filters,setFilters,counts,ryokanCount}:{filters:HotelFilters;setFilters:(f:HotelFilters)=>void;counts:SearchResponse['featureCounts'];ryokanCount:number}){
- const chosen=isVerifiedCriteria(filters);
- const ratingOptions=filters.ratingProvider==='trip'?[8,8.5,9,9.5]:[4,4.2,4.5,4.8];
- return <div className="filter-content">
-  <div className="filter-title"><h2>숙소 필터</h2><button onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button></div>
-  <label className={`criteria-box check-row ${chosen?'chosen':''}`}><Checkbox checked={chosen} onCheckedChange={checked=>setFilters({...filters,ratingProvider:'trip',minRating:checked===true?9:0,minReviews:checked===true?50:0})}/><span className="criteria-copy"><b><ShieldCheck size={20}/>내 검증 기준</b><span>Trip.com 9.0+ · 리뷰 50개+</span></span></label>
-  <p className="filter-hint bath-filter-intro">확인된 조건을 모두 갖춘 숙소만 표시합니다.</p>{FEATURE_GROUPS.map(group=><fieldset key={group.label}><legend>{group.label}</legend>{group.keys.map(key=><label className="check-row" key={key}><Checkbox checked={filters.features.includes(key)} onCheckedChange={checked=>setFilters({...filters,features:checked===true?[...new Set([...filters.features,key])]:filters.features.filter(k=>k!==key)})}/><span>{FEATURE_LABELS[key]}</span><small>{counts[key]??0}</small></label>)}{group.keys.includes('natural' as never)&&<p className="filter-hint">대욕탕만 확인된 숙소는 천연온천 조건에 포함하지 않습니다.</p>}{group.keys.includes('freeFlow' as never)&&<p className="filter-hint">카케나가시는 원천을 흘려보내는 방식입니다. 가수·가온 없음과는 별개입니다.</p>}</fieldset>)}
-  <fieldset><legend>숙소 유형·등급</legend><label className="check-row"><Checkbox checked={filters.features.includes('jalanHighClass')} onCheckedChange={checked=>setFilters({...filters,features:checked===true?[...new Set([...filters.features,'jalanHighClass' as const])]:filters.features.filter(k=>k!=='jalanHighClass')})}/><span>자란 하이클래스</span><small>{counts.jalanHighClass??0}</small></label><p className="filter-hint">자란에서 해당 숙소의 하이클래스 표시를 확인한 경우만 포함합니다.</p><label className="check-row"><Checkbox checked={filters.ryokanOnly} onCheckedChange={checked=>setFilters({...filters,ryokanOnly:checked===true})}/><span>료칸만 보기</span><small>{ryokanCount}</small></label></fieldset>
-  <fieldset><legend>평점과 리뷰</legend><label className="filter-select">평점 출처<Picker label="평점 출처" value={filters.ratingProvider} onChange={v=>setFilters({...filters,ratingProvider:v as HotelFilters['ratingProvider'],minRating:0,minReviews:0})} options={[{value:'trip',label:'Trip.com · 10점 만점'},{value:'jalan',label:'Jalan · 5점 만점'}]}/></label><label className="filter-select">최소 평점<Picker label="최소 평점" value={String(filters.minRating)} onChange={v=>setFilters({...filters,minRating:Number(v)})} options={[{value:'0',label:'제한 없음'},...ratingOptions.map(v=>({value:String(v),label:v.toFixed(1)+' 이상'}))]}/></label><label className="filter-select">최소 리뷰 수<Picker label="최소 리뷰 수" value={String(filters.minReviews)} onChange={v=>setFilters({...filters,minReviews:Number(v)})} options={[{value:'0',label:'제한 없음'},{value:'50',label:'50개 이상'},{value:'100',label:'100개 이상'},{value:'300',label:'300개 이상'},{value:'500',label:'500개 이상'}]}/></label></fieldset>
-  <div className="filter-footnote"><Info size={16}/><p>선택한 출처의 원래 평점으로 필터합니다. 확인된 시설만 포함하며, 객실탕은 해당 객실 타입을 예약해야 이용할 수 있습니다.</p></div>
- </div>
-}
 // The page is a static asset: conditions come from the address once mounted,
 // and every list, search and map result from the static search snapshot.
 export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|null}){
@@ -158,6 +142,8 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const hoverCard=(id:string|null)=>setActiveId(id??pinnedId.current);
  const regionName=REGIONS.find(r=>r.id===filters.region)?.name??'일본 전국';
  const listEnd=useRef<HTMLDivElement>(null),listingPosition=useRef<ListingPosition|null>(null);
+ // Closing the filter sheet puts focus back on the chip that opened it (a tap does not focus it).
+ const filterButton=useRef<HTMLButtonElement>(null);
  // The data status is in the footer, which the list's automatic loading would keep pushing
  // away; its link above the list stops that for the current result (the ‘숙소 더 불러오기’
  // button still loads more), opens the collection status and moves there.
@@ -273,11 +259,11 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  <header className="site-header"><div className="header-inner"><h1 className="sr-only">일본 온천, 나에게 맞는 곳</h1><button className="brand" onClick={()=>{setSavedOnly(false);chooseRegion('all');setFilters(DEFAULT_FILTERS)}} aria-label="유케무리 전체 숙소"><span className="brand-icon"><Waves size={22}/></span><span>유케무리</span></button>
   <form className="search-form" role="search" onSubmit={e=>{e.preventDefault();setFilters(f=>({...f,query:draft}));setActiveId(null);setDismissSuggestions(n=>n+1)}}><div className="region-picker"><MapPin size={17}/><Picker label="검색 지역 · 온천마을" value={placeValue} onChange={choosePlace} groups={PLACE_GROUPS}/></div><HotelAutocomplete value={draft} onChange={setDraft} filters={filters} savedOnly={savedOnly} favorites={favorites} searchIndex={preparedIndex} indexReady={indexReady} indexFailed={indexFailed} onRetry={snap.refresh} dismissKey={dismissSuggestions} onSelect={hotel=>{setDraft(hotel.name);setFilters(f=>({...f,query:hotel.name}));setActiveId(null);setDismissSuggestions(n=>n+1)}} onClear={()=>{setDraft('');setFilters(f=>({...f,query:''}))}}/><button type="submit" className="search-button">검색</button></form>
   <nav aria-label="주 메뉴"><button className={!savedOnly?'nav-active':''} onClick={()=>{setSavedOnly(false)}}>숙소 찾기</button><button className={savedOnly?'nav-active':''} onClick={()=>{setSavedOnly(true)}}><Heart size={18} fill={savedOnly?'currentColor':'none'}/>즐겨찾기 <span>{favorites.length}</span></button></nav></div></header>
- <div className="chip-bar" role="group" aria-label="빠른 조건"><button className="mobile-filter" onClick={()=>setFilterOpen(true)}><SlidersHorizontal size={16}/>필터{chips.length>0&&<span>{chips.length}</span>}</button><button className={'verified-chip'+(isVerifiedCriteria(filters)?' active':'')} aria-pressed={isVerifiedCriteria(filters)} onClick={()=>setFilters(f=>({...f,ratingProvider:'trip',minRating:isVerifiedCriteria(f)?0:9,minReviews:isVerifiedCriteria(f)?0:50}))}><ShieldCheck size={16}/>내 기준 9.0+ · 리뷰 50+</button>{QUICK_FEATURES.map(q=>{const on=filters.features.includes(q.key);return <button key={q.key} className={on?'active':''} aria-pressed={on} onClick={()=>setFilters(f=>({...f,features:on?f.features.filter(k=>k!==q.key):[...new Set([...f.features,q.key])]}))}>{q.label}</button>})}</div>
+ <div className="chip-bar" role="group" aria-label="빠른 조건"><button ref={filterButton} className="mobile-filter" onClick={()=>setFilterOpen(true)}><SlidersHorizontal size={16}/>필터{chips.length>0&&<span>{chips.length}</span>}</button><button className={'verified-chip'+(isVerifiedCriteria(filters)?' active':'')} aria-pressed={isVerifiedCriteria(filters)} onClick={()=>setFilters(f=>({...f,ratingProvider:'trip',minRating:isVerifiedCriteria(f)?0:9,minReviews:isVerifiedCriteria(f)?0:50}))}><ShieldCheck size={16}/>내 기준 9.0+ · 리뷰 50+</button>{QUICK_FEATURES.map(q=>{const on=filters.features.includes(q.key);return <button key={q.key} className={on?'active':''} aria-pressed={on} onClick={()=>setFilters(f=>({...f,features:on?f.features.filter(k=>k!==q.key):[...new Set([...f.features,q.key])]}))}>{q.label}</button>})}</div>
  {searchError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{searchError}</span><button onClick={snap.refresh}>다시 시도</button>{reopenSearch&&<button onClick={()=>window.location.reload()}>페이지 다시 열기</button>}</div>}
  {favoritesError&&<div className="error-banner" role="alert"><AlertCircle size={17}/><span>{favoritesError}</span><button onClick={loadFavorites}>다시 시도</button></div>}
  <main className={`workspace view-${mode}`} data-first-page={preview?firstPage?.snapshot:undefined}>
-  <aside className="desktop-filters"><Filters filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></aside>
+  <aside className="desktop-filters"><FilterPanel filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></aside>
   <section className="results-section" aria-label="숙소 검색 결과" aria-busy={loading}>
    {preview&&<p className="conditions-pending" role="status">주소의 조건을 적용하는 중…</p>}
    <div className="results-header"><div><h2>{savedOnly?'즐겨찾기':regionName}{!favoritesBlocked&&<> <span>{response.total.toLocaleString()}곳</span></>}</h2></div><div className="result-actions"><button ref={comparisonButton} className="compare-open" onClick={showComparison} aria-label={"숙소 비교 열기, "+comparisonIds.length+"곳 선택"}><ArrowLeftRight size={17}/><span className="compare-word">비교 </span>{comparisonIds.length}/4</button><Picker label="숙소 정렬" value={sort} onChange={v=>{setSort(v as SortOrder)}} options={[{value:'recommended',label:filters.query?'관련성 높은 순':'온천 확인 우선'},{value:'rating',label:'평점 높은 순'},{value:'reviews',label:'리뷰 많은 순'},{value:'name',label:'이름순'}]}/></div></div>
@@ -306,7 +292,8 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   {mode==='list'&&<button className="restore-map" onClick={()=>setMode('split')}><Map size={17}/>지도 함께 보기</button>}
  </main>
  <button className="mobile-map-toggle" onClick={()=>setMode(mode==='map'?'list':'map')}>{mode==='map'?<List size={18}/>:<Map size={18}/>} {mode==='map'?'목록 보기':'지도 보기'}<span>{response.total.toLocaleString()}</span></button>
- <Sheet open={filterOpen} onOpenChange={setFilterOpen}><SheetContent side="left" showCloseButton={false} className="mobile-filter-sheet !w-[min(92vw,360px)] !max-w-[360px] !gap-0"><div className="mobile-sheet-title"><div><SheetTitle>숙소 필터</SheetTitle><SheetDescription>{favoritesBlocked?'즐겨찾기를 불러오지 못했어요':`조건에 맞는 ${response.total.toLocaleString()}곳`}</SheetDescription></div><SheetClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></SheetClose></div><div className="mobile-sheet-body"><Filters filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount}/></div><SheetClose asChild><button className="apply-filters">{favoritesBlocked?'목록으로 돌아가기':response.total.toLocaleString()+'곳 보기'}</button></SheetClose></SheetContent></Sheet>
+ {/* U05 filter: on a phone the filters come up from the bottom (vaul); drag down, the close button or Escape closes it. */}
+ <Drawer open={filterOpen} onOpenChange={setFilterOpen} direction="bottom" autoFocus><DrawerContent className="filter-drawer" onCloseAutoFocus={e=>{e.preventDefault();filterButton.current?.focus()}}><div className="mobile-sheet-title"><div><DrawerTitle>숙소 필터</DrawerTitle><DrawerDescription>{favoritesBlocked?'즐겨찾기를 불러오지 못했어요':`조건에 맞는 ${response.total.toLocaleString()}곳`}</DrawerDescription></div><DrawerClose asChild><button className="icon-button" aria-label="필터 닫기"><X size={22}/></button></DrawerClose></div><div className="mobile-sheet-body"><FilterPanel filters={filters} setFilters={setFilters} counts={response.featureCounts} ryokanCount={response.ryokanCount} title={false}/></div><div className="filter-drawer-actions"><button type="button" className="filter-reset" onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button><DrawerClose asChild><button className="apply-filters">{favoritesBlocked?'목록으로 돌아가기':response.total.toLocaleString()+'곳 보기'}</button></DrawerClose></div></DrawerContent></Drawer>
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
  <HotelComparison open={comparisonOpen} ids={comparisonIds} onClose={()=>setComparisonOpen(false)} onRemove={id=>setComparisonIds(previous=>previous.filter(item=>item!==id))} onClear={()=>setComparisonIds([])} onRestoreFocus={restoreComparisonFocus} onDetail={openDetail}/>
  <HotelDetail hotel={detail} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detail&&favorites.includes(detail.id)} onFavorite={()=>detail&&saveFavorite(detail.id)} pending={!!detail&&pending.includes(detail.id)} canSave={favoritesReady} booking={booking} onBooking={onBooking}/>
