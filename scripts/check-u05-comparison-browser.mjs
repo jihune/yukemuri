@@ -42,9 +42,9 @@ function addStated(h){
 function expectedMarks(h){
  const score=p=>{const r=h.ratings.find(r=>r.provider===p&&!r.isMock&&r.scale===(p==='trip'?10:5));return r?r.score.toFixed(1):'?'};
  const fact=k=>{const f=h.features[k];return !f||f.value===null?'?':f.value===false?'–':'✓'+(f.scope==='someRooms'?'일부':f.scope==='allRooms'?'전':'')};
- return {trip:score('trip'),jalan:score('jalan'),natural:fact('natural'),outdoor:fact('outdoor'),roomOnsen:fact('roomOnsen'),rooms:h.rooms?String(h.rooms.total):'?',opened:h.facilityYears?.opened?String(h.facilityYears.opened):'?',renovated:h.facilityYears?.renovated?String(h.facilityYears.renovated):'?'};
+ return {trip:score('trip'),jalan:score('jalan'),natural:fact('natural'),outdoor:fact('outdoor'),privateBath:fact('privateBath'),roomOnsen:fact('roomOnsen'),rooms:h.rooms?String(h.rooms.total):'?',opened:h.facilityYears?.opened?String(h.facilityYears.opened):'?',renovated:h.facilityYears?.renovated?String(h.facilityYears.renovated):'?'};
 }
-const ROWS={trip:'Trip.com · 10점',jalan:'자란넷 · 5점',natural:'천연온천',outdoor:'노천탕',roomOnsen:'객실 온천',rooms:'객실 수',opened:'설립 연도',renovated:'리모델링 연도'};
+const ROWS={trip:'Trip.com · 10점',jalan:'자란넷 · 5점',natural:'천연온천',outdoor:'노천탕',privateBath:'전세탕 / 가족탕',roomOnsen:'객실 온천',rooms:'객실 수',opened:'설립 연도',renovated:'리모델링 연도'};
 const browser=await chromium.launch();
 for(const w of [360,390,1280]){
  width=w;const mobile=w<900;
@@ -70,7 +70,7 @@ for(const w of [360,390,1280]){
   const region=root.querySelector('.comparison-table-region'),box=e=>{const r=e.getBoundingClientRect();return{left:Math.round(r.left),right:Math.round(r.right),w:Math.round(r.width),h:Math.round(r.height)}};
   const heads=[...root.querySelectorAll('.comparison-table thead th')].map(box);
   const rows=[...root.querySelectorAll('.comparison-table tbody tr:not(.comparison-evidence)')].map(tr=>{const th=tr.querySelector('th');return{name:th.firstChild.textContent.trim(),diff:!!th.querySelector('.comparison-diff-tag'),undecided:th.querySelector('.comparison-undecided')?.textContent??'',
-   button:th.querySelector('.comparison-expand')&&visible(th.querySelector('.comparison-expand'))?{expanded:th.querySelector('.comparison-expand').getAttribute('aria-expanded'),h:Math.round(th.querySelector('.comparison-expand').getBoundingClientRect().height)}:null,
+   button:th.querySelector('.comparison-expand')&&visible(th.querySelector('.comparison-expand'))?{expanded:th.querySelector('.comparison-expand').getAttribute('aria-expanded'),h:Math.round(th.querySelector('.comparison-expand').getBoundingClientRect().height),w:Math.round(th.querySelector('.comparison-expand').getBoundingClientRect().width)}:null,
    cells:[...tr.querySelectorAll('td')].map(td=>{const m=td.querySelector('.comparison-mark');return{mark:visible(m)?[...m.querySelectorAll('[aria-hidden=true]')].map(e=>e.textContent).join(''):null,said:m?.querySelector('.sr-only')?.textContent??null,full:visible(td.querySelector('.comparison-full')),h:Math.round(m?.getBoundingClientRect().height??0)}})}});
   const evidence=[...root.querySelectorAll('.comparison-evidence')].filter(visible).map(tr=>({id:tr.id,items:[...tr.querySelectorAll('li')].map(li=>({name:li.querySelector('b').textContent,text:li.textContent,links:[...li.querySelectorAll('a')].map(a=>a.href)}))}));
   const names=[...root.querySelectorAll('.comparison-hotel-name')].map(b=>({h:Math.round(b.getBoundingClientRect().height),lines:Math.round(b.scrollHeight/parseFloat(getComputedStyle(b).lineHeight))}));
@@ -84,8 +84,8 @@ for(const w of [360,390,1280]){
  const shown=Object.fromEntries(Object.entries(ROWS).map(([k,name])=>[k,s.rows.find(r=>r.name===name)?.cells.map(c=>c.mark)]));
  if(mobile){
   check('휴대폰: 4곳이 가로 이동 없이 한 화면(이름표 열 120px, 숙소 열 52px 이상), 시트 가로 넘침 없음',s.fit.scroll<=s.fit.client&&Math.abs(s.heads[0].w-120)<=1&&s.heads.slice(1).every(h=>h.w>=52)&&s.overflow<=0,{fit:s.fit,heads:s.heads.map(h=>h.w),overflow:s.overflow});
-  check('휴대폰: 칸마다 표지(✓ – ?)나 짧은 값이 응답 값과 같고, 전체 칸은 숨음',same(shown,want)&&s.rows.every(r=>r.cells.every(c=>c.mark!==null&&!c.full&&c.said)),{shown,want});
-  check('휴대폰: 숙소 이름은 두 줄까지(44px), 빼기 버튼 44px, ‘근거’ 버튼 44px 이상',s.names.every(n=>n.h<=44&&n.h>=44-1)&&s.removes.every(b=>b.w>=44&&b.h>=44)&&s.rows.every(r=>r.button&&r.button.h>=44),{names:s.names,removes:s.removes,buttons:s.rows.map(r=>r.button?.h)});
+  check('휴대폰: 칸마다 표지(✓ – ?)나 짧은 값이 응답 값과 같고(없음 2곳인 전세탕 포함), 전체 칸은 숨음',same(shown,want)&&want.privateBath.includes('–')&&s.rows.every(r=>r.cells.every(c=>c.mark!==null&&!c.full&&c.said)),{shown,want});
+  check('휴대폰: 숙소 이름은 두 줄까지(44px), 빼기 버튼 44px, ‘근거’ 버튼 44×44px 이상',s.names.every(n=>n.h<=44&&n.h>=44-1)&&s.removes.every(b=>b.w>=44&&b.h>=44)&&s.rows.every(r=>r.button&&r.button.h>=44&&r.button.w>=44),{names:s.names,removes:s.removes,buttons:s.rows.map(r=>[r.button?.w,r.button?.h])});
   // Open a row by tapping one of its cells; close it with its ‘근거’ button.
   const roomRow=sheet.locator('.comparison-table tbody tr',{has:page.locator('th',{hasText:'객실 수'})}).first();
   await roomRow.scrollIntoViewIfNeeded();await roomRow.locator('td').nth(1).tap();await page.waitForTimeout(300);

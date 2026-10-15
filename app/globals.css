@@ -984,7 +984,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
   .comparison-mark.is-value{border:0;color:var(--yk-text);font-size:var(--yk-fs-sm)}
   .comparison-mark.is-ref{border:0}
   .comparison-table tbody th small{font-size:var(--yk-fs-xs)}
-  .comparison-expand{display:flex;width:fit-content;align-items:center;gap:2px;min-height:var(--yk-tap);margin-top:2px;color:var(--yk-primary);font-size:var(--yk-fs-xs);font-weight:650}
+  .comparison-expand{display:flex;width:fit-content;min-width:var(--yk-tap);align-items:center;gap:2px;min-height:var(--yk-tap);margin-top:2px;color:var(--yk-primary);font-size:var(--yk-fs-xs);font-weight:650}
   .comparison-expand[aria-expanded=true] svg{transform:rotate(180deg)}
   .comparison-expand:focus-visible{outline:2px solid var(--yk-primary);outline-offset:2px}
   .comparison-evidence{display:table-row}
