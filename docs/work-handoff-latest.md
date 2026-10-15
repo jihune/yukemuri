@@ -1176,3 +1176,24 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 - Claude 검토 1회째(`c581ede`, 22:24Z, 검토 세션 `session_01K9M4aA8GiGuH6KweSuGW3D`): P2 1건, P3 2건. main merge(`0e1f45a`, 충돌 없음) 뒤 모두 고쳤다. P2: 건너뛴 push 배포가 성공으로 끝나 `checked-commit.mjs`가 그 커밋을 ‘전체 검사 통과’로 봤다. 이제 `Cloud app checks`만 센다. P3: `lifecycle-push.mjs`를 로컬 compare API 대역으로 검사, 복구 안내를 수동 실행으로(재실행은 원래 커밋을 다시 배포). 이 문서 다른 절의 C3 줄(‘`Cloud app checks` 또는 push 배포’)은 그때 기록이라 그대로 둔다. 지금 규칙은 `cloudflare-deploy.md`다. 다음은 상위 세션이 여는 Claude 검토 2회째(마지막)다.
 - Claude 검토 2회째(`e252f31`, 22:56Z, 검토 세션 `session_018C5u7htqtrQBR6no5pfPbQ`, 마지막 검토): P0~P3 지적 없음. 검토는 Codex 3회와 Claude 2회로 5회를 다 썼다. 상위 세션이 검토한 head `e252f31`을 그대로 병합했다(main `3355d38`, 22:5xZ). 이 두 줄과 `L01-20261013.md`의 2회째 기록은 병합 뒤 다시 올린 기록이다. 상위 세션은 10-13 22:2xZ부터 `session_01PuNgLiSyMdn35DxmRigJmK`(세 번째 상위 세션)이다.
 - 다음 작업(L01 PR 2와 함께 볼 것): (1) 병합 뒤 ‘Cloudflare deploy’ push 실행이 `deferred`로 건너뛰고 ‘Yukemuri lifecycle’이 4건 `replayed`, 2건 `saved`, 배포 한 번으로 끝났는지 본다(상위 세션이 확인하고 기록한다). (2) PR 2: 로컬 브랜치 `l01-pr2-wip`(`5103175`)를 새 main 위로 옮겨 지역 판정 규칙을 고친다. 7일 사용량 때문에 상위 세션이 시작을 알릴 때까지 기다린다(10-13 22:57Z). (3) 검토 참고(지적 아님): `checked-commit.mjs`의 `main()`이 API 실패를 `checked=false`로 처리하는 길을 검사가 돌리지 않는다(C3부터). `web-checks.yml` concurrency에 `queue: max`가 없어 가운데 push의 검사가 취소될 수 있다(그때는 `--full`을 다시 돈다). 둘 다 L01 밖이라 상위 세션이 맡길지 정한다.
+
+## D04 — 시설 연식·리뉴얼 연도
+
+기록: 2026-10-15T01:35Z / 10:35 KST. 상세는 `D04-20261015.md`다.
+
+### 기준과 상태
+
+- 작업 환경: Claude Code 웹 클라우드. 상위 세션 `session_01PuNgLiSyMdn35DxmRigJmK`(세 번째 상위 세션)가 01:23Z에 시작을 알렸다. 작성 세션은 `session_01EbPNydUi1HEGqL6GRQxwcD`이고 브랜치는 `claude/d05-rooms`, 기준 main `27d5da7`이다.
+- 상위 세션 지시(01:23Z): 표본으로 출처 표기를 먼저 확인하고 확인된 연도만 출처·확인일과 저장한다(추정 없음). 첫 단계는 조사·설계이고 결과를 상위 세션에 알린다. 첫 PR에 `check-source-policy` 단언 보강(`1fcbc42`)을 넣는다. 수집 쓰기가 늘면 D1 쓰기를 먼저 재서 PR에 적는다. 5시간 창 0.9에 닿아도 멈추지 않고, 닿으면 단계마다 커밋·push하고 `resetsAt` 10분 뒤로 재개를 예약한다.
+- 1단계(조사·설계)를 마쳤다. 원출처 요청은 Jalan 3회(`shisetu/` 200 두 번, 404 한 번)와 Trip.com 상세 6쪽이다. `SourceGuard`로 robots를 확인하고 8초 이상 간격을 두었다. 403·429·봇 확인은 없었다. 운영 사이트에는 요청하지 않았다.
+- 운영 D1·Secret·수집 주기·상한·간격은 바꾸지 않았다.
+
+### 조사 결과
+
+- Trip.com 상세의 이 숙소 묶음에 `openYear`(설립 연도)·`fitmentYear`(리모델링 연도)가 있고, 같은 값이 한국어 표지로 보인다. 표본 8곳 중 설립 연도 6곳, 리모델링 연도 1곳, 없음 1곳이다.
+- Jalan에는 연도 칸이 없다. 자유 문장의 연도는 대부분 객실 하나의 개장이라 쓰지 않는다.
+
+### 다음 작업
+
+1. 설계를 상위 세션에 보낸다. 물은 것: 검색 스냅숏에 연도를 넣을지(기본값: 이번 PR은 상세·비교 API만).
+2. 구현 PR: 파서·계약·합성·검사, 쓰기 측정, `check-source-policy` 단언 보강.
