@@ -67,7 +67,7 @@ function BathDetail({hotel}:{hotel:Hotel}){
   {anyKnown?<p className="bath-guide">Jalan 시설 정보를 먼저 봅니다. 객실탕은 표시된 객실 타입에만 해당합니다.</p>:<p className="bath-unknown">이 숙소의 탕 정보는 아직 확인하지 못했습니다.{facility&&<> <a href={facility.url} target="_blank" rel="noopener noreferrer">{facility.label} ↗</a></>}</p>}
   {facts(groups)}
   {anyKnown&&count>0&&<details className="unknown-facts"><summary>확인 전 {count}개 보기<ChevronDown size={18} aria-hidden="true"/></summary>{facts(unknown)}</details>}
-  {(anyKnown||hotel.spring.types.length>0)&&<div className="spring-note"><strong>온천 종류와 사용 방식</strong><p>{hotel.spring.types.join(' · ')||'세부 온천 종류는 공식 안내를 확인하세요.'}</p><p>{hotel.spring.waterNotes}</p></div>}
+  {anyKnown&&<div className="spring-note"><strong>온천 종류와 사용 방식</strong><p>{hotel.spring.types.join(' · ')||'세부 온천 종류는 공식 안내를 확인하세요.'}</p><p>{hotel.spring.waterNotes}</p></div>}
   {anyKnown&&<div className="notice"><Info size={17} aria-hidden="true"/><p>{hotel.spring.useNotes}</p></div>}
  </section>;
 }

@@ -168,14 +168,18 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   // Cards carry list fields only; the sheet opens with the hotel the API returns. When the
   // API cannot answer (anything but 404: a Worker or network failure, 429, 503, 403) the sheet
   // shows the stay's card from the list or snapshot instead, with a retry; a 404 means the
-  // stay is gone, so the sheet closes and the snapshot is checked again.
+  // stay is gone, so the sheet closes and the snapshot is checked again. A stay opened by its
+  // address before the snapshot arrived waits for it (the loader hands back the snapshot the
+  // page loads, or its preloaded files) rather than closing.
   setDetail(null);if(!detailId){setDetailLoading(false);return}
   const controller=new AbortController();setDetailLoading(true);
-  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(e=>{if(!controller.signal.aborted){
-   const gone=e instanceof ApiError&&e.status===404,at=snap.snapshot?.position.get(detailId);
-   const card=gone?undefined:displayHotels.find(h=>h.id===detailId)??(areaHotel?.id===detailId?areaHotel:undefined)??alternatives.find(a=>a.hotel.id===detailId)?.hotel??(at===undefined?undefined:snap.snapshot!.cards[at]);
+  apiJson<Hotel>('/api/hotels/'+encodeURIComponent(detailId),{signal:controller.signal}).then(data=>{if(!controller.signal.aborted)setDetail(data)}).catch(async e=>{if(controller.signal.aborted)return;
+   const gone=e instanceof ApiError&&e.status===404;
+   let card=gone?undefined:displayHotels.find(h=>h.id===detailId)??(areaHotel?.id===detailId?areaHotel:undefined)??alternatives.find(a=>a.hotel.id===detailId)?.hotel;
+   if(!gone&&!card){const s=snap.snapshot??await loadSnapshot(controller.signal,firstPage?.manifest).catch(()=>null),at=s?.position.get(detailId);card=at===undefined?undefined:s!.cards[at]}
+   if(controller.signal.aborted)return;
    if(card){setDetailFallback(card);return}
-   setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail();if(gone)snap.refresh()}}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
+   setToast(e instanceof Error?e.message:'상세 정보를 불러오지 못했습니다.');closeDetail();if(gone)snap.refresh()}).finally(()=>{if(!controller.signal.aborted)setDetailLoading(false)});
   return()=>controller.abort();
  },[detailId,detailAttempt]);
 

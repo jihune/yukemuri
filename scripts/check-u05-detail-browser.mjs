@@ -11,11 +11,13 @@
 // - the action bar stays at the bottom: Jalan and Trip.com links, favourite, compare; the date and
 //   guest fields open above it and go into the two links;
 // - a detail API failure other than 404 (503, network, 429) keeps the sheet open with the stay's
-//   snapshot card and ‘자세한 정보를 지금 불러올 수 없습니다’; ‘다시 시도’ brings the full detail and
+//   snapshot card and ‘자세한 정보를 지금 불러올 수 없습니다’, also when the stay was opened by its
+//   address and the failure came before the snapshot; ‘다시 시도’ brings the full detail and
 //   moves focus to the name. The loading notice shows while the request is pending.
 // The rooms, years and room photos are added to the local detail response here (the local data has
 // none); room photos and every other external image get a blank stand-in, other external requests
-// are blocked. Each width opens four details (the API allows 30 a minute).
+// are blocked. Each width asks the detail API four times (it allows 30 a minute); the failures
+// are answered here.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-detail-browser.mjs [base] [evidence.json] [screenshot dir]
@@ -32,6 +34,8 @@ const search=await siteSearch(base);
 // A stay with Trip.com and Jalan sources and two photos, and one with neither source id.
 const ID='jalan-327522',BARE='daiichi-takimotokan';
 const card=id=>search.snapshot.cards[search.snapshot.position.get(id)];
+// For the address race: a stay well past the static first page (the list's 40).
+const LATE=search.snapshot.cards[search.order('')[400]],onFirstPage=search.list('').hotels.some(h=>h.id===LATE.id);
 if(!card(ID)||!card(BARE))throw new Error('The local snapshot lacks '+ID+' or '+BARE);
 const types=readFileSync(new URL('../lib/hotel-types.ts',import.meta.url),'utf8');
 const LABELS=Object.fromEntries([...types.slice(types.indexOf('CORE_FEATURE_LABELS'),types.indexOf('export const FEATURE_LABELS')).matchAll(/(\w+):\s*'([^']+)'/g)].map(m=>[m[1],m[2]]));
@@ -84,8 +88,11 @@ for(const w of [360,390,1280]){
  // fact unconfirmed, or a failure after a pause (so the loading notice can be seen).
  let mode='rooms',api=null;
  await page.route(/\/api\/hotels\/[^/?#]+(?:\?.*)?$/,async route=>{
+  if(mode==='race'){failedAt=Date.now();return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'잠시 후 다시 시도해 주세요.'})}).catch(()=>{})}
   if(mode==='fail'){await new Promise(r=>setTimeout(r,1200));const kind=FAILURES[w];return(kind==='network'?route.abort('failed'):route.fulfill({status:Number(kind),contentType:'application/json',body:JSON.stringify({error:'잠시 후 다시 시도해 주세요.'})})).catch(()=>{})}
-  const response=await route.fetch();let h=await response.json();
+  const response=await route.fetch().catch(e=>{errors.push('detail fetch: '+String(e).slice(0,120));return null});
+  if(!response)return route.abort().catch(()=>{});
+  let h=await response.json();
   if(mode==='rooms')h=withRooms(h);else if(mode==='unknown')h=unconfirmed(h);
   api=h;await route.fulfill({response,json:h});
  });
@@ -101,7 +108,7 @@ for(const w of [360,390,1280]){
    ratings:d.querySelectorAll('.detail-summary .detail-rating').length,
    cells:[...d.querySelectorAll('.detail-cells .bath-cell')].map(li=>({label:li.querySelector('.bath-label').textContent,state:(li.className.match(/is-(\w+)/)||[])[1],scope:li.querySelector('small')?.textContent??''})),
    photo:{counter:d.querySelector('.photo-nav>span')?.textContent.replace('사진 ','')??null,credit:d.querySelector('.detail-image .photo-source-credit')?.textContent??null},
-   bath:bath?{facts:[...bath.querySelectorAll('.feature-fact')].map(fact),fold:bath.querySelector('.unknown-facts>summary')?.textContent??null,open:!!bath.querySelector('.unknown-facts')?.open,unknown:bath.querySelector('.bath-unknown')?.textContent??null,unknownLink:bath.querySelector('.bath-unknown a')?.href??null}:null,
+   bath:bath?{children:[...bath.children].map(e=>e.tagName.toLowerCase()+(e.className?'.'+e.className:'')),facts:[...bath.querySelectorAll('.feature-fact')].map(fact),fold:bath.querySelector('.unknown-facts>summary')?.textContent??null,open:!!bath.querySelector('.unknown-facts')?.open,unknown:bath.querySelector('.bath-unknown')?.textContent??null,unknownLink:bath.querySelector('.bath-unknown a')?.href??null}:null,
    rooms:rooms?{facts:[...rooms.querySelectorAll('.feature-fact')].map(fact),missing:rooms.querySelector('.facts-unknown')?.textContent??null,
     sets:[...rooms.querySelectorAll('.room-set')].map(s=>({title:s.querySelector('h3').textContent,origin:{text:s.querySelector(':scope>.fact-origin').textContent,href:s.querySelector(':scope>.fact-origin a')?.href??null},
      types:[...s.querySelectorAll('.room-list b')].map(b=>({name:b.textContent,shown:visible(b),photos:b.parentElement.querySelectorAll('figure').length})),
@@ -185,9 +192,19 @@ for(const w of [360,390,1280]){
 
  // 3. Nothing about the baths confirmed: one sentence and the Jalan facility page.
  mode='unknown';await open(ID);s=await read();await shot('unknown');
- check('탕 정보가 모두 확인 전: 한 문장과 Jalan 시설 안내 링크만, 접기 없음, 6칸 모두 ?',s.bath.unknown==='이 숙소의 탕 정보는 아직 확인하지 못했습니다. Jalan 시설 안내 ↗'&&s.bath.unknownLink===api.sources.find(x=>x.sourceId.startsWith('jalan-')).url&&s.bath.fold===null&&s.bath.facts.length===0&&s.cells.every(x=>x.state==='unknown'),{bath:s.bath,cells:s.cells.map(x=>x.state)});
+ check('탕 정보가 모두 확인 전: 제목 아래 한 문장과 Jalan 시설 안내 링크만(접기·온천 종류 블록 없음), 6칸 모두 ?',same(s.bath.children,['h2','p.bath-unknown'])&&s.bath.unknown==='이 숙소의 탕 정보는 아직 확인하지 못했습니다. Jalan 시설 안내 ↗'&&s.bath.unknownLink===api.sources.find(x=>x.sourceId.startsWith('jalan-')).url&&s.bath.fold===null&&s.bath.facts.length===0&&s.cells.every(x=>x.state==='unknown'),{bath:s.bath,cells:s.cells.map(x=>x.state)});
 
- // 4. Loading, a failure other than 404, and the retry.
+ // 4. Opened by its address before the snapshot arrives: the detail fails first, the sheet waits
+ // for the snapshot's card instead of closing (the stay is not on the static first page).
+ mode='race';let failedAt=0,cardsAt=0;
+ const cardsFile=/\/snapshot\/v\/[^/]+\/cards\.json$/;
+ await page.route(cardsFile,async route=>{await new Promise(r=>setTimeout(r,2500));cardsAt=Date.now();await route.continue().catch(()=>{})});
+ await page.goto(base+'/#stay/'+LATE.id,{waitUntil:'domcontentloaded'});
+ const waited=await detail.locator('.detail-unavailable').waitFor({timeout:15000}).then(()=>true,()=>false);
+ s=waited?await read():null;await page.unroute(cardsFile);
+ check('첫 쪽에 없는 숙소를 주소로 열고 스냅숏보다 상세 실패가 먼저 와도 시트를 닫지 않고 스냅숏 카드를 보임',!onFirstPage&&waited&&failedAt>0&&cardsAt>failedAt&&s.title===LATE.names.ko&&same(s.cells,expected(LATE)),{id:LATE.id,onFirstPage,waited,failedBeforeCards:cardsAt-failedAt,title:s?.title,sheet:await detail.count()});
+
+ // 5. Loading, a failure other than 404, and the retry.
  mode='fail';const pending=page.goto(base+'/#stay/'+ID,{waitUntil:'networkidle'});
  const loading=await page.locator('.toast-message',{hasText:'숙소 상세를 불러오는 중…'}).waitFor({timeout:5000}).then(()=>true,()=>false);
  await pending;const kept=await detail.locator('.detail-unavailable').waitFor({timeout:15000}).then(()=>true,()=>false);
