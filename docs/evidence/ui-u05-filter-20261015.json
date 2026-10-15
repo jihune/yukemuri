@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-15T01:44:57.733Z",
+ "checkedAt": "2026-10-15T01:57:14.202Z",
  "base": "http://127.0.0.1:8787",
  "results": [
   {
@@ -128,6 +128,16 @@
      "카케나가시": false
     },
     "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "시트 안의 ‘최소 리뷰 수’ 선택 상자가 열리고 ‘50개 이상’이 적용됨(45곳 = 스냅숏 값), 시트는 열린 채",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=50&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "apply": "45곳 보기",
+    "want50": 45
    }
   },
   {
@@ -264,6 +274,16 @@
      "카케나가시": false
     },
     "apply": "1,655곳 보기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "시트 안의 ‘최소 리뷰 수’ 선택 상자가 열리고 ‘50개 이상’이 적용됨(45곳 = 스냅숏 값), 시트는 열린 채",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=50&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "apply": "45곳 보기",
+    "want50": 45
    }
   },
   {

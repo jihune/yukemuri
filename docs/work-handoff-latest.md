@@ -1105,7 +1105,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 
 ### 4번 필터 PR
 
-기록: RECORDTIME4. 상위 세션 지시(10-15T01:23Z)로 시작했다. 브랜치 `claude/u05-ui`는 main `27d5da7`에서 시작했다.
+기록: 2026-10-15T01:57Z. 상위 세션 지시(10-15T01:23Z)로 시작했다. 브랜치 `claude/u05-ui`는 main `27d5da7`에서 시작했다.
 
 바꾼 것(설계안 8절 3번):
 
@@ -1125,7 +1125,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
 
 검사:
 
-- 새 `scripts/check-u05-filter-browser.mjs` 25개 통과(실제 Chromium 360·390·1280px, `evidence/ui-u05-filter-20261015.json`). 보는 것:
+- 새 `scripts/check-u05-filter-browser.mjs` 27개 통과(실제 Chromium 360·390·1280px, `evidence/ui-u05-filter-20261015.json`). 보는 것:
   - 시트가 화면 아래에 붙고 폭 전체이며 화면의 90% 이하인지, ‘숙소 필터’ 대화상자인지, 초점이 안으로 가는지.
   - 토글 15개가 모두 44px 이상인지, 묶음 5개의 이름·순서.
   - ‘?’가 44px이고 누르기 전에는 설명이 숨어 있는지.
@@ -1137,7 +1137,7 @@ Claude 검토 1회째(상위 세션이 연 검토, 이 PR의 4회째, head `9659
   - 데스크톱 패널이 같은 토글·묶음인지.
 - 변형 확인: 빌드된 묶음에서 토글의 `aria-checked`를 늘 꺼짐으로 고정하면 5건이 실패한다(세 폭).
 - 처음 실행에서 화면 문제 하나를 찾아 고쳤다. 터치로 연 시트를 닫으면 초점이 칩으로 돌아오지 않았다(360·390px 2건).
-- 기존 브라우저 검사: RECORDCHECKS4.
+- 기존 브라우저 검사(`946bbd7` 빌드, 로컬 사이트)는 모두 통과했다: `check-u05-foundation` 53(휴대폰 필터 시트의 대비·44px·13px 포함), `check-u05-list` 28, `check-u01` 64, `check-u02` 52, `check-u02-map` 55, `check-u05-map` 23, `check-u03-desktop` 12, `check-u03-comparison` 60, `check-u04` 57, `check-p03-followups` 9. 기존 검사는 고친 것이 없다.
 - `cloud-check.py --full`: RECORDCLOUD4.
 - 수정 전 캡처는 3번 PR 때의 main 캡처(필터 시트는 그 뒤로 바뀌지 않음)이고, 수정 후 캡처(foundation 검사의 캡처 폴더)와 함께 작업 세션 임시 폴더에만 있다.
 
