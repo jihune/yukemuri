@@ -1,0 +1,1 @@
+const f=document.querySelector('.chip-bar .mobile-filter');if(f){f.innerHTML='필터 더 보기 <b style="margin-left:6px;background:#0a6670;color:#fff;border-radius:999px;padding:0 7px;font-size:13px">15</b>';const bar=f.parentElement;bar.appendChild(f)}
