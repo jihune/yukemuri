@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {BUDGET,budgetToday,pagesFor} from './collection-budget.mjs';
 
 // The measured costs (2026-10-17) and the share of each free limit.
-assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,share:0.85,writesPerPage:151,readsPerPage:3000,snapshotReads:260000});
+assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,share:0.85,writesPerPage:151,readsPerPage:3000,snapshotReads:330000});
 
 // A fresh day: the cap. Nothing recorded yet counts as zero (an authorised query with no rows).
 assert.equal(pagesFor({rowsRead:0,rowsWritten:0}).pages,120);
@@ -18,17 +18,18 @@ assert.equal(pagesFor({rowsRead:0,rowsWritten:80_000}).pages,33);
 // 7,172 rows left -> 47 pages.
 assert.equal(pagesFor({rowsRead:3_170_016,rowsWritten:77_828}).pages,47);
 // Whatever today's usage, a run's pages stay within 85% at the costliest per-page costs measured on
-// 2026-10-17: 150.4 rows written, 2,981 read, and a 257,099-row snapshot after the run (none at 0 pages).
+// 2026-10-17: 150.4 rows written, 2,981 read, and a snapshot after the run (none at 0 pages) of
+// 257,099 rows plus two days of that day's growth (2 x 33,760).
 for(let written=0;written<=85_000;written++){
  const {pages}=pagesFor({rowsRead:0,rowsWritten:written});
  assert.ok(written+pages*150.4<=85_000,'writes '+written);
 }
 for(let read=0;read<=4_250_000;read+=100){
  const {pages}=pagesFor({rowsRead:read,rowsWritten:0});
- assert.ok(pages===0||read+pages*2981+257_099<=4_250_000,'reads '+read);
+ assert.ok(pages===0||read+pages*2981+257_099+2*33_760<=4_250_000,'reads '+read);
 }
-// Reads decide: 4,250,000 - 3,800,000 - 260,000 = 190,000 rows -> 63 pages.
-assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,63);
+// Reads decide: 4,250,000 - 3,800,000 - 330,000 = 120,000 rows -> 40 pages.
+assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,40);
 // 2026-10-13 05:36Z (87,579 written): over 85% of the writes, so the run skips.
 assert.equal(pagesFor({rowsRead:1_647_393,rowsWritten:87_579}).pages,0);
 assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).pages,0);

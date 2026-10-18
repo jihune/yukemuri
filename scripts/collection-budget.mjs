@@ -17,7 +17,8 @@ export const BUDGET=Object.freeze({
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
  readsPerPage:3000,    // 2026-10-17: 2,713-2,981 a page between runs, snapshot taken out
- snapshotReads:260000  // 2026-10-17: the last snapshot build read 257,099 rows (23,032 hotels)
+ snapshotReads:330000  // 2026-10-17: the last snapshot build read 257,099 rows (23,032 hotels), up
+                       // 33,760 that day as hotels grew; this leaves two more days of that growth
 });
 
 // usage: {rowsRead, rowsWritten} of the account today; null counts mean no
