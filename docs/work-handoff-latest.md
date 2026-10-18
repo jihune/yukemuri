@@ -122,7 +122,9 @@
 
 - 10-18T12:48Z PR #151(U07 PR 나)을 병합했다(`7541ebe`). 병합 조건: 지금 main `3c8bd68`과 합친 트리를 마지막 검토 커밋 `d3ee9d9`와 head `1a57336`에서 각각 만들어(`git merge-tree --write-tree`) 비교하니 차이가 `docs/U07-20261019.md`(+6줄)와 이 문서의 U07 절 한 줄뿐이었다. `1a57336`의 `checks`(12:36:28Z–12:43:20Z)·GitGuardian 성공, mergeable clean, 리뷰 스레드 모두 해결. 검토는 Codex 3회와 이어 가는 Claude 검토 2회였고, 마지막 검토(`d3ee9d9`)는 P0~P2 없이 P3 1건을 남겼다(D07 다음 PR 몫). main 배포 run 39128834824가 성공했다(12:48:35Z–12:59:28Z, 마이그레이션 없음, Worker `f6aa0643`, 스냅숏 `c14ecda23453cb7a`, smoke 통과, `deployments.md`). 상위 세션이 저장한 로그에서 Worker·마이그레이션·스냅숏·smoke 줄을 grep했다. 로그의 ‘Hotel load failed … no such table: hotels’ 두 줄은 통과한 edge guard 검사(`check-edge-guard-worker.mjs`) 중의 출력이고, #160 배포 로그에도 같은 두 줄이 있다.
 - 10-18T12:49Z U07에 PR 다를 최신 main에서 열라고, D07에 다음 PR(위 4의 D07 항목 세 가지)을 최신 main에서 열라고 알렸다(둘 다 delivered). U07이 알린 로컬 D1 문제(`prepare-local-site.mjs`)는 D07 다음 PR에 넣었다.
-- 10-18T12:50Z 이 문서가 58 KB가 되어 지금 상태만 남게 다시 썼다. 옛 문서는 `docs/history/work-handoff-20261018T1250Z.md`에 바꾸지 않고 옮겼다(`cmp` 같음). 하위 세션이 고치는 U07·D07 절은 글자 그대로 두었다.
+- 10-18T12:50Z 이 문서가 58 KB가 되어 지금 상태만 남게 다시 썼다. 옛 문서는 `docs/history/work-handoff-20261018T1250Z.md`에 바꾸지 않고 옮겼다(`cmp` 같음). 하위 세션이 고치는 U07·D07 절은 글자 그대로 두었다. 기록 PR #164로 병합했다(`4f21185`).
+- 10-18T13:04Z C04가 알렸다: #163 Codex 1회째(12:52Z, head `0f6b633`)의 P2 두 건을 `15dec87`에서 고쳤다. `writesPerPage`는 80 → 180(Trip.com 상세와 이름 쪽이 비면 Jalan 상세 11행과 새 숙소 30곳 목록 348행만 든 바퀴가 이어져 평균 179.5행), `readsPerPage`는 3,100 → 3,600(이름 쪽 받기 525행이 쪽 하나뿐인 바퀴에 들 수 있음)이고 `snapshotReads` 168,000은 그대로다. 실행마다 그날 사용량을 다시 읽으므로 이 값은 그날 마지막 실행들의 쪽수만 정한다.
+- 10-18T13:24Z D07이 PR 3(브랜치 `claude/d07-names`, `b569174`, main `4f21185` 위)을 알렸다. 사진 출처 쪽 질의가 `hotel_locale_names`를 LEFT JOIN으로 읽어 문장 수는 그대로이고, 운영에서는 이름 행 하나마다 한 행이 더해져 쪽당 약 82행이 된다(시드 측정 42행, 상한 60행). 상위 세션이 상한을 운영 최악의 값을 덮는 90으로 올리고, `measure-d1-reads` 시드에 이름 행을 넣어 재는 값이 최악의 경우가 되게 하라고 정했다(상한이 운영 값을 말하지 못하면 검사의 뜻이 없음).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
