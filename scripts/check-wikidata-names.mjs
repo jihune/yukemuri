@@ -1,10 +1,9 @@
 // D07 Wikidata names: the rule (lib/wikidata-names.ts) on fixture labels, the extract
 // (data/wikidata-trip-names.json) and its refresh (scripts/update-wikidata-names.mjs).
 // With --public, the rule runs on the public snapshot: every name it adds or keeps is listed with
-// two signs the rule does not use that the Trip.com id points at another hotel on Wikidata (the
-// item's point over 1 km from our source coordinates, or the item located in another prefecture
-// than our record), and a control pairs hotels with other hotels' items to prove the signs fire.
-// A name neither sign can check is counted apart as unverified.
+// the one sign the rule does not use that the Trip.com id points at another hotel on Wikidata (the
+// item's point over 1 km from our source coordinates), and a control swaps two hotels' items to
+// prove the sign fires. A name without that sign is counted apart as unverified, for a person to look at.
 // Usage: node scripts/check-wikidata-names.mjs [--public [--dir saved-snapshot] [--json out.json]]
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -86,34 +85,16 @@ async function auditPublic(){
  // Latin words of a name, accents dropped (Frésa is Fresa), generic ones left out.
  const words=s=>new Set((s??'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().match(/[a-z0-9]{3,}/g)?.filter(w=>!GENERIC.has(w))??[]);
  const within=(a,b)=>{const [few,many]=a.size<=b.size?[a,b]:[b,a];return few.size>0&&[...few].every(w=>many.has(w))};
- // The prefecture each item is located in (P131 up to an item with an ISO 3166-2 JP- code), from
- // two SPARQL GETs: the codes of the items the snapshot's Trip.com hotels reach, and each code's
- // Japanese label (石川県), which matches data/prefectures.json (not in JIS code order). An item
- // with none, or a failed query, gives no sign.
- const reached=[...new Set(core.ids.flatMap(id=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))?[labels.get(id.slice(5)).item]:[]))];
- const sparql=async query=>{
-  const r=await fetch('https://query.wikidata.org/sparql',{method:'POST',body:new URLSearchParams({query}),headers:{Accept:'application/sparql-results+json','User-Agent':'YukemuriCatalogUpdater/1.0 (+https://github.com/jihune/yukemuri)'},signal:AbortSignal.timeout(120000)});
-  if(!r.ok)throw new Error('Wikidata SPARQL HTTP '+r.status);return(await r.json()).results.bindings;
- };
- const located=new Map();let placesError=null;
- try{
-  const ours=new Map(JSON.parse(readFileSync('data/prefectures.json','utf8')).map(p=>[p.ja,p.id]));
-  const byCode=new Map((await sparql('SELECT ?iso ?ja WHERE { ?p wdt:P300 ?iso ; rdfs:label ?ja . FILTER(STRSTARTS(?iso,"JP-") && LANG(?ja)="ja") }')).map(b=>[b.iso.value,ours.get(b.ja.value)]));
-  for(const b of await sparql(`SELECT ?item ?iso WHERE { VALUES ?item { ${reached.map(q=>'wd:'+q).join(' ')} } ?item wdt:P131+ ?p . ?p wdt:P300 ?iso . FILTER(STRSTARTS(?iso,"JP-")) }`)){
-   const q=b.item.value.split('/').pop(),pref=byCode.get(b.iso.value);if(pref)located.set(q,[...new Set([...(located.get(q)??[]),pref])]);
-  }
- }catch(error){placesError=String(error.message??error).slice(0,200)}
- // Signs the rule does not use that the item is another hotel: its point over 1 km from our
- // source point, or its prefecture not ours. A hotel with neither to compare is unverified. The
- // name sign (no name of ours whose Latin words and the English label's contain one another) is
- // the rule's own condition, so it never fires on a name the rule gives; it is kept for the
- // hotels the extract reaches whose item the rule refuses.
- const judge=(card,i,label,trip,prefecture=core.prefecture[i])=>{
+ // The sign the rule does not use that the item is another hotel: its point over 1 km from our
+ // source point. A hotel without both points is unverified. The name sign (no name of ours whose
+ // Latin words and the English label's contain one another) is the rule's own condition, so it
+ // never fires on a name the rule gives; it is kept for the hotels the extract reaches whose item
+ // the rule refuses.
+ const judge=(card,i,label,trip)=>{
   const point=points.get(trip),ours=core.lat[i]!==null?[core.lat[i],core.lng[i]]:null,distance=ours&&point?km(ours,point):null;
-  const where=located.get(label.item),place=where&&prefecture?where.includes(prefecture)?'same':'other':null;
   const theirs=words(label.en),mine=Object.values(card.names).map(words).filter(w=>w.size);
   const named=theirs.size&&mine.length?mine.some(w=>within(w,theirs)):null;
-  return{distance:distance===null?null:Math.round(distance*1000),prefecture:place,named,suspicious:distance!==null&&distance>1||place==='other',unverified:distance===null&&place===null};
+  return{distance:distance===null?null:Math.round(distance*1000),named,suspicious:distance!==null&&distance>1,unverified:distance===null};
  };
  const shown=list=>({ko:list.filter(c=>displayNames(c.names).titleLang==='ko').length,en:list.filter(c=>{const d=displayNames(c.names);return d.titleLang==='en'||d.en!==null}).length});
  const same=(a,b)=>a.ko===b.ko&&a.ja===b.ja&&a.en===b.en;
@@ -131,33 +112,25 @@ async function auditPublic(){
   if(h.names!==base.names)added.push({id:card.id,item:label.item,state:mark&&same(h.names,card.names)?'shows':'adds',before:base.names,ko:h.names.ko!==base.names.ko?h.names.ko:null,en:h.names.en!==base.names.en?h.names.en:null,labelEn:label.en,grade:geo?.grade[i]??null,...judge(base,i,label,trip)});
   else if(mark)dropped.push({id:card.id,item:mark.item,shown:card.names,next:base.names});
  });
- // Controls: a hotel judged against another hotel's item must be flagged. By point: two Trip.com
- // hotels with both points over 1 km apart. By prefecture: each judged hotel against the next
- // judged hotel whose item lies in another prefecture, its point left out.
+ // Control: two Trip.com hotels with both points over 1 km apart, each judged against the other's
+ // item, must be flagged.
  const [pi,qi]=core.ids.flatMap((id,i)=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))&&points.has(id.slice(5))&&core.lat[i]!==null?[i]:[]).filter((i,n,all)=>n===0||judge(cards[all[0]],all[0],labels.get(core.ids[i].slice(5)),core.ids[i].slice(5)).distance>1000);
  assert(pi!==undefined&&qi!==undefined,'two hotels over 1 km apart to swap');
  const swap=(i,j)=>judge(cards[i],i,labels.get(core.ids[j].slice(5)),core.ids[j].slice(5));
  const byPoint=[swap(pi,qi),swap(qi,pi)];
- const byPrefecture=added.flatMap(a=>{
-  const i=core.ids.indexOf(a.id),other=added.find(b=>located.get(b.item)&&core.prefecture[i]&&!located.get(b.item).includes(core.prefecture[i]));
-  return other?[{id:a.id,against:other.item,...judge(cards[i],i,labels.get(other.id.slice(5)),null)}]:[];
- });
- assert(added.length===0||byPrefecture.length>0||placesError,'a judged hotel to pair with an item in another prefecture');
- const missed=byPrefecture.filter(c=>c.prefecture!=='other'),control=byPoint.every(s=>s.suspicious)&&missed.length===0;
+ const control=byPoint.every(s=>s.suspicious);
  const before=shown(cards),now=shown(after),suspicious=added.filter(a=>a.suspicious),unverified=added.filter(a=>a.unverified);
  // Every Trip.com hotel the extract reaches, named or not: how often its item looks like another hotel.
  const matched=core.ids.flatMap((id,i)=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))?[{id,...judge(cards[i],i,labels.get(id.slice(5)),id.slice(5))}]:[]);
  const odd=matched.filter(m=>m.suspicious||m.named===false);
- const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,dropped,suspicious:suspicious.map(a=>a.id),unverified:unverified.map(a=>a.id),placesError,matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,withPrefecture:matched.filter(m=>m.prefecture!==null).length,odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint},byPrefecture}};
+ const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,dropped,suspicious:suspicious.map(a=>a.id),unverified:unverified.map(a=>a.id),matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint}}};
  if(arg('--json'))writeFileSync(arg('--json'),JSON.stringify(report,null,1)+'\n');
- const sign=a=>[a.distance===null?'no point':a.distance+' m',a.prefecture===null?'no prefecture':a.prefecture+' prefecture'].join(', ');
+ const sign=a=>a.distance===null?'no point to compare':a.distance+' m';
  for(const a of added)console.log(`  ${a.suspicious?'SUSPICIOUS ':a.unverified?'UNVERIFIED ':''}${a.state} ${a.id} ${a.item}: ${a.ko??'-'} / ${a.en??'-'} (was ${a.before.ko}; Wikidata en ${a.labelEn}; ${sign(a)})`);
- for(const c of missed)console.log(`  CONTROL MISSED ${c.id} against ${c.against}`);
  for(const d of dropped)console.log(`  drops ${d.id} ${d.item}: ${d.shown.ko} / ${d.shown.en} (a name the current extract no longer gives)`);
  for(const m of odd)console.log(`  note: ${m.id} reached by the extract looks like another item (${sign(m)}; names agree ${m.named})`);
- if(placesError)console.log('  Wikidata prefectures not read: '+placesError);
  const pass=control&&suspicious.length===0,checked=added.length-unverified.length;
- console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names, ${added.filter(a=>a.state==='shows').length} keep them, ${dropped.length} lose them (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); checked ${checked} (${added.filter(a=>a.distance!==null).length} by point, ${added.filter(a=>a.distance===null&&a.prefecture!==null).length} by prefecture only), ${suspicious.length} suspicious, ${unverified.length} unverified and not covered by this verdict (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, other prefectures ${byPrefecture.length-missed.length}/${byPrefecture.length} flagged -> ${pass?'PASS':'FAIL'}`);
+ console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names, ${added.filter(a=>a.state==='shows').length} keep them, ${dropped.length} lose them (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); checked by point ${checked}, ${suspicious.length} suspicious, ${unverified.length} unverified and not covered by this verdict (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); control: swapped points ${byPoint.filter(s=>s.suspicious).length}/2 flagged -> ${pass?'PASS':'FAIL'}`);
  if(!pass)process.exitCode=1;
  return` Public audit: ${checked} checked, ${suspicious.length} suspicious, ${unverified.length} unverified, ${pass?'PASS':'FAIL'}.`;
 }

@@ -2,7 +2,7 @@
  "snapshot": "909da47bc703c163",
  "generatedAt": "2026-10-18T07:23:55.118Z",
  "hotels": 23429,
- "checkedAt": "2026-10-18T08:24:24.917Z",
+ "checkedAt": "2026-10-18T08:30:35.415Z",
  "koreanTitles": {
   "before": 1543,
   "after": 1565
@@ -26,10 +26,9 @@
    "labelEn": "The Prince Sakura Tower Tokyo",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-1454519",
@@ -45,10 +44,9 @@
    "labelEn": "Daiwa Roynet Hotel Yokohama-Koen",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-1489108",
@@ -64,10 +62,9 @@
    "labelEn": "Hotel Metropolitan Tokyo Ikebukuro",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-22678179",
@@ -83,7 +80,6 @@
    "labelEn": "Hotel Bloemen North-Hanazono",
    "grade": 6,
    "distance": null,
-   "prefecture": null,
    "named": true,
    "suspicious": false,
    "unverified": true
@@ -102,10 +98,9 @@
    "labelEn": "mesm Tokyo, Autograph Collection",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-52320512",
@@ -121,10 +116,9 @@
    "labelEn": "Mitsui Garden Hotel Toyosu Premier",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-686316",
@@ -140,10 +134,9 @@
    "labelEn": "Tokyo Station Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-686539",
@@ -159,10 +152,9 @@
    "labelEn": "The Gate Hotel Kaminarimon by Hulic",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-688249",
@@ -178,10 +170,9 @@
    "labelEn": "Hotel The Celestine Tokyo Shiba",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-688271",
@@ -197,10 +188,9 @@
    "labelEn": "Tokyo Prince Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-688422",
@@ -216,10 +206,9 @@
    "labelEn": "Hotel Metropolitan Edmont Tokyo",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-688621",
@@ -235,10 +224,9 @@
    "labelEn": "The Prince Park Tower Tokyo",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-704012",
@@ -254,10 +242,9 @@
    "labelEn": "The Yokohama Bay Hotel Tokyu",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-704030",
@@ -273,10 +260,9 @@
    "labelEn": "Tokyo Dome Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-759807",
@@ -292,10 +278,9 @@
    "labelEn": "Grand Nikko Tokyo Daiba",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-926340",
@@ -311,10 +296,9 @@
    "labelEn": "Hilton Tokyo Bay",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-993483",
@@ -330,10 +314,9 @@
    "labelEn": "Shin Yokohama Prince Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-993510",
@@ -349,10 +332,9 @@
    "labelEn": "Imperial Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-994533",
@@ -368,10 +350,9 @@
    "labelEn": "Sotetsu Grand Frésa Tokyo-Bay Ariake",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-994617",
@@ -387,10 +368,9 @@
    "labelEn": "Hyatt Regency Tokyo",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-994639",
@@ -406,10 +386,9 @@
    "labelEn": "Keio Plaza Hotel Tokyo",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-994895",
@@ -425,10 +404,9 @@
    "labelEn": "Shinagawa Prince Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   },
   {
    "id": "trip-994914",
@@ -444,27 +422,45 @@
    "labelEn": "Shinjuku Washington Hotel",
    "grade": 6,
    "distance": null,
-   "prefecture": "same",
    "named": true,
    "suspicious": false,
-   "unverified": false
+   "unverified": true
   }
  ],
  "dropped": [],
  "suspicious": [],
  "unverified": [
-  "trip-22678179"
+  "trip-1426722",
+  "trip-1454519",
+  "trip-1489108",
+  "trip-22678179",
+  "trip-50999069",
+  "trip-52320512",
+  "trip-686316",
+  "trip-686539",
+  "trip-688249",
+  "trip-688271",
+  "trip-688422",
+  "trip-688621",
+  "trip-704012",
+  "trip-704030",
+  "trip-759807",
+  "trip-926340",
+  "trip-993483",
+  "trip-993510",
+  "trip-994533",
+  "trip-994617",
+  "trip-994639",
+  "trip-994895",
+  "trip-994914"
  ],
- "placesError": null,
  "matched": {
   "count": 296,
   "withPoints": 52,
-  "withPrefecture": 128,
   "odd": [
    {
     "id": "trip-13783418",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -472,15 +468,13 @@
    {
     "id": "trip-1454486",
     "distance": null,
-    "prefecture": "same",
     "named": false,
     "suspicious": false,
-    "unverified": false
+    "unverified": true
    },
    {
     "id": "trip-1483531",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -488,7 +482,6 @@
    {
     "id": "trip-1500207",
     "distance": 18,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -496,7 +489,6 @@
    {
     "id": "trip-17084562",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -504,7 +496,6 @@
    {
     "id": "trip-1715016",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -512,7 +503,6 @@
    {
     "id": "trip-18090690",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -520,7 +510,6 @@
    {
     "id": "trip-19889617",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -528,7 +517,6 @@
    {
     "id": "trip-22257228",
     "distance": 63,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -536,7 +524,6 @@
    {
     "id": "trip-23152370",
     "distance": 41,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -544,7 +531,6 @@
    {
     "id": "trip-25721170",
     "distance": 5,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -552,7 +538,6 @@
    {
     "id": "trip-25797449",
     "distance": 1,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -560,15 +545,13 @@
    {
     "id": "trip-37913163",
     "distance": null,
-    "prefecture": "same",
     "named": false,
     "suspicious": false,
-    "unverified": false
+    "unverified": true
    },
    {
     "id": "trip-42519346",
     "distance": 83,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -576,7 +559,6 @@
    {
     "id": "trip-46153791",
     "distance": 24,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -584,7 +566,6 @@
    {
     "id": "trip-5174981",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -592,7 +573,6 @@
    {
     "id": "trip-5611441",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -600,7 +580,6 @@
    {
     "id": "trip-6395323",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -608,7 +587,6 @@
    {
     "id": "trip-6596757",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -616,15 +594,13 @@
    {
     "id": "trip-688209",
     "distance": null,
-    "prefecture": "same",
     "named": false,
     "suspicious": false,
-    "unverified": false
+    "unverified": true
    },
    {
     "id": "trip-704593",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -632,7 +608,6 @@
    {
     "id": "trip-705328",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -640,15 +615,13 @@
    {
     "id": "trip-705902",
     "distance": null,
-    "prefecture": "same",
     "named": false,
     "suspicious": false,
-    "unverified": false
+    "unverified": true
    },
    {
     "id": "trip-706094",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -656,7 +629,6 @@
    {
     "id": "trip-706185",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -664,7 +636,6 @@
    {
     "id": "trip-706395",
     "distance": 0,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -672,7 +643,6 @@
    {
     "id": "trip-706401",
     "distance": 7,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": false
@@ -680,7 +650,6 @@
    {
     "id": "trip-711296",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -688,7 +657,6 @@
    {
     "id": "trip-8657775",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -696,7 +664,6 @@
    {
     "id": "trip-9062347",
     "distance": null,
-    "prefecture": null,
     "named": false,
     "suspicious": false,
     "unverified": true
@@ -704,10 +671,9 @@
    {
     "id": "trip-993398",
     "distance": null,
-    "prefecture": "same",
     "named": false,
     "suspicious": false,
-    "unverified": false
+    "unverified": true
    }
   ]
  },
@@ -720,228 +686,17 @@
    "judged": [
     {
      "distance": 194650,
-     "prefecture": null,
      "named": false,
      "suspicious": true,
      "unverified": false
     },
     {
      "distance": 194684,
-     "prefecture": "other",
      "named": false,
      "suspicious": true,
      "unverified": false
     }
    ]
-  },
-  "byPrefecture": [
-   {
-    "id": "trip-1426722",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-1454519",
-    "against": "Q111406723",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-1489108",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-22678179",
-    "against": "Q111406723",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-50999069",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-52320512",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-686316",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-686539",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-688249",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-688271",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-688422",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-688621",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-704012",
-    "against": "Q111406723",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-704030",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-759807",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-926340",
-    "against": "Q111406723",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-993483",
-    "against": "Q111406723",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-993510",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-994533",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-994617",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-994639",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-994895",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   },
-   {
-    "id": "trip-994914",
-    "against": "Q111406745",
-    "distance": null,
-    "prefecture": "other",
-    "named": false,
-    "suspicious": true,
-    "unverified": false
-   }
-  ]
+  }
  }
 }
