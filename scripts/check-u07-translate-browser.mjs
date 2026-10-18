@@ -16,7 +16,8 @@
 // - a failed translation says so and offers ‘다시 시도’, which works;
 // - a stay whose description is already Korean shows neither button nor note;
 // - closing the sheet while the model downloads aborts the signal given to create(), and leaves no
-//   translator behind: the one made after that is destroyed and never translates.
+//   translator behind: the one made after that is destroyed and never translates;
+// - an English description has lang="en", asks for the English pair and gives the one-pack size.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u07-translate-browser.mjs [base] [evidence.json] [screenshot folder]
@@ -45,6 +46,8 @@ if(!foreign||!korean)throw new Error('No checked-in stay for the translation che
 // The detail the page receives carries that description in two lines (no checked-in description
 // has a line break), so the translation line by line is what is judged.
 const described=foreign.description.trim()+'\n客室は全室和室です。';
+// The same stay with an English description (the catalogue has none), for the English pair.
+const english='A quiet hot spring inn by the river.\nAll rooms are Japanese style.';
 // The stand-in: brands, availability and translation are set per run through window.__u07.
 const standIn=({brand,availability,fail})=>{
  Object.defineProperty(Navigator.prototype,'userAgentData',{configurable:true,get:()=>({brands:[{brand,version:'141'}],mobile:false,platform:'Linux'})});
@@ -73,7 +76,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   await (mobile?card.tap():card.click());await page.waitForTimeout(1500);
   return page.locator('.hotel-description');
  };
- const context=async init=>{const c=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});await c.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));await c.route(url=>url.pathname==='/api/hotels/'+foreign.id,async route=>{const response=await route.fetch();const hotel=await response.json();hotel.description=described;await route.fulfill({response,json:hotel})});if(init)await c.addInitScript(standIn,init);return c};
+ const context=async(init,description=described)=>{const c=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});await c.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));await c.route(url=>url.pathname==='/api/hotels/'+foreign.id,async route=>{const response=await route.fetch();const hotel=await response.json();hotel.description=description;await route.fulfill({response,json:hotel})});if(init)await c.addInitScript(standIn,init);return c};
  // 1. Not Chrome or Edge (this Chromium names itself ‘Chromium’): a note, no button, never asked.
  {
   const c=await context(null),page=await c.newPage(),errors=[];page.setDefaultTimeout(8000);page.on('pageerror',e=>errors.push(String(e)));
@@ -146,6 +149,16 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   if(await button.count()){await (mobile?button.tap():button.click());await page.waitForTimeout(150);await page.keyboard.press('Escape');await page.waitForTimeout(1500)}
   const log=await page.evaluate(()=>window.__u07),open_=await page.locator('.hotel-description').count();
   check('모델을 받는 중 상세를 닫으면 create()에 넘긴 신호가 중단되고, 그 뒤 만들어진 번역기는 정리되고(destroy) 번역에 쓰이지 않음',open_===0&&log.create===1&&log.created===1&&log.signalAborted===true&&log.destroyed===1&&log.translate.length===0,{log:{create:log.create,created:log.created,signalAborted:log.signalAborted,destroyed:log.destroyed,translate:log.translate},open:open_});
+  await c.close();
+ }
+ // 6. An English description (Chrome, downloadable): its own lang, the English pair, the size of
+ // its one language pack.
+ {
+  const c=await context({brand:'Google Chrome',availability:'downloadable',fail:0},english),page=await c.newPage();
+  const d=await open(page,foreign.id);
+  const r={original:await d.locator('.hotel-intro').first().textContent(),lang:await d.locator('.hotel-intro').first().getAttribute('lang'),readyNote:await d.locator('.translate-note').first().textContent().catch(()=>null),pair:await page.evaluate(()=>window.__u07.pair??null)};
+  check('영어 설명: 원문은 lang="en"이고 영어→한국어 쌍(en>ko)으로 물음',r.original.trim()===english&&r.lang==='en'&&r.pair==='en>ko',r);
+  check('영어 설명: 단추 아래 안내가 모델 크기 약 57MB를 알림(일본어의 약 110MB가 아님)',/약 57MB/.test(r.readyNote??'')&&!/110MB/.test(r.readyNote??''),r);
   await c.close();
  }
 }
