@@ -1128,6 +1128,11 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-chip{padding-left:8px;padding-right:8px}
 .filter-chip:not(.is-verified){display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:6px;row-gap:0;align-content:center;justify-items:start}
 .filter-chip:not(.is-verified) small{grid-column:2}
+/* ‘내 기준’ keeps its note on one line: beside the name where it fits, else on a second line at
+   the right. Squeezed beside the name (a 155px button with its ‘?’, touch at 901-959px) the note
+   broke into four lines and ran into the ‘?’. */
+.filter-chip.is-verified{flex-wrap:wrap}
+.filter-chip.is-verified small{white-space:nowrap}
 .filter-check{flex-shrink:0;display:inline-grid;place-items:center;width:14px;height:14px;border:1.5px solid currentColor;border-radius:3px;opacity:.55;font-style:normal}
 .filter-chip[aria-pressed=true] .filter-check{opacity:1;border-color:transparent}
 .filter-chip[aria-pressed=true] .filter-check::before{content:'✓';font-size:14px;font-weight:800;line-height:1}
