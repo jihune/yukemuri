@@ -64,7 +64,7 @@
 
 1. H01 7단계: 6일차(10-19T01:20Z)와 7일차(10-20T01:20Z)를 예약대로 본다(`H01-20261011.md` 「7단계 기록(매일)」). 6일차에는 PR #130의 `writesPerPage` 151·`snapshotReads` 330,000으로 그날 쓰기가 85% 안에 들었는지 본다. 7일차 뒤 아래 6의 C1을 닫고 7단계를 정리한다. PR #130의 회차 경위는 옮긴 파일 4-1에 있다.
 2. O03 사용량 점검 자동화(이후 아이디어 10, 하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`): 앱 PR #131(`48cc071`)과 실행기 PR #11(실행기 `31daed7`)이 병합됐다. 실행기 예약이 매일 01:41Z에 앱 점검을 부르고, 85% 이상·1102·0쪽 수집·26분 초과·백업 실패면 실패 메일이 간다. 첫 예약 실행(10-19T01:41Z)은 O03이 10-19T02:45Z에 확인한다. 7일차(10-20) 뒤 상위 세션의 Claude 매일 점검을 끝내고, 실패 메일이 온 날만 run 요약을 본다.
-3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR #133(PR 가)과 #148(할 것 7)이 병합·배포됐다. PR #151(PR 나: 지도 표지를 묶음 구성원 점 위에, 꼬리 끝을 숙소 점에, 할 것 8: `names.ko`를 바로 쓰던 비교 표·지도·에이전트 도구·사진 출처 API를 `displayNames`로)은 Codex 1·2회째 P2를 고쳤고, 3회째(마지막 Codex)가 10-18T09:08Z `394b271`에서 끝났다(요약 댓글의 `has_unresolved_findings` true). U07이 지적을 고치면 다음은 이어 가는 Claude 검토(4번째 검토)이고 상위 세션이 연다. 그 뒤 PR 다(설명을 그 자리에서 번역)를 연다(로컬에 준비됨).
+3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR #133(PR 가)과 #148(할 것 7)이 병합·배포됐다. PR #151(PR 나: 지도 표지를 묶음 구성원 점 위에, 꼬리 끝을 숙소 점에, 할 것 8: `names.ko`를 바로 쓰던 비교 표·지도·에이전트 도구·사진 출처 API를 `displayNames`로)은 Codex 1·2회째 P2를 고쳤고, 3회째(마지막 Codex, P2 1건)와 이어 가는 Claude 검토 1회째(4번째, P2 1건·P3 2건, 아래 8의 10:02Z)를 받았다. 다음은 U07이 P2(자동완성 이름)를 고친 뒤 5번째 검토(이어 가는 Claude 검토 2회째)이고 상위 세션이 연다. 그 뒤에도 P0~P2가 남으면 병합하지 않고 사용자에게 보고한다. 그 뒤 PR 다(설명을 그 자리에서 번역)를 연다(로컬에 준비됨).
 4. C04 쪽당 D1 쓰기 줄이기와 P04 스냅숏 읽기(하위 세션 `session_01BFCCsaQ7tWzZRYedC5aTVL`, 상세 `C04-20261019.md`와 아래 「C04」): 다음은 예산 PR이다. 배포 뒤 첫 수집 실행들의 실측으로 `writesPerPage`·`snapshotReads`를 내린다. D07 PR 2가 늘리는 양(스냅숏 1회 약 7,600행, 쪽당 쓰기는 D07이 PR 설명에 적음)을 넣어 정한다. #138의 P3 3건을 함께 고친다. C04는 05:13Z 뒤의 다음 수집 실행이 있어야 쪽당 쓰기를 구할 수 있어 10:25Z에 다시 본다. 수집 예약 공백: 실행기 예약의 최근 다섯 번 간격이 2시간 28분에서 5시간 42분이라 손으로 부르지 않고 기다린다. 11:15Z 안전망 확인에서 다시 보고, 그때까지 새 실행이 없으면 사용자에게 알린다.
 5. D07 한국어·영어 이름 넓히기(하위 세션 `session_01P9cAoY1mYPco2JKPBhvgqv`, 상세 `D07-20261019.md`): PR 1(#145, Wikidata 이름을 정확한 Trip.com ID로만 붙임, 카드에 출처 표시 `wikidataNames`)을 10-18T08:56Z에 병합하고 배포했다(`17d66a6`). 검토는 다섯 번(Codex 3회, 이어 가는 Claude 검토 2회)이었다. 1~4회째 지적이 모두 점검 스크립트가 출처를 짐작하는 데서 나와, 상위 세션이 근본 원인(출처 표시)을 고치게 했다. 배포 뒤 확인(D07 09:09:21Z, 공개 GET만): 공개 `status.json`의 한국어 이름(`nameKo.filled`)이 1,543 → 1,565곳(Trip.com +22, Jalan 그대로)이고, 배포된 스냅숏 `328a9a3b27cf2b8e`에 돌린 `check-wikidata-names.mjs --public`은 이름 유지 23곳, `PASS`(rc 0)였다. 원문 줄과 근거 파일은 #154의 `D07-20261019.md` ‘결과(PR 1)’ 8과 `docs/evidence/d07-20261018/wikidata-names-deployed.json`이 기준이고, 상위 세션 기록은 이 한 줄만 둔다. PR 2(Jalan 한국어·영어 목록 이름)는 #154로 10-18T09:10Z에 열렸다(head `feb3d7f`, `checks` 성공). 새 표 `hotel_locale_names`(마이그레이션 0015), 새 작업 종류 `kind='names'`(우선순위 95), 쪽당 쓰기 한국어 79행·영어 49행·재방문 9행이라 `writesPerPage` 151과 `snapshotReads` 330,000은 바꾸지 않았다고 PR 설명에 적었다. PR 1의 남은 P3 2건(`prefecture-check.py`가 GET을 보냄, 설계 4의 결과 6 표시)도 넣었다. D07이 Codex 1회째를 09:17Z에 요청했다. 코드 PR이라 Codex 세 번과 이어 가는 Claude 검토 두 번까지다.
 6. C1(유지보수 경로 CPU, PR #53 측정): 백업 `catalog-checkpoint.py`의 `limit=1000` 쪽과 수집 목록 PUT의 1102 위험은 지금 바꾸지 않는다. 7일차까지 1102가 0이면 ‘대응 없음’으로 닫고, 1102가 나오면 백업 `limit`을 250으로 낮추는 안부터 본다.
@@ -101,7 +101,6 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
-| `session_01LC18eEffLnceQxpKh8kfCV` | PR #151 이어 가는 Claude 검토 1회째(4번째 검토, 커밋 `9b72153`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01LVAMrpS7MbkEEbYmjXYMse` | PR #154 Claude 대체 검토 3회째(Codex 한도, 커밋 `47ba390`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
@@ -127,6 +126,11 @@
 - 10-18T09:20Z 다섯 번째 상위 세션이 인계 뒤에 받은 D07의 #145 배포 뒤 확인 두 통을 넘겼다. 기록이 겹치지 않게 D07 문서와 근거 파일을 기준으로 두고, 상위 세션은 위 4-5에 숫자 한 줄만 둔다고 D07에 알렸다. C04는 05:13Z 뒤 수집 실행이 아직 없어 10:25Z에 다시 본다고 알렸다.
 - 10-18T09:46Z U07이 PR #151의 이어 가는 Claude 검토를 요청했다(09:45Z). Codex 3회째 P2 1건(범위 검색 지점 묶음 `spotGroups`가 직선거리 52px로만 묶어 대각선 표지 상자가 겹침)을 `48090e1`에서 가로 52px·세로 44px 상자 판정으로 고쳤고, main을 합쳐 head가 `9b72153`이 됐다(충돌은 이 문서의 U07 절 하나). 상위 세션이 `checks`·GitGuardian 성공(09:42:48Z), 해결 안 된 스레드 0건, 지금 main과 합친 트리에 충돌 없음을 확인하고 검토 세션 `session_01LC18eEffLnceQxpKh8kfCV`를 열었다(09:46:40Z, 커밋 `9b72153`, 4번째 검토).
 - 10-18T10:02Z D07 PR #154: Codex 1회째 P2 1건(사진 경로 번호, `4add602`)과 2회째 P2 1건(세 번 실패한 `names` 작업을 다시 받는 경로, `47ba390`)을 D07이 고쳤다. 3회째 Codex 요청(10:01:03Z)에 사용량 한도 안내가 달려(10:01:17Z), 상위 세션이 `47ba390`의 `checks`·GitGuardian 성공(09:58:52Z)과 mergeable clean을 확인하고 Claude 대체 검토 세션 `session_01LVAMrpS7MbkEEbYmjXYMse`를 열었다(10:02:11Z, 3회째로 셈).
+- 10-18T10:02Z PR #151의 이어 가는 Claude 검토 1회째(4번째 검토, `session_01LC18eEffLnceQxpKh8kfCV`, 커밋 `9b72153`)가 리뷰를 남겼다(review 5562472004). 지도 고침(할 것 6)에는 지적이 없고, 할 것 8에 P2 1건과 P3 2건이다. `cloud-check --full` 46개 rc 0, 브라우저 검사 `check-u07-map` 9/9·`check-u07-names` 10/10·`check-u02-map` 55/55 통과, 공개 스냅숏의 16×16 칸 263개가 모두 숙소 점 위(main 코드는 43개)였다. 세션은 보관했다.
+  - P2: 검색창 자동완성의 굵은 이름이 스냅숏 `text.names[i][0]`(`names.ko`)이라 이름 규칙을 거치지 않는다(`lib/hotel-search-index.ts`, `components/hotel-autocomplete.tsx`). D07 한국어 이름 22곳은 카드에 한국어, 자동완성에 영어가 보인다(PR head 빌드에 공개 스냅숏을 넣어 브라우저로 재현).
+  - P3-1: 사진 출처 API(`app/api/photo-credits/route.ts`)가 `withWikidataNames`를 거치지 않아 같은 22곳의 이름이 카드와 다르다(함수로만 재현).
+  - P3-2: 비교 표의 원어 줄이 영어여도 `lang="ja"`다(`components/hotel-comparison.tsx`, 이 PR 전부터).
+  - 마지막 검토가 아니므로 U07에 P2를 고치고 검사에 자동완성을 넣게 했고, P3는 이 PR에서 고쳐도 된다고 알렸다. 다음은 5번째 검토(이어 가는 Claude 검토 2회째, 묻지 않고 받는 마지막 검토)다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
