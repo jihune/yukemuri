@@ -63,6 +63,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   const c=await context(null),page=await c.newPage(),errors=[];page.setDefaultTimeout(8000);page.on('pageerror',e=>errors.push(String(e)));
   const d=await open(page,foreign.id);
   const r={note:await d.locator('.translate-note').textContent().catch(()=>null),buttons:await d.locator('.translate-button').count(),original:await d.locator('.hotel-intro').first().textContent()};
+  if(shots)await d.screenshot({path:join(shots,`translate-unsupported-${w}.png`)});
   check('Chrome·Edge가 아닌 브라우저: 번역 단추 없이 ‘이 브라우저에서는 바로 번역을 쓸 수 없습니다’를 보이고 원문은 그대로, 페이지 오류 없음',/쓸 수 없습니다/.test(r.note??'')&&r.buttons===0&&r.original.trim()===foreign.description.trim()&&errors.length===0,{...r,errors});
   await c.close();
  }
