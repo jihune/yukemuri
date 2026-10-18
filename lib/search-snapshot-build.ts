@@ -13,6 +13,8 @@ import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 import {needsKoreanDescription} from './hotel-description';
+import {displayNames,normalizeSearch} from './hotel-names';
+import {withWikidataNames} from './wikidata-names';
 import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
@@ -122,22 +124,27 @@ export async function buildSearchSnapshot(now:Date){
   const lifecycles=rows.length?new Map((await db.prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id>? AND hotel_id<=?').bind(cursor,rows.at(-1)!.id).all<Record<string,unknown>>()).results.map(r=>[r.hotel_id,r])):new Map();
   const hotels=await attach(rows.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
   rows.forEach((r,i)=>{
-   const h=hotels[i],state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
-   core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(r.name);core.kind.push(r.kind);
+   // Wikidata names (D07) on the card, the name column (the shown title, which the area map labels
+   // markers with) and the name search, as the detail API adds them.
+   const h=withWikidataNames(hotels[i]),state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
+   const added=h===hotels[i]?[]:[h.names.ko,h.names.en].filter(n=>!Object.values(hotels[i].names).includes(n));
+   core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(h===hotels[i]?r.name:displayNames(h.names).title);core.kind.push(r.kind);
    core.tripScore.push(r.trip_score);core.tripReviews.push(r.trip_reviews);core.jalanScore.push(r.jalan_score);core.jalanReviews.push(r.jalan_reviews);
    core.natural.push(r.natural);core.features.push(r.bath_features);core.known.push(r.bath_known);core.lat.push(r.lat);core.lng.push(r.lng);core.state.push(state);
    const own=aliases.get(r.id)??[];
-   text.searchText.push(r.search_text);text.nameKeys.push(own.map(a=>a.key));
+   // Wikidata names join the substring and typo-tolerant search, never the shared name keys.
+   text.searchText.push(r.search_text+added.map(normalizeSearch).join(''));text.nameKeys.push(own.map(a=>a.key));
    // The former search index: the stored payload (not enriched) and table columns.
    const place={prefecture:r.prefecture,regionId:r.region,location:raw.location,names:raw.names};
-   text.names.push(closed?null:[...new Set([raw.names.ko,raw.names.ja,raw.names.en,...own.map(a=>a.name)].filter(Boolean))]);
+   text.names.push(closed?null:[...new Set([raw.names.ko,raw.names.ja,raw.names.en,...own.map(a=>a.name),...added].filter(Boolean))]);
    text.location.push(closed?null:formatHotelLocation(place));text.context.push(closed?null:hotelPlaceSearchText(place));
    // A source that marks its own coordinates approximate (only the sample seed
    // does; the collector contract refuses them) ranks as a city-level point.
    const located=r.lat!==null&&r.lng!==null;
    geo.grade.push(located?raw.location.isApproximate?GEO_GRADE.city:GEO_GRADE.source:GEO_GRADE.none);geo.lat.push(located?r.lat:null);geo.lng.push(located?r.lng:null);
    geocodeInputs.push(located?null:geocodeInput(place));
-   cards.push(hotelSummary(h));
+   const item=h===hotels[i]?null:h.sources.find(s=>s.sourceId==='wikidata-name:'+h.id)!.url!.split('/').pop()!;
+   cards.push(item?{...hotelSummary(h),wikidataNames:{item,was:Object.fromEntries((['ko','en'] as const).filter(k=>h.names[k]!==hotels[i].names[k]).map(k=>[k,hotels[i].names[k]]))}}:hotelSummary(h));
    add(r.id,raw,h,r.bath_known);
    if(r.prefecture!==null)prefectures.add(r.prefecture);
    quality.records++;if(raw.sources[0]?.label?.includes('상세'))quality.detailRecords++;if((r.bath_known??0)&BATH_FEATURE_MASK)quality.bathKnownRecords++;

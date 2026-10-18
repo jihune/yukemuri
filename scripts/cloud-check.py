@@ -43,6 +43,7 @@ commands = [
     ['node', 'scripts/check-hotel-names.mjs'],
     ['node', 'scripts/check-source-policy.mjs'],
     ['node', 'scripts/check-snapshot-geo.mjs'],
+    ['node', 'scripts/check-wikidata-names.mjs'],
 ]
 if args.full:
     commands += [
