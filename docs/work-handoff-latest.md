@@ -14,7 +14,7 @@
 
 이어받는 세션은 하네스 규칙(인계를 받은 세션의 누락 점검)대로 이 인계에 빠진 것이 없는지 스스로 점검한다. 옛 상위 세션의 사용자 메시지(`list_events(session_id=<옛 상위 세션>, kinds=["user"], limit=100)`을 `before_id`로 거슬러 읽음)를 아래 2·4와 대조한다. 결과가 커서 파일로 저장되면 스크립트로 글 블록만 뽑는다. 사용자의 작업이나 결정이 필요하면 사용자에게 묻는다(사용자 10-17T17:0xZ: ‘인계시 새 세션에서 작업한다면 인계한거 빠진거 없는지는 규칙에 따라 자동으로 검토하면 될거다. 사용자 작업이나 결정 필요사항 있다면 새 세션에서 역질문 하던가 답변해주면 된다. 하네스는 당시의 최신 하네스가 새 판으로 자동으로 적용될 거다.’).
 
-1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 10-18T00:5xZ에 다섯 번째 상위 세션에서 확인한 판은 `0366863 2026-10-18`이다(setup 21 `8c8889e` 바로 다음의 기록 커밋, 룰·스킬은 setup 21과 같음). 10-18T03:12Z 하네스 관리 세션이 알려 준 마지막 판은 setup 24 `3f81c72 2026-10-18`이다. 새 세션은 setup 번호가 아니라 시작할 때의 하네스 main 끝을 설치할 수 있으므로, 이보다 새 판이면 정상이고 실제 판은 자기 `harness-version`으로 본다. 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
+1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 10-18T00:5xZ에 다섯 번째 상위 세션에서 확인한 판은 `0366863 2026-10-18`이다(setup 21 `8c8889e` 바로 다음의 기록 커밋, 룰·스킬은 setup 21과 같음). 10-18T07:01Z 하네스 관리 세션이 알려 준 마지막 판은 setup 25 `9178992 2026-10-18`이다(10-18T06:56Z 두 환경 새 세션으로 확인). 새 세션은 setup 번호가 아니라 시작할 때의 하네스 main 끝을 설치할 수 있으므로, 이보다 새 판이면 정상이고 실제 판은 자기 `harness-version`으로 본다. 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`가 세션 범위에 없으면 `add_repo`(access push)로 붙인다(10-18 다섯 번째 상위 세션은 처음에 범위 밖이었다).
@@ -59,7 +59,7 @@
 | 하위 세션 | O03·U07이 10-18T01:01Z, C04가 02:34Z, D07이 05:54Z에 일을 시작했다. U05·U06·L01·D05는 쉰다(아래 6). D05 브랜치의 `d2f7d53`은 문구만 고쳐 main `f2a3cc3`에 있다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 상위 세션에 묶인 예약: H01 6일차 `trig_016nnsiwLz8WjSaHjmz16GPg`(10-19T01:20Z), 7일차 `trig_015ChLhywzoX2vwBFcopWLFq`(10-20T01:20Z). 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
 | 사용량 | 10-18T03:27Z에 5시간 창 0.43, 7일 창 0.11(`isUsingOverage` false) | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_011ayTaQQUY8VUJQqLdxTrSz`(10-18T02:24Z부터, 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 24 `3f81c72`, 이 세션은 `0366863` | 위 1-1 |
+| 하네스 | 하네스 관리 세션은 `session_011ayTaQQUY8VUJQqLdxTrSz`(10-18T02:24Z부터, 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 25 `9178992`(10-18T07:01Z 알림), 이 세션은 `0366863` | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
