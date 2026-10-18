@@ -80,7 +80,7 @@ assert.deepEqual(freshness([run(12.5)],now),{state:'stale',ok:false,lastSuccess:
 for(const other of [{conclusion:'cancelled'},{conclusion:'failure'},{status:'in_progress',conclusion:null},{display_title:'Yukemuri collection (check-access)'}])
  assert.equal(freshness([run(1,other),run(13)],now).state,'stale',JSON.stringify(other));
 assert.deepEqual(freshness([run(1,{conclusion:'cancelled'})],now),{state:'none',ok:true});
-// The runner cron fires every 3 hours: three lost dispatches in a row stay within 12 hours, the fourth fails.
+// The runner cron fires hourly (C05) and GitHub delays or drops scheduled runs: any gap up to 12 hours passes, a longer one fails.
 assert.equal(freshness([run(12)],now).ok,true);assert.equal(freshness([run(15)],now).ok,false);
 
 // The script itself: skip before the switch, then the GitHub API through a local stand-in.

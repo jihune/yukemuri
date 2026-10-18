@@ -2,8 +2,10 @@
 // day (default yesterday) it fails when the account used 85% or more of a free
 // daily limit (Worker requests, D1 rows read, D1 rows written), when this Worker
 // answered with exceededResources (errors 1102/1027), or when a gentle collection
-// of that day took 0 pages, ran its collect job 26 minutes or more, did not
-// succeed or has not finished. Usage or runs that cannot be read fail; they never
+// of that day ran its collect job 26 minutes or more, did not succeed or has not
+// finished, or took 0 pages while its budget line shows room left (C05: with an
+// hourly runner a run after the day's D1 share is used takes 0 pages by design;
+// a day whose runs all took 0 pages fails too). Usage or runs that cannot be read fail; they never
 // read as zero. Each request stops after 30 s, so one half never blocks the other. The
 // tables go to GITHUB_STEP_SUMMARY. usage.yml runs it with check: true; the runner
 // repository dispatches that once a day and checks its own backups (its runs are
@@ -70,6 +72,13 @@ export function parseLog(text){
  return {pages,reason,processed,counts,pending,completed};
 }
 
+// The pages the run's budget allowed by writes and by reads, from its reason= line
+// (collection-budget.mjs), or null when the line is missing or of another kind.
+export function budgetLeft(reason){
+ const m=/writes allow (-?\d+) pages, reads (-?\d+)/.exec(reason??'');
+ return m?{writes:Number(m[1]),reads:Number(m[2])}:null;
+}
+
 export function runFailures(run){
  // The next day's check looks at another day, so a run still open now is never judged later (PR #131 Codex review).
  if(run.status!=='completed')return [`끝나지 않음(${run.status}): 다음 점검은 이 실행을 다시 보지 않는다`];
@@ -77,8 +86,17 @@ export function runFailures(run){
  if(run.conclusion!=='success')out.push(`결과 ${run.conclusion}`);
  if(run.jobSeconds!==null&&run.jobSeconds>=JOB_MINUTES*60)out.push(`collect job ${Math.floor(run.jobSeconds/60)}분(${JOB_MINUTES}분 이상)`);
  if(run.pages===null)out.push('로그에서 pages= 줄을 읽지 못함');
- else if(run.pages===0)out.push('0쪽 실행');
+ else if(run.pages===0){
+  const left=budgetLeft(run.reason);
+  if(!left)out.push('0쪽 실행인데 reason=에서 남은 예산을 읽지 못함');
+  else if(left.writes>0&&left.reads>0)out.push(`0쪽 실행인데 그날 예산이 남아 있었다(writes allow ${left.writes}, reads ${left.reads})`);
+ }
  return out;
+}
+
+// A day on which every gentle run took 0 pages collected nothing, whatever each run's budget said.
+export function dayFailures(runs){
+ return runs.length&&runs.every(r=>r.pages===0)?[`그날 gentle 실행 ${runs.length}회가 모두 0쪽이다(수집 없음)`]:[];
 }
 
 const seconds=(start,end)=>{const s=Date.parse(start),e=Date.parse(end);return Number.isFinite(s)&&Number.isFinite(e)?Math.round((e-s)/1000):null};
@@ -117,9 +135,9 @@ export function runTable(runs){
   const states=Object.entries(r.counts).map(([s,n])=>`${s} ${n}`).join(', ')||'-';
   const failures=runFailures(r);
   lines.push(`| ${r.id} | ${clock(r.createdAt)} | ${r.status==='completed'?r.conclusion:r.status} | ${r.pages??'-'} | ${(r.reason??'-').replace(/\|/g,'/')} | ${span(r.stepSeconds)} | ${span(r.jobSeconds)} `
-   +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':'통과'} |`);
+   +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':r.pages===0?'통과(예산 소진)':'통과'} |`);
  }
- lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: 0쪽, collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음. 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
+ lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날. 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
  return lines;
 }
 
@@ -156,6 +174,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
   }
   details.push(...runTable(runs));
   for(const r of runs)for(const f of runFailures(r))failures.push(`gentle run ${r.id}: ${f}`);
+  failures.push(...dayFailures(runs));
  }catch(error){
   const message=error instanceof CheckError?error.message:'GitHub query failed ('+error.constructor.name+')';
   details.push('## gentle 수집(`collect.yml`)','','**읽지 못함**: '+message);
@@ -163,7 +182,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
  }
  const lines=[`# 매일 점검(O03) — ${date}(UTC)`,''];
  if(control!=='none')lines.push(`> 대조 입력 \`${control}\`: 실제 값 하나를 일부러 바꿔 점검이 실패하는지 본다. 아래 표의 해당 값은 실제 값이 아니다.`,'');
- lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 85% 이상인 한도, exceededResources, 0쪽·26분 이상·성공하지 않은 gentle 실행이 없다.','');
+ lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.','');
  for(const f of failures)lines.push('- 실패: '+f);
  if(failures.length)lines.push('');
  lines.push(...details);

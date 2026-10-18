@@ -10,7 +10,7 @@ import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {ENDPOINT,LIMITS} from './cloudflare-usage.mjs';
 import {GENTLE_TITLE} from './check-collection-freshness.mjs';
-import {FAIL,JOB_MINUTES,COLLECT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,TIMEOUT_MS,checkDate,usageFailures,parseLog,runFailures,dailyCheck,CheckError} from './daily-check.mjs';
+import {FAIL,JOB_MINUTES,COLLECT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,TIMEOUT_MS,checkDate,usageFailures,parseLog,budgetLeft,runFailures,dayFailures,dailyCheck,CheckError} from './daily-check.mjs';
 
 // usage.yml: the check is a second step behind the boolean input, with the workflow token for Actions reads.
 const usage=readFileSync('.github/workflows/usage.yml','utf8');
@@ -32,6 +32,7 @@ assert(collect.includes('        run: node scripts/collection-budget.mjs | tee -
 assert(collect.includes(`      - name: ${COLLECTOR_STEP}\n`),'the collector step whose time is reported');
 const budget=readFileSync('scripts/collection-budget.mjs','utf8');
 assert(budget.includes("console.log('pages='+pages);")&&budget.includes("console.log('reason='+"),'budget prints pages= and reason=');
+assert(budget.includes('writes allow ${byWrites} pages, reads ${byReads}'),'the reason line carries the pages each share allows (the 0-page rule reads them)');
 const site=readFileSync('scripts/crawler/update-site.py','utf8');
 assert(site.includes("print(json.dumps(dict(url=url,status=payload['status']")&&site.includes('print(json.dumps(dict(processed=completed,readbackId=first_written,coverage=final))'),'collector prints page states and the final coverage');
 
@@ -55,10 +56,10 @@ assert.deepEqual(usageFailures({...acc(),exceeded:1}),['exceededResources 1건(1
 
 // Log: the budget lines of the budget step only, page states without diagnostics, the final coverage.
 const stamp=s=>s.split('\n').map((l,i)=>`2026-10-17T05:0${Math.min(i,9)}:00.000000${i%10}Z ${l}`).join('\n');
-const logText=(pages,{collected=pages,states={done:pages}}={})=>stamp([
+const logText=(pages,{collected=pages,states={done:pages},allow=pages}={})=>stamp([
  '##[group]Run python3 scripts/runner/check_collection.py','pages=999','##[endgroup]',
  BUDGET_STEP+' | tee -a "$GITHUB_OUTPUT"','\u001b[36;1mnode scripts/collection-budget.mjs | tee -a "$GITHUB_OUTPUT"\u001b[0m','env:','  CLOUDFLARE_API_TOKEN: ***','##[endgroup]',
- `pages=${pages}`,`reason=today 120 rows written, 3000 read; writes allow ${pages} pages, reads 400, cap 120`,
+ `pages=${pages}`,`reason=today 120 rows written, 3000 read; writes allow ${allow} pages, reads 400, cap 120`,
  '##[group]Run python3 scripts/runner/run-collection.py --mode "$MODE" --pages "${PAGES:-16}"','##[endgroup]',
  pages?JSON.stringify({mode:'gentle',target:'https://example.invalid',pages}):JSON.stringify({mode:'gentle',state:'skipped',pages:0}),
  ...Object.entries(states).flatMap(([s,n])=>Array.from({length:n},(_,i)=>JSON.stringify({url:`https://example.invalid/${s}/${i}`,status:s,reason:null,accepted:1,records:10}))),
@@ -77,7 +78,15 @@ const done={status:'completed',conclusion:'success',jobSeconds:20*60,pages:120};
 assert.deepEqual(runFailures(done),[]);
 assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60-1}),[]);
 assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60,conclusion:'cancelled'}),['결과 cancelled','collect job 26분(26분 이상)']);
-assert.deepEqual(runFailures({...done,pages:0}),['0쪽 실행']);
+// 0 pages (C05, hourly runner): normal once the day's D1 share is used, a failure while the budget line shows room or cannot be read.
+const spent=(w,r)=>`today 85500 rows written, 3000 read; writes allow ${w} pages, reads ${r}, cap 120`;
+assert.deepEqual(budgetLeft(spent(-3,400)),{writes:-3,reads:400});assert.equal(budgetLeft('usage unavailable: fallback to 16 pages'),null);assert.equal(budgetLeft(undefined),null);
+for(const [w,r] of [[0,400],[-3,400],[30,0],[30,-12]])assert.deepEqual(runFailures({...done,pages:0,reason:spent(w,r)}),[],`writes ${w}, reads ${r}: the share is used`);
+assert.deepEqual(runFailures({...done,pages:0,reason:spent(30,400)}),['0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)']);
+for(const reason of [undefined,null,'usage unavailable: fallback to 16 pages'])assert.deepEqual(runFailures({...done,pages:0,reason}),['0쪽 실행인데 reason=에서 남은 예산을 읽지 못함'],String(reason));
+assert.deepEqual(runFailures({...done,pages:120,reason:spent(0,400)}),[],'pages taken: the budget line is not judged');
+assert.deepEqual(dayFailures([]),[]);assert.deepEqual(dayFailures([{...done,pages:0},{...done,pages:3}]),[]);
+assert.deepEqual(dayFailures([{...done,pages:0},{...done,pages:0}]),['그날 gentle 실행 2회가 모두 0쪽이다(수집 없음)']);
 assert.deepEqual(runFailures({...done,pages:null}),['로그에서 pages= 줄을 읽지 못함']);
 assert.deepEqual(runFailures({...done,conclusion:'failure',jobSeconds:null,pages:null}),['결과 failure','로그에서 pages= 줄을 읽지 못함']);
 for(const status of ['in_progress','queued'])
@@ -117,13 +126,13 @@ const env={CLOUDFLARE_API_TOKEN:CF_TOKEN,CLOUDFLARE_ACCOUNT_ID:ACCOUNT,GH_TOKEN,
 const now=new Date('2026-10-18T01:30:00Z');
 const check=(extra={})=>dailyCheck({env:{...env,...extra},fetch,now,config});
 let id=0;
-function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true}={}){
+function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages}={}){
  const run=++id,job=1000+run;
  runs.push({id:run,display_title:title,created_at:created,run_started_at:created,status,conclusion});
  const at=m=>new Date(Date.parse(created)+m*60000).toISOString().replace('.000','');
  jobs[run]=[{id:job,name:COLLECT_JOB,status,conclusion,started_at:at(0),completed_at:status==='completed'?at(jobMinutes):null,
   steps:[{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)}]},{id:job+500,name:'snapshot / deploy',status,conclusion}];
- if(log)logs[job]=logText(pages,{states});
+ if(log)logs[job]=logText(pages,{states,allow});
  return run;
 }
 try{
@@ -146,7 +155,7 @@ try{
  assert(!text.includes(CF_TOKEN)&&!text.includes(GH_TOKEN)&&!text.includes('example.invalid'),'no token and no source address in the report');
 
  // Each control fails the same normal day.
- for(const [control,pattern] of [['over-85',/계정 D1 쓰기 85,000행 = 무료 한도의 85\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
+ for(const [control,pattern] of [['over-85',/계정 D1 쓰기 85,000행 = 무료 한도의 85\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
   result=await check({CHECK_CONTROL:control});
   assert.equal(result.failures.length,1,control+': '+result.failures.join(' / '));assert.match(result.failures[0],pattern,control);
   assert.match(result.lines.join('\n'),new RegExp(`> 대조 입력 \`${control}\``),control+' is labelled');
@@ -174,15 +183,20 @@ try{
  assert.match((await dailyCheck({env,fetch:networkDown,now,config})).failures[0],/Usage query failed \(TypeError\)/);
 
  // Real failures on the collection side.
- const zero=addRun(0,{created:'2026-10-17T19:35:00Z',jobMinutes:1,stepMinutes:0});
+ const zero=addRun(0,{created:'2026-10-17T19:35:00Z',jobMinutes:1,stepMinutes:0}); // the share used: normal
+ const roomy=addRun(0,{created:'2026-10-17T20:10:00Z',jobMinutes:1,stepMinutes:0,allow:30}); // room left: a failure
  const slow=addRun(120,{created:'2026-10-17T12:30:00Z',jobMinutes:26,stepMinutes:25,conclusion:'cancelled'});
  const failed=addRun(120,{created:'2026-10-17T15:00:00Z',conclusion:'failure',log:false});
  jobs[failed]=[]; // failed before the collect job had a log
  const running=addRun(120,{created:'2026-10-17T23:58:00Z',status:'in_progress',conclusion:null,log:false});
  result=await check();
- assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${zero}: 0쪽 실행`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
+ assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${roomy}: 0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| \\*\\*실패\\*\\* \\|$`,'m'));
- runs=runs.filter(r=>![zero,slow,failed,running].includes(r.id));
+ assert.match(result.lines.join('\n'),new RegExp(`\\| ${zero} \\| 19:35Z \\| success \\| 0 \\|.*\\| 통과\\(예산 소진\\) \\|$`,'m'),'a 0-page run after the share is used passes');
+ runs=runs.filter(r=>![roomy,slow,failed,running].includes(r.id));
+ result=await check();assert.deepEqual(result.failures,[]);
+ assert.ok(result.lines.includes('**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
+ runs=runs.filter(r=>r.id!==zero);
  // GitHub errors and missing settings fail; the usage table stays.
  for(const [fail,pattern] of [[{path:'/workflows/',status:403},/GitHub API 403 \(\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\)/],[{path:'/logs',status:410},/GitHub API 410/],[{path:'/blob/',status:404},/GitHub API 404/]]){
   ghFail=fail;result=await check();ghFail=null;
@@ -206,6 +220,9 @@ try{
  const saved=runs;runs=[];
  result=await check();assert.deepEqual(result.failures,[]);assert.match(result.lines.join('\n'),/gentle 실행 0회/);
  assert.match((await check({CHECK_CONTROL:'zero-pages'})).failures[0],/zero-pages를 적용하지 못함/);
+ // Every run of the day took 0 pages: nothing was collected, even with each share used.
+ addRun(0,{created:'2026-10-17T06:00:00Z',jobMinutes:1,stepMinutes:0});addRun(0,{created:'2026-10-17T07:00:00Z',jobMinutes:1,stepMinutes:0});
+ result=await check();assert.deepEqual(result.failures,['그날 gentle 실행 2회가 모두 0쪽이다(수집 없음)']);
  runs=saved;
 
  // The script: exit code, summary file and ::error:: lines (usage unreadable without a token, so no network).
@@ -219,4 +236,4 @@ try{
  assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-85, exceeded, zero-pages, no-permission/);
  assert(!ran.out.includes(GH_TOKEN),'token never printed');
 }finally{server.closeAllConnections();server.close();rmSync(folder,{recursive:true,force:true})}
-console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 85% of each free limit (just under passes), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);
+console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 85% of each free limit (just under passes), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);
