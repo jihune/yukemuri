@@ -1,0 +1,1871 @@
+{
+ "checkedAt": "2026-10-18T02:05:24.756Z",
+ "base": "http://127.0.0.1:8788",
+ "results": [
+  {
+   "width": 360,
+   "name": "카드 40곳: 이름이 한국어 → 영어 → 원어 순으로 정해지고 원어가 다르면 둘째 줄, 영어·원어 이름마다 44px 복사 단추(제목 {\"ko\":25,\"en\":0,\"ja\":15})",
+   "pass": false,
+   "detail": {
+    "cards": 40,
+    "kinds": {
+     "ko": 25,
+     "en": 0,
+     "ja": 15
+    },
+    "wrong": [
+     {
+      "card": {
+       "id": "ginrinsou",
+       "title": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "rows": []
+      },
+      "names": {
+       "ko": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "en": "Ginrinsou"
+      },
+      "want": [
+       {
+        "text": "料亭湯宿 銀鱗荘",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "chalet-ivy-jozankei",
+       "title": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "rows": []
+      },
+      "names": {
+       "ko": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "en": "Chalet Ivy Jozankei"
+      },
+      "want": [
+       {
+        "text": "シャレーアイビー定山渓",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "konosumika",
+       "title": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "rows": []
+      },
+      "names": {
+       "ko": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "en": "더 레이크 스위트 코 노 수미카(The Lake Suite Ko No Sumika)"
+      },
+      "want": [
+       {
+        "text": "ザ・レイクスイート 湖の栖",
+        "label": "원어 이름 복사"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 이름이 들어가고 ‘복사됨’이 보임",
+   "pass": false,
+   "detail": {
+    "copyButtons": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세 ‘긴린소’: 이름이 한국어 → 영어 → 원어 순서이고 영어·원어 옆에 44px 복사 단추, ‘다른 이름’에 같은 이름을 다시 쓰지 않음",
+   "pass": false,
+   "detail": {
+    "detail": {
+     "rows": [],
+     "other": "다른 이름: Ginrinsou"
+    },
+    "want": {
+     "title": "긴린소",
+     "titleLang": "ko",
+     "en": "Ginrinsou",
+     "ja": "料亭湯宿 銀鱗荘"
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "빠른 조건 7개(내 기준·천연온천·노천탕·전세탕·객실 온천·카케나가시·니고리유)를 누르기 전후에 이름 글자 위치·줄 수·숫자 줄·버튼 크기가 같고, 체크 표시 자리(0px)가 처음부터 있음",
+   "pass": false,
+   "detail": {
+    "moved": [
+     {
+      "b": {
+       "name": "내 기준",
+       "on": false,
+       "x": 33,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 328,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "내 기준",
+       "on": true,
+       "x": 50.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 328,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "천연온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "천연온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "노천탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "노천탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "전세탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "전세탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "객실 온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "객실 온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "카케나가시",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "카케나가시",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "니고리유",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "니고리유",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 162,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     }
+    ],
+    "before": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "x": 33,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 328,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ],
+    "after": [
+     {
+      "name": "내 기준",
+      "on": true,
+      "x": 50.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 328,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 162,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "어느 버튼도 글자를 자르지 않음(누르기 전후, 숫자가 다섯 자리여도)",
+   "pass": true,
+   "detail": {
+    "cut": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "필터 옵션 15개마다 도움말이 있고 옵션과 함께 읽힘(aria-describedby), 문구가 서로 다름",
+   "pass": false,
+   "detail": {
+    "helps": [
+     {
+      "name": "내 기준",
+      "text": ""
+     },
+     {
+      "name": "천연온천",
+      "text": ""
+     },
+     {
+      "name": "노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세탕",
+      "text": ""
+     },
+     {
+      "name": "객실 온천",
+      "text": ""
+     },
+     {
+      "name": "카케나가시",
+      "text": ""
+     },
+     {
+      "name": "니고리유",
+      "text": ""
+     },
+     {
+      "name": "대욕장",
+      "text": ""
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 실내 온천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천 온천탕",
+      "text": ""
+     },
+     {
+      "name": "자란 하이클래스",
+      "text": ""
+     },
+     {
+      "name": "료칸만 보기",
+      "text": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음",
+   "pass": false,
+   "detail": {
+    "buttons": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "카드 40곳: 이름이 한국어 → 영어 → 원어 순으로 정해지고 원어가 다르면 둘째 줄, 영어·원어 이름마다 44px 복사 단추(제목 {\"ko\":25,\"en\":0,\"ja\":15})",
+   "pass": false,
+   "detail": {
+    "cards": 40,
+    "kinds": {
+     "ko": 25,
+     "en": 0,
+     "ja": 15
+    },
+    "wrong": [
+     {
+      "card": {
+       "id": "ginrinsou",
+       "title": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "rows": []
+      },
+      "names": {
+       "ko": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "en": "Ginrinsou"
+      },
+      "want": [
+       {
+        "text": "料亭湯宿 銀鱗荘",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "chalet-ivy-jozankei",
+       "title": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "rows": []
+      },
+      "names": {
+       "ko": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "en": "Chalet Ivy Jozankei"
+      },
+      "want": [
+       {
+        "text": "シャレーアイビー定山渓",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "konosumika",
+       "title": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "rows": []
+      },
+      "names": {
+       "ko": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "en": "더 레이크 스위트 코 노 수미카(The Lake Suite Ko No Sumika)"
+      },
+      "want": [
+       {
+        "text": "ザ・レイクスイート 湖の栖",
+        "label": "원어 이름 복사"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 이름이 들어가고 ‘복사됨’이 보임",
+   "pass": false,
+   "detail": {
+    "copyButtons": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세 ‘긴린소’: 이름이 한국어 → 영어 → 원어 순서이고 영어·원어 옆에 44px 복사 단추, ‘다른 이름’에 같은 이름을 다시 쓰지 않음",
+   "pass": false,
+   "detail": {
+    "detail": {
+     "rows": [],
+     "other": "다른 이름: Ginrinsou"
+    },
+    "want": {
+     "title": "긴린소",
+     "titleLang": "ko",
+     "en": "Ginrinsou",
+     "ja": "料亭湯宿 銀鱗荘"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "빠른 조건 7개(내 기준·천연온천·노천탕·전세탕·객실 온천·카케나가시·니고리유)를 누르기 전후에 이름 글자 위치·줄 수·숫자 줄·버튼 크기가 같고, 체크 표시 자리(0px)가 처음부터 있음",
+   "pass": false,
+   "detail": {
+    "moved": [
+     {
+      "b": {
+       "name": "내 기준",
+       "on": false,
+       "x": 33,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 358,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "내 기준",
+       "on": true,
+       "x": 50.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 358,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "천연온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "천연온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "노천탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "노천탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "전세탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "전세탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "객실 온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "객실 온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "카케나가시",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "카케나가시",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "니고리유",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "니고리유",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 177,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     }
+    ],
+    "before": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "x": 33,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 358,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ],
+    "after": [
+     {
+      "name": "내 기준",
+      "on": true,
+      "x": 50.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 358,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 177,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "어느 버튼도 글자를 자르지 않음(누르기 전후, 숫자가 다섯 자리여도)",
+   "pass": true,
+   "detail": {
+    "cut": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "필터 옵션 15개마다 도움말이 있고 옵션과 함께 읽힘(aria-describedby), 문구가 서로 다름",
+   "pass": false,
+   "detail": {
+    "helps": [
+     {
+      "name": "내 기준",
+      "text": ""
+     },
+     {
+      "name": "천연온천",
+      "text": ""
+     },
+     {
+      "name": "노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세탕",
+      "text": ""
+     },
+     {
+      "name": "객실 온천",
+      "text": ""
+     },
+     {
+      "name": "카케나가시",
+      "text": ""
+     },
+     {
+      "name": "니고리유",
+      "text": ""
+     },
+     {
+      "name": "대욕장",
+      "text": ""
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 실내 온천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천 온천탕",
+      "text": ""
+     },
+     {
+      "name": "자란 하이클래스",
+      "text": ""
+     },
+     {
+      "name": "료칸만 보기",
+      "text": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음",
+   "pass": false,
+   "detail": {
+    "buttons": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "카드 40곳: 이름이 한국어 → 영어 → 원어 순으로 정해지고 원어가 다르면 둘째 줄, 영어·원어 이름마다 44px 복사 단추(제목 {\"ko\":25,\"en\":0,\"ja\":15})",
+   "pass": false,
+   "detail": {
+    "cards": 40,
+    "kinds": {
+     "ko": 25,
+     "en": 0,
+     "ja": 15
+    },
+    "wrong": [
+     {
+      "card": {
+       "id": "ginrinsou",
+       "title": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "rows": []
+      },
+      "names": {
+       "ko": "긴린소",
+       "ja": "料亭湯宿 銀鱗荘",
+       "en": "Ginrinsou"
+      },
+      "want": [
+       {
+        "text": "料亭湯宿 銀鱗荘",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "chalet-ivy-jozankei",
+       "title": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "rows": []
+      },
+      "names": {
+       "ko": "샬레 아이비 조잔케이",
+       "ja": "シャレーアイビー定山渓",
+       "en": "Chalet Ivy Jozankei"
+      },
+      "want": [
+       {
+        "text": "シャレーアイビー定山渓",
+        "label": "원어 이름 복사"
+       }
+      ]
+     },
+     {
+      "card": {
+       "id": "konosumika",
+       "title": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "rows": []
+      },
+      "names": {
+       "ko": "더 레이크 스위트 고노스미카",
+       "ja": "ザ・レイクスイート 湖の栖",
+       "en": "더 레이크 스위트 코 노 수미카(The Lake Suite Ko No Sumika)"
+      },
+      "want": [
+       {
+        "text": "ザ・レイクスイート 湖の栖",
+        "label": "원어 이름 복사"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 이름이 들어가고 ‘복사됨’이 보임",
+   "pass": false,
+   "detail": {
+    "copyButtons": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세 ‘긴린소’: 이름이 한국어 → 영어 → 원어 순서이고 영어·원어 옆에 44px 복사 단추, ‘다른 이름’에 같은 이름을 다시 쓰지 않음",
+   "pass": false,
+   "detail": {
+    "detail": {
+     "rows": [],
+     "other": "다른 이름: Ginrinsou"
+    },
+    "want": {
+     "title": "긴린소",
+     "titleLang": "ko",
+     "en": "Ginrinsou",
+     "ja": "料亭湯宿 銀鱗荘"
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세의 원어 이름 복사 단추는 키보드 초점과 Enter로도 복사됨",
+   "pass": false,
+   "detail": {
+    "clip": ""
+   }
+  },
+  {
+   "width": 1280,
+   "name": "빠른 조건 7개(내 기준·천연온천·노천탕·전세탕·객실 온천·카케나가시·니고리유)를 누르기 전후에 이름 글자 위치·줄 수·숫자 줄·버튼 크기가 같고, 체크 표시 자리(0px)가 처음부터 있음",
+   "pass": false,
+   "detail": {
+    "moved": [
+     {
+      "b": {
+       "name": "내 기준",
+       "on": false,
+       "x": 33,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 203,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "내 기준",
+       "on": true,
+       "x": 50.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 203,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "천연온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "천연온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": true,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "노천탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "노천탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "전세탕",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "전세탕",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "객실 온천",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "객실 온천",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": true,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "카케나가시",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "카케나가시",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": true,
+       "slot": 0
+      }
+     },
+     {
+      "b": {
+       "name": "니고리유",
+       "on": false,
+       "x": 11,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      },
+      "a": {
+       "name": "니고리유",
+       "on": true,
+       "x": 28.3,
+       "y": 13.9,
+       "lines": 16,
+       "count": 13.5,
+       "w": 100,
+       "h": 44,
+       "cut": false,
+       "slot": 0
+      }
+     }
+    ],
+    "before": [
+     {
+      "name": "내 기준",
+      "on": false,
+      "x": 33,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 203,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ],
+    "after": [
+     {
+      "name": "내 기준",
+      "on": true,
+      "x": 50.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 203,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": false,
+      "slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "어느 버튼도 글자를 자르지 않음(누르기 전후, 숫자가 다섯 자리여도)",
+   "pass": false,
+   "detail": {
+    "cut": [
+     {
+      "name": "천연온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "노천탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "전세탕",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": true,
+      "x": 28.3,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "천연온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "객실 온천",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "카케나가시",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     },
+     {
+      "name": "니고리유",
+      "on": false,
+      "x": 11,
+      "y": 13.9,
+      "lines": 16,
+      "count": 13.5,
+      "w": 100,
+      "h": 44,
+      "cut": true,
+      "slot": 0
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "필터 옵션 15개마다 도움말이 있고 옵션과 함께 읽힘(aria-describedby), 문구가 서로 다름",
+   "pass": false,
+   "detail": {
+    "helps": [
+     {
+      "name": "내 기준",
+      "text": ""
+     },
+     {
+      "name": "천연온천",
+      "text": ""
+     },
+     {
+      "name": "노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세탕",
+      "text": ""
+     },
+     {
+      "name": "객실 온천",
+      "text": ""
+     },
+     {
+      "name": "카케나가시",
+      "text": ""
+     },
+     {
+      "name": "니고리유",
+      "text": ""
+     },
+     {
+      "name": "대욕장",
+      "text": ""
+     },
+     {
+      "name": "공용 대욕장 노천탕",
+      "text": ""
+     },
+     {
+      "name": "전세·가족 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 실내 온천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천탕",
+      "text": ""
+     },
+     {
+      "name": "객실 노천 온천탕",
+      "text": ""
+     },
+     {
+      "name": "자란 하이클래스",
+      "text": ""
+     },
+     {
+      "name": "료칸만 보기",
+      "text": ""
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "마우스: 옵션에 ‘?’ 단추 없이, 올리면 도움말 툴팁이 패널 오른쪽 바깥(다른 옵션을 가리지 않음)에 화면 안으로 뜨고, 벗어나면 사라짐",
+   "pass": false,
+   "detail": {
+    "visibleHelp": 0,
+    "hovered": null,
+    "gone": null
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드: Tab으로 옵션에 가면 같은 툴팁이 뜨고, Escape로 닫히며 초점은 옵션에 남음",
+   "pass": false,
+   "detail": {
+    "onChip": true,
+    "focused": null,
+    "escaped": null,
+    "still": true
+   }
+  },
+  {
+   "width": 1280,
+   "name": "가로 넘침 없음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "클립보드를 쓸 수 없는 브라우저: 복사 단추가 이름 ‘’을 선택해 두고 ‘이름을 선택했어요’라고 알림",
+   "pass": false,
+   "detail": {
+    "selected": "",
+    "status": null,
+    "clipboard": "undefined"
+   }
+  }
+ ]
+}

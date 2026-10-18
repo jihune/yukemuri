@@ -16,13 +16,21 @@
 // Usage: node scripts/check-u05-list-browser.mjs [base] [evidence.json]
 import {createRequire} from 'node:module';
 import {writeFileSync,readFileSync} from 'node:fs';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
 import {siteSearch} from './site-search-node.mjs';
+import {compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(new URL('../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
 const [base='http://127.0.0.1:8787',evidence]=process.argv.slice(2);
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const search=await siteSearch(base);
+// A card is named in Korean, else English, else the original, with the original beside it (U07).
+const nameTemp=mkdtempSync(join(tmpdir(),'yukemuri-u05-names-'));
+let displayNames;
+try{({displayNames}=createRequire(import.meta.url)(compileLib(nameTemp,'lib/hotel-names.ts')))}finally{rmSync(nameTemp,{recursive:true,force:true})}
 // The onsen town with the most stays in the served snapshot (a town with none would compare 0 with 0).
 const towns=JSON.parse(readFileSync(new URL('../data/collection-priorities.json',import.meta.url))).towns;
 const town=towns.map(t=>({...t,total:search.list(new URLSearchParams({region:t.prefecture,q:t.query}).toString()).total})).sort((a,b)=>b.total-a.total)[0];
@@ -59,7 +67,7 @@ for(const w of [360,390,1280]){
  const first=search.list('').hotels;
  const cards=await page.locator('.hotel-list .hotel-card').evaluateAll(list=>list.map(card=>({
   id:card.id.replace(/^card-/,''),title:card.querySelector('.card-title')?.innerText.trim(),ja:card.querySelector('.name-ja')?.innerText.trim()??null,
-  english:!!card.querySelector('.name-en,[lang=en]'),
+  english:!!card.querySelector('.name-en'),
   cells:[...card.querySelectorAll('.bath-cells .bath-cell')].map(c=>{const s=getComputedStyle(c),label=c.querySelector('.bath-label'),mark=c.querySelector('.bath-mark');return{
    label:label?.textContent.trim(),state:(c.className.match(/is-(yes|no|unknown)/)??[])[1],mark:mark?.textContent.trim(),markHidden:mark?.getAttribute('aria-hidden')==='true',
    scope:c.querySelector('small')?.textContent.trim()??'',text:c.textContent.replace(/\s+/g,' ').trim(),
@@ -76,10 +84,11 @@ for(const w of [360,390,1280]){
    const shape=c.state==='yes'?c.mark==='✓'&&c.filled&&c.border==='solid':c.state==='no'?c.mark==='–'&&c.struck&&!c.filled:c.mark==='?'&&c.border==='dashed'&&!c.filled;
    if(c.label!==e.label||c.state!==e.state||c.scope!==e.scope||!shape||!c.markHidden||!c.text.endsWith(WORD[e.state]))wrong.push({id:card.id,got:c,want:e,shape});
   }
-  if(card.title!==h.names.ko||(h.names.ja!==h.names.ko&&card.ja!==h.names.ja)||card.english)wrong.push({id:card.id,title:card.title,ja:card.ja,english:card.english,names:h.names});
+  const n=displayNames(h.names);
+  if(card.title!==n.title||card.ja!==n.ja||card.english)wrong.push({id:card.id,title:card.title,ja:card.ja,english:card.english,names:h.names});
  }
  const states=cards.flatMap(c=>c.cells.map(x=>x.state)).reduce((m,s)=>(m[s]=(m[s]??0)+1,m),{});
- check(`카드 ${cards.length}곳의 탕 6칸이 스냅숏으로 따로 계산한 상태·순서·범위와 같고 모양(채움 ✓, 취소선 –, 점선 ?)과 읽는 글이 맞음, 이름은 한국어·일본어 두 줄`,cards.length===first.length&&wrong.length===0&&states.yes>0&&states.no>0&&states.unknown>0,{cards:cards.length,states,wrong:wrong.slice(0,5)});
+ check(`카드 ${cards.length}곳의 탕 6칸이 스냅숏으로 따로 계산한 상태·순서·범위와 같고 모양(채움 ✓, 취소선 –, 점선 ?)과 읽는 글이 맞음, 이름은 두 줄(한국어 → 영어 → 원어 중 앞의 것과 원어)`,cards.length===first.length&&wrong.length===0&&states.yes>0&&states.no>0&&states.unknown>0,{cards:cards.length,states,wrong:wrong.slice(0,5)});
  // The legend says what the marks mean.
  const legend=await page.locator('.bath-legend').innerText().catch(()=>'');
  check('6칸 설명(있음·없음·확인 전)이 목록 위에 있음',/있음/.test(legend)&&/없음/.test(legend)&&/확인 전/.test(legend),{legend});
