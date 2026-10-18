@@ -149,5 +149,5 @@
 하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`, 브랜치 `claude/o03-usage-check`(두 저장소 모두, main `0885eab`에서 시작). 상세는 `O03-20261019.md`.
 
 - 앱 PR #131: `usage.yml`에 매일 점검(`check: true`, 대조 입력 `control`)과 `scripts/daily-check.mjs`·`scripts/check-daily-check.mjs`를 더한다. 방법은 `cloudflare-deploy.md` ‘매일 점검(O03)’. Codex 1회차 P2 두 건(Cloudflare 조회 시간 제한, 끝나지 않은 실행)을 `80d85a3`에서 고쳤고, 2회차(`80d85a3`)는 지적 없음. 병합 준비를 상위 세션에 알린다.
-- 실행기 PR: 매일 cron이 앱 점검을 부르고 전날 백업 실패를 본다. 10-18T01:0xZ `add_repo`(push)가 자동 권한 검사에서 거부돼 아직 만들지 못했다. 상위 세션은 사용자에게 이 세션의 승인을 부탁하고, 앱 PR 병합 때까지 승인이 없으면 상위 세션이 `O03-20261019.md` 「실행기 PR 설계」대로 맡는다.
+- 실행기 PR jihune/yukemuri-script-runner#11: 매일 01:41Z cron이 앱 점검을 부르고 전날 백업 실패를 본다. 사용자가 10-18T02:1xZ 이 세션의 `add_repo`를 승인했다. 앱 PR #131을 먼저 병합한 뒤 병합한다.
 - 끝나는 조건(병합 뒤 상위 세션과 확인): 정상인 날 성공하는 run, 대조 입력 네 가지(`over-85`·`exceeded`·`zero-pages`·`no-permission`)가 실패하는 run.
