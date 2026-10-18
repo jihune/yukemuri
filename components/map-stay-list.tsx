@@ -3,6 +3,7 @@ import {useState} from 'react';
 import type {HotelSummary} from '@/lib/search-snapshot';
 import type {RatingProvider} from '@/lib/hotel-types';
 import {providerRating,displayRating} from '@/lib/hotel-ratings';
+import {displayNames} from '@/lib/hotel-names';
 
 // The stays beside the map (U05 map mode): the stays in view, the members of a
 // group, or the stays without a point. The heading count is the whole set;
@@ -33,7 +34,7 @@ export default function MapStayList({title,stays,provider,activeId,onSelect,onBa
   {stays.length===0?<p className="map-stay-list-empty">{empty}</p>:<ul>
    {stays.slice(0,shown).map(h=>{const score=scoreLabel(h,provider),r=providerRating(h,provider)??displayRating(h);return <li key={h.id}>
     <button type="button" className={h.id===activeId?'is-active':''} onClick={()=>onSelect(h.id)}>
-     <span className="map-stay-name">{h.names.ko}</span>
+     <span className="map-stay-name">{displayNames(h.names).title}</span>
      <span className="map-stay-meta">{h.location.label}{score&&<> · <b>{score}</b> {r?.provider==='jalan'?'Jalan':'Trip.com'}</>}</span>
     </button>
    </li>})}

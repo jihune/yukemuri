@@ -1,0 +1,241 @@
+{
+ "log": "117667017020.txt",
+ "size": {
+  "pages": "120",
+  "reason": "today 6728 rows written, 1759973 read; writes allow 518 pages, reads 720, cap 120"
+ },
+ "preparation": [
+  {
+   "preparationBatch": 1,
+   "done": true,
+   "search": {
+    "done": true,
+    "processed": 0,
+    "cursor": "done"
+   },
+   "priorities": {
+    "done": true,
+    "processed": 0,
+    "cursor": "done"
+   },
+   "bathScope": {
+    "done": true,
+    "processed": 0,
+    "cursor": "done"
+   },
+   "localeLists": {
+    "done": true,
+    "queued": 94
+   }
+  }
+ ],
+ "pages": 120,
+ "statuses": {
+  "done": 118,
+  "skipped": 2
+ },
+ "localePages": 15,
+ "localeTotals": {
+  "blocks": 430,
+  "names": 430,
+  "refused": 0,
+  "accepted": 413
+ },
+ "locale": [
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 1,
+   "status": "done",
+   "accepted": 28,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 2,
+   "status": "done",
+   "accepted": 28,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 3,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 4,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 5,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 6,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 7,
+   "status": "done",
+   "accepted": 28,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 10,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 11,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 12,
+   "status": "done",
+   "accepted": 30,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 13,
+   "status": "done",
+   "accepted": 29,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 14,
+   "status": "done",
+   "accepted": 8,
+   "blocks": 10,
+   "names": 10,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 8,
+   "status": "done",
+   "accepted": 30,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "010000",
+   "page": 9,
+   "status": "done",
+   "accepted": 30,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 6,
+   "listed": 400,
+   "reviewReason": null
+  },
+  {
+   "lang": "en_US",
+   "kenCd": "020000",
+   "page": 1,
+   "status": "done",
+   "accepted": 28,
+   "blocks": 30,
+   "names": 30,
+   "refused": 0,
+   "links": 3,
+   "listed": 105,
+   "reviewReason": null
+  }
+ ]
+}

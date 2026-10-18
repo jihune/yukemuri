@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {buildSnapshot} from './build-search-snapshot.mjs';
+import {buildSnapshot,compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='public-reads-only',VISITOR='e'.repeat(64);
@@ -47,6 +47,9 @@ try{
  const prepared=await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY}});assert.equal(prepared.status,200);
  // The collector's GET sets the record counter the photo credits read.
  assert.equal((await mf.dispatchFetch('http://localhost/api/crawl?provider=jalan&kind=list&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).status,200);
+ // A Jalan list name (D07 PR 2) for a Jalan hotel with no Hangul name, as the collector stores one.
+ const jalan=(await db.prepare("SELECT id FROM hotels WHERE id LIKE 'jalan-%' AND json_extract(payload,'$.names') NOT GLOB '*[가-힣]*' ORDER BY id LIMIT 1").first()).id;
+ await db.prepare("INSERT INTO hotel_locale_names (hotel_id,name_ko,ko_url,ko_checked_at) VALUES (?,'시험 료칸','https://www.jalan.net/kr/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/test/','2026-10-18T00:00:00Z')").bind(jalan).run();
  const ready=await fingerprint();
  const after=await readAll('takinoya');
  assert.equal(after['/api/hotels/takinoya'].status,200);assert.equal(after['/api/hotels/takinoya'].body.id,'takinoya');
@@ -54,7 +57,8 @@ try{
  const records=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n,credits=after['/api/photo-credits'].body;
  assert.equal(credits.total,records);assert.equal(credits.items.length,40);
  // Following `next` visits every hotel once, in id order.
- const seen=[...credits.items.map(i=>i.hotelId)];for(let next=credits.next;next;){const page=(await request(next)).body;seen.push(...page.items.map(i=>i.hotelId));next=page.next}
+ const listed=[...credits.items];for(let next=credits.next;next;){const page=(await request(next)).body;listed.push(...page.items);next=page.next}
+ const seen=listed.map(i=>i.hotelId);
  const ids=(await db.prepare('SELECT id FROM hotels ORDER BY id').all()).results.map(r=>r.id);assert.deepEqual(seen,ids);
  for(const bad of ['?page=2','?after=%27x','?after=a&after=b','?limit=5'])assert.equal((await request('/api/photo-credits'+bad)).status,400,bad);
  assert.deepEqual((await request('/api/photo-credits?page=1')).body,credits);
@@ -66,5 +70,12 @@ try{
  assert.deepEqual(await fingerprint(),ready,'a public read wrote D1');
  const built=await buildSnapshot({db,out:join(temp,'prepared')});
  assert.deepEqual(built.unprepared,[],'the snapshot finds the catalogue prepared');
- console.log(`Public reads passed: ${reads('x').length} public routes answer without a 5xx before preparation, no D1 write before or after (detail of ${untranslated.length} untranslated hotels included), photo credits by cursor over ${seen.length} hotels with the counter total, snapshot reports the 5 unprepared steps until crawl-prepare.`);
+ // Photo sources name every hotel as its card does (U07 task 8), Wikidata and Jalan list names (D07)
+ // included: the seed gives some hotels a Korean Wikidata name, and one hotel a Jalan one above.
+ const {displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
+ const {ids:cardIds}=built.data.core,cards=new Map(built.data.cards.map((c,i)=>[cardIds[i],c]));
+ assert(built.data.cards.some(c=>c.wikidataNames?.was.ko!==undefined),'the seed has a hotel with a Wikidata Korean name');
+ assert.equal(displayNames(cards.get(jalan).names).title,'시험 료칸','the Jalan Korean name titles its card');
+ assert.deepEqual(listed.filter(i=>i.name!==displayNames(cards.get(i.hotelId).names).title).map(i=>[i.hotelId,i.name]),[],'photo sources name hotels as their cards do');
+ console.log(`Public reads passed: ${reads('x').length} public routes answer without a 5xx before preparation, no D1 write before or after (detail of ${untranslated.length} untranslated hotels included), photo credits by cursor over ${seen.length} hotels with the counter total and the card names, snapshot reports the 5 unprepared steps until crawl-prepare.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}
