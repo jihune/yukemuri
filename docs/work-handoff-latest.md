@@ -101,6 +101,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
+| `session_01LC18eEffLnceQxpKh8kfCV` | PR #151 이어 가는 Claude 검토 1회째(4번째 검토, 커밋 `9b72153`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -123,6 +124,7 @@
 - 10-18T09:10Z 다섯 번째 상위 세션이 이 문서를 지금 상태만 남게 다시 쓰고, 여섯 번째 상위 세션에 넘기기로 했다(하네스 setup 28, 위 머리 문단).
 - 10-18T09:15Z–09:2xZ 여섯 번째 상위 세션 `session_01T2rEzYyaSi8qtavjsZawQB`가 인계를 받았다(위 7).
 - 10-18T09:20Z 다섯 번째 상위 세션이 인계 뒤에 받은 D07의 #145 배포 뒤 확인 두 통을 넘겼다. 기록이 겹치지 않게 D07 문서와 근거 파일을 기준으로 두고, 상위 세션은 위 4-5에 숫자 한 줄만 둔다고 D07에 알렸다. C04는 05:13Z 뒤 수집 실행이 아직 없어 10:25Z에 다시 본다고 알렸다.
+- 10-18T09:46Z U07이 PR #151의 이어 가는 Claude 검토를 요청했다(09:45Z). Codex 3회째 P2 1건(범위 검색 지점 묶음 `spotGroups`가 직선거리 52px로만 묶어 대각선 표지 상자가 겹침)을 `48090e1`에서 가로 52px·세로 44px 상자 판정으로 고쳤고, main을 합쳐 head가 `9b72153`이 됐다(충돌은 이 문서의 U07 절 하나). 상위 세션이 `checks`·GitGuardian 성공(09:42:48Z), 해결 안 된 스레드 0건, 지금 main과 합친 트리에 충돌 없음을 확인하고 검토 세션 `session_01LC18eEffLnceQxpKh8kfCV`를 열었다(09:46:40Z, 커밋 `9b72153`, 4번째 검토).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
