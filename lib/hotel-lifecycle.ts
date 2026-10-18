@@ -28,7 +28,13 @@ export async function attachLifecycle(hotels:Hotel[]):Promise<Hotel[]>{
  if(!hotels.length)return hotels;
  const rows=await favoritesDb().prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(hotels.map(h=>h.id))).all<Record<string,unknown>>();
  const byId=new Map(rows.results.map(r=>[r.hotel_id,r]));
- return hotels.map(h=>{const r=byId.get(h.id);if(!r)return h;return{...h,lifecycle:{state:r.state as HotelLifecycle['state'],firstSeenAt:String(r.first_seen_at),lastSeenAt:String(r.last_seen_at),lastDetailAt:r.last_detail_at as string|null,reviewNeeded:Number(r.missing_count)>0,checkedAt:r.checked_at as string|null,...(r.evidence?{evidence:JSON.parse(String(r.evidence))}: {})}}});
+ return hotels.map(h=>withLifecycle(h,byId.get(h.id)));
+}
+// A hotel with its hotel_lifecycle row, or as it is without one. The snapshot
+// builder reads the rows by id range and attaches them the same way (P04).
+export function withLifecycle(h:Hotel,r:Record<string,unknown>|undefined):Hotel{
+ if(!r)return h;
+ return{...h,lifecycle:{state:r.state as HotelLifecycle['state'],firstSeenAt:String(r.first_seen_at),lastSeenAt:String(r.last_seen_at),lastDetailAt:r.last_detail_at as string|null,reviewNeeded:Number(r.missing_count)>0,checkedAt:r.checked_at as string|null,...(r.evidence?{evidence:JSON.parse(String(r.evidence))}: {})}};
 }
 export async function saveLifecyclePatch(patch:LifecyclePatch){
  const db=favoritesDb(),hotel=await db.prepare('SELECT payload FROM hotels WHERE id=?').bind(patch.id).first<{payload:string}>();
