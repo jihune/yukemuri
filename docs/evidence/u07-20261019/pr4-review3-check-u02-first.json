@@ -1,0 +1,513 @@
+{
+ "measuredAt": "2026-10-18T20:24:53.192Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 360,
+   "name": "미확인 때문에 제외된 후보 수를 안내",
+   "pass": true,
+   "detail": {
+    "expected": 1610,
+    "noticeText": "선택한 조건 중 확인되지 않은 정보가 있어 제외한 숙소가 1,610곳 더 있습니다. 미확인 정보는 추정하지 않습니다. 해당 조건을 해제하면 함께 볼 수 있습니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "안내가 화면 너비 안에 있고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "시설·평점 조건이 없으면 안내 없음",
+   "pass": true,
+   "detail": {
+    "unknownExcluded": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "스냅숏을 받기 전에 정적 첫 쪽 40곳이 기본 결과와 같은 순서로 보이고 로딩 안내 없음",
+   "pass": true,
+   "detail": {
+    "early": 40,
+    "earlyBanner": "자료 현황\n\n47개 도도부현 · 숙소 1,655개 항목 · 최근 출처 확인 2026-10-03 · 전국 정보 보강 중\n\n최신 자료 확인\n수집 현황 자세히 보기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "스냅숏을 받은 뒤에도 같은 첫 쪽",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음",
+   "pass": true,
+   "detail": {
+    "bareCards": 40,
+    "bareVisible": "visible",
+    "barePending": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "mark": false,
+    "pending": false,
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&utm_source=mail"
+   }
+  },
+  {
+   "width": 360,
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "hidden",
+    "first": "373dd59be56b274d",
+    "mark": true,
+    "cardsVisible": false,
+    "pending": true,
+    "mapCount": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "first": null,
+    "mark": false,
+    "pending": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록을 받는 중에는 로딩 안내만 보이고 미확인 안내는 숨김",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "목록을 받으면 그 조건의 수로 안내",
+   "pass": true,
+   "detail": {
+    "expected": 1610,
+    "verifiedText": "선택한 조건 중 확인되지 않은 정보가 있어 제외한 숙소가 1,610곳 더 있습니다. 미확인 정보는 추정하지 않습니다. 해당 조건을 해제하면 함께 볼 수 있습니다."
+   }
+  },
+  {
+   "width": 360,
+   "name": "조건을 바꿔도 목록 요청이 Worker로 가지 않음",
+   "pass": true,
+   "detail": {
+    "requests": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록을 받지 못하면 오류 안내와 다시 시도 버튼, 미확인 안내 숨김",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "Enter로 다시 시도하면 목록과 그 조건의 안내가 돌아옴",
+   "pass": true,
+   "detail": {
+    "cardsAfterRetry": 40
+   }
+  },
+  {
+   "width": 360,
+   "name": "스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼",
+   "pass": true,
+   "detail": {
+    "text": "사이트가 새 버전으로 바뀌었습니다. 페이지를 다시 열어 주세요.\n다시 시도\n페이지 다시 열기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "옛 버전 파일이 404면 manifest를 다시 받아 목록을 보임",
+   "pass": true,
+   "detail": {
+    "gone404": 2,
+    "manifestReads": 1
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세가 404면 안내 후 시트를 닫고 스냅숏 목록을 다시 확인",
+   "pass": true,
+   "detail": {
+    "manifests": 1,
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&adults=2"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 화면에 결과 전체 수·이 화면·화면 밖·위치 미확인 수 표시(합 = 결과 수)",
+   "pass": true,
+   "detail": {
+    "text": "이 화면 60곳 화면 밖 0곳 위치 미확인 1,595곳 목록 검색 결과 1,655곳",
+    "total": 1655,
+    "noPoint": 1595
+   }
+  },
+  {
+   "width": 360,
+   "name": "이 화면 수와 지도 옆 목록 머리의 수가 같음",
+   "pass": true,
+   "detail": {
+    "listHead": "이 화면 60곳",
+    "inViewCount": 60
+   }
+  },
+  {
+   "width": 360,
+   "name": "‘지도 보기’ 버튼으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "initiallyCovered": false,
+    "button": {
+     "left": 167.671875,
+     "top": 20,
+     "right": 329.171875,
+     "bottom": 64,
+     "width": 161.5,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 위치 미확인 목록 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "overflow": 0,
+    "button": {
+     "left": 167.671875,
+     "top": 266,
+     "right": 329.171875,
+     "bottom": 310,
+     "width": 161.5,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치로 위치 미확인 목록을 열면 요청 없이 그 수의 목록",
+   "pass": true,
+   "detail": {
+    "head": "위치 미확인 1,595곳",
+    "requests": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "Tab으로 위치 미확인 목록 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 75
+   }
+  },
+  {
+   "width": 360,
+   "name": "Space로 위치 미확인 목록을 엶",
+   "pass": true,
+   "detail": {
+    "head": "위치 미확인 1,595곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "검사 중단",
+   "pass": false,
+   "detail": {
+    "error": "TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8787/?view=map\", waiting until \"networkidle\"\u001b[22m\n"
+   }
+  },
+  {
+   "width": 390,
+   "name": "미확인 때문에 제외된 후보 수를 안내",
+   "pass": true,
+   "detail": {
+    "expected": 1610,
+    "noticeText": "선택한 조건 중 확인되지 않은 정보가 있어 제외한 숙소가 1,610곳 더 있습니다. 미확인 정보는 추정하지 않습니다. 해당 조건을 해제하면 함께 볼 수 있습니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "안내가 화면 너비 안에 있고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "시설·평점 조건이 없으면 안내 없음",
+   "pass": true,
+   "detail": {
+    "unknownExcluded": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "스냅숏을 받기 전에 정적 첫 쪽 40곳이 기본 결과와 같은 순서로 보이고 로딩 안내 없음",
+   "pass": true,
+   "detail": {
+    "early": 40,
+    "earlyBanner": "자료 현황\n\n47개 도도부현 · 숙소 1,655개 항목 · 최근 출처 확인 2026-10-03 · 전국 정보 보강 중\n\n최신 자료 확인\n수집 현황 자세히 보기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "스냅숏을 받은 뒤에도 같은 첫 쪽",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음",
+   "pass": true,
+   "detail": {
+    "bareCards": 40,
+    "bareVisible": "visible",
+    "barePending": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "mark": false,
+    "pending": false,
+    "search": "?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&utm_source=mail"
+   }
+  },
+  {
+   "width": 390,
+   "name": "조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임",
+   "pass": true,
+   "detail": {
+    "visibility": "hidden",
+    "first": "373dd59be56b274d",
+    "mark": true,
+    "cardsVisible": false,
+    "pending": true,
+    "mapCount": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움",
+   "pass": true,
+   "detail": {
+    "visibility": "visible",
+    "first": null,
+    "mark": false,
+    "pending": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록을 받는 중에는 로딩 안내만 보이고 미확인 안내는 숨김",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "목록을 받으면 그 조건의 수로 안내",
+   "pass": true,
+   "detail": {
+    "expected": 1610,
+    "verifiedText": "선택한 조건 중 확인되지 않은 정보가 있어 제외한 숙소가 1,610곳 더 있습니다. 미확인 정보는 추정하지 않습니다. 해당 조건을 해제하면 함께 볼 수 있습니다."
+   }
+  },
+  {
+   "width": 390,
+   "name": "조건을 바꿔도 목록 요청이 Worker로 가지 않음",
+   "pass": true,
+   "detail": {
+    "requests": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록을 받지 못하면 오류 안내와 다시 시도 버튼, 미확인 안내 숨김",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "Enter로 다시 시도하면 목록과 그 조건의 안내가 돌아옴",
+   "pass": true,
+   "detail": {
+    "cardsAfterRetry": 40
+   }
+  },
+  {
+   "width": 390,
+   "name": "스냅숏 형식이 다르면 새 버전 안내와 페이지 다시 열기 버튼",
+   "pass": true,
+   "detail": {
+    "text": "사이트가 새 버전으로 바뀌었습니다. 페이지를 다시 열어 주세요.\n다시 시도\n페이지 다시 열기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "옛 버전 파일이 404면 manifest를 다시 받아 목록을 보임",
+   "pass": true,
+   "detail": {
+    "gone404": 2,
+    "manifestReads": 1
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세가 404면 안내 후 시트를 닫고 스냅숏 목록을 다시 확인",
+   "pass": true,
+   "detail": {
+    "manifests": 1,
+    "url": "http://127.0.0.1:8787/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split&adults=2"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 화면에 결과 전체 수·이 화면·화면 밖·위치 미확인 수 표시(합 = 결과 수)",
+   "pass": true,
+   "detail": {
+    "text": "이 화면 60곳 화면 밖 0곳 위치 미확인 1,595곳 목록 검색 결과 1,655곳",
+    "total": 1655,
+    "noPoint": 1595
+   }
+  },
+  {
+   "width": 390,
+   "name": "이 화면 수와 지도 옆 목록 머리의 수가 같음",
+   "pass": true,
+   "detail": {
+    "listHead": "이 화면 60곳",
+    "inViewCount": 60
+   }
+  },
+  {
+   "width": 390,
+   "name": "‘지도 보기’ 버튼으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "initiallyCovered": false,
+    "button": {
+     "left": 167.671875,
+     "top": 20,
+     "right": 329.171875,
+     "bottom": 64,
+     "width": 161.5,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 화면 가로 넘침 없음, 스크롤해 화면 가운데에 둔 위치 미확인 목록 버튼도 다섯 점 모두 가려지지 않고 높이 44px 이상",
+   "pass": true,
+   "detail": {
+    "overflow": 0,
+    "button": {
+     "left": 167.671875,
+     "top": 266,
+     "right": 329.171875,
+     "bottom": 310,
+     "width": 161.5,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치로 위치 미확인 목록을 열면 요청 없이 그 수의 목록",
+   "pass": true,
+   "detail": {
+    "head": "위치 미확인 1,595곳",
+    "requests": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "Tab으로 위치 미확인 목록 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 75
+   }
+  },
+  {
+   "width": 390,
+   "name": "Space로 위치 미확인 목록을 엶",
+   "pass": true,
+   "detail": {
+    "head": "위치 미확인 1,595곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "주소의 view=map으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 167.671875,
+     "top": 20,
+     "right": 329.171875,
+     "bottom": 64,
+     "width": 161.5,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "카드의 ‘지도에서 보기’로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 167.671875,
+     "top": 20,
+     "right": 329.171875,
+     "bottom": 64,
+     "width": 161.5,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기·모바일 브라우저 주소창·안전 영역",
+  "스크린리더 읽기 순서",
+  "외부 지도 타일",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)"
+ ]
+}
