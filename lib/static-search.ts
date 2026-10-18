@@ -156,16 +156,13 @@ export function resultPage(s:SearchSnapshot,r:SearchResult,page:number):SearchRe
  const hotels=r.order.slice((actual-1)*PAGE_SIZE,actual*PAGE_SIZE).map(i=>s.cards[i]);
  return{hotels,total:r.total,unknownExcluded:r.unknownExcluded,page:actual,pageSize:PAGE_SIZE,featureCounts:r.featureCounts,ryokanCount:r.ryokanCount,coverage:s.manifest.coverage,similarCount:r.similarCount,similarHotelIds:pageSimilar(r,hotels),alternatives:r.alternatives};
 }
-// SQLite AVG of a REAL column: integers summed exactly until the first real
-// value, then a Kahan-Babuska-Neumaier sum.
-function sqliteAverage(values:number[]){
- let integer=0,approximate=false,sum=0,error=0;
- for(const value of values){
-  if(!approximate&&Number.isInteger(value)){integer+=value;continue}
-  if(!approximate){approximate=true;sum=integer;error=0}
-  const t=sum+value;error+=Math.abs(sum)>Math.abs(value)?(sum-t)+value:(value-t)+sum;sum=t;
- }
- return approximate?(sum+error)/values.length:integer/values.length;
+// A cell's marker sits on the point of the member nearest the members' mean, not on the mean
+// (U07: around islands and bays the mean lies in the sea). The former Worker answered the SQL
+// average, so scripts/compare-static-search.mjs now differs from it in cells' lat and lng only.
+function nearestMean(lats:number[],lngs:number[]){
+ const la=lats.reduce((a,v)=>a+v,0)/lats.length,lo=lngs.reduce((a,v)=>a+v,0)/lngs.length;
+ let best=0;for(let k=1;k<lats.length;k++)if((lats[k]-la)**2+(lngs[k]-lo)**2<(lats[best]-la)**2+(lngs[best]-lo)**2)best=k;
+ return{lat:lats[best],lng:lngs[best]};
 }
 // Every matching hotel inside the bounds: points (id order) up to the limit,
 // else counts on a 16 x 16 grid over the bounds.
@@ -191,7 +188,7 @@ export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=fa
   const [lat,lng,grade]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
   const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[],approximate:0};cell.lats.push(lat);cell.lngs.push(lng);if(grade>=2)cell.approximate++;cells.set(row*16+col,cell);
  }
- result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({lat:sqliteAverage(x.lats),lng:sqliteAverage(x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
+ result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({...nearestMean(x.lats,x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
  return result;
 }
 export function suggestions(s:SearchSnapshot,f:HotelFilters,savedOnly=false,savedIds:string[]=[]):HotelSuggestion[]{

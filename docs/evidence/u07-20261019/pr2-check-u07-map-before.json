@@ -1,0 +1,746 @@
+{
+ "checkedAt": "2026-10-18T02:28:04.703Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "전국: 처음과 확대 4단계에서 표지 17개(묶음 14개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 4,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 4
+     },
+     {
+      "step": "확대 1",
+      "zoom": 5,
+      "markers": 4,
+      "covered": 1,
+      "groups": 4,
+      "off": 4
+     },
+     {
+      "step": "확대 2",
+      "zoom": 6,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     },
+     {
+      "step": "확대 3",
+      "zoom": 7,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     },
+     {
+      "step": "확대 4",
+      "zoom": 8,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     }
+    ],
+    "off": [
+     {
+      "text": "25곳",
+      "stay": null,
+      "group": "ginrinsou",
+      "tip": {
+       "x": 226,
+       "y": 162
+      },
+      "distance": 9.4
+     },
+     {
+      "text": "16곳",
+      "stay": null,
+      "group": "jalan-327522",
+      "tip": {
+       "x": 133,
+       "y": 284
+      },
+      "distance": 17.1
+     },
+     {
+      "text": "15곳",
+      "stay": null,
+      "group": "jalan-300001",
+      "tip": {
+       "x": 203,
+       "y": 256
+      },
+      "distance": 13
+     },
+     {
+      "text": "4곳",
+      "stay": null,
+      "group": "trip-67309116",
+      "tip": {
+       "x": 73,
+       "y": 382
+      },
+      "distance": 18.5
+     },
+     {
+      "text": "15곳",
+      "stay": null,
+      "group": "trip-49509069",
+      "tip": {
+       "x": 242,
+       "y": 250
+      },
+      "distance": 6.6
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-301401",
+      "tip": {
+       "x": 151,
+       "y": 288
+      },
+      "distance": 15.9
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-327522",
+      "tip": {
+       "x": 52,
+       "y": 325
+      },
+      "distance": 14.6
+     },
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "jalan-300170",
+      "tip": {
+       "x": 273,
+       "y": 190
+      },
+      "distance": 15.2
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 5개(묶음 2개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 9,
+      "markers": 2,
+      "covered": 0,
+      "groups": 2,
+      "off": 2
+     },
+     {
+      "step": "확대 1",
+      "zoom": 10,
+      "markers": 3,
+      "covered": 1,
+      "groups": 0,
+      "off": 3
+     },
+     {
+      "step": "확대 2",
+      "zoom": 11,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": [
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "trip-23204180",
+      "tip": {
+       "x": 214,
+       "y": 180
+      },
+      "distance": 11.2
+     },
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "trip-67309116",
+      "tip": {
+       "x": 116,
+       "y": 340
+      },
+      "distance": 12.3
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-67309116",
+      "group": null,
+      "tip": {
+       "x": 45,
+       "y": 459
+      },
+      "distance": 21.5
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-705561",
+      "group": null,
+      "tip": {
+       "x": 89,
+       "y": 378
+      },
+      "distance": 20.7
+     },
+     {
+      "text": "9.0",
+      "stay": "trip-23204180",
+      "group": null,
+      "tip": {
+       "x": 244,
+       "y": 132
+      },
+      "distance": 21
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "전국: 처음과 확대 4단계에서 표지 18개(묶음 15개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 4,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 4
+     },
+     {
+      "step": "확대 1",
+      "zoom": 5,
+      "markers": 5,
+      "covered": 0,
+      "groups": 5,
+      "off": 5
+     },
+     {
+      "step": "확대 2",
+      "zoom": 6,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     },
+     {
+      "step": "확대 3",
+      "zoom": 7,
+      "markers": 3,
+      "covered": 1,
+      "groups": 2,
+      "off": 3
+     },
+     {
+      "step": "확대 4",
+      "zoom": 8,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     }
+    ],
+    "off": [
+     {
+      "text": "25곳",
+      "stay": null,
+      "group": "ginrinsou",
+      "tip": {
+       "x": 241,
+       "y": 162
+      },
+      "distance": 9.4
+     },
+     {
+      "text": "16곳",
+      "stay": null,
+      "group": "jalan-327522",
+      "tip": {
+       "x": 148,
+       "y": 284
+      },
+      "distance": 17.1
+     },
+     {
+      "text": "15곳",
+      "stay": null,
+      "group": "jalan-300001",
+      "tip": {
+       "x": 218,
+       "y": 256
+      },
+      "distance": 13
+     },
+     {
+      "text": "4곳",
+      "stay": null,
+      "group": "trip-67309116",
+      "tip": {
+       "x": 88,
+       "y": 382
+      },
+      "distance": 18.5
+     },
+     {
+      "text": "20곳",
+      "stay": null,
+      "group": "ginrinsou",
+      "tip": {
+       "x": 295,
+       "y": 54
+      },
+      "distance": 6
+     },
+     {
+      "text": "15곳",
+      "stay": null,
+      "group": "trip-49509069",
+      "tip": {
+       "x": 257,
+       "y": 250
+      },
+      "distance": 6.6
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-301401",
+      "tip": {
+       "x": 166,
+       "y": 288
+      },
+      "distance": 15.9
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-327522",
+      "tip": {
+       "x": 67,
+       "y": 325
+      },
+      "distance": 14.6
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 6개(묶음 2개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 9,
+      "markers": 2,
+      "covered": 0,
+      "groups": 2,
+      "off": 2
+     },
+     {
+      "step": "확대 1",
+      "zoom": 10,
+      "markers": 4,
+      "covered": 0,
+      "groups": 0,
+      "off": 4
+     },
+     {
+      "step": "확대 2",
+      "zoom": 11,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": [
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "trip-23204180",
+      "tip": {
+       "x": 229,
+       "y": 180
+      },
+      "distance": 11.2
+     },
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "trip-67309116",
+      "tip": {
+       "x": 131,
+       "y": 340
+      },
+      "distance": 12.3
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-67309116",
+      "group": null,
+      "tip": {
+       "x": 60,
+       "y": 459
+      },
+      "distance": 21.5
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-705561",
+      "group": null,
+      "tip": {
+       "x": 104,
+       "y": 378
+      },
+      "distance": 20.7
+     },
+     {
+      "text": "9.0",
+      "stay": "trip-23204180",
+      "group": null,
+      "tip": {
+       "x": 259,
+       "y": 132
+      },
+      "distance": 21
+     },
+     {
+      "text": "4.9/5",
+      "stay": "jalan-300310",
+      "group": null,
+      "tip": {
+       "x": 295,
+       "y": 63
+      },
+      "distance": 18.2
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "전국: 처음과 확대 4단계에서 표지 25개(묶음 18개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 5,
+      "markers": 7,
+      "covered": 0,
+      "groups": 7,
+      "off": 7
+     },
+     {
+      "step": "확대 1",
+      "zoom": 6,
+      "markers": 6,
+      "covered": 0,
+      "groups": 3,
+      "off": 6
+     },
+     {
+      "step": "확대 2",
+      "zoom": 7,
+      "markers": 4,
+      "covered": 0,
+      "groups": 3,
+      "off": 4
+     },
+     {
+      "step": "확대 3",
+      "zoom": 8,
+      "markers": 5,
+      "covered": 0,
+      "groups": 3,
+      "off": 5
+     },
+     {
+      "step": "확대 4",
+      "zoom": 9,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 3
+     }
+    ],
+    "off": [
+     {
+      "text": "20곳",
+      "stay": null,
+      "group": "ginrinsou",
+      "tip": {
+       "x": 347,
+       "y": 194
+      },
+      "distance": 6.4
+     },
+     {
+      "text": "15곳",
+      "stay": null,
+      "group": "trip-49509069",
+      "tip": {
+       "x": 308,
+       "y": 389
+      },
+      "distance": 7.3
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-301401",
+      "tip": {
+       "x": 217,
+       "y": 427
+      },
+      "distance": 16.8
+     },
+     {
+      "text": "8곳",
+      "stay": null,
+      "group": "jalan-327522",
+      "tip": {
+       "x": 118,
+       "y": 464
+      },
+      "distance": 15
+     },
+     {
+      "text": "4곳",
+      "stay": null,
+      "group": "trip-67309116",
+      "tip": {
+       "x": 48,
+       "y": 640
+      },
+      "distance": 16.4
+     },
+     {
+      "text": "3곳",
+      "stay": null,
+      "group": "hinanoza",
+      "tip": {
+       "x": 408,
+       "y": 163
+      },
+      "distance": 21
+     },
+     {
+      "text": "2곳",
+      "stay": null,
+      "group": "jalan-300170",
+      "tip": {
+       "x": 339,
+       "y": 329
+      },
+      "distance": 16.1
+     },
+     {
+      "text": "11곳",
+      "stay": null,
+      "group": "trip-49509069",
+      "tip": {
+       "x": 405,
+       "y": 395
+      },
+      "distance": 11.9
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 6개(묶음 0개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)",
+   "pass": false,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 10,
+      "markers": 4,
+      "covered": 0,
+      "groups": 0,
+      "off": 4
+     },
+     {
+      "step": "확대 1",
+      "zoom": 11,
+      "markers": 2,
+      "covered": 0,
+      "groups": 0,
+      "off": 2
+     },
+     {
+      "step": "확대 2",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 14,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": [
+     {
+      "text": "9.5",
+      "stay": "trip-67309116",
+      "group": null,
+      "tip": {
+       "x": 111,
+       "y": 598
+      },
+      "distance": 22.5
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-705561",
+      "group": null,
+      "tip": {
+       "x": 155,
+       "y": 517
+      },
+      "distance": 21.7
+     },
+     {
+      "text": "9.0",
+      "stay": "trip-23204180",
+      "group": null,
+      "tip": {
+       "x": 310,
+       "y": 271
+      },
+      "distance": 22
+     },
+     {
+      "text": "4.9/5",
+      "stay": "jalan-300310",
+      "group": null,
+      "tip": {
+       "x": 349,
+       "y": 205
+      },
+      "distance": 22.2
+     },
+     {
+      "text": "9.5",
+      "stay": "trip-705561",
+      "group": null,
+      "tip": {
+       "x": 81,
+       "y": 634
+      },
+      "distance": 22.4
+     },
+     {
+      "text": "9.0",
+      "stay": "trip-23204180",
+      "group": null,
+      "tip": {
+       "x": 391,
+       "y": 141
+      },
+      "distance": 22
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

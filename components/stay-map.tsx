@@ -18,6 +18,12 @@ type Spot={id:string;lat:number;lng:number;label:string;title:string;place:strin
 // One empty array for every render: a new [] each time would re-run the fitting effect
 // and throw away the view the user chose.
 const NO_CELLS:MapCell[]=[];
+// A marker is a label with a caret under it (app/globals.css .stay-marker), 44px tall. Its point
+// is the caret's tip, 43px below the icon's top (U07: anchored at the icon's middle, the caret
+// pointed 21px below the stay, out at sea off a small island at a low zoom).
+const TIP=43;
+// Stays drawn as one marker sit on the member nearest their mean, never on the mean (U07).
+const nearestMean=<T extends {lat:number;lng:number}>(list:T[])=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
 export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=NO_CELLS,onSearchArea,areaBusy=false,areaFailed=false,result=null,onView,onOpenGroup}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
  const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label,approximate:false}));
@@ -45,9 +51,9 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    const tabStops=()=>layer.current?.eachLayer(m=>{
     const el=(m as Leaflet.Marker).getElement();if(!el)return;
     const p=map.latLngToContainerPoint((m as Leaflet.Marker).getLatLng()),size=map.getSize();
-    // The icon is centred on its point: half its own size on each side must fit.
-    const w=el.offsetWidth/2,h=el.offsetHeight/2;
-    el.tabIndex=p.x>=w&&p.x<=size.x-w&&p.y>=h&&p.y<=size.y-h?0:-1;
+    // The icon stands on its point: half its width on each side and its height above must fit.
+    const w=el.offsetWidth/2;
+    el.tabIndex=p.x>=w&&p.x<=size.x-w&&p.y>=TIP&&p.y<=size.y-(el.offsetHeight-TIP)?0:-1;
    });
    // Enter and Space do what a click does; Leaflet 1.9.4 only handles Enter for popups.
    const add=(marker:Leaflet.Marker,data:Record<string,string>,open:(keyboard:boolean)=>void)=>{
@@ -66,11 +72,11 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
      for(const m of view.markers){
       if(m.kind==='stay'){
        const stay=result.stay(m.row),active=stay.id===props.current.activeId,approximate=m.grade>=2;
-       const marker=L.marker([m.lat,m.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${approximate?'is-approximate':''}">${stay.label}</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:stay.title+(approximate?' (대략 위치)':''),alt:stay.title});
+       const marker=L.marker([m.lat,m.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${approximate?'is-approximate':''}">${stay.label}</span>`,iconSize:[52,44],iconAnchor:[26,TIP]}),keyboard:true,autoPanOnFocus:false,title:stay.title+(approximate?' (대략 위치)':''),alt:stay.title});
        add(marker,{stayIds:stay.id},keyboard=>props.current.onSelect(stay.id,keyboard));
       }else{
        const first=result.stay(m.rows[0]),list=m.samePoint||map.getZoom()>=map.getMaxZoom();
-       const marker=L.marker([m.lat,m.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster ${m.approximate===m.count?'is-approximate':''}">${m.count.toLocaleString()}곳</span>`,iconSize:[60,44],iconAnchor:[30,22]}),keyboard:true,autoPanOnFocus:false,title:`${first.title} 등 ${m.count}개 숙소, ${list?'눌러서 목록 보기':'눌러서 확대'}`,alt:`숙소 ${m.count}곳`});
+       const marker=L.marker([m.lat,m.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster ${m.approximate===m.count?'is-approximate':''}">${m.count.toLocaleString()}곳</span>`,iconSize:[60,44],iconAnchor:[30,TIP]}),keyboard:true,autoPanOnFocus:false,title:`${first.title} 등 ${m.count}개 숙소, ${list?'눌러서 목록 보기':'눌러서 확대'}`,alt:`숙소 ${m.count}곳`});
        add(marker,{group:first.id,count:String(m.count)},()=>{
         if(list)props.current.onOpenGroup?.(m.rows);
         else map.fitBounds(L.latLngBounds([[m.south,m.west],[m.north,m.east]]),{padding:[50,50],maxZoom:map.getMaxZoom()});
@@ -89,9 +95,9 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
     }
     for(const group of groups){
      const hs=group.spots,first=hs[0];
-     const lat=hs.reduce((a,h)=>a+h.lat,0)/hs.length,lng=hs.reduce((a,h)=>a+h.lng,0)/hs.length;
+     const {lat,lng}=nearestMean(hs);
      const active=hs.some(h=>h.id===props.current.activeId);
-     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''} ${hs.every(h=>h.approximate)?'is-approximate':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
+     const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''} ${hs.every(h=>h.approximate)?'is-approximate':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,44],iconAnchor:[26,TIP]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
      add(marker,{stayIds:hs.map(h=>h.id).join(' ')},keyboard=>{
       if(hs.length>1){map.fitBounds(L.latLngBounds(hs.map(h=>[h.lat,h.lng] as [number,number])),{padding:[50,50],maxZoom:17});}
       else props.current.onSelect(first.id,keyboard);
@@ -99,7 +105,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
     }
     // Grid counts from a map-bounds search with more points than one response holds.
     for(const cell of props.current.cells){
-     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster ${cell.approximate===cell.count?'is-approximate':''}">${cell.count}곳</span>`,iconSize:[52,44],iconAnchor:[26,22]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`});
+     const marker=L.marker([cell.lat,cell.lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker is-cluster ${cell.approximate===cell.count?'is-approximate':''}">${cell.count}곳</span>`,iconSize:[52,44],iconAnchor:[26,TIP]}),keyboard:true,autoPanOnFocus:false,title:`이 구역 ${cell.count}개 숙소, 눌러서 확대`,alt:`이 구역 ${cell.count}개 숙소`});
      add(marker,{cell:`${cell.south},${cell.west}`},()=>map.fitBounds(L.latLngBounds([[cell.south,cell.west],[cell.north,cell.east]])));
     }
     tabStops();
