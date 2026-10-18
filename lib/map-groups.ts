@@ -133,5 +133,21 @@ export function nearestMean<T extends {lat:number;lng:number}>(list:T[]):T{
  return list[best];
 }
 
+// The area search's spots as markers (components/stay-map.tsx), in screen pixels: a spot within
+// one marker's width of a group's first spot joins it; then groups whose markers (each on the
+// member nearest the members' mean, as nearestMean picks) still come within that width merge,
+// until none do. A marker moved to a member can come nearer a neighbour than the first spot was
+// (#151: spots at 0, 40, 51 and 84px put two 52px markers 44px apart).
+export function spotGroups<T>(items:T[],at:(item:T)=>[number,number],width:number):T[][]{
+ const groups:{items:T[];x:number;y:number}[]=[];
+ for(const item of items){const [x,y]=at(item),near=groups.find(g=>Math.hypot(g.x-x,g.y-y)<width);if(near)near.items.push(item);else groups.push({items:[item],x,y})}
+ const marker=(g:{items:T[]})=>{const ps=g.items.map(at),mx=ps.reduce((a,p)=>a+p[0],0)/ps.length,my=ps.reduce((a,p)=>a+p[1],0)/ps.length;return ps.reduce((b,p)=>(p[0]-mx)**2+(p[1]-my)**2<(b[0]-mx)**2+(b[1]-my)**2?p:b)};
+ for(let merged=true;merged;){
+  merged=false;const ms=groups.map(marker);
+  for(let a=0;a<groups.length;a++)for(let b=groups.length-1;b>a;b--)if(Math.hypot(ms[a][0]-ms[b][0],ms[a][1]-ms[b][1])<width){groups[a].items.push(...groups[b].items);groups.splice(b,1);ms.splice(b,1);merged=true}
+ }
+ return groups.map(g=>g.items);
+}
+
 // Stays a marker stands for (one for a single marker, every member for a group).
 export const markerCount=(m:MapMarker)=>m.kind==='stay'?1:m.count;

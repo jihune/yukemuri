@@ -18,7 +18,7 @@ const dir=mkdtempSync(join(tmpdir(),'yukemuri-map-groups-'));
 try{
  const compile=spawnSync(process.execPath,['node_modules/typescript/bin/tsc','lib/map-groups.ts','--outDir',dir,'--module','commonjs','--target','es2022','--skipLibCheck'],{encoding:'utf8'});
  if(compile.status!==0)throw new Error(compile.stdout+compile.stderr);
- const {resultPositions,viewGroups,markerCount,MARKER_PX,mercatorPoint,GROUP_CELL_PX,nearestMean}=createRequire(join(dir,'x.cjs'))(join(dir,'map-groups.js'));
+ const {resultPositions,viewGroups,markerCount,MARKER_PX,mercatorPoint,GROUP_CELL_PX,nearestMean,spotGroups}=createRequire(join(dir,'x.cjs'))(join(dir,'map-groups.js'));
  // A fixed pseudo-random fixture.
  let seed=7;const rnd=()=>(seed=(seed*1103515245+12345)%2147483648)/2147483648;
  const N=13000,lat=[],lng=[],grade=[],geoLat=[],geoLng=[];
@@ -119,6 +119,18 @@ try{
  assert.equal(nearestMean(cross),cross[2],'nearestMean measures on the screen (Web Mercator)');
  const inDegrees=list=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
  assert.notEqual(inDegrees(cross),cross[2],'a pick in degrees is caught');
+ // spotGroups, the area search's markers (52px wide): every spot in one group and no two markers,
+ // each on the member nearest its group's mean, closer than 52px. Spots at 0, 40, 51 and 84px on
+ // a line: grouped by the first spot alone (as before #151), the markers at 40 and 84px are 44px apart.
+ const px=t=>[t.x,t.y],mark=g=>{const mx=g.reduce((a,t)=>a+t.x,0)/g.length,my=g.reduce((a,t)=>a+t.y,0)/g.length;return g.reduce((b,t)=>(t.x-mx)**2+(t.y-my)**2<(b.x-mx)**2+(b.y-my)**2?t:b)};
+ const apart=gs=>gs.every((g,a)=>gs.every((h,b)=>b<=a||Math.hypot(mark(g).x-mark(h).x,mark(g).y-mark(h).y)>=52));
+ const once=(gs,set)=>gs.flat().length===set.length&&new Set(gs.flat()).size===set.length;
+ const line=[0,40,51,84].map(x=>({x,y:0}));
+ assert.ok(apart(spotGroups(line,px,52))&&once(spotGroups(line,px,52),line),'spot markers 0, 40, 51, 84px do not overlap');
+ const firstOnly=set=>{const gs=[];for(const t of set){const g=gs.find(g=>Math.hypot(g[0].x-t.x,g[0].y-t.y)<52);if(g)g.push(t);else gs.push([t])}return gs};
+ assert.ok(!apart(firstOnly(line)),'grouping by the first spot alone is caught');
+ let spotSets=0;
+ for(let t=0;t<200;t++){const set=Array.from({length:30},()=>({x:rnd()*400,y:rnd()*300})),gs=spotGroups(set,px,52);assert.ok(apart(gs)&&once(gs,set),'random spots '+t);spotSets++}
  // The grid alone (no merging of neighbouring cells) puts icons on top of each other.
  const gridOnly=v=>{const scale=256*2**v.zoom/GROUP_CELL_PX,cells=new Map();for(let k=0;k<p.rows.length;k++){if(!inside(v,p.lat[k],p.lng[k]))continue;const key=Math.floor(p.x[k]*scale)+':'+Math.floor(p.y[k]*scale);(cells.get(key)??cells.set(key,[]).get(key)).push(k)}return[...cells.values()].map(ks=>({lat:ks.reduce((n,k)=>n+p.lat[k],0)/ks.length,lng:ks.reduce((n,k)=>n+p.lng[k],0)/ks.length}))};
  const overlapping=views.filter(v=>overlaps(v,gridOnly(v))>0).length;
