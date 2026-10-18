@@ -143,14 +143,14 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
     - 계산: 쪽수 = min(120, (쓰기 한도 10만의 85% − 오늘 쓰기) ÷ 151, (읽기 한도 500만의 85% − 오늘 읽기 − 끝 스냅숏 33만) ÷ 3,000). 0보다 작으면 0이다. 쪽당 쓰기 151은 10-17 실행 사이 실측의 가장 큰 값(150.4행/쪽, 하루 평균 129.7)을 올림한 값이다. 실행마다 그날 실제 사용량을 다시 읽으므로 큰 값은 쓰기 상한이 쪽수를 정하는 실행 하나만 줄이고(10-17 마지막 실행이면 55쪽 대신 47쪽), 작은 값은 그 실행이 85%를 넘게 한다. 처음 값 90은 10-13 gentle 두 번(32쪽, 쪽당 약 77)에서 쟀는데 쪽당 쓰기가 10-14 99.9에서 10-17 129.7로 늘었고, 10-17에는 90으로 정한 마지막 실행 때문에 하루가 88.1%에서 끝났다(`H01-20261011.md` 「7단계 기록(매일)」 5일차). 쪽당 읽기 3,000은 10-17 실행 사이 실측(스냅숏을 뺀 2,713–2,981)보다 크다. 스냅숏 생성 1회는 10-17 마지막 배포에서 읽기 257,099행(23,032곳, 곳당 약 11.2행)이었고 숙소가 늘수록 커진다. `check-collection-budget.mjs`는 어떤 사용량에서도 정한 쪽수가 이 최대값들로 85% 안에 드는지 훑어서 단언한다. 숙소가 늘어 스냅숏 예약 33만은 10-17 마지막 실측 257,099행에 그날 늘어난 33,760행(숙소 2,512곳)의 이틀 치를 더한 값이다. 스냅숏이 그보다 커지거나 쪽당 값이 올라가면 다시 잰 값으로 올리고, P04가 스냅숏 읽기를 줄이면 내린다.
     - 0쪽이면 수집기를 부르지 않고 성공으로 끝나며 스냅숏 배포도 건너뛴다(`needs.collect.outputs.pages != '0'`). 사용량을 못 읽으면(권한·네트워크·설정 오류) C03 전 크기인 16쪽으로 돈다.
     - 시간: 실행 한도는 쪽당 11초 + 60초(최소 240초, 120쪽 1,380초), job 26분이다. 10-13 측정은 16쪽 146초(두 사이트를 번갈아 약 9초/쪽)였다.
-    - 하루 기대량: 실행기 cron은 3시간(하루 8번)이지만 10-14~10-17에 실제로는 하루 4~6번 돌았다. 쓰기 85% 예산(85,000)은 실제 쪽당 130행이면 하루 약 650쪽이라 120쪽 실행 다섯 번 뒤의 실행부터 줄어든다. 그때 읽기는 650×3,000 + 스냅숏 6번(10-17 실측 합 1,445,381행) ≈ 3,395,000행(68%)이다. 백업·방문·배포가 쓰는 몫은 나머지 15%에 둔다. `usage.yml` 기록으로 쪽당 값을 다시 맞춘다.
+    - 하루 기대량: 실행기 cron은 3시간(하루 8번)이었지만 10-14~10-17에 실제로는 하루 4~6번 돌았다(GitHub 예약 지연·누락, `docs/evidence/h01-schedule-gap-20261018/`). C05에서 매시간으로 바꾼다(실행기 PR 병합 뒤). 매시간이면 그날 몫을 다 쓴 뒤의 실행은 0쪽으로 끝난다. 쓰기 85% 예산(85,000)은 실제 쪽당 130행이면 하루 약 650쪽이라 120쪽 실행 다섯 번 뒤의 실행부터 줄어든다. 그때 읽기는 650×3,000 + 스냅숏 6번(10-17 실측 합 1,445,381행) ≈ 3,395,000행(68%)이다. 백업·방문·배포가 쓰는 몫은 나머지 15%에 둔다. `usage.yml` 기록으로 쪽당 값을 다시 맞춘다.
     - `check_collection.py`·`check-collection-budget.mjs`·`check-collect-workflow.mjs`가 값과 단계 구성을 단언한다.
   - 수집기는 Sites release를 받지 않고 이 커밋의 `scripts/crawler/update-site.py`를 실행한다. 주소 허용은 `source_safety.site_api()`가 한다(workers.dev에는 `X-Yukemuri-Crawl-Key`만).
   - gentle 수집이 성공하고 1쪽 이상을 맡았으면 `uses: ./.github/workflows/deploy.yml`(`after_collection: true`, `secrets: inherit`)로 같은 커밋의 스냅숏을 다시 만들어 배포한다. 배포가 실패하면 그 수집 실행도 실패로 끝난다.
 - 동시 실행 잠금(P03 규칙): `collect.yml`은 최상위에서 `yukemuri-catalog-updates`를 실행 전체 동안 잡는다(`cancel-in-progress: false`). 수집끼리, 그리고 push·수동 배포와 겹치지 않는다. job 단위 잠금은 두지 않는다. 계정 잠금(`cloudflare-account`)은 불린 배포 job 안에서만 잡으므로 잠금 순서가 push 배포와 같다. 불린 배포의 최상위 그룹은 `yukemuri-snapshot-after-collection`이다.
 - 대기 실행 보존(P03 다음 작업 5번, PR #48 Codex 검토 P2): GitHub 동시 실행 그룹은 기본(`queue: single`)으로 대기 실행을 하나만 둔다. 새 실행이 들어오면 앞의 대기 실행은 시작 전에 취소된다. 그러면 push 배포가 대기 수집을 취소하거나, 수집 부르기가 대기 배포를 취소할 수 있다. 뒤의 경우 새 수집이 아직 배포되지 않은 커밋의 수집기로 이전 Worker를 부를 수 있다. 그래서 세 그룹(`yukemuri-catalog-updates`, `yukemuri-snapshot-after-collection`, `cloudflare-account`)에 들어가는 모든 실행에 `queue: max`를 둔다(`collect.yml`, `deploy.yml` 최상위·job, `d1-setup.yml`). GitHub 문서(`github/docs` `data/reusables/actions/actions-group-concurrency.md`, 2026-10-12 확인, github.com·GHEC 적용)와 SchemaStore `github-workflow.json`(`queue`: `single`|`max`)에 따르면 대기 실행을 100개까지 두고, 기다리기 시작한 시각 순(FIFO)으로 돈다. 순서는 보장되지 않는다고 적혀 있다. `cancel-in-progress: true`와 함께 쓸 수 없다.
   - 결과: 대기 수집도 대기 배포도 취소되지 않는다. 수집 부르기 전에 대기하던 push 배포가 먼저 돈다. 대가로 연속 push가 더는 하나로 합쳐지지 않는다. push마다 배포(스냅숏 생성 1회 약 10.4만 행 읽기)가 차례로 돈다. 병합이 몰리는 날의 D1 읽기를 5단계 실측에서 본다.
-  - 대기열이 100개를 넘거나 순서가 바뀌는 드문 경우에도, 취소된 수집은 실행기의 다음 cron 부르기(3시간)가 대신한다. 12시간 확인(실행기 `check`, 앱 감시)은 성공한 gentle 실행만 센다.
+  - 대기열이 100개를 넘거나 순서가 바뀌는 드문 경우에도, 취소된 수집은 실행기의 다음 cron 부르기(C05 뒤 매시간, 그 전 3시간)가 대신한다. 12시간 확인(실행기 `check`, 앱 감시)은 성공한 gentle 실행만 센다.
   - actionlint 1.7.7–1.7.12는 `queue` 키를 모른다. `run-actionlint.py`는 이 키의 ‘unexpected key’ 오류만 무시하고, `check-deploy-config.mjs`·`check-collect-workflow.mjs`가 값(`queue: max`, `cancel-in-progress: false`)을 단언한다. 실제 GitHub의 수용 여부는 이 PR 병합 뒤 첫 main push 배포(설정 검증)와 6단계 수동 실행(gentle 중 하나 더 넣기)에서 확인한다.
 - `collect-watch.yml`: 6시간마다(`41 */6 * * *`) `GITHUB_TOKEN`(`actions: read`)으로 `collect.yml`의 성공 실행을 읽는다(`scripts/check-collection-freshness.mjs`). 마지막 성공 gentle이 12시간을 넘으면 실패한다. 성공이 하나도 없으면 통과하고, `publicOrigin`이 `null`이면 API를 부르지 않고 건너뛴다. 4단계 완료 PR에서 `publicOrigin`이 채워진 뒤 6단계 전까지는 성공이 없어 통과한다.
 - 검사: `check-collect-workflow.mjs`(두 workflow 설정, 이 레포에 다른 cron 없음, 감시 규칙과 로컬 GitHub API 대역), `runner/check_collection.py`(상한·대상·키 전달), `run-actionlint.py`(actionlint 1.7.7, 해시 고정 내려받기, shellcheck·pyflakes 끔). 모두 `cloud-check.py`에 들어 있다.
@@ -193,14 +193,14 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - 그날 계정 전체 Worker 요청·D1 읽기·D1 쓰기 가운데 하나라도 무료 한도의 85% 이상. 한도와 계정 합계는 위 ‘사용량 측정’과 같다(`cloudflare-usage.mjs`의 `queryDay`·`LIMITS`).
   - 이 Worker의 `exceededResources`(1102·1027)가 1 이상.
   - 사용량을 읽지 못함(권한·네트워크·API 오류). 권한이 있는 조회에서 계정 값이 ‘기록 없음’이어도 판단할 수 없어 실패로 본다.
-  - 그날(UTC, 실행을 만든 시각) 만든 gentle 수집(`collect.yml`) 가운데 0쪽 실행, collect job이 26분 이상(job `timeout-minutes`), 성공하지 않은 실행(실패·취소·시간 초과), 끝난 실행의 로그에 `pages=` 줄이 없음, 점검 때 아직 끝나지 않은 실행. 다음 날 점검은 다른 날을 보므로 끝나지 않은 실행은 나중에 다시 판정되지 않는다(PR #131 Codex 검토). 그래서 점검은 전날 마지막 수집과 스냅숏 배포가 끝난 뒤(01:00Z 이후)에 돌린다. 그날 실행이 0회면 표에 0회로 쓰고 실패로 보지 않는다(수집이 멈추면 `collect-watch.yml`의 12시간 감시가 알린다).
+  - 그날(UTC, 실행을 만든 시각) 만든 gentle 수집(`collect.yml`) 가운데 collect job이 26분 이상(job `timeout-minutes`), 성공하지 않은 실행(실패·취소·시간 초과), 끝난 실행의 로그에 `pages=` 줄이 없음, 점검 때 아직 끝나지 않은 실행. 0쪽 실행은 ‘Size the run’의 `reason=`에서 `writes allow`·`reads`가 모두 1 이상(예산이 남음)이거나 그 값을 읽지 못하면 실패다. 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다(C05, 매시간이면 날마다 생긴다). 그날 gentle 실행이 모두 0쪽이면 수집이 없었으므로 실패다. 다음 날 점검은 다른 날을 보므로 끝나지 않은 실행은 나중에 다시 판정되지 않는다(PR #131 Codex 검토). 그래서 점검은 전날 마지막 수집과 스냅숏 배포가 끝난 뒤(01:00Z 이후)에 돌린다. 그날 실행이 0회면 표에 0회로 쓰고 실패로 보지 않는다(수집이 멈추면 `collect-watch.yml`의 12시간 감시가 알린다).
   - GitHub API로 실행·job·로그를 읽지 못함.
 - 시간 제한: Cloudflare·GitHub 요청마다 30초다. 한쪽이 응답 없이 멈춰도 다른 쪽 표와 판정은 남는다(PR #131 Codex 검토).
 - 결과: run 요약(`GITHUB_STEP_SUMMARY`) 첫 줄에 통과나 실패 건수, 이어서 실패 항목, ‘사용량 측정’과 같은 사용량 표, gentle 실행 표를 쓴다. gentle 표는 실행마다 만든 시각, 결과, ‘Size the run’의 `pages=`·`reason=`, 수집 단계 시간, collect job 시간, 처리 쪽수, 쪽 상태(done·retry·failed 수), 끝난 뒤 대기·상세 완료다. H01 7단계 매일 기록과 같은 항목이다. 로그에서 숫자만 뽑고 원출처 주소와 비밀값은 쓰지 않는다. 실패 항목마다 `::error::`도 남긴다.
 - 백업: 실행기 백업은 private 실행기 레포의 실행이라 이 레포 토큰으로 읽을 수 없다. 전날 백업 실패는 실행기 레포의 매일 점검 job이 자기 토큰으로 보고 실패로 끝난다.
-- 대조 입력 `control`(점검이 실패하는지 실제 실행으로 보이는 용도): `over-85`는 계정 D1 쓰기를 한도의 85%로, `exceeded`는 `exceededResources`를 1로, `zero-pages`는 그날 첫 gentle 실행의 쪽수를 0으로 바꾼다. 실제 값을 읽은 뒤 하나만 바꾼다. `no-permission`은 Cloudflare 조회에 일부러 틀린 토큰을 보내 실제 API의 거절이 0으로 읽히지 않는지 본다. 요약 첫 줄에 대조 입력이라고 쓴다. 대조 run도 실패 메일을 보낸다.
+- 대조 입력 `control`(점검이 실패하는지 실제 실행으로 보이는 용도): `over-85`는 계정 D1 쓰기를 한도의 85%로, `exceeded`는 `exceededResources`를 1로, `zero-pages`는 그날 첫 gentle 실행의 쪽수를 0으로 바꾼다(그 실행의 `reason=`은 예산이 남아 있으므로 실패해야 한다). 실제 값을 읽은 뒤 하나만 바꾼다. `no-permission`은 Cloudflare 조회에 일부러 틀린 토큰을 보내 실제 API의 거절이 0으로 읽히지 않는지 본다. 요약 첫 줄에 대조 입력이라고 쓴다. 대조 run도 실패 메일을 보낸다.
 - Actions 사용 시간: 이 레포는 public이라 한도가 없다. 실행기 레포의 부르기 job은 하루 약 1분이다.
-- 검사: `scripts/check-daily-check.mjs`(`cloud-check.py` 기본 목록). `usage.yml` 설정, 이 점검이 읽는 `collect.yml`의 job·단계와 수집기 출력 형식, 85% 경계(한 단위 아래 통과, 85% 실패, 세 값 각각), `exceededResources`, 기록 없는 날, 권한·네트워크·토큰 없음, 로컬 GitHub API 대역(로그 주소 302 이동 포함)으로 0쪽·26분·실패·취소·`pages=` 없음·끝나지 않은 실행·다른 날과 check-access 제외, GitHub 오류, 응답 없는 요청의 시간 제한, 대조 입력 네 가지가 정상인 날을 실패시키는지 본다.
+- 검사: `scripts/check-daily-check.mjs`(`cloud-check.py` 기본 목록). `usage.yml` 설정, 이 점검이 읽는 `collect.yml`의 job·단계와 수집기 출력 형식, 85% 경계(한 단위 아래 통과, 85% 실패, 세 값 각각), `exceededResources`, 기록 없는 날, 권한·네트워크·토큰 없음, 로컬 GitHub API 대역(로그 주소 302 이동 포함)으로 0쪽(예산 남음·예산 줄 없음은 실패, 몫을 다 쓴 0쪽은 통과, 모두 0쪽인 날은 실패)·26분·실패·취소·`pages=` 없음·끝나지 않은 실행·다른 날과 check-access 제외, GitHub 오류, 응답 없는 요청의 시간 제한, 대조 입력 네 가지가 정상인 날을 실패시키는지 본다.
 
 ## 롤백
 
@@ -222,7 +222,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 주의(6단계 전환 뒤):
 
-1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈춘 뒤 revert를 병합하고 다시 켠다.
+1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(C05 뒤 약 1시간, 그 전 최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈춘 뒤 revert를 병합하고 다시 켠다.
 2. `autoDeploy`를 `false`로 바꾸면 배포만이 아니라 수집도 멈춘다. `collect.yml`(`run-collection.py`)이 `autoDeploy`가 꺼져 있으면 요청 전에 실패하기 때문이다. 앱 감시 workflow가 12시간 뒤 실패로 알린다.
 3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 실행기 `YUKEMURI_ENABLED`를 `false`로 두고, 복구 뒤 스냅숏을 다시 만든 다음 켠다.
 4. 크롤 키(`YUKEMURI_CRAWL_ACCESS_KEY`)를 바꾼 뒤 그 전 버전으로 `worker-rollback`하면, 되돌린 Worker는 바꾸기 전 키를 쓴다. 요약에는 따로 표시되지 않는다. 롤백 뒤 수집 부르기가 403으로 실패하면 이 경우다. main revert를 병합해 새 배포가 지금 키를 다시 올리게 하거나, 키를 바꾼 적이 있으면 롤백 대상 버전을 키 변경 뒤의 것으로 고른다.

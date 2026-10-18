@@ -10,7 +10,7 @@ import {pathToFileURL} from 'node:url';
 import {LIMITS,queryDay} from './cloudflare-usage.mjs';
 
 export const BUDGET=Object.freeze({
- maxPages:120,         // one run; the runner dispatches every 3 hours
+ maxPages:120,         // one run; the runner dispatches hourly (C05), so later runs of a day often get 0
  fallbackPages:16,     // usage unreadable: the run size before C03
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
  writesPerPage:151,    // 2026-10-17: up to 150.4 a page between runs (day average 129.7; 77 on 10-13).
