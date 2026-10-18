@@ -7,16 +7,18 @@ import {join} from 'node:path';
 import {BUDGET,budgetToday,pagesFor} from './collection-budget.mjs';
 
 // The measured costs (2026-10-17) and the share of each free limit.
-assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,share:0.85,writesPerPage:130,readsPerPage:3000,snapshotReads:260000});
+assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,share:0.85,writesPerPage:150,readsPerPage:3000,snapshotReads:260000});
 
 // A fresh day: the cap. Nothing recorded yet counts as zero (an authorised query with no rows).
 assert.equal(pagesFor({rowsRead:0,rowsWritten:0}).pages,120);
 assert.equal(pagesFor({rowsRead:null,rowsWritten:null}).pages,120);
-// Writes decide: 85,000 - 80,000 = 5,000 rows -> 38 pages.
-assert.equal(pagesFor({rowsRead:0,rowsWritten:80_000}).pages,38);
+// Writes decide: 85,000 - 80,000 = 5,000 rows -> 33 pages.
+assert.equal(pagesFor({rowsRead:0,rowsWritten:80_000}).pages,33);
 // 2026-10-17 23:31Z: 90 a page allowed 79 pages, which wrote 10,224 rows and ended the day at 88.1%.
-// 7,172 rows left -> 55 pages, about 7,100 rows at the measured 129.7.
-assert.equal(pagesFor({rowsRead:3_170_016,rowsWritten:77_828}).pages,55);
+// 7,172 rows left -> 47 pages, which stay within 85% even at that day's costliest run (150.4 a page).
+const lastRun=pagesFor({rowsRead:3_170_016,rowsWritten:77_828}).pages;
+assert.equal(lastRun,47);
+for(const perPage of [129.7,150.4])assert.ok(77_828+lastRun*perPage<=85_000,String(perPage));
 // Reads decide: 4,250,000 - 3,800,000 - 260,000 = 190,000 rows -> 63 pages.
 assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,63);
 // 2026-10-13 05:36Z (87,579 written): over 85% of the writes, so the run skips.
@@ -39,7 +41,7 @@ try{
  assert.equal(result.pages,120);assert.match(result.reason,/today 10000 rows written, 200000 read/);
  assert.equal(api.calls[0].date,'2026-10-14','today in UTC');
  api=answer(200,{data:{viewer:{accounts:[account(0,84_000)]}}});
- assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,7);
+ assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,6);
  api=answer(200,{data:{viewer:{accounts:[account(null,null)]}}});
  assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,120,'no rows yet today');
  // Permission errors, server errors, an account the token cannot see, no token: fallback, never a throw.

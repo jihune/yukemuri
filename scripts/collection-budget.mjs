@@ -13,7 +13,9 @@ export const BUDGET=Object.freeze({
  maxPages:120,         // one run; the runner dispatches every 3 hours
  fallbackPages:16,     // usage unreadable: the run size before C03
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
- writesPerPage:130,    // 2026-10-17: 88,052 rows for 679 pages (129.7 a page; 77 on 10-13)
+ writesPerPage:150,    // 2026-10-17: up to 150.4 a page between runs (day average 129.7; 77 on 10-13).
+                       // Each run re-reads today's usage, so a high value only shortens the run the
+                       // write share stops; a low one lets that run pass 85%.
  readsPerPage:3000,    // 2026-10-17: 2,713-2,981 a page between runs, snapshot taken out
  snapshotReads:260000  // 2026-10-17: the last snapshot build read 257,099 rows (23,032 hotels)
 });
