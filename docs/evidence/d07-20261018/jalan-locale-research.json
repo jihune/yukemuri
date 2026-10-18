@@ -1,0 +1,529 @@
+{
+ "note": "D07 research on Jalan Korean and English list pages, read 2026-10-18 without collection. Page bodies stay in the session scratch folder (third-party pages, not committed). Our names: public snapshot 2004e2cb8ddb5a06. Verdicts by hand, comparing each Korean name with our current original name.",
+ "requestsSpacing": "one at a time, 3 seconds or more apart, User-Agent YukemuriCatalogUpdater/1.0 (+https://yukemuri.jihune.workers.dev)",
+ "requests": [
+  {
+   "savedAt": "2026-10-18T06:04:16Z",
+   "url": "https://www.jalan.net/robots.txt",
+   "purpose": "robots",
+   "bytes": 1645
+  },
+  {
+   "savedAt": "2026-10-18T06:04:26Z",
+   "url": "https://www.jalan.net/en/",
+   "purpose": "English top (301 to /en/japan_hotels_ryokan/)",
+   "bytes": 253
+  },
+  {
+   "savedAt": "2026-10-18T06:04:35Z",
+   "url": "https://www.jalan.net/en/japan_hotels_ryokan/",
+   "purpose": "English top",
+   "bytes": 170188
+  },
+  {
+   "savedAt": "2026-10-18T06:04:46Z",
+   "url": "https://www.jalan.net/kr/japan_hotels_ryokan/",
+   "purpose": "Korean top",
+   "bytes": 170861
+  },
+  {
+   "savedAt": "2026-10-18T06:05:05Z",
+   "url": "https://www.jalan.net/kr/japan_hotels_ryokan/Oita/",
+   "purpose": "Korean Oita page",
+   "bytes": 96934
+  },
+  {
+   "savedAt": "2026-10-18T06:23:40Z",
+   "url": "https://www.jalan.net/sitemapxml/kaigai/abroad_sitemap.xml",
+   "purpose": "sitemap (overseas travel for Japanese users, not the foreign-language site)",
+   "bytes": 3665
+  },
+  {
+   "savedAt": "2026-10-18T06:24:00Z",
+   "url": "https://www.jalan.net/kr/japan_hotels_ryokan/Accommodation/Oita_Accommodation/Beppu_Accommodation/",
+   "purpose": "Korean Beppu list",
+   "bytes": 411416,
+   "parsed": {
+    "blocks": 30,
+    "names": 30,
+    "refused": 0,
+    "links": 2,
+    "listed": 68,
+    "reviewReason": null
+   }
+  },
+  {
+   "savedAt": "2026-10-18T06:26:09Z",
+   "url": "https://www.jalan.net/kr/japan_hotels_ryokan/Accommodation/Oita_Accommodation/",
+   "purpose": "Korean Oita list",
+   "bytes": 414856,
+   "parsed": {
+    "blocks": 30,
+    "names": 30,
+    "refused": 0,
+    "links": 6,
+    "listed": 207,
+    "reviewReason": null
+   }
+  },
+  {
+   "savedAt": "2026-10-18T06:26:17Z",
+   "url": "https://www.jalan.net/kr/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Beppu_Hotels/amane_resort_gahama/",
+   "purpose": "Korean stay page (the only stay page opened)",
+   "bytes": 174885
+  },
+  {
+   "savedAt": "2026-10-18T06:26:57Z",
+   "url": "https://www.jalan.net/en/japan_hotels_ryokan/Accommodation/Oita_Accommodation/Beppu_Accommodation/",
+   "purpose": "English Beppu list",
+   "bytes": 410321,
+   "parsed": {
+    "blocks": 30,
+    "names": 30,
+    "refused": 0,
+    "links": 2,
+    "listed": 68,
+    "reviewReason": null
+   }
+  },
+  {
+   "savedAt": "2026-10-18T06:35:16Z",
+   "url": "https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=ko_KR&kenCd=440000&dateUndecided=1&stayCount=1&roomCount=1&distCd=01&crcyCd=KRW&activeSort=1&screenId=UIW1402&scVal=05&idx=30&pageNum=2",
+   "purpose": "Korean Oita list page 2 by GET",
+   "bytes": 417389,
+   "parsed": {
+    "blocks": 30,
+    "names": 30,
+    "refused": 0,
+    "links": 5,
+    "listed": 207,
+    "reviewReason": null
+   }
+  },
+  {
+   "savedAt": "2026-10-18T06:35:35Z",
+   "url": "https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=ko_KR&kenCd=440000&stayYear=2027&stayMonth=Feb&stayDay=10&stayCount=1&roomCount=1&distCd=01&crcyCd=KRW&activeSort=1&screenId=UIW1402",
+   "purpose": "Korean Oita list for another stay date",
+   "bytes": 439471,
+   "parsed": {
+    "blocks": 30,
+    "names": 30,
+    "refused": 0,
+    "links": 6,
+    "listed": 229,
+    "reviewReason": null
+   }
+  }
+ ],
+ "koreanNameSample": {
+  "distinctStays": 96,
+  "withHangul": 67,
+  "inOurRecords": 64,
+  "oldNames": 3,
+  "oldNotRefused": 2,
+  "rows": [
+   {
+    "id": "jalan-339956",
+    "ko": "그랜드브리오 호텔 벳푸완 와쿠라",
+    "ours": "グランヴィリオホテル別府湾　和蔵　－ルートインホテルズ－",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-383733",
+    "ko": "아카리노야도 도게츠",
+    "ours": "灯りの宿　燈月",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-371030",
+    "ko": "하나벳푸",
+    "ours": "別府温泉　竹と椿のお宿　花べっぷ",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-348896",
+    "ko": "토토 노이 노야도 하루 쇼안",
+    "ours": "ととのいの宿　春燈庵",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-386776",
+    "ko": "가하마 테라스",
+    "ours": "AMANE RESORT GAHAMA（ガハマテラス）",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-329698",
+    "ko": "Hotel and Resorts 벳부완",
+    "ours": "グランドメルキュール別府湾リゾート＆スパ",
+    "verdict": "old name; Latin words disagree with the English name, refused by the rule"
+   },
+   {
+    "id": "jalan-314914",
+    "ko": "오니야마 호텔",
+    "ours": "別府最大級の露天風呂の宿　おにやまホテル",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-314361",
+    "ko": "사쿠라테이",
+    "ours": "絶景の宿　さくら亭",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-351806",
+    "ko": "이야시노야도 이로하",
+    "ours": "癒しの宿　彩葉（いろは）",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-332349",
+    "ko": "초보노 야도 시오리",
+    "ours": "眺望の宿　しおり",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-360288",
+    "ko": "신안",
+    "ours": "匠晴の宿　心庵　",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-353417",
+    "ko": "나고미노야도 무츠키",
+    "ours": "和の宿　夢月（なごみのやど　むつき）",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-331454",
+    "ko": "니혼 료칸 우츠와 벳푸 칸나와",
+    "ours": "日本旅館　器　別府鉄輪",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-328442",
+    "ko": "청자색의 온천 오카모토야 료칸",
+    "ours": "青磁色の湯　岡本屋旅館",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-384726",
+    "ko": "ISHINOYA 벳푸",
+    "ours": "ISHINOYA 別府 / 石のや 別府",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-344340",
+    "ko": "스파 호텔 츠루미(2023년 9월 그랜드 오픈)",
+    "ours": "―べっぷ温泉―スパホテルつるみ(2023年9月グランドオープン)",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-314552",
+    "ko": "니시테츠 리조트 인 벳부",
+    "ours": "西鉄リゾートイン別府",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-388093",
+    "ko": "아라타마 료칸",
+    "ours": "新玉旅館",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-399710",
+    "ko": "벳푸 후가",
+    "ours": "別府　丘と海のドッグリゾート（旧別府風雅）",
+    "verdict": "old name (ours: 旧別府風雅), Hangul only, not refused"
+   },
+   {
+    "id": "jalan-319857",
+    "ko": "유모토미요시",
+    "ours": "別府旅館　湯元美吉",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-345100",
+    "ko": "호텔 퍼블릭 21",
+    "ours": "ホテルパブリック21　夕食＆朝食が無料サービス！",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-369011",
+    "ko": "료칸 분고노사토",
+    "ours": null,
+    "verdict": "not in our records"
+   },
+   {
+    "id": "jalan-312545",
+    "ko": "라 가르 오이타",
+    "ours": "ラ・ガール大分",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-310280",
+    "ko": "게스트 하우스 로지우라",
+    "ours": "BEPPU　ROJIURA",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-390057",
+    "ko": "오이다 크레인 호텔 미야코마치점",
+    "ours": "大分クレインホテル都町店",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-370545",
+    "ko": "게스트 하우스 타네토네",
+    "ours": "ゲストハウス種と根",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-313407",
+    "ko": "호텔 에어리어원 오이타",
+    "ours": "ホテルエリアワン大分(HOTEL Areaone)",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-320404",
+    "ko": "우스키 로쿠가사코 온천 원천 타와라야 료칸 코토 시라사기칸",
+    "ours": "臼杵　鷺来ヶ迫（ろくがさこ）温泉　源泉　俵屋旅館　コト白鷺館",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-366928",
+    "ko": "HOTEL R9 The Yard 나카츠",
+    "ours": "ＨＯＴＥＬ　Ｒ９　Ｔｈｅ　Ｙａｒｄ　中津",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-368825",
+    "ko": "비즈니스 호텔 뉴 오자이",
+    "ours": "ビジネスホテル　ニューおおざい",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-332511",
+    "ko": "HOTEL R9 The Yard 우사",
+    "ours": "HOTEL R9 The Yard 宇佐",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-369135",
+    "ko": "비즈니스 호텔 파크인 사토",
+    "ours": "ホテル　アウルム日田",
+    "verdict": "old name (ours: ホテル アウルム日田), Hangul only, not refused"
+   },
+   {
+    "id": "jalan-336128",
+    "ko": "B 앤드 B 유후 텐료노사토",
+    "ours": "Ｂ＆Ｂ由布　天領の里",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-394311",
+    "ko": "트래블 인 요시토미",
+    "ours": "トラベルイン吉富",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-320850",
+    "ko": "야스라기노사토 야마쿠니",
+    "ours": "やすらぎの郷やまくに",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-321672",
+    "ko": "카메가와 마리나 게스트하우스",
+    "ours": "海風とラジオが流れる宿　亀川マリーナゲストハウス",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-302493",
+    "ko": "벳푸 유케무리노오카 유스호스텔",
+    "ours": "別府湯けむりの丘ユースホステル",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-317041",
+    "ko": "아리스톤 호텔 오이타",
+    "ours": "天然温泉　アリストンホテル大分",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-340763",
+    "ko": "게스트 하우스 쿠리하이",
+    "ours": "KURIHAI(星ふる森の宿)",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-363758",
+    "ko": "호텔 FORZA 오이타【리치먼드 호텔스】",
+    "ours": "FORZA　ホテルフォルツァ大分",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-388052",
+    "ko": "호텔 루트인 나카쓰 에키마에",
+    "ours": "ホテルルートイン中津駅前",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-327972",
+    "ko": "키샤 폿포",
+    "ours": "汽車ポッポ食堂と民宿・別邸",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-373374",
+    "ko": "호텔 마스노이",
+    "ours": "ホテル　ますの井",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-305712",
+    "ko": "호텔 크라운 힐스 오이타 (BBH 호텔 그룹)",
+    "ours": "天然温泉都の湯ホテルクラウンヒルズ大分（BBHホテルグループ）",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-389174",
+    "ko": "호텔 휴식",
+    "ours": "民宿いこい",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-349324",
+    "ko": "비지니스 호텔 세이후소",
+    "ours": "ビジネスホテル清風荘",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-357005",
+    "ko": "호텔 뉴 우스키",
+    "ours": "ホテルニューうすき",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-308052",
+    "ko": "호텔 베이 그랜드 쿠니사키 (이코이노무라 쿠니사키)",
+    "ours": "ホテルベイグランド国東",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-306940",
+    "ko": "우리 하우스",
+    "ours": "ウリハウス",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-303157",
+    "ko": "프라임룸 벳푸 아사미",
+    "ours": "ＰｒｉｍｅＲｏｏｍ別府　朝見",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-338696",
+    "ko": "호텔 메사 뷰트",
+    "ours": null,
+    "verdict": "not in our records"
+   },
+   {
+    "id": "jalan-332851",
+    "ko": "사이키 센트럴 호텔",
+    "ours": "佐伯セントラルホテル",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-361531",
+    "ko": "프라임룸 벳푸 GRANMAJESTA",
+    "ours": null,
+    "verdict": "not in our records"
+   },
+   {
+    "id": "jalan-344930",
+    "ko": "호텔 루트인 사이키 에키마에",
+    "ours": "ホテルルートイン佐伯駅前",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-325350",
+    "ko": "마쓰키 빌딩 시사이드 맨션",
+    "ours": "松亀ビル‐シーサイドマンション",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-398658",
+    "ko": "다이코쿠야",
+    "ours": "大黒屋",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-318153",
+    "ko": "래스터 글라스",
+    "ours": "湯布院　小さな貸し別荘　ラスタグラス",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-391138",
+    "ko": "호텔 루트 인 히타 에키마에",
+    "ours": "ホテルルートイン日田駅前",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-399746",
+    "ko": "캄 하우스 벳푸 모토마치",
+    "ours": "カームハウス別府元町",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-328196",
+    "ko": "오이타 센츄리 호텔",
+    "ours": "大分センチュリーホテル",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-346687",
+    "ko": "프라임룸 벳푸 하마와키 온센마에",
+    "ours": "ＰｒｉｍｅＲｏｏｍ別府　浜脇温泉前",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-323314",
+    "ko": "벳푸 스테이션 호텔 서관 호텔 스타",
+    "ours": "別府ステーションホテル西館　ホテルスター",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-343156",
+    "ko": "캡슐 호스텔 벳푸 타워",
+    "ours": "カプセルホステル別府タワー",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-339571",
+    "ko": "롯지 토라노유(Lodge TORANOYU)",
+    "ours": "ロッジ虎の湯（旧：トライアル温泉郷虎乃湯）",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-371560",
+    "ko": "게스트하우스 선라인 벳푸",
+    "ours": "ゲストハウスサンライン別府",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-364624",
+    "ko": "스마일 호텔 오이타 히타",
+    "ours": "スマイルホテル大分日田",
+    "verdict": "current"
+   },
+   {
+    "id": "jalan-353026",
+    "ko": "아마넥인 벳푸",
+    "ours": "アマネクイン別府",
+    "verdict": "current"
+   }
+  ]
+ }
+}

@@ -32,6 +32,10 @@ try{
  const curated=JSON.parse(readFileSync('lib/hotels.verified.json','utf8'))[0].id;
  assert.equal((await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.names.en','Stored English name') WHERE id=?").bind(curated).run()).meta.changes,1);
  await db.prepare('DELETE FROM hotel_lifecycle WHERE hotel_id=?').bind(curated).run();
+ // A Trip.com hotel named in kana with its Latin name, whose item has only an English label: the
+ // English name becomes the title, and the name column follows it (Codex P2 on PR #145).
+ const mixed='成田東武ホテルエアポート(Narita Tobu Hotel Airport)';
+ assert.equal((await db.prepare("UPDATE hotels SET name=?,payload=json_set(payload,'$.names',json(?)) WHERE id='trip-703896'").bind(mixed,JSON.stringify({ko:mixed,ja:mixed,en:mixed})).run()).meta.changes,1);
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.location.latitude','35.1') WHERE id=(SELECT id FROM hotels WHERE json_type(payload,'$.location.latitude')='real' ORDER BY id LIMIT 1)").run();
 
  // U06 data status: places and pages in every state the screen tells apart. A Jalan detail read
@@ -81,8 +85,21 @@ try{
  // coordinates and the lifecycle state.
  const rows=(await db.prepare(`SELECT h.id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,bath_features,bath_known,search_text,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.longitude') END AS lng,l.state FROM hotels h LEFT JOIN hotel_lifecycle l ON l.hotel_id=h.id ORDER BY h.id`).all()).results;
  assert.equal(manifest.hotels,rows.length);assert.equal(core.ids.length,rows.length);
+ // Wikidata names (D07): which hotels get them is the rule's (scripts/check-wikidata-names.mjs);
+ // here, that they take the name column, join the name search and match the Worker's hotels.
+ const {withWikidataNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'wikidata-')),'lib/wikidata-names.ts')),added=new Map();
+ const items=new Map(JSON.parse(readFileSync('data/wikidata-trip-names.json','utf8')).hotels.map(([trip,item])=>['trip-'+trip,item]));
+ for(const r of (await db.prepare("SELECT id,json_extract(payload,'$.names') AS names FROM hotels").all()).results){
+  const names=JSON.parse(r.names),w=withWikidataNames({id:r.id,names,aliases:[],sources:[]}).names,item=items.get(r.id);
+  const ko=w.ko!==names.ko?w.ko:null,en=w.en!==names.en?w.en:null;
+  if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean),shown:w,was:{...(ko?{ko:names.ko}:{}),...(en?{en:names.en}:{})}});
+ }
+ assert([...added.values()].some(a=>a.ko),'the seed reaches a Trip.com hotel that gets a Wikidata Korean name');
+ assert.deepEqual([added.get('trip-703896')?.ko,added.get('trip-703896')?.en],[null,'Narita Tobu Hotel Airport'],'and one that gets an English name only');
+ const {normalizeSearch,displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
  const columns={region:'region',prefecture:'prefecture',name:'name',kind:'kind',tripScore:'trip_score',tripReviews:'trip_reviews',jalanScore:'jalan_score',jalanReviews:'jalan_reviews',natural:'natural',features:'bath_features',known:'bath_known',lat:'lat',lng:'lng',state:'state'};
- rows.forEach((row,i)=>{assert.equal(core.ids[i],row.id);for(const [k,c] of Object.entries(columns))assert.equal(core[k][i],row[c],row.id+' '+k)});
+ assert.equal(core.name[core.ids.indexOf('trip-703896')],'Narita Tobu Hotel Airport','the name column is the English title');
+ rows.forEach((row,i)=>{assert.equal(core.ids[i],row.id);for(const [k,c] of Object.entries(columns))assert.equal(core[k][i],k==='name'&&added.has(row.id)?displayNames(added.get(row.id).shown).title:row[c],row.id+' '+k)});
  assert(core.lat.some(v=>v!==null)&&core.lat.filter(v=>v!==null).length<rows.length-1,'some, not all, coordinates');
  const states=new Set(core.state);for(const s of ['closed','temporarily_closed','operating','unverified',null])assert(states.has(s),'state '+s);
 
@@ -90,12 +107,12 @@ try{
  // it until P03 (lib/hotel-repository.ts catalogueSearchIndex): hotels not
  // closed, in id order, names from the stored payload then the aliases.
  const names=(await db.prepare('SELECT hotel_id,name_key FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
- rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text);assert.deepEqual(text.nameKeys[i],names.filter(n=>n.hotel_id===row.id).map(n=>n.name_key))});
+ rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text+(added.get(row.id)?.names??[]).map(normalizeSearch).join(''));assert.deepEqual(text.nameKeys[i],names.filter(n=>n.hotel_id===row.id).map(n=>n.name_key))});
  const places=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'places-')),'lib/japan-place-labels.ts'));
  const aliasRows=(await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
  const index=(await db.prepare("SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id").all()).results.map(r=>{
   const n=JSON.parse(r.names),place={prefecture:r.prefecture,regionId:r.region,location:JSON.parse(r.location),names:n};
-  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...aliasRows.filter(a=>a.hotel_id===r.id).map(a=>a.name)].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
+  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...aliasRows.filter(a=>a.hotel_id===r.id).map(a=>a.name),...(added.get(r.id)?.names??[])].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
  });
  const open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
  assert.deepEqual(open.map(i=>core.ids[i]),index.map(h=>h.id),'index rows: every hotel not closed, in id order');
@@ -112,8 +129,18 @@ try{
  assert.equal(cards.length,rows.length);const workerHotels=new Map();
  for(let i=0;i<core.ids.length;i+=4){
   const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));
-  hotels.forEach((h,n)=>{assert.deepEqual(cards[i+n],summary(h),h.id);workerHotels.set(h.id,h)});
+  // A card the rule named also notes the item and the names the added ones replaced.
+  hotels.forEach((h,n)=>{const a=added.get(h.id);assert.deepEqual(cards[i+n],a?{...summary(h),wikidataNames:{item:a.item,was:a.was}}:summary(h),h.id);workerHotels.set(h.id,h)});
  }
+ // The Worker's hotels carry the same Wikidata names, with the item among the sources; the
+ // detail API too.
+ for(const [id,a] of added){
+  const h=workerHotels.get(id),url='https://www.wikidata.org/wiki/'+a.item,source=h.sources.find(s=>s.sourceId==='wikidata-name:'+id);
+  if(a.ko)assert.equal(h.names.ko,a.ko,id);if(a.en)assert.equal(h.names.en,a.en,id);
+  assert.deepEqual([source?.url,source?.nameLocaleUrl,source?.verifiedAt],[url,a.ko?url:undefined,null],id+' Wikidata source');
+ }
+ {const [id,a]=[...added].find(([,a])=>a.ko);assert.equal((await api('/api/hotels/'+id)).names.ko,a.ko,'the detail API shows the Wikidata Korean name')}
+ for(const h of workerHotels.values())if(!added.has(h.id))assert(!h.sources.some(s=>s.sourceId.startsWith('wikidata-name:')),h.id+' has no Wikidata name');
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
 
  // Map positions (D06): geo.json in core order; payload coordinates are grade 1
@@ -255,7 +282,6 @@ try{
  assert.deepEqual(first.hotels,expectedOrder.map(id=>cards[core.ids.indexOf(id)]));assert.deepEqual(first.coverage,manifest.coverage);
  const pageOf=()=>readFileSync(join(local,'index.html'),'utf8'),titles=html=>[...html.matchAll(/class="card-title"[^>]*><h3[^>]*>([^<]*)<\/h3>/g)].map(m=>m[1].replaceAll('&amp;','&').replaceAll('&#x27;',"'").replaceAll('&quot;','"'));
  // A card is named in Korean, else English, else the original (U07, lib/hotel-names.ts).
- const {displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
  const html=pageOf();
  assert(html.includes(`data-first-page="${manifest.id}"`),'static page marks its snapshot');
  assert.deepEqual(titles(html),first.hotels.map(h=>displayNames(h.names).title),'static page renders the first page cards in order');

@@ -1,0 +1,202 @@
+{
+ "source": "GET https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=100",
+ "fetched_at": "2026-10-18T11:27Z",
+ "workflow_runs": [
+  {
+   "id": 39099802372,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-18T05:13:15Z",
+   "updated_at": "2026-10-18T05:36:14Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 39079360613,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-17T23:31:30Z",
+   "updated_at": "2026-10-17T23:53:46Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 39069354506,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-17T21:03:59Z",
+   "updated_at": "2026-10-17T21:33:07Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 39047462074,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-17T15:59:43Z",
+   "updated_at": "2026-10-17T16:28:03Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 39027866523,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-17T11:13:20Z",
+   "updated_at": "2026-10-17T11:41:25Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 39004972354,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-17T05:05:17Z",
+   "updated_at": "2026-10-17T05:30:01Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38984219371,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-16T23:59:22Z",
+   "updated_at": "2026-10-17T00:25:57Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38971706090,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-16T21:47:22Z",
+   "updated_at": "2026-10-16T22:13:28Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38936406112,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-16T17:00:56Z",
+   "updated_at": "2026-10-16T17:25:39Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38897174076,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-16T11:57:01Z",
+   "updated_at": "2026-10-16T12:24:33Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38854440335,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-16T05:10:59Z",
+   "updated_at": "2026-10-16T05:34:07Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38826891617,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-15T23:59:58Z",
+   "updated_at": "2026-10-16T00:25:37Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38812937043,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-15T21:51:00Z",
+   "updated_at": "2026-10-15T22:18:50Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38777113540,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-15T17:24:47Z",
+   "updated_at": "2026-10-15T17:52:44Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38732762398,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-15T12:11:23Z",
+   "updated_at": "2026-10-15T12:36:19Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38686271595,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-15T05:20:38Z",
+   "updated_at": "2026-10-15T05:46:19Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38644241858,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-14T21:58:01Z",
+   "updated_at": "2026-10-14T22:21:07Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38608396863,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-14T17:38:42Z",
+   "updated_at": "2026-10-14T18:03:14Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38564285928,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-14T12:30:14Z",
+   "updated_at": "2026-10-14T12:55:19Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38517080565,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-14T05:31:17Z",
+   "updated_at": "2026-10-14T05:53:25Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38491444609,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-14T00:39:54Z",
+   "updated_at": "2026-10-14T01:04:08Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38456038713,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T19:35:26Z",
+   "updated_at": "2026-10-13T19:35:39Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38388639688,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T11:12:39Z",
+   "updated_at": "2026-10-13T11:12:56Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38353387724,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T05:49:32Z",
+   "updated_at": "2026-10-13T05:57:16Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38351668272,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T05:29:45Z",
+   "updated_at": "2026-10-13T05:36:09Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38350770981,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T05:19:06Z",
+   "updated_at": "2026-10-13T05:24:24Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38349917943,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T05:08:51Z",
+   "updated_at": "2026-10-13T05:16:12Z",
+   "conclusion": "success"
+  },
+  {
+   "id": 38334680230,
+   "event": "workflow_dispatch",
+   "created_at": "2026-10-13T01:58:39Z",
+   "updated_at": "2026-10-13T02:03:21Z",
+   "conclusion": "failure"
+  }
+ ]
+}
