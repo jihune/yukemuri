@@ -87,7 +87,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
      props.current.onView?.(view);
     }
     const spots=result?[]:props.current.spots;
-    const groups=map.getZoom()<16?spotGroups(spots,h=>{const p=map.latLngToLayerPoint([h.lat,h.lng]);return [p.x,p.y]},52):spots.map(h=>[h]);
+    const groups=map.getZoom()<16?spotGroups(spots,h=>{const p=map.latLngToLayerPoint([h.lat,h.lng]);return [p.x,p.y]},52,44):spots.map(h=>[h]);
     for(const hs of groups){
      const first=hs[0],{lat,lng}=first;
      const active=hs.some(h=>h.id===props.current.activeId);

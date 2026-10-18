@@ -133,14 +133,16 @@ export function nearestMean<T extends {lat:number;lng:number}>(list:T[]):T{
  return list[best];
 }
 
-// The area search's spots as markers (components/stay-map.tsx), in screen pixels: a spot within
-// one marker's width of a group's first spot joins it, else starts a group. Its marker sits on
-// that first spot: first spots are at least a marker's width apart, so no marker comes nearer
-// another, and each points at a stay. (#151: on the member nearest the mean, spots at 0, 40, 51 and
-// 84px put two 52px markers 44px apart; merging such groups again chained them across the map.)
-export function spotGroups<T>(items:T[],at:(item:T)=>[number,number],width:number):T[][]{
+// The area search's spots as markers (components/stay-map.tsx), in screen pixels: a spot whose
+// marker would overlap the marker on a group's first spot joins that group, else starts one. Its
+// marker sits on that first spot, so no two markers overlap and each points at a stay. Markers
+// of one size and anchor overlap when both the gaps across and down are under that size.
+// (#151: on the member nearest the mean, spots at 0, 40, 51 and 84px put two 52px markers 44px
+// apart; merging such groups again chained them across the map; a distance under 52px missed
+// markers 40px across and 40px down.)
+export function spotGroups<T>(items:T[],at:(item:T)=>[number,number],width:number,height:number):T[][]{
  const groups:{items:T[];x:number;y:number}[]=[];
- for(const item of items){const [x,y]=at(item),near=groups.find(g=>Math.hypot(g.x-x,g.y-y)<width);if(near)near.items.push(item);else groups.push({items:[item],x,y})}
+ for(const item of items){const [x,y]=at(item),near=groups.find(g=>Math.abs(g.x-x)<width&&Math.abs(g.y-y)<height);if(near)near.items.push(item);else groups.push({items:[item],x,y})}
  return groups.map(g=>g.items);
 }
 

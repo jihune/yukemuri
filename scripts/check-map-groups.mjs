@@ -119,18 +119,21 @@ try{
  assert.equal(nearestMean(cross),cross[2],'nearestMean measures on the screen (Web Mercator)');
  const inDegrees=list=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
  assert.notEqual(inDegrees(cross),cross[2],'a pick in degrees is caught');
- // spotGroups, the area search's markers (52px wide): every spot in one group, each marker on its
- // group's first spot, and no two markers closer than 52px. Spots at 0, 40, 51 and 84px on a line:
- // with the marker moved to the member nearest the group's mean (as in 5fdaaa3), the markers at
- // 40 and 84px are 44px apart, and that placement is caught.
+ // spotGroups, the area search's markers (52 x 44px, one anchor): every spot in one group, each
+ // marker on its group's first spot, and no two marker boxes overlapping. Spots at 0, 40, 51 and
+ // 84px on a line: with the marker moved to the member nearest the mean (as in 5fdaaa3), the
+ // markers at 40 and 84px overlap. Spots at (0,0), (-40,0) and (40,40): grouped by a distance
+ // under 52px (as in 394b271), the markers at (0,0) and (40,40) overlap. Both are caught.
  const px=t=>[t.x,t.y],first=g=>g[0],nearMean=g=>{const mx=g.reduce((a,t)=>a+t.x,0)/g.length,my=g.reduce((a,t)=>a+t.y,0)/g.length;return g.reduce((b,t)=>(t.x-mx)**2+(t.y-my)**2<(b.x-mx)**2+(b.y-my)**2?t:b)};
- const apart=(gs,mark)=>gs.every((g,a)=>gs.every((h,b)=>b<=a||Math.hypot(mark(g).x-mark(h).x,mark(g).y-mark(h).y)>=52));
+ const apart=(gs,mark)=>gs.every((g,a)=>gs.every((h,b)=>b<=a||Math.abs(mark(g).x-mark(h).x)>=52||Math.abs(mark(g).y-mark(h).y)>=44));
  const once=(gs,set)=>gs.flat().length===set.length&&new Set(gs.flat()).size===set.length;
- const line=[0,40,51,84].map(x=>({x,y:0}));
- assert.ok(apart(spotGroups(line,px,52),first)&&once(spotGroups(line,px,52),line),'spot markers 0, 40, 51, 84px do not overlap');
- assert.ok(!apart(spotGroups(line,px,52),nearMean),'markers moved to the member nearest the mean are caught');
+ const line=[0,40,51,84].map(x=>({x,y:0})),diagonal=[{x:0,y:0},{x:-40,y:0},{x:40,y:40}];
+ for(const set of [line,diagonal])assert.ok(apart(spotGroups(set,px,52,44),first)&&once(spotGroups(set,px,52,44),set),'spot markers do not overlap '+JSON.stringify(set));
+ assert.ok(!apart(spotGroups(line,px,52,44),nearMean),'markers moved to the member nearest the mean are caught');
+ const byDistance=set=>{const gs=[];for(const t of set){const g=gs.find(g=>Math.hypot(g[0].x-t.x,g[0].y-t.y)<52);if(g)g.push(t);else gs.push([t])}return gs};
+ assert.ok(!apart(byDistance(diagonal),first),'grouping by a distance under 52px is caught');
  let spotSets=0;
- for(let t=0;t<200;t++){const set=Array.from({length:30},()=>({x:rnd()*400,y:rnd()*300})),gs=spotGroups(set,px,52);assert.ok(apart(gs,first)&&once(gs,set),'random spots '+t);spotSets++}
+ for(let t=0;t<200;t++){const set=Array.from({length:30},()=>({x:rnd()*400,y:rnd()*300})),gs=spotGroups(set,px,52,44);assert.ok(apart(gs,first)&&once(gs,set),'random spots '+t);spotSets++}
  // The grid alone (no merging of neighbouring cells) puts icons on top of each other.
  const gridOnly=v=>{const scale=256*2**v.zoom/GROUP_CELL_PX,cells=new Map();for(let k=0;k<p.rows.length;k++){if(!inside(v,p.lat[k],p.lng[k]))continue;const key=Math.floor(p.x[k]*scale)+':'+Math.floor(p.y[k]*scale);(cells.get(key)??cells.set(key,[]).get(key)).push(k)}return[...cells.values()].map(ks=>({lat:ks.reduce((n,k)=>n+p.lat[k],0)/ks.length,lng:ks.reduce((n,k)=>n+p.lng[k],0)/ks.length}))};
  const overlapping=views.filter(v=>overlaps(v,gridOnly(v))>0).length;
