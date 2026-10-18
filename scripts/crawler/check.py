@@ -3,7 +3,7 @@
 import tempfile
 import re
 from pathlib import Path
-from collect import json_hotels, normalize, discover, open_db, enqueue, process, canonical, outside_japan, image_url, localized_names, parse_source_page, parse_locale_names, locale_list_url
+from collect import json_hotels, normalize, discover, open_db, enqueue, process, canonical, outside_japan, image_url, localized_names, parse_source_page, parse_locale_names, locale_list_url, LOCALE_STAY
 
 fixtures=Path(__file__).parent/'fixtures'
 raw=(fixtures/'jalan-list.html').read_text()
@@ -221,6 +221,16 @@ for lang,expected in [('ko',['SUGINOI HOTEL','Hotel BOKAI','그랜드브리오 �
  for photo in ['Y300000/Y300000BV4','Y300000/Y344350BV4','Y344350/Y300000BV4']:
   other=page.replace('Y344350/Y344350BV4',photo,1)
   assert [n['id'] for n in parse_locale_names(other,url)[0]]==['jalan-328944','jalan-339956','jalan-399732'],photo
+ # A name link the Worker contract would refuse (lib/crawl-contract.ts localeName) leaves its block out.
+ site='kr' if lang=='ko' else 'en'
+ link=f'<h3 class="cassette-hotel-name"><a href="/{site}/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Beppu_Hotels/suginoi_hotel/'
+ assert page.count(link)==1
+ for path in [f'/{site}/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Kannawa.Myoban_Hotels/suginoi_hotel/',f'/{site}/japan_hotels_ryokan/Hotels/Oita_Hotels/suginoi_hotel/',f'/{"en" if lang=="ko" else "kr"}/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Beppu_Hotels/suginoi_hotel/']:
+  other=page.replace(link,'<h3 class="cassette-hotel-name"><a href="'+path)
+  assert [n['id'] for n in parse_locale_names(other,url)[0]]==['jalan-328944','jalan-339956','jalan-399732'],path
+ # A slug with an escaped quote keeps its whole path, unescaped before the query is cut, then percent-encoded.
+ quoted=parse_locale_names(page.replace(link+'?',link.replace('suginoi_hotel/','suginoi_(&#034;hotel&#034;)/')+'?'),url)[0]
+ assert quoted[0]['url'].endswith('/Beppu_Hotels/Beppu_Hotels/suginoi_%28%22hotel%22%29/') and len(quoted)==4,quoted[0]['url']
  unbooked=page.replace("openPlanSyosai('328944'","openPlan('328944'")
  assert parse_locale_names(unbooked,url)[2]['refused']==1
  # Every block refused, a stay listed twice, more than 30 blocks, or no list at all: the page is reviewed.
@@ -228,9 +238,14 @@ for lang,expected in [('ko',['SUGINOI HOTEL','Hotel BOKAI','그랜드브리오 �
  head,first,rest=page.partition('jsc-cassette-container')
  block=first+rest.split('jsc-cassette-container')[0]
  assert parse_locale_names(head+block+'jsc-cassette-container'+rest,url)[2]['reviewReason']=='locale_list_requires_review'
- assert parse_locale_names(head+(block)*31,url)[2]['reviewReason']=='locale_list_requires_review'
+ # 31 different stays: the 30-block limit alone (31 copies of one block would be a duplicate).
+ assert parse_locale_names(head+''.join(block.replace('344350',str(344350+i)) for i in range(31)),url)[2]['reviewReason']=='locale_list_requires_review'
+ assert parse_locale_names(head+''.join(block.replace('344350',str(344350+i)) for i in range(30)),url)[2]=={'blocks':30,'names':30,'refused':0,'links':0,'listed':68,'reviewReason':None}
  assert parse_locale_names('<html><body>maintenance</body></html>',url)[2]['reviewReason']=='empty_listing'
  assert parse_locale_names(page.split('jsc-cassette-container')[0],url)[2]['reviewReason'] is None
+# The parser's stay URL rule is the Worker contract's (lib/crawl-contract.ts localeName).
+contract=re.search(r'url:z\.string\(\)\.max\(600\)\.regex\(/\^(.*?)\$/\)', (Path(__file__).resolve().parents[2]/'lib/crawl-contract.ts').read_text(encoding='utf-8'))
+assert contract and contract[1].replace('\\/','/')==LOCALE_STAY.pattern,contract and contract[1]
 # Only the exact parameter order is a queue page: no extra parameter, date or mismatched currency.
 for bad in [locale_list_url('ko',44,1)+'&stayYear=2026',locale_list_url('ko',44,1).replace('KRW','USD'),locale_list_url('ko',48,1),locale_list_url('ko',44,2).replace('pageNum=2','pageNum=3')]:
  assert canonical(bad,bad)!=bad,bad
