@@ -101,6 +101,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
+| `session_01BnFaUt2qwCtQpfSZSjJRrb` | PR #154 이어 가는 Claude 검토 1회째(4번째 검토, 커밋 `a211968`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -134,6 +135,7 @@
   - P2: `parse_locale_names`가 숙소 주소를 퍼센트 인코딩만 하고 Worker 계약(`localeName.url`, 3–5단 영숫자·쪽 언어 경로)과 같은 형식인지 보지 않는다. 형식이 다른 칸 하나면 그 쪽 PUT 전체가 400이고, `update-site.py`가 HTTPError를 잡지 않아 수집 실행이 멈춘다(스냅숏 작업도 건너뜀). 작업 행이 그대로라 다음 실행도 같은 쪽에서 멈춘다. fixture 경로 하나만 바꿔 재현했고 대조군은 200이었다. 실제 Jalan에서 나오는 빈도는 미확인이다.
   - P3-1: `check.py`의 31칸 단언이 중복 조건에 가려 30칸 상한을 판정하지 않는다(상한을 지운 사본도 통과). P3-2: 옛 한국어 이름 거름이 일반어 목록에 기대어 ‘Hotel and Resort 벳부완’은 통과한다. P3-3: `localnames` 작업 받기가 끝난 이름 쪽을 모두 훑는다(쪽이 96·260·356·780개일 때 101·265·361·785행). 이 읽기가 PR의 읽기 근거에 빠져 있다.
   - 이 회차로 Codex 몫 세 번을 다 썼다. P2가 남아 다음은 이어 가는 Claude 검토 1회째(4번째 검토)다. D07에 P2를 고치게 했고, 이 회차는 마지막 검토가 아니어서 P3도 이 PR에서 고쳐도 된다고 알렸다.
+- 10-18T10:40Z D07이 `a211968`에서 P2(파서가 Worker 계약에 맞지 않는 칸을 PUT 전에 뺌, 엔티티로 적힌 따옴표를 자르기 전에 풂, 파서와 계약의 정규식이 같은지 단언)와 P3-1(31칸 단언)을 고쳤고, P3-2·P3-3은 문서와 PR 본문에 적었다(claim 읽기 쪽당 약 60행, `readsPerPage` 3,000 안). 상위 세션이 `a211968`의 `checks`·GitGuardian 성공(10:34:57Z)과 main `939c444`와 합친 트리에 충돌 없음을 확인하고, 이어 가는 Claude 검토 1회째(4번째 검토) 세션 `session_01BnFaUt2qwCtQpfSZSjJRrb`를 열었다(10:40:13Z).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
