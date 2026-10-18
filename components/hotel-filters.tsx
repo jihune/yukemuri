@@ -1,17 +1,63 @@
 'use client';
-import {useId,useState,type ReactNode} from 'react';
+import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import {ChevronRight,ShieldCheck} from 'lucide-react';
 import {DEFAULT_FILTERS,FEATURE_LABELS,isVerifiedCriteria,type FeatureKey,type HotelFilters} from '@/lib/hotel-types';
 import type {SearchResponse} from '@/lib/static-search';
 import Picker from './picker';
+import {Tooltip,TooltipContent,TooltipProvider,TooltipTrigger} from '@/components/ui/tooltip';
 
 // U05 filter (PR 4, two-step panel after the user's choice C on 2026-10-15): the same panel on a
 // wide screen and in the phone's bottom sheet. First ‘내 기준’ and the six bath conditions as a
 // 2-column grid of pressed buttons, in the cards' order; then the remaining conditions in groups
 // that start closed. Every row and button is 44px and up, its count beside it; a group's
 // explanation is behind its ‘?’.
-function Toggle({label,detail,count,on,onChange}:{label:string;detail?:string;count?:number;on:boolean;onChange:(on:boolean)=>void}){
- return <button type="button" role="switch" aria-checked={on} className={'filter-toggle'+(on?' is-on':'')} onClick={()=>onChange(!on)}><span className="filter-toggle-label">{label}{detail&&<small>{detail}</small>}</span>{count!==undefined&&<small>{count.toLocaleString()}</small>}<span className="filter-switch" aria-hidden="true"/></button>;
+// U07: every option has a short help in the words of the cards and lib/collection-status.ts, read
+// with the option (aria-describedby, the text under it). A mouse or a keyboard focus shows it as a
+// tooltip right of the panel, where it covers no other option; Escape hides it. A touch screen
+// has a ‘?’ in the option instead, which opens the same text under the option, across the whole
+// list (its containing block is .filter-quick or the group), until a press elsewhere.
+// 전망 욕탕 (viewBath) is shown in the detail only, never filtered.
+type FilterKey=Exclude<FeatureKey,'viewBath'>;
+type HelpKey=FilterKey|'verified'|'ryokan';
+const OPTION_HELP:Record<HelpKey,string>={
+ verified:'Trip.com 평점 9.0점 이상, 리뷰 50개 이상인 숙소입니다.',
+ natural:'자란넷 온천 항목에 천연 온천으로 적힌 숙소입니다. 대욕탕만 확인된 숙소는 넣지 않습니다.',
+ outdoor:'자란넷에서 노천탕이 확인된 숙소입니다. 공용 노천탕과 객실 노천탕을 모두 셉니다.',
+ privateBath:'빌려 쓰는 전세탕이나 가족탕이 확인된 숙소입니다.',
+ roomOnsen:'온천탕이 딸린 객실 타입이 확인된 숙소입니다. 그 객실 타입을 예약해야 쓸 수 있습니다.',
+ freeFlow:'원천을 흘려보내는 방식으로 안내된 욕탕이 있는 숙소입니다. 가수·가온 없음과는 별개입니다.',
+ nigori:'출처에 탁한 색의 온천수가 적힌 숙소입니다. 계절과 욕탕에 따라 색이 달라질 수 있습니다.',
+ largeBath:'자란넷 안내에 대욕장이 있고 시설표에서 공용 내탕이 확인된 숙소입니다.',
+ communalOutdoor:'전세가 아닌 공용 노천탕이 확인된 숙소입니다.',
+ privateOutdoor:'노천인 전세탕이나 가족탕이 확인된 숙소입니다.',
+ roomIndoorOnsen:'실내 온천탕이 딸린 객실 타입이 확인된 숙소입니다. 그 객실 타입을 예약해야 쓸 수 있습니다.',
+ roomOutdoor:'노천탕이 딸린 객실 타입이 확인된 숙소입니다. 온천수인지는 따로 확인합니다.',
+ roomOutdoorOnsen:'온천수 노천탕이 딸린 객실 타입이 확인된 숙소입니다. 그 객실 타입을 예약해야 쓸 수 있습니다.',
+ jalanHighClass:'자란넷 숙소 페이지의 제목 옆에 하이클래스 표시가 있는 숙소입니다.',
+ ryokan:'숙소 이름에 료칸(일본어나 영어 표기)이 들어간 곳입니다.',
+};
+type Tip={open:string|null;setOpen:(key:string|null)=>void};
+function Option({tip,name,label,children}:{tip:Tip;name:HelpKey;label:string;children:(describedBy:string)=>ReactNode}){
+ const id=useId(),box=useRef<HTMLDivElement>(null),open=tip.open===name,{setOpen}=tip,[offset,setOffset]=useState(10);
+ useEffect(()=>{
+  if(!open)return;
+  const away=(e:PointerEvent)=>{if(!box.current?.contains(e.target as Node))setOpen(null)};
+  document.addEventListener('pointerdown',away);return()=>document.removeEventListener('pointerdown',away);
+ },[open,setOpen]);
+ return <div ref={box} className={'filter-option'+(open?' is-open':'')}>
+  <div className="filter-option-row"><Tooltip onOpenChange={on=>{
+   // Past the panel's right edge, so the tooltip never covers the option beside this one.
+   const panel=box.current?.closest('.filter-content')?.getBoundingClientRect(),own=box.current?.getBoundingClientRect();
+   if(on&&panel&&own)setOffset(Math.max(10,panel.right-own.right+10));
+  }}><TooltipTrigger asChild>{children(id)}</TooltipTrigger><TooltipContent side="right" align="start" sideOffset={offset} collisionPadding={8} className="option-tip-float">{OPTION_HELP[name]}</TooltipContent></Tooltip>
+   <button type="button" className="option-help" aria-label={label+' 도움말'} aria-expanded={open} aria-controls={id} onClick={()=>setOpen(open?null:name)}>?</button></div>
+  <p className="option-tip" id={id} hidden={!open}>{OPTION_HELP[name]}</p>
+ </div>;
+}
+// The check mark has its own place from the start (U07), so pressing never moves the label.
+const Check=()=><i className="filter-check" aria-hidden="true"/>;
+function Toggle({tip,name,label,detail,count,on,onChange}:{tip:Tip;name:HelpKey;label:string;detail?:string;count?:number;on:boolean;onChange:(on:boolean)=>void}){
+ return <Option tip={tip} name={name} label={label}>{id=><button type="button" role="switch" aria-checked={on} aria-describedby={id} className={'filter-toggle'+(on?' is-on':'')} onClick={()=>{tip.setOpen(null);onChange(!on)}}><span className="filter-toggle-label">{label}{detail&&<small>{detail}</small>}</span>{count!==undefined&&<small>{count.toLocaleString()}</small>}<span className="filter-switch" aria-hidden="true"/></button>}</Option>;
 }
 function Group({title,help,active,children}:{title:string;help?:string;active:number;children:ReactNode}){
  const [open,setOpen]=useState(false),[shown,setShown]=useState(false),id=useId();
@@ -24,34 +70,34 @@ function Group({title,help,active,children}:{title:string;help?:string;active:nu
 // The six bath conditions of the cards (lib/bath-columns.ts) as filter keys, in the cards' order.
 // The room one filters ‘객실 온천’ (roomOnsen): the card's 객실탕 column also counts an open-air
 // room bath that is not onsen water, which no single filter key says.
-const CORE:{key:FeatureKey;label:string}[]=[{key:'natural',label:'천연온천'},{key:'outdoor',label:'노천탕'},{key:'privateBath',label:'전세탕'},{key:'roomOnsen',label:'객실 온천'},{key:'freeFlow',label:'카케나가시'},{key:'nigori',label:'니고리유'}];
+const CORE:{key:FilterKey;label:string}[]=[{key:'natural',label:'천연온천'},{key:'outdoor',label:'노천탕'},{key:'privateBath',label:'전세탕'},{key:'roomOnsen',label:'객실 온천'},{key:'freeFlow',label:'카케나가시'},{key:'nigori',label:'니고리유'}];
 // The rest, folded by group: the sub-conditions of the shared, private and room baths.
-const MORE:{label:string;help:string;keys:FeatureKey[]}[]=[
+const MORE:{label:string;help:string;keys:FilterKey[]}[]=[
  {label:'공용·전세 목욕 시설 세부',help:'확인된 시설만 포함합니다. 확인 전인 시설은 있음으로 치지 않습니다.',keys:['largeBath','communalOutdoor','privateOutdoor']},
  {label:'객실 목욕 시설 세부',help:'객실탕은 해당 객실 타입을 예약해야 이용할 수 있습니다. 확인된 시설만 포함합니다.',keys:['roomIndoorOnsen','roomOutdoor','roomOutdoorOnsen']},
 ];
 export default function HotelFilters({filters,setFilters,counts,ryokanCount,title=true}:{filters:HotelFilters;setFilters:(f:HotelFilters)=>void;counts:SearchResponse['featureCounts'];ryokanCount:number;title?:boolean}){
- const verified=isVerifiedCriteria(filters),[helpOpen,setHelpOpen]=useState(false),helpId=useId();
+ const verified=isVerifiedCriteria(filters),[helpOpen,setHelpOpen]=useState(false),helpId=useId(),[open,setOpen]=useState<string|null>(null),tip={open,setOpen};
  const helpButton=<button type="button" className="filter-help" aria-expanded={helpOpen} aria-controls={helpId} aria-label="탕 조건 설명" onClick={()=>setHelpOpen(o=>!o)}>?</button>;
  const ratingOptions=filters.ratingProvider==='trip'?[8,8.5,9,9.5]:[4,4.2,4.5,4.8];
  const feature=(key:FeatureKey,on:boolean)=>setFilters({...filters,features:on?[...new Set([...filters.features,key])]:filters.features.filter(k=>k!==key)});
- return <div className="filter-content">
+ return <TooltipProvider delayDuration={300}><div className="filter-content">
   {/* The bath conditions' explanation sits behind a ‘?’ in the title row (the phone's sheet has no title row). */}
   {title?<div className="filter-title"><h2>숙소 필터</h2>{helpButton}<button onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button></div>:<div className="filter-group-head filter-quick-head"><h3>탕 조건</h3>{helpButton}</div>}
   <p id={helpId} className="filter-hint" hidden={!helpOpen}>확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다.</p>
   <div className="filter-quick" role="group" aria-label="탕 조건">
-   <button type="button" className="filter-chip is-verified" aria-pressed={verified} onClick={()=>setFilters({...filters,ratingProvider:'trip',minRating:verified?0:9,minReviews:verified?0:50})}><ShieldCheck size={16} aria-hidden="true"/><span>내 기준</span><small>9.0+ · 리뷰 50+</small></button>
-   {CORE.map(({key,label})=>{const on=filters.features.includes(key);return <button key={key} type="button" className="filter-chip" aria-pressed={on} onClick={()=>feature(key,!on)}><span>{label}</span><small>{(counts[key]??0).toLocaleString()}</small></button>})}
+   <Option tip={tip} name="verified" label="내 기준">{id=><button type="button" className="filter-chip is-verified" aria-pressed={verified} aria-describedby={id} onClick={()=>{setOpen(null);setFilters({...filters,ratingProvider:'trip',minRating:verified?0:9,minReviews:verified?0:50})}}><Check/><ShieldCheck size={16} aria-hidden="true"/><span>내 기준</span><small>9.0+ · 리뷰 50+</small></button>}</Option>
+   {CORE.map(({key,label})=>{const on=filters.features.includes(key);return <Option key={key} tip={tip} name={key} label={label}>{id=><button type="button" className="filter-chip" aria-pressed={on} aria-describedby={id} onClick={()=>{setOpen(null);feature(key,!on)}}><Check/><span>{label}</span><small>{(counts[key]??0).toLocaleString()}</small></button>}</Option>})}
   </div>
-  {MORE.map(group=><Group key={group.label} title={group.label} help={group.help} active={group.keys.filter(key=>filters.features.includes(key)).length}>{group.keys.map(key=><Toggle key={key} label={FEATURE_LABELS[key]} count={counts[key]??0} on={filters.features.includes(key)} onChange={on=>feature(key,on)}/>)}</Group>)}
+  {MORE.map(group=><Group key={group.label} title={group.label} help={group.help} active={group.keys.filter(key=>filters.features.includes(key)).length}>{group.keys.map(key=><Toggle key={key} tip={tip} name={key} label={FEATURE_LABELS[key]} count={counts[key]??0} on={filters.features.includes(key)} onChange={on=>feature(key,on)}/>)}</Group>)}
   <Group title="숙소 유형·등급" help="자란 하이클래스는 자란 숙소 페이지에서 하이클래스 표시를 확인한 경우만 포함합니다." active={Number(filters.features.includes('jalanHighClass'))+Number(filters.ryokanOnly)}>
-   <Toggle label="자란 하이클래스" count={counts.jalanHighClass??0} on={filters.features.includes('jalanHighClass')} onChange={on=>feature('jalanHighClass',on)}/>
-   <Toggle label="료칸만 보기" count={ryokanCount} on={filters.ryokanOnly} onChange={on=>setFilters({...filters,ryokanOnly:on})}/>
+   <Toggle tip={tip} name="jalanHighClass" label="자란 하이클래스" count={counts.jalanHighClass??0} on={filters.features.includes('jalanHighClass')} onChange={on=>feature('jalanHighClass',on)}/>
+   <Toggle tip={tip} name="ryokan" label="료칸만 보기" count={ryokanCount} on={filters.ryokanOnly} onChange={on=>setFilters({...filters,ryokanOnly:on})}/>
   </Group>
   <Group title="평점과 리뷰" help="선택한 예약 사이트의 원래 평점(Trip.com 10점, Jalan 5점)으로 거릅니다." active={Number(filters.minRating>0)+Number(filters.minReviews>0)}>
    <label className="filter-select">평점 출처<Picker label="평점 출처" value={filters.ratingProvider} onChange={v=>setFilters({...filters,ratingProvider:v as HotelFilters['ratingProvider'],minRating:0,minReviews:0})} options={[{value:'trip',label:'Trip.com · 10점 만점'},{value:'jalan',label:'Jalan · 5점 만점'}]}/></label>
    <label className="filter-select">최소 평점<Picker label="최소 평점" value={String(filters.minRating)} onChange={v=>setFilters({...filters,minRating:Number(v)})} options={[{value:'0',label:'제한 없음'},...ratingOptions.map(v=>({value:String(v),label:v.toFixed(1)+' 이상'}))]}/></label>
    <label className="filter-select">최소 리뷰 수<Picker label="최소 리뷰 수" value={String(filters.minReviews)} onChange={v=>setFilters({...filters,minReviews:Number(v)})} options={[{value:'0',label:'제한 없음'},{value:'50',label:'50개 이상'},{value:'100',label:'100개 이상'},{value:'300',label:'300개 이상'},{value:'500',label:'500개 이상'}]}/></label>
   </Group>
- </div>;
+ </div></TooltipProvider>;
 }

@@ -253,10 +253,12 @@ try{
  assert.equal(first.total,openRows.length);assert.equal(first.page,1);
  assert.deepEqual(first.hotels.map(h=>h.id),expectedOrder);
  assert.deepEqual(first.hotels,expectedOrder.map(id=>cards[core.ids.indexOf(id)]));assert.deepEqual(first.coverage,manifest.coverage);
- const pageOf=()=>readFileSync(join(local,'index.html'),'utf8'),titles=html=>[...html.matchAll(/class="card-title"[^>]*><h3>([^<]*)<\/h3>/g)].map(m=>m[1].replaceAll('&amp;','&').replaceAll('&#x27;',"'").replaceAll('&quot;','"'));
+ const pageOf=()=>readFileSync(join(local,'index.html'),'utf8'),titles=html=>[...html.matchAll(/class="card-title"[^>]*><h3[^>]*>([^<]*)<\/h3>/g)].map(m=>m[1].replaceAll('&amp;','&').replaceAll('&#x27;',"'").replaceAll('&quot;','"'));
+ // A card is named in Korean, else English, else the original (U07, lib/hotel-names.ts).
+ const {displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
  const html=pageOf();
  assert(html.includes(`data-first-page="${manifest.id}"`),'static page marks its snapshot');
- assert.deepEqual(titles(html),first.hotels.map(h=>h.names.ko),'static page renders the first page cards in order');
+ assert.deepEqual(titles(html),first.hotels.map(h=>displayNames(h.names).title),'static page renders the first page cards in order');
  assert(new RegExp(first.total.toLocaleString('ko-KR')+'(?:<!-- -->)?곳').test(html),'static page shows the total');
  // Rebuilding replaces the version folder and adds the cache rule once.
  const again=await buildSnapshot({db,out:local,now:new Date('2026-10-12T00:00:00Z')});

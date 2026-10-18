@@ -1,7 +1,7 @@
 'use client';
 import { Hotel, FEATURE_LABELS, FeatureKey } from '@/lib/hotel-types';
 import type {HotelSummary} from '@/lib/search-snapshot';
-import {useRef,useEffect,useState,type ReactNode} from 'react';
+import {useId,useRef,useEffect,useState,type ReactNode} from 'react';
 import type {GooglePlaceData} from '@/lib/google-places';
 import HotelPhoto from './hotel-photo';
 import GooglePlaceRating from './google-place-rating';
@@ -19,6 +19,8 @@ import HotelDescription from './hotel-description';
 import BookingFields from './booking-fields';
 import { datedLink, bookingError, type BookingQuery } from '@/lib/booking-query';
 import {roomKindsText} from '@/lib/room-kinds';
+import {displayNames,nameLang} from '@/lib/hotel-names';
+import CopyName from './copy-name';
 const providers={trip:'Trip.com',jalan:'Jalan',official:'공식 홈페이지',maps:'Google Maps'};
 const ratingProviders={trip:'Trip.com',google:'Google Maps',jalan:'Jalan',rakuten:'Rakuten Travel'};
 const KIND={ryokan:'료칸',hotel:'호텔',unknown:'숙소'};
@@ -101,6 +103,7 @@ function RoomsAndYears({hotel}:{hotel:Hotel}){
 const shortDate=(day:string)=>{const [,m,d]=day.split('-');return Number(m)+'.'+Number(d)};
 export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRestoreFocus,favorite,onFavorite,pending,canSave,compared,onCompare,booking,onBooking}:{hotel:Hotel|null;fallback:HotelSummary|null;loading:boolean;onRetry:()=>void;onClose:()=>void;onRestoreFocus:()=>void;favorite:boolean;onFavorite:()=>void;pending:boolean;canSave:boolean;compared:boolean;onCompare:()=>void;booking:BookingQuery;onBooking:(q:BookingQuery)=>void}){
  const closeButton=useRef<HTMLButtonElement>(null),scroll=useRef<HTMLDivElement>(null),title=useRef<HTMLHeadingElement>(null),retried=useRef(false);
+ const nameId=useId(),enRef=useRef<HTMLParagraphElement>(null),jaRef=useRef<HTMLParagraphElement>(null);
  const [googleResult,setGoogleResult]=useState<{hotelId:string;data:GooglePlaceData}|null>(null),[bookingOpen,setBookingOpen]=useState(false);
  const google=googleResult?.hotelId===hotel?.id?googleResult?.data??null:null;
  const card:(HotelSummary&{sources?:Hotel['sources']})|null=hotel??fallback;
@@ -118,7 +121,10 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
  const actionLinks=hotel?(['jalan','trip'] as const).flatMap(provider=>hotel.links.filter(link=>link.provider===provider&&link.url).slice(0,1)):[];
  const chosen=booking.checkIn&&booking.checkOut&&!bookingProblem?shortDate(booking.checkIn)+'–'+shortDate(booking.checkOut)+' · 성인 '+booking.adults+'명':booking.checkIn||booking.checkOut?'날짜 확인 필요':'고르지 않음';
  const renderRating=(rating:Hotel['ratings'][number])=>{const source=hotel?.sources.find(s=>s.sourceId===rating.sourceId);return <div className="detail-rating" key={rating.sourceId}><span className="score">{rating.score.toFixed(1)}</span><b>{rating.provider?ratingProviders[rating.provider]:source?.label}</b><span>/{rating.scale} · 리뷰 {rating.reviewCount.toLocaleString()}개</span><small>확인 {rating.verifiedAt??'미확인'}{source?.url&&<> · <a href={source.url} target="_blank" rel="noopener noreferrer">출처 ↗</a></>}</small></div>};
- const otherNames=hotel?[...new Set([hotel.names.en,...(hotel.aliases??[])])].filter(name=>name&&name!==hotel.names.ko&&name!==hotel.names.ja):[];
+ // U07: Korean, else English, else the original name, then the English and original names that
+ // differ, each English or original one with a copy button. Other names: the rest, once.
+ const n=card?displayNames(card.names):null,shown=n?[n.title,n.en,n.ja]:[];
+ const otherNames=hotel?[...new Set([hotel.names.en,...(hotel.aliases??[])])].filter(name=>name&&!shown.includes(name)&&name!==hotel.names.ko&&name!==hotel.names.ja):[];
  return <Sheet open={!!card} onOpenChange={open=>{if(!open)onClose()}}><SheetContent showCloseButton={false} onOpenAutoFocus={e=>{e.preventDefault();closeButton.current?.focus({preventScroll:true})}} onCloseAutoFocus={e=>{e.preventDefault();onRestoreFocus()}} className="hotel-detail !w-full sm:!max-w-[720px] !gap-0">
   {card&&<>
    <div className="detail-top"><span><Waves size={18} aria-hidden="true"/> 숙소 살펴보기</span><SheetClose asChild><button ref={closeButton} className="icon-button" aria-label="숙소 상세 닫기"><X size={22}/></button></SheetClose></div>
@@ -128,7 +134,7 @@ export default function HotelDetail({hotel,fallback,loading,onRetry,onClose,onRe
      <div className="detail-summary">
       {!hotel&&<div className="detail-unavailable"><p role="status">{loading?'자세한 정보를 다시 불러오는 중입니다…':'자세한 정보를 지금 불러올 수 없습니다. 목록에 있는 정보만 보여 줍니다.'}</p><button type="button" className="detail-retry" onClick={()=>{retried.current=true;onRetry()}} disabled={loading}><RotateCw size={17} aria-hidden="true"/>다시 시도</button></div>}
       <SheetDescription className="detail-eyebrow">{KIND[card.kind]} · {card.location.label}{hotelFeature(card,'jalanHighClass').value===true&&<span className="highclass-tag">자란 하이클래스</span>}</SheetDescription>
-      <div className="detail-name"><SheetTitle ref={title} tabIndex={-1}>{card.names.ko}</SheetTitle>{card.names.ja!==card.names.ko&&<p lang="ja">{card.names.ja}</p>}</div>
+      {n&&<div className="detail-name"><div className="name-row"><SheetTitle ref={title} tabIndex={-1} lang={nameLang(n.title)}>{n.title}</SheetTitle>{n.titleLang!=='ko'&&<CopyName name={n.title} label={n.titleLang==='en'?'영어 이름':'원어 이름'} target={title}/>}</div>{n.en&&<div className="name-row"><p className="name-en" id={nameId+'e'} ref={enRef} lang={nameLang(n.en)}>{n.en}</p><CopyName name={n.en} label="영어 이름" target={enRef} id={nameId+'e'}/></div>}{n.ja&&<div className="name-row"><p id={nameId+'j'} ref={jaRef} lang={nameLang(n.ja)}>{n.ja}</p><CopyName name={n.ja} label="원어 이름" target={jaRef} id={nameId+'j'}/></div>}</div>}
       {hotel?<HotelLifecycleNote hotel={hotel}/>:<HotelLifecycleNote hotel={card} compact/>}
       {hotel?<div className="provider-ratings" aria-label="출처별 평점">{orderedRatings(hotel).filter(r=>r.provider==='trip').map(renderRating)}<GooglePlaceRating hotel={hotel} data={google}/>{orderedRatings(hotel).filter(r=>r.provider!=='trip'&&r.provider!=='google').map(renderRating)}{hotel.ratings.length===0&&<p className="secondary">확인된 평점이 없습니다.</p>}</div>
       :<div className="provider-ratings" aria-label="출처별 평점">{card.ratings.filter(r=>r.provider==='trip'||r.provider==='jalan').map(r=><div className="detail-rating" key={r.provider}><span className="score">{r.score.toFixed(1)}</span><b>{ratingProviders[r.provider!]}</b><span>/{r.scale} · 리뷰 {r.reviewCount.toLocaleString()}개</span></div>)}{card.ratings.length===0&&<p className="secondary">확인된 평점이 없습니다.</p>}</div>}
