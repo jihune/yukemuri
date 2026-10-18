@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {Languages,RotateCw,X} from 'lucide-react';
+import {translationSource} from '@/lib/hotel-description';
 // U07: the description translated in place by the browser's own on-device translator, the
 // Translator API of Chrome 138+ and Edge 148+ on a desktop (no payment, no new window, and not a
 // language model: Chrome documents it as an expert translation model; user decision 2026-10-17).
@@ -17,14 +18,6 @@ const translatorApi=()=>(globalThis as {Translator?:TranslatorApi}).Translator;
 // The answer does not change while the page is open, so there is nothing to subscribe to.
 const noSubscription=()=>()=>{};
 const chromeOrEdge=()=>((navigator as Navigator&{userAgentData?:{brands?:{brand:string}[]}}).userAgentData?.brands??[]).some(b=>b.brand==='Google Chrome'||b.brand==='Microsoft Edge');
-// Kana: Japanese (the sources are Japanese sites). English: letters that are all plain Latin or
-// the long vowels of Hepburn romaji (`Sensō-ji` in a Trip.com description), read once composed
-// (NFC). Anything else is not guessed: kanji without kana may be Chinese, other accents French.
-export function descriptionLanguage(text:string){
- if(/[ぁ-ゖァ-ヺ]/.test(text))return 'ja';
- const composed=text.normalize('NFC');
- return /[A-Za-z]/.test(composed)&&!/(?![A-Za-zĀāĒēĪīŌōŪū])[\p{L}\p{M}]/u.test(composed)?'en':null;
-}
 // The first download, as Google's component server sized the language packs on 2026-10-18 (Chrome's
 // documents give no size): Japanese goes through English, en-ja and en-ko, 113,091,783 bytes;
 // English needs en-ko alone, 56,601,733 bytes.
@@ -32,12 +25,12 @@ const modelSize={ja:'약 110MB',en:'약 57MB'};
 // unsupported: not this browser at all; unavailable: Chrome or Edge that cannot translate this pair.
 type State={kind:'checking'|'unsupported'|'unavailable'|'ready'|'translating'|'failed'|'done';progress?:number;text?:string};
 export default function DescriptionTranslate({text}:{text:string}){
- const source=descriptionLanguage(text),translator=useRef<Translator|null>(null),pending=useRef<AbortController|null>(null);
+ const source=translationSource(text),translator=useRef<Translator|null>(null),pending=useRef<AbortController|null>(null);
  // Whether this browser has the translator, read as React reads browser-only values: null on the
  // server and while hydrating, so the first render is the same wherever it runs.
  const capable=useSyncExternalStore(noSubscription,()=>!!translatorApi()&&chromeOrEdge(),()=>null);
  const [answer,setState]=useState<State>({kind:'checking'});
- const state:State=capable===false?{kind:'unsupported'}:capable===null?{kind:'checking'}:answer;
+ const state:State=!source||capable===false?{kind:'unsupported'}:capable===null?{kind:'checking'}:answer;
  useEffect(()=>{
   const api=translatorApi();
   if(!source||!api||!capable)return;
@@ -61,8 +54,7 @@ export default function DescriptionTranslate({text}:{text:string}){
    if(!signal.aborted)setState({kind:'done',text:lines.join('\n')});
   }catch{if(!signal.aborted)setState({kind:'failed'})}
  }
- // A language it cannot name gets neither a button nor a note: no browser would be asked.
- if(!source||state.kind==='checking')return null;
+ if(state.kind==='checking')return null;
  if(state.kind==='unsupported')return <p className="translate-note">이 브라우저에서는 바로 번역을 쓸 수 없습니다. 데스크톱 Chrome·Edge에서는 이 자리에서 번역할 수 있습니다.</p>;
  if(state.kind==='unavailable')return <p className="translate-note">이 브라우저에서는 이 설명을 번역할 수 없습니다.</p>;
  const done=state.kind==='done',busy=state.kind==='translating';

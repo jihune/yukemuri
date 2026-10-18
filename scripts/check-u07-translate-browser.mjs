@@ -17,10 +17,11 @@
 // - a stay whose description is already Korean shows neither button nor note;
 // - closing the sheet while the model downloads aborts the signal given to create(), and leaves no
 //   translator behind: the one made after that is destroyed and never translates;
-// - an English description, long vowels of romaji included, has lang="en", asks for the English
-//   pair and gives the one-pack size;
-// - a description whose language is not guessed (Chinese, French) is marked lang="", not Japanese or
-//   English, and gets neither a button nor a note, the browser never asked.
+// - an English description has lang="en", asks for the English pair and gives the one-pack size;
+// - a description whose lang is not plain (Chinese, French, romaji long vowels in English) is
+//   marked lang="", and still gets the button main showed, asking main's pair;
+// - the button's rule (translationSource) is main's (#166) for every checked-in description and
+//   the cases above, so a stricter lang rule cannot hide a button main shows (parent session).
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u07-translate-browser.mjs [base] [evidence.json] [screenshot folder]
@@ -36,8 +37,8 @@ if(shots)mkdirSync(shots,{recursive:true});
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-u07-translate-'));
-let needsKoreanDescription;
-try{({needsKoreanDescription}=createRequire(import.meta.url)(compileLib(temp,'lib/hotel-description.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
+let needsKoreanDescription,translationSource;
+try{({needsKoreanDescription,translationSource}=createRequire(import.meta.url)(compileLib(temp,'lib/hotel-description.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
 // A stay whose description needs Korean (Japanese, in the checked-in catalogue the local site
 // loads) and one whose description is already Korean. Picked from the file, not by asking the
 // detail API of every stay: the local Worker limits detail requests per address (H02).
@@ -49,13 +50,14 @@ if(!foreign||!korean)throw new Error('No checked-in stay for the translation che
 // The detail the page receives carries that description in two lines (no checked-in description
 // has a line break), so the translation line by line is what is judged.
 const described=foreign.description.trim()+'\n客室は全室和室です。';
-// The same stay with an English description (the catalogue has none), for the English pair. It
-// names places in Hepburn romaji as Trip.com descriptions do (trip-687323 has `Sensō-ji`), the
-// second line with its long vowels as combining marks (NFD).
-const english='A quiet hot spring inn near Sensō-ji Temple.\n'+'All rooms look out on Tōkyō Bay.'.normalize('NFD');
-// Kanji without kana and accented Latin: the cases descriptionLanguage() must not guess.
-// The French one also with its accents as combining marks (NFD), as some sources store text.
-const unguessed={chinese:'酒店设有餐厅和温泉。',french:'Cet hôtel propose un petit-déjeuner payant.',frenchDecomposed:'Cet hôtel propose un petit-déjeuner payant.'.normalize('NFD')};
+// The same stay with an English description (the catalogue has none), for the English pair.
+const english='A quiet hot spring inn by the river.\nAll rooms are Japanese style.';
+// Descriptions whose lang is not plain, with the pair main (#166) asks for: kanji without kana,
+// accented Latin (also as combining marks, NFD, as some sources store text), and English naming
+// places in Hepburn romaji as Trip.com descriptions do (trip-687323 in production has `Sensō-ji`).
+const unguessed={chinese:['중국어(가나 없는 한자)','酒店设有餐厅和温泉。','ja>ko'],french:['프랑스어(악센트)','Cet hôtel propose un petit-déjeuner payant.','en>ko'],frenchDecomposed:['프랑스어(분해형 악센트)','Cet hôtel propose un petit-déjeuner payant.'.normalize('NFD'),'en>ko'],romaji:['영어(로마자 장음 Sensō-ji)','A quiet hot spring inn near Sensō-ji Temple.','en>ko']};
+// #166's rule, written out here apart from the code: kana or kanji, Japanese; any Latin letter, English.
+const mainRule=t=>/[ぁ-ゖァ-ヺ㐀-䶿一-鿿]/.test(t)?'ja':/[A-Za-z]/.test(t)?'en':null;
 // The stand-in: brands, availability and translation are set per run through window.__u07.
 const standIn=({brand,availability,fail})=>{
  Object.defineProperty(Navigator.prototype,'userAgentData',{configurable:true,get:()=>({brands:[{brand,version:'141'}],mobile:false,platform:'Linux'})});
@@ -75,6 +77,13 @@ const standIn=({brand,availability,fail})=>{
   },
  };
 };
+// 0. The button's rule against main's, before any browser: every checked-in description and the
+// cases here (a build is not needed; the lib is compiled from this tree).
+{
+ const texts=[...catalogue.map(h=>h.description).filter(Boolean),described,english,...Object.values(unguessed).map(u=>u[1]),'Отель расположен рядом с вокзалом.','123 …'];
+ const differ=typeof translationSource==='function'?texts.filter(t=>translationSource(t)!==mainRule(t)).slice(0,5).map(t=>({text:t.slice(0,60),now:translationSource(t),main:mainRule(t)})):'translationSource missing';
+ check(`번역 단추의 원문 언어 규칙(translationSource)이 main(#166)과 같음: 설명 ${texts.length}개(체크인 자료 전체와 이 검사의 경우)`,Array.isArray(differ)&&differ.length===0,{texts:texts.length,differ});
+}
 const browser=await chromium.launch();
 for(const [w,mobile] of [[390,true],[1280,false]]){
  width=w;
@@ -169,12 +178,13 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   check('영어 설명: 단추 아래 안내가 모델 크기 약 57MB를 알림(일본어의 약 110MB가 아님)',/약 57MB/.test(r.readyNote??'')&&!/110MB/.test(r.readyNote??''),r);
   await c.close();
  }
- // 7. Chinese and French, composed and decomposed (Chrome, available): lang="", no button, no note, nothing asked.
- for(const [label,text] of Object.entries(unguessed)){
+ // 7. Descriptions whose lang is not plain (Chrome, available): lang="", and the button main shows,
+ // asking main's pair.
+ for(const [label,text,pair] of Object.values(unguessed)){
   const c=await context({brand:'Google Chrome',availability:'available',fail:0},text),page=await c.newPage();
   const d=await open(page,foreign.id);
-  const r={original:await d.locator('.hotel-intro').first().textContent(),lang:await d.locator('.hotel-intro').first().getAttribute('lang'),buttons:await d.locator('.translate-button').count(),notes:await d.locator('.translate-note').count(),availability:await page.evaluate(()=>window.__u07.availability)};
-  check(`${{chinese:'중국어(가나 없는 한자)',french:'프랑스어(악센트 있는 라틴 문자)',frenchDecomposed:'프랑스어(악센트가 결합 문자인 분해형)'}[label]} 설명: 원문은 lang=""(일본어·영어로 짐작하지 않음)이고 번역 단추도 안내도 없으며 브라우저에 묻지 않음`,r.original.trim()===text&&r.lang===''&&r.buttons===0&&r.notes===0&&r.availability===0,r);
+  const r={original:await d.locator('.hotel-intro').first().textContent(),lang:await d.locator('.hotel-intro').first().getAttribute('lang'),buttons:await d.locator('.translate-button').count(),log:await page.evaluate(()=>({availability:window.__u07.availability,pair:window.__u07.pair??null}))};
+  check(`${label} 설명: 원문은 lang=""(짐작하지 않음)이고, 번역 단추는 main처럼 뜨며 ${pair}로 물음`,r.original.trim()===text&&r.lang===''&&r.buttons===1&&r.log.availability===1&&r.log.pair===pair,r);
   await c.close();
  }
 }
