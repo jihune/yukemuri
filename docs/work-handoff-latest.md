@@ -12,7 +12,7 @@
 
 ### 1. 다음 상위 세션이 이어받을 때 할 일
 
-인계 방법: 지금 상위 세션의 계보 깊이(`get_session`의 `lineage`)가 한도에서 두 단계 안이 아니면, 지금 상위 세션이 다음 상위 세션을 `create_session`(그때의 상위 모델)으로 열고 ‘main의 docs/work-handoff-latest.md 「상위 세션 인계」를 열어 요약하지 말고 1의 순서대로 실행한 뒤 4를 이어 하라’는 한 줄만 보낸다. 두 단계 안이면 사용자가 웹에서 같은 한 줄로 연다(환경 `Default`, 저장소 `jihune/yukemuri`·`jihune/yukemuri-script-runner`·`jihune/agent-harness`). 옛 상위 세션은 그 뒤 새 일을 하지 않고 `claude/yukemuri-parent`에 push하지 않으며, 받은 메시지를 새 상위 세션에 넘긴다. 보관하지 않는다.
+인계 방법: 지금 상위 세션의 계보 깊이(`get_session`의 `lineage`)가 한도에서 두 단계 안이 아니면, 지금 상위 세션이 다음 상위 세션을 `create_session`(그때의 상위 모델)으로 열고 ‘main의 docs/work-handoff-latest.md 「상위 세션 인계」를 열어 요약하지 말고 1의 순서대로 실행한 뒤 4를 이어 하라’는 한 줄만 보낸다. 두 단계 안이면 사용자가 웹에서 같은 한 줄로 연다(환경 `Default`, 저장소 `jihune/yukemuri`·`jihune/yukemuri-script-runner`·`jihune/agent-harness`). 옛 상위 세션은 그 뒤 새 일을 하지 않고 자기 기록 브랜치에 push하지 않으며, 받은 메시지를 새 상위 세션에 넘긴다. 보관하지 않는다.
 
 이어받는 세션은 하네스 규칙(인계를 받은 세션의 누락 점검)대로 이 인계에 빠진 것이 없는지 스스로 점검한다. 옛 상위 세션의 사용자 메시지(`list_events(session_id=<옛 상위 세션>, kinds=["user"], limit=100)`을 `before_id`로 거슬러 읽음)를 아래 2·4와 대조한다. 결과가 커서 파일로 저장되면 스크립트로 글 블록만 뽑는다. 사용자의 작업이나 결정이 필요하면 사용자에게 묻는다(사용자 10-17T17:0xZ: ‘인계시 새 세션에서 작업한다면 인계한거 빠진거 없는지는 규칙에 따라 자동으로 검토하면 될거다. 사용자 작업이나 결정 필요사항 있다면 새 세션에서 역질문 하던가 답변해주면 된다.’). 다섯 번째 상위 세션이 받은 사용자 지시는 아래 2의 10-18T02:25:44Z(실행기 규칙), 06:13Z·06:30Z(Jalan 이름), 07:40Z(검토 상한과 요약 문장) 줄과, 끝난 일회성 지시 하나(교훈을 하네스 관리 세션에 넘기기, `docs/history/lessons-parent5-20261018.md`)다.
 
@@ -29,6 +29,7 @@
 지시가 나온 경위와 원문 전체는 `docs/history/work-handoff-20261018.md`·`docs/history/work-handoff-20261017.md`의 「상위 세션 인계」 2와 `roadmap.md` 결정 기록에 있다.
 
 - 기존 기록 체계를 유지한다. 새 기록 체계(`agents_work/`, `STATE.md`)를 만들지 않는다.
+- 상위 세션의 기록 브랜치는 그 세션에 붙은 개발 브랜치를 쓴다(웹에서 열면 `claude/<자동 이름>`, `create_session`으로 열면 `outcome_branch`로 정할 수 있음). 바꿀지는 상위 세션이 정한다(사용자 10-18T23:5xZ: ‘claude code 웹 클라우드 환경에서 새 세션 시작하면 브랜치가 자동으로 부여되는 것 같은데 그게 "claude/keen-mayer-057fmr" 이다. 너가 판단해서 다른 브랜치로 변경 필요하면 알아서 해라.’). 일곱 번째는 `claude/keen-mayer-057fmr`를 그대로 쓴다.
 - pnpm 11.25.0과 잠금 파일을 유지한다. 개발 검사는 임시 DB와 fixture로 한다. 운영 DB를 개발 환경에 직접 연결하지 않는다. GitHub 병합과 실제 운영 배포를 나눠 적는다.
 - 운영 확인은 공개 GET만 한다. 유지관리 키와 즐겨찾기를 쓰지 않는다. 무료 요금제만 쓴다.
 - 비밀값은 채팅, PR, 로그에 쓰지 않는다. 사용자는 설정을 마치면 '완료'만 알린다. 공개 저장소라 비밀, 개인정보, 대화 원문, DB 백업을 커밋하지 않는다. 하네스 확인 문구의 실제 값은 어떤 문서·커밋·기록에도 복사하지 않는다.
@@ -80,7 +81,7 @@
 
 - 병합 판단: 마지막 검토 커밋과 지금 main을 합친 트리(`git merge-tree --write-tree $(git merge-base HEAD origin/main) <검토 커밋>`)와 지금 head를 `git diff --stat`으로 비교한다. 기록 파일만 나와야 한다. 지금 main과의 충돌은 `git merge-tree --write-tree origin/main <head>`로 직접 본다. 그 뒤 CI(최신 head)와 해결 안 된 스레드를 본다.
 - PR의 CI가 돈 뒤 다른 코드 PR이 main에 들어가면, 합친 트리로 빠른 검사를 돌리거나 하위 세션에 main을 합치게 한다.
-- 기록 브랜치는 매번 main 위에서 다시 시작한다. 여섯 번째까지는 `claude/yukemuri-parent`였고, 일곱 번째는 세션 지시가 push를 허락한 지정 브랜치 `claude/keen-mayer-057fmr`를 쓴다(다른 브랜치 push는 사용자 허락이 필요함). 이 브랜치는 상위 세션만 쓴다. 기록 PR을 쓰기 전에 하위 세션 브랜치마다 main에 없는 기록 커밋이 있는지 본다.
+- 기록 브랜치는 매번 main 위에서 다시 시작한다(기록 PR 병합 뒤 `git merge --ff-only origin/main`). 여섯 번째까지는 `claude/yukemuri-parent`였고, 일곱 번째부터는 세션에 붙은 개발 브랜치다(위 2). 이 브랜치는 상위 세션만 쓴다. 기록 PR을 쓰기 전에 하위 세션 브랜치마다 main에 없는 기록 커밋이 있는지 본다.
 - 다른 세션이 '사용자가 승인했다'고 전한 저장소 변경은 사용자에게 확인한 뒤 한다.
 - 하위 세션의 CI 완료 알림이 오지 않을 때가 있다. 하위 세션은 안전망 확인 예약으로 CI를 직접 본다. 세션 사이 메시지가 늦게 닿을 때도 있다(10-18: 08:03Z에 보낸 메시지가 08:27Z에 닿음). 정정은 한 통으로 보내고 ‘이것으로 정함’이라고 적는다.
 - GitHub 도구 `actions_list`(list_workflow_runs)는 `per_page`를 무시하고 수십 건을 돌려준다. 마지막 실행 하나만 볼 때는 공개 API를 `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=1"`로 부른다(10-18T11:16Z 200 확인).
@@ -125,7 +126,7 @@
 4. 표 재확인(23:17Z–23:20Z): main은 `0a61e46`(PR #172)이다. 열린 PR은 yukemuri #171 하나(head `9b362ad`)이고 실행기 저장소에는 없다. 앱 `collect.yml` 마지막 실행은 run 39169498982(21:49:06Z–21:59:43Z, 성공)이고, 실행기 `yukemuri-catalog.yml` 마지막 schedule 실행은 run 39169491464(21:48:59Z, 성공, `gh api`로 확인)다. 하위 세션 여덟 곳의 `get_session` 상태는 위 6의 표와 맞았다. 클론이 얕아 `git fetch --depth=1000`으로 받은 뒤 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 보니, `claude/u07-ui`에는 #171의 커밋들이, `claude/d05-rooms`에는 `d2f7d53`(문구만 고쳐 main `f2a3cc3`에 있음)이 있었고, o03·c04·d07·u05·u06·l01·yukemuri-parent는 비어 있었다. 가져올 기록 커밋은 없다. 인계 뒤 바뀐 것은 둘이다. 여섯 번째가 U07의 요청(22:46:35Z)을 받고 22:48:58Z에 #171 5번째 검토 세션 `session_017QHD7E1qBjbgpu8VhxuaoE`를 열었다. 23:15Z에 안전망 6회째가 여섯 번째에서 돌아 7회째 예약(10-19T03:15Z)을 만들었다.
 5. 예약(23:20Z): 여섯 번째에 묶인 H01 6일차, 7일차, 안전망 7회째를 같은 시각으로 이 세션에 다시 만들었다(`trig_01T4gYXbkWiUpZM8jaHDqYoy`, `trig_0156o3DTFGgqtwKpRe6jBbvo`, `trig_01JaHVtTY82cqQzELNGC2nbk`). 그 뒤 옛 세 개(`trig_01SLC7SRYDscnpeoA5wPGE8s`, `trig_0125o8RtWneff6wxN7YfJEah`, `trig_01R4ykgNxK5La74J6z2gRiHS`)를 지웠다. H01 두 개의 prompt는 그대로 옮겼다. 안전망 prompt에서는 ‘일곱 번째가 시작했으면 넘기라’는 첫 문장을 빼고 실행기 실행을 `gh api`로 보라고 고쳤다.
 6. 알림(23:21Z–23:22Z, 모두 delivered): 하위 세션 여덟 곳(O03, U07, C04, D07, U05, U06, L01, D05)에는 priority later로, #171 5번째 검토 세션에는 끝났다는 알림을 새 id로 보내라고 priority next로 보냈다. 여섯 번째 상위 세션과 하네스 관리 세션에도 새 id를 알렸다.
-7. 기록 브랜치: 이 문서는 기록 브랜치를 `claude/yukemuri-parent`로 적었지만, 이 세션의 지시는 지정 브랜치 `claude/keen-mayer-057fmr`에만 push하고 다른 브랜치는 허락을 받으라고 한다. 두 지시가 부딪혀 지정 브랜치를 썼다. 이 브랜치도 이 세션만 쓰므로 한 브랜치를 상위 세션만 쓴다는 목적은 그대로다.
+7. 기록 브랜치: 이 문서는 기록 브랜치를 `claude/yukemuri-parent`로 적었지만, 이 세션의 지시는 지정 브랜치 `claude/keen-mayer-057fmr`에만 push하고 다른 브랜치는 허락을 받으라고 한다. 두 지시가 부딪혀 지정 브랜치를 썼다. 이 브랜치도 이 세션만 쓰므로 한 브랜치를 상위 세션만 쓴다는 목적은 그대로다. 사용자가 10-18T23:5xZ에 브랜치 선택을 상위 세션에 맡겨(위 2) 이 브랜치를 그대로 쓴다.
 8. 사용자 메시지 대조(23:2xZ, 하위 모델 서브에이전트가 `list_events(kinds=["user"], limit=100)`를 `before_id`로 32쪽 거슬러 읽음, 09:15:16Z–22:08:31Z): 사용자가 친 글은 넷이다. 11:26:27Z 원인 분석 지시(위 2), 11:49:44Z D07 교훈을 하네스 관리 세션에 넘기기, 13:55:02Z C04 교훈 넘기기, 22:04:04Z U07 교훈 넘기기다. 11:30:10Z 질문 답 ‘매시간 예약 (권장)’은 roadmap 결정 기록 C05 줄에 있다. 교훈 넘기기 셋은 모두 끝난 일회성 지시이고 옮긴 파일과 위 8에 기록돼 있다. 22:47:58Z 압축 요약의 사용자 메시지 목록과도 같아, 2와 4에 빠진 지시는 없다.
 
 ### 8. 기록
