@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type * as Leaflet from 'leaflet';
 import type { HotelSummary } from '@/lib/search-snapshot';
 import { displayRating } from '@/lib/hotel-ratings';
+import { displayNames } from '@/lib/hotel-names';
 import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/static-search';
@@ -26,7 +27,7 @@ const TIP=43;
 const nearestMean=<T extends {lat:number;lng:number}>(list:T[])=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
 export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=NO_CELLS,onSearchArea,areaBusy=false,areaFailed=false,result=null,onView,onOpenGroup}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
- const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:h.names.ko,place:h.location.label,approximate:false}));
+ const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:displayNames(h.names).title,place:h.location.label,approximate:false}));
  // The note under the map names where the points come from: approximate points (dashed) too.
  const approximateShown=result?result.positions.grade.some(g=>g>=2):spots.some(s=>s.approximate)||cells.some(c=>c.approximate>0);
  const props=useRef({spots,cells,activeId,onSelect,result,onView,onOpenGroup});props.current={spots,cells,activeId,onSelect,result,onView,onOpenGroup};
