@@ -3,6 +3,12 @@ name: Cloudflare usage
 # written per UTC day from the GraphQL Analytics API (H01 steps 5 and 7). The
 # token needs Account > Account Analytics > Read; without it the run fails
 # instead of reporting zero (docs/cloudflare-deploy.md).
+# check: the O03 daily check (scripts/daily-check.mjs) of one day instead: it
+# fails on 85% of a free limit, exceededResources and a 0-page, 26-minute or
+# unsuccessful gentle collection. No cron here (a public repository's schedule
+# turns off after 60 days without activity): the private runner repository
+# dispatches it once a day, as it dispatches collect.yml.
+run-name: Cloudflare usage${{ inputs.check && format(' (daily check{0})', inputs.control != 'none' && format(', control {0}', inputs.control) || '') || '' }}
 on:
   workflow_dispatch:
     inputs:
@@ -16,8 +22,26 @@ on:
         type: string
         required: false
         default: '2'
+      check:
+        description: 'Daily check (O03) of one day: date, empty = yesterday in UTC; days is not used'
+        type: boolean
+        required: false
+        default: false
+      control:
+        description: 'Daily check only: replace one real value to show the check fails on it'
+        type: choice
+        required: false
+        default: none
+        options:
+          - none
+          - over-85
+          - exceeded
+          - zero-pages
+          - no-permission
+# actions: read for the daily check, which reads this repository's collect.yml runs.
 permissions:
   contents: read
+  actions: read
 # bash runs with -eo pipefail: a failing command piped into tee fails its step.
 defaults:
   run:
@@ -34,9 +58,18 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - env:
+      - if: ${{ !inputs.check }}
+        env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           USAGE_DATE: ${{ inputs.date }}
           USAGE_DAYS: ${{ inputs.days }}
         run: node scripts/cloudflare-usage.mjs
+      - if: inputs.check
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GH_TOKEN: ${{ github.token }}
+          CHECK_DATE: ${{ inputs.date }}
+          CHECK_CONTROL: ${{ inputs.control }}
+        run: node scripts/daily-check.mjs

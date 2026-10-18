@@ -26,6 +26,7 @@ commands = [
     ['node', 'scripts/check-collect-workflow.mjs'],
     ['node', 'scripts/check-rollback-workflow.mjs'],
     ['node', 'scripts/check-cloudflare-usage.mjs'],
+    ['node', 'scripts/check-daily-check.mjs'],
     ['node', 'scripts/check-collection-budget.mjs'],
     ['node', 'scripts/check-cloudflare-smoke.mjs'],
     [sys.executable, 'scripts/run-actionlint.py'],
