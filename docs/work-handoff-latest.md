@@ -93,7 +93,8 @@
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음. 10-18T00:5xZ 인계 끝 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함(10-18T01:01Z 시작) |
 | `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함(10-18T01:01Z 시작), PR #133 |
-| `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기, 이어서 P04(브랜치 `claude/c04-writes`) | 일함(10-18T02:34Z 시작), PR #138 |
+| `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기, 이어서 P04(브랜치 `claude/c04-writes`) | 일함(10-18T02:34Z 시작). #137·#138 병합, 배포 뒤 수집 실측으로 예산 PR 준비 |
+| `session_01QRdQHRsfj4b6fZePbqMLpC` | PR #133 Claude 검토(이 PR의 3회째 검토, 커밋 `eff9155`) | 일함(10-18T04:57Z 시작). 결과를 기록한 뒤 보관한다 |
 | `session_01PuNgLiSyMdn35DxmRigJmK` | 세 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
@@ -132,6 +133,7 @@
 - 10-18T03:2xZ–03:3xZ C04 PR #137을 병합 조건(Codex 1회 ‘큰 문제 없음’ `183771d`=head, CI `checks` 성공, 스레드 없음, merge-tree 결과와 head의 차이가 main 기록 PR #136의 이 문서뿐, 남은 P3 없음)을 직접 본 뒤 병합했다(03:28Z, `4caa224`). 마이그레이션 0014 SQL(DROP INDEX 8개)과 `route.ts`·`hotel-repository.ts`의 건너뛰기 조건을 읽었다. C04는 브랜치를 `4caa224`에서 다시 시작해 P04 PR #138을 열었다. 「C04」 절을 누가 고칠지 두 메시지가 두 번 엇갈려, 상위 세션 기록 PR이 쓰고 #138은 인계 문서를 바꾸지 않기로 정했다(03:3xZ). 배포 run 39093721785(03:28–03:38Z)가 성공했다: 운영 D1에 0014 적용, Worker `4c83684d`, 스냅숏 `2a2f4d71a3a43c22`, smoke 통과(`deployments.md`). 이 뒤의 첫 수집 실행부터가 C04의 쪽당 쓰기 실측 대상이다. #138 검토 요청(03:42Z)에 Codex가 사용량 한도 안내만 남겨(03:43Z, 회복 시각 없음), 이 PR을 구현하지 않은 Claude 검토 세션 `session_01Cz7adKH5EFnx3nKicEkhkh`를 열었다(03:44Z). 한도 안내만 받은 요청은 검토 횟수에 세지 않는다.
 - 10-18T03:4xZ–04:0xZ 기록 PR #139(#137 병합·배포, #138 검토 세션)를 병합했다(`6d4442a`). U07 PR #133의 2회째 Codex 요청도 사용량 한도 안내로 끝나, Claude 검토 세션 `session_01ESs7semHE1WAEMAHGBcQ5b`를 열었다(04:00Z, 커밋 `4eda436`, 그 뒤 head `545adb0`은 기록 파일 한 줄만 다름). U07이 알린 범위 밖 결함(지역만 준 주소에서 region이 빈 값)은 U07이 #133 병합 뒤 따로 고치기로 정했다(위 4의 3). 사용량은 03:59Z에 5시간 창 0.5, 7일 창 0.13이었다.
 - 10-18T04:1xZ–04:3xZ #138 Claude 검토(P0~P2 없음, P3 3건)를 받아 P3를 「C04」 절에 다음 PR 몫으로 적은 뒤 병합했다(04:17Z, `2653d84`). 배포 run 39096592943 성공(04:28Z, Worker `74e83e91`), 운영 스냅숏 생성 읽기는 257,099 → 117,433행이다. 두 검토 세션(#138, #133)은 결과를 기록한 뒤 보관했다. #133 검토는 P2 2건·P3 1건이라 U07이 고친다(위 4의 3). 실행기 저장소에는 10-17T23:31Z 뒤로 예약 실행(수집·백업)이 없다(04:2xZ 확인). GitHub 예약 지연은 전에도 4시간까지 있었다(10-13 백업).
+- 10-18T04:3xZ–04:5xZ 기록 PR #140을 병합했다(`2f0a076`). U07이 2회째 검토의 P2 2건·P3 1건을 `6c33c16`에서 고쳤다. 상위 세션 04:29Z 메시지(‘Codex가 한도면 Claude 검토를 요청’, 곧 Codex에 먼저 다시 요청하라는 뜻)와 `docs/cloud-development.md` ‘Codex 클라우드 환경’ 3번(사용자 결정: 한도 안내를 남기면 Codex에 다시 요청하지 않음)이 부딪쳤다. U07이 이를 짚었고, 문서의 사용자 결정을 따르기로 했다. 3회째 검토는 Claude 검토 세션 `session_01QRdQHRsfj4b6fZePbqMLpC`가 맡는다(04:57Z, 커밋 `eff9155`).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
