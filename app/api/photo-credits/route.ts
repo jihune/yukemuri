@@ -1,6 +1,8 @@
 import { favoritesDb } from '@/lib/favorites-db';
 import { RECORD_COUNTER } from '@/lib/hotel-repository';
 import type { Hotel } from '@/lib/hotel-types';
+import { displayNames } from '@/lib/hotel-names';
+import { withWikidataNames } from '@/lib/wikidata-names';
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 // Photo sources, 40 hotels at a time in id order. A page is read by the primary
 // key after the cursor and the total is the collector's record counter, so any
@@ -17,7 +19,7 @@ export async function GET(request:Request){
    // null until the collector's first full count sets the counter.
    total:count===undefined?null:Number(count),
    next:found.length>40?'/api/photo-credits?after='+encodeURIComponent(page.at(-1)!.id):null,
-   items:page.map(r=>{const h=JSON.parse(r.payload) as Hotel,s=h.sources.find(s=>s.sourceId===h.image.sourceId);return{hotelId:h.id,name:h.names.ko,imageUrl:h.image.url,sourceUrl:s?.url??null,credit:s?.label??null,retrievedAt:s?.retrievedAt??null,rights:'사진 저작권은 원출처에 있습니다.'}}),
+   items:page.map(r=>{const h=JSON.parse(r.payload) as Hotel,s=h.sources.find(s=>s.sourceId===h.image.sourceId);return{hotelId:h.id,name:displayNames(withWikidataNames(h).names).title,imageUrl:h.image.url,sourceUrl:s?.url??null,credit:s?.label??null,retrievedAt:s?.retrievedAt??null,rights:'사진 저작권은 원출처에 있습니다.'}}),
   },{headers});
  }catch(error){console.error('Photo credits failed',error);return Response.json({error:'Photo sources unavailable'},{status:503,headers})}
 }

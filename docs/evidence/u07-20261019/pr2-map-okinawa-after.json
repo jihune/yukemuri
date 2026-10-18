@@ -1,0 +1,84 @@
+{
+ "checkedAt": "2026-10-18T02:29:35.404Z",
+ "base": "http://127.0.0.1:8789",
+ "snapshot": "9f7a7366c25a0944",
+ "report": [
+  {
+   "width": 1280,
+   "view": "122.08007812500001,17.832374329567518,132.14355468750003,32.82421110161336,6",
+   "kmPerPx": 2.19,
+   "markers": [
+    {
+     "text": "825곳",
+     "tip": {
+      "x": 260,
+      "y": 336
+     },
+     "nearestStayPx": 0.2,
+     "nearestStayKm": 0.4
+    },
+    {
+     "text": "306곳",
+     "tip": {
+      "x": 102,
+      "y": 429
+     },
+     "nearestStayPx": 0.5,
+     "nearestStayKm": 1.2
+    },
+    {
+     "text": "2곳",
+     "tip": {
+      "x": 41,
+      "y": 434
+     },
+     "nearestStayPx": 0.6,
+     "nearestStayKm": 1.4
+    },
+    {
+     "text": "4.3/5",
+     "tip": {
+      "x": 417,
+      "y": 364
+     },
+     "nearestStayPx": 1.2,
+     "nearestStayKm": 2.7
+    }
+   ]
+  },
+  {
+   "width": 390,
+   "view": "119.26757812500001,15.665354182093287,134.91210937500003,34.70549341022547,5",
+   "kmPerPx": 4.39,
+   "markers": [
+    {
+     "text": "816곳",
+     "tip": {
+      "x": 194,
+      "y": 219
+     },
+     "nearestStayPx": 0.2,
+     "nearestStayKm": 0.7
+    },
+    {
+     "text": "317곳",
+     "tip": {
+      "x": 115,
+      "y": 266
+     },
+     "nearestStayPx": 0.3,
+     "nearestStayKm": 1.2
+    },
+    {
+     "text": "4.3/5",
+     "tip": {
+      "x": 272,
+      "y": 233
+     },
+     "nearestStayPx": 1.1,
+     "nearestStayKm": 4.9
+    }
+   ]
+  }
+ ]
+}

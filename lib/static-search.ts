@@ -1,7 +1,8 @@
 import type {HotelFilters,FeatureKey} from './hotel-types';
 import type {SortOrder} from './hotel-search';
 import {FEATURE_KEYS} from './hotel-bath-facts';
-import {normalizeSearch} from './hotel-names';
+import {normalizeSearch,displayNames} from './hotel-names';
+import {nearestMean} from './map-groups';
 import {prepareSearchIndex,searchIndexMatches,localHotelSuggestions,type PreparedSearchIndex,type SearchIndexHotel} from './hotel-search-index';
 import {rankHotelAlternatives} from './hotel-alternatives';
 import type {HotelSuggestion} from './hotel-suggestions';
@@ -47,7 +48,7 @@ export function openSnapshot(manifest:SnapshotManifest,core:SnapshotCore,cards:H
 // every hotel that is not closed, in id order as the former index was.
 export function addSnapshotText(s:SearchSnapshot,text:SnapshotText){
  const hotels:SearchIndexHotel[]=[],c=s.core;
- for(let i=0;i<s.size;i++){const names=text.names[i];if(names)hotels.push({id:c.ids[i],names,location:text.location[i]!,context:text.context[i]!,region:c.region[i],prefecture:c.prefecture[i],kind:c.kind[i],features:c.features[i]??0,knownFeatures:c.known[i]??0,tripScore:c.tripScore[i],tripReviews:c.tripReviews[i],jalanScore:c.jalanScore[i],jalanReviews:c.jalanReviews[i]})}
+ for(let i=0;i<s.size;i++){const names=text.names[i];if(names)hotels.push({id:c.ids[i],names,title:displayNames(s.cards[i].names).title,location:text.location[i]!,context:text.context[i]!,region:c.region[i],prefecture:c.prefecture[i],kind:c.kind[i],features:c.features[i]??0,knownFeatures:c.known[i]??0,tripScore:c.tripScore[i],tripReviews:c.tripReviews[i],jalanScore:c.jalanScore[i],jalanReviews:c.jalanReviews[i]})}
  const keys=new Map<string,number[]>();
  text.nameKeys.forEach((list,i)=>{for(const key of list){const rows=keys.get(key);if(rows)rows.push(i);else keys.set(key,[i])}});
  s.text=text;s.index={prepared:prepareSearchIndex(hotels),keys};
@@ -156,17 +157,10 @@ export function resultPage(s:SearchSnapshot,r:SearchResult,page:number):SearchRe
  const hotels=r.order.slice((actual-1)*PAGE_SIZE,actual*PAGE_SIZE).map(i=>s.cards[i]);
  return{hotels,total:r.total,unknownExcluded:r.unknownExcluded,page:actual,pageSize:PAGE_SIZE,featureCounts:r.featureCounts,ryokanCount:r.ryokanCount,coverage:s.manifest.coverage,similarCount:r.similarCount,similarHotelIds:pageSimilar(r,hotels),alternatives:r.alternatives};
 }
-// SQLite AVG of a REAL column: integers summed exactly until the first real
-// value, then a Kahan-Babuska-Neumaier sum.
-function sqliteAverage(values:number[]){
- let integer=0,approximate=false,sum=0,error=0;
- for(const value of values){
-  if(!approximate&&Number.isInteger(value)){integer+=value;continue}
-  if(!approximate){approximate=true;sum=integer;error=0}
-  const t=sum+value;error+=Math.abs(sum)>Math.abs(value)?(sum-t)+value:(value-t)+sum;sum=t;
- }
- return approximate?(sum+error)/values.length:integer/values.length;
-}
+// A cell's marker sits on the point of the member nearest the members' mean on the screen
+// (lib/map-groups.ts nearestMean), not on the mean (U07: around islands and bays the mean lies in
+// the sea). The former Worker answered the SQL average, so scripts/compare-static-search.mjs now
+// differs from it in cells' lat and lng only.
 // Every matching hotel inside the bounds: points (id order) up to the limit,
 // else counts on a 16 x 16 grid over the bounds.
 export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=false,savedIds:string[]=[],geo:GeoColumns|null=null):MapAreaResponse{
@@ -185,13 +179,13 @@ export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=fa
  const result:MapAreaResponse={total,inBounds:inside.length,outOfBounds:total-withoutCoordinates-inside.length,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
  if(!inside.length)return result;
  const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,Math.max(1,geo?.grade[i]??1)]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
- if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:c.name[i],lat,lng,score:score[i],grade}});return result}
+ if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:displayNames(s.cards[i].names).title,lat,lng,score:score[i],grade}});return result}
  const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[];approximate:number}>();
  for(const i of inside){
   const [lat,lng,grade]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
   const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[],approximate:0};cell.lats.push(lat);cell.lngs.push(lng);if(grade>=2)cell.approximate++;cells.set(row*16+col,cell);
  }
- result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({lat:sqliteAverage(x.lats),lng:sqliteAverage(x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
+ result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({...nearestMean(x.lats.map((lat,k)=>({lat,lng:x.lngs[k]}))),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
  return result;
 }
 export function suggestions(s:SearchSnapshot,f:HotelFilters,savedOnly=false,savedIds:string[]=[]):HotelSuggestion[]{

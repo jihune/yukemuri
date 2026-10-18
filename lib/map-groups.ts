@@ -4,13 +4,17 @@
 //
 // Grouping runs over the stays inside the current view only, in square cells of the
 // world pixel grid at the current zoom. A group therefore holds only stays that are on
-// screen and sits at their mean position, which is on screen too, so
+// screen and sits on one of their points, which is on screen too, so
 //   stays in view = single markers + the numbers on group markers
 // holds exactly at every zoom, and the list beside the map shows the same stays. A
 // whole-set clusterer (supercluster) places a cluster at the centre of all its members,
 // so a cluster can sit off screen while some members are on screen and those stays would
 // vanish from the view; that is the failure the user asked to avoid. The cells are
 // anchored to the world grid, not the screen, so panning does not reshuffle them.
+//
+// A group sits on the point of the member nearest the members' mean, never on the mean
+// itself (U07): around islands and bays the mean falls in the sea, and the user saw a
+// group of 317 stays 40 km out between Miyako and Ishigaki (docs/U07-20261019.md).
 //
 // Positions are Web Mercator x/y in [0, 1] (Leaflet EPSG:3857: 256px at zoom 0), computed
 // once per result. grade: lib/search-snapshot.ts GEO_GRADE (1 = the source's own point,
@@ -37,8 +41,9 @@ export type ViewGroups={markers:MapMarker[];
 
 // A group marker is up to 60px wide; cells a little wider keep neighbours from overlapping much.
 export const GROUP_CELL_PX=72;
-// The largest marker icon (stay-map.tsx: groups 60×44, single stays 52×44); icons centred on
-// points closer than this in both directions overlap.
+// The largest marker icon (stay-map.tsx: groups 60×44, single stays 52×44). Every icon stands on
+// its point with the same offset (the caret's tip), so icons on points closer than this in both
+// directions overlap.
 export const MARKER_PX={width:60,height:44};
 // Web Mercator x/y in [0, 1] at zoom 0, as Leaflet projects.
 export const mercatorPoint=(lat:number,lng:number):[number,number]=>[mercatorX(lng),mercatorY(lat)];
@@ -73,9 +78,9 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
  // Neighbouring cells can put two icons almost on top of each other across a cell border;
  // the lower one could then not be seen or tapped. So in passes, each group (largest first)
  // takes in the groups whose icons overlap its own, found through buckets of icon size,
- // until a pass merges nothing. A merged group sits at its members' mean, inside the view.
+ // until a pass merges nothing. A merged group sits on a member's point (place), inside the view.
  type Group={members:number[];lat:number;lng:number};
- let groups:Group[]=[...cells.values()].map(members=>{let la=0,lo=0;for(const k of members){la+=p.lat[k];lo+=p.lng[k]}return{members,lat:la/members.length,lng:lo/members.length}});
+ let groups:Group[]=[...cells.values()].map(members=>({members,...place(p,members)}));
  const W=MARKER_PX.width,H=MARKER_PX.height;
  for(let merged=true;merged;){
   merged=false;
@@ -89,15 +94,13 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
   const taken=new Uint8Array(n),next:Group[]=[];
   for(let i=0;i<n;i++){
    if(taken[i])continue;taken[i]=1;
-   const g=groups[i],bx=Math.floor(x[i]/W),by=Math.floor(y[i]/H);
-   let la=g.lat*g.members.length,lo=g.lng*g.members.length;
+   const g=groups[i],bx=Math.floor(x[i]/W),by=Math.floor(y[i]/H),size=g.members.length;
    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)for(const j of buckets.get((bx+dx)*2**24+by+dy)??[]){
     if(taken[j]||Math.abs(x[i]-x[j])>=W||Math.abs(y[i]-y[j])>=H)continue;
     taken[j]=1;merged=true;
-    const h=groups[j];la+=h.lat*h.members.length;lo+=h.lng*h.members.length;
-    for(const k of h.members)g.members.push(k);
+    for(const k of groups[j].members)g.members.push(k);
    }
-   next.push({members:g.members,lat:la/g.members.length,lng:lo/g.members.length});
+   next.push(g.members.length===size?g:{members:g.members,...place(p,g.members)});
   }
   groups=next;
  }
@@ -109,6 +112,38 @@ export function viewGroups(p:ResultPositions,view:MapView,cellPx=GROUP_CELL_PX):
   markers.push({kind:'group',rows:members.map(k=>p.rows[k]),count:members.length,lat,lng,samePoint:south===north&&west===east,south,west,north,east,approximate});
  }
  return{markers,inView:inView.map(k=>p.rows[k]),outOfView:p.rows.length-inView.length,unknown:p.unknown.length,total:p.rows.length+p.unknown.length};
+}
+
+// The member point nearest the members' mean, in Web Mercator x/y (the screen's own scale).
+function place(p:ResultPositions,members:number[]){
+ let mx=0,my=0;for(const k of members){mx+=p.x[k];my+=p.y[k]}
+ mx/=members.length;my/=members.length;
+ let best=members[0],dist=Infinity;
+ for(const k of members){const d=(p.x[k]-mx)**2+(p.y[k]-my)**2;if(d<dist){dist=d;best=k}}
+ return{lat:p.lat[best],lng:p.lng[best]};
+}
+
+// The member nearest the members' mean on the screen (Web Mercator, as place above): where the
+// area search's grid cells put their marker (lib/static-search.ts mapArea). Never the mean itself
+// (U07: around islands it lies in the sea).
+export function nearestMean<T extends {lat:number;lng:number}>(list:T[]):T{
+ const ps=list.map(h=>mercatorPoint(h.lat,h.lng)),mx=ps.reduce((a,p)=>a+p[0],0)/ps.length,my=ps.reduce((a,p)=>a+p[1],0)/ps.length;
+ const d=(k:number)=>(ps[k][0]-mx)**2+(ps[k][1]-my)**2;
+ let best=0;for(let k=1;k<ps.length;k++)if(d(k)<d(best))best=k;
+ return list[best];
+}
+
+// The area search's spots as markers (components/stay-map.tsx), in screen pixels: a spot whose
+// marker would overlap the marker on a group's first spot joins that group, else starts one. Its
+// marker sits on that first spot, so no two markers overlap and each points at a stay. Markers
+// of one size and anchor overlap when both the gaps across and down are under that size.
+// (#151: on the member nearest the mean, spots at 0, 40, 51 and 84px put two 52px markers 44px
+// apart; merging such groups again chained them across the map; a distance under 52px missed
+// markers 40px across and 40px down.)
+export function spotGroups<T>(items:T[],at:(item:T)=>[number,number],width:number,height:number):T[][]{
+ const groups:{items:T[];x:number;y:number}[]=[];
+ for(const item of items){const [x,y]=at(item),near=groups.find(g=>Math.abs(g.x-x)<width&&Math.abs(g.y-y)<height);if(near)near.items.push(item);else groups.push({items:[item],x,y})}
+ return groups.map(g=>g.items);
 }
 
 // Stays a marker stands for (one for a single marker, every member for a group).

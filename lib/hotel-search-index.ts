@@ -7,8 +7,10 @@ import {featureMasks} from './hotel-bath-facts';
 import {providerRating} from './hotel-ratings';
 
 export const SEARCH_FEATURES=Object.keys(FEATURE_LABELS) as HotelFilters['features'];
+// title: the name the card shows (displayNames), which a suggestion shows too; names[0] is the
+// stored names.ko, which the Wikidata names (D07) and the name rule may not show (U07 task 8).
 export type SearchIndexHotel={
-  id:string;names:string[];location:string;context:string;region:string;prefecture:string|null;kind:string;features:number;knownFeatures?:number;
+  id:string;names:string[];title?:string;location:string;context:string;region:string;prefecture:string|null;kind:string;features:number;knownFeatures?:number;
   tripScore:number|null;tripReviews:number|null;jalanScore:number|null;jalanReviews:number|null;
 };
 export function searchIndexHotel(hotel:Hotel):SearchIndexHotel{
@@ -35,5 +37,5 @@ export function localHotelSuggestions(index:PreparedSearchIndex,query:string,fil
     const score=filters.ratingProvider==='jalan'?h.jalanScore:h.tripScore,reviews=filters.ratingProvider==='jalan'?h.jalanReviews:h.tripReviews;
     return (!savedIds||savedIds.has(h.id))&&(!filters.ryokanOnly||h.kind==='ryokan')&&(h.features&mask)===mask&&(!filters.minRating||score!==null&&score>=filters.minRating)&&(!filters.minReviews||reviews!==null&&reviews>=filters.minReviews);
   });
-  return searchIndexMatches(eligible,query,filters.region).sort((a,b)=>b.score-a.score||(b.hotel.tripReviews??0)-(a.hotel.tripReviews??0)||a.id.localeCompare(b.id)).slice(0,8).map(match=>({id:match.id,name:match.hotel.names[0],location:match.hotel.location,matchedName:match.matchedName,similar:match.similar}));
+  return searchIndexMatches(eligible,query,filters.region).sort((a,b)=>b.score-a.score||(b.hotel.tripReviews??0)-(a.hotel.tripReviews??0)||a.id.localeCompare(b.id)).slice(0,8).map(match=>{const name=match.hotel.title??match.hotel.names[0];return{id:match.id,name,location:match.hotel.location,matchedName:match.matchedName.trim()||name,similar:match.similar}});
 }
