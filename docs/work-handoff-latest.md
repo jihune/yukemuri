@@ -59,7 +59,7 @@
 | 하위 세션 | 일함: O03(C05 측정), U07(#166 P3 후속 PR). 쉼: C04, D07, U05, U06, L01, D05(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 여섯 번째 상위 세션에 묶인 예약 세 개(위 1-5). 하위 세션 예약: O03의 첫 매일 점검 확인(10-19T02:45Z)과 C05 이틀 측정(10-21T02:10Z), 그 밖에 U07이 자기 PR 확인용으로 잡는 것. 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
 | 사용량 | 10-18T17:01:01Z 5시간 창 0.16(재설정 20:40Z), 7일 창 0.56(재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_01M7TTyzzQPadBMiWAGFWCR4`(10-18T09:03Z 알림부터). 앞 관리 세션 `session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여섯 번째 상위 세션에 설치된 판은 `8e9695c`(하네스 main head와 같음, 10-18T09:16Z `list_commits`) | 위 1-1 |
+| 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여섯 번째 상위 세션에 설치된 판은 `8e9695c`(하네스 main head와 같음, 10-18T09:16Z `list_commits`) | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
@@ -109,7 +109,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
-| `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
+| `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
 ### 7. 인계 결과(다음 상위 세션이 적는다)
@@ -126,6 +126,7 @@
 - 10-18T19:15Z 안전망 확인 5회째: 사용량 5시간 0.20, 7일 0.57. 두 번째 매시간 실행이 18:53Z에 왔다(실행기 run 39156219002, 앱 collect run 39156227847 진행 중). 16:37Z·17:37Z·18:37Z 예약 가운데 하나만 실행돼, 매시간 cron인데도 실제 간격이 약 3시간이다(C05 측정에서 확인). #171은 Codex 2회째(`dfdb1e2`)에서 P2 1건(중국어 원문에 일본어 `lang`)이 나와 U07이 처리 중이다. 다음 안전망 확인은 23:15Z.
 - 10-18T20:57Z U07 요청으로 #171의 4번째 검토(이어 가는 Claude 검토 1회째) 세션 `session_01SCZ6RqhjwEt917mkqPUJKH`를 열었다(검토 커밋 `d57db19`, `checks`·GitGuardian 성공, 충돌 없음). Codex 세 번은 P2 1건씩이었고 모두 고쳤다(영어 설명 검사, 한자만 있는 중국어의 `lang`, 결합 문자 악센트).
 - 10-18T21:35Z #171 4번째 검토(review 5565067303)는 P2 1건이다. 영어 판정이 A-Za-z만 받아, 운영 숙소 trip-687323(`Sensō-ji`의 ō)에서 main에 있던 번역 단추가 사라진다(브라우저 재현, 공개 상세 API 표본 202곳 가운데 1곳). #166 P3 다섯 건과 Codex P2 세 건은 해결됐고, `cloud-check --full` 47개와 브라우저 검사 20개가 통과했다. 같은 갈래 지적이 세 번째라, 상위 세션이 근본 원인을 고치게 했다. 원인은 함수 하나가 원문 `lang`과 단추 표시를 함께 정한 것이다. 단추와 원문 언어는 main 규칙으로, `lang`은 지금의 엄격한 규칙으로 나눈다. 다음은 5번째 검토이고, 사용자에게 묻지 않고 받는 마지막 검토다. 검토 세션은 이 결과를 기록하기 전에 보관했다(순서 실수, 결과는 PR 리뷰와 이 줄에 있음).
+- 10-18T22:04Z 사용자 지시 ‘U07 교훈도 하네스 관리 세션에 넘겨라, 최신 하네스 관리 세션은 변경되었을 수 있다’(새 관리 세션 `session_01WusoPNSswrf4gH76sh9bF2`)에 따라, U07 문서(브랜치 `claude/u07-ui` `d57db19`)의 ‘## U07 교훈’ 아홉 항목을 원문 그대로 새 관리 세션에 보냈다(delivered).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
