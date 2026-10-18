@@ -6,20 +6,20 @@
 
 ## 상위 세션 인계
 
-여섯 번째 상위 세션 `session_01T2rEzYyaSi8qtavjsZawQB`(10-18T09:15Z 시작, 브랜치 `claude/yukemuri-parent`, 하네스 `8e9695c`)가 이 절을 10-18T17:0xZ에 다시 썼다. 열린 PR이 없는 단계 경계이고 문서가 4시간 만에 53 KB가 되어 지금 상태만 남겼다. 여섯 번째 상위 세션이 그대로 이어 일한다. 이 절의 사실은 적은 시각에 맞았다. 이어받는 세션은 아래 3의 확인 명령으로 다시 본다.
+여섯 번째 상위 세션 `session_01T2rEzYyaSi8qtavjsZawQB`(10-18T09:15Z 시작, 브랜치 `claude/yukemuri-parent`, 하네스 `8e9695c`)가 이 절을 10-18T22:1xZ에 고쳤다. 하네스 setup 29(`b0b9917`)가 새 세션에 닿았고 이 세션의 하네스가 그보다 오래돼서, 하네스 `cloud-session-ops` §8 「When to hand off」(1)에 따라 일곱 번째 상위 세션에 넘긴다. 이 세션의 계보 깊이가 5(한도 8)라 `create_session`으로 열면 한도까지 두 단계만 남으므로, 같은 절 「Lineage has a ceiling」에 따라 사용자가 웹에서 새 세션을 연다. 이 절의 사실은 적은 시각에 맞았다. 이어받는 세션은 아래 3의 확인 명령으로 다시 본다.
 
 ### 1. 다음 상위 세션이 이어받을 때 할 일
 
-인계 방법: 지금 상위 세션이 다음 상위 세션을 `create_session`(그때의 상위 모델)으로 열고 ‘main의 docs/work-handoff-latest.md 「상위 세션 인계」를 열어 요약하지 말고 1의 순서대로 실행한 뒤 4를 이어 하라’는 한 줄만 보낸다. 옛 상위 세션은 그 뒤 새 일을 하지 않고 `claude/yukemuri-parent`에 push하지 않으며, 받은 메시지를 새 상위 세션에 넘긴다. 보관하지 않는다.
+인계 방법: 지금 상위 세션의 계보 깊이(`get_session`의 `lineage`)가 한도에서 두 단계 안이 아니면, 지금 상위 세션이 다음 상위 세션을 `create_session`(그때의 상위 모델)으로 열고 ‘main의 docs/work-handoff-latest.md 「상위 세션 인계」를 열어 요약하지 말고 1의 순서대로 실행한 뒤 4를 이어 하라’는 한 줄만 보낸다. 두 단계 안이면 사용자가 웹에서 같은 한 줄로 연다(환경 `Default`, 저장소 `jihune/yukemuri`·`jihune/yukemuri-script-runner`·`jihune/agent-harness`). 옛 상위 세션은 그 뒤 새 일을 하지 않고 `claude/yukemuri-parent`에 push하지 않으며, 받은 메시지를 새 상위 세션에 넘긴다. 보관하지 않는다.
 
 이어받는 세션은 하네스 규칙(인계를 받은 세션의 누락 점검)대로 이 인계에 빠진 것이 없는지 스스로 점검한다. 옛 상위 세션의 사용자 메시지(`list_events(session_id=<옛 상위 세션>, kinds=["user"], limit=100)`을 `before_id`로 거슬러 읽음)를 아래 2·4와 대조한다. 결과가 커서 파일로 저장되면 스크립트로 글 블록만 뽑는다. 사용자의 작업이나 결정이 필요하면 사용자에게 묻는다(사용자 10-17T17:0xZ: ‘인계시 새 세션에서 작업한다면 인계한거 빠진거 없는지는 규칙에 따라 자동으로 검토하면 될거다. 사용자 작업이나 결정 필요사항 있다면 새 세션에서 역질문 하던가 답변해주면 된다.’). 다섯 번째 상위 세션이 받은 사용자 지시는 아래 2의 10-18T02:25:44Z(실행기 규칙), 06:13Z·06:30Z(Jalan 이름), 07:40Z(검토 상한과 요약 문장) 줄과, 끝난 일회성 지시 하나(교훈을 하네스 관리 세션에 넘기기, `docs/history/lessons-parent5-20261018.md`)다.
 
-1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 여섯 번째 상위 세션은 `8e9695c 2026-10-18`이었다(하네스 main의 10-18T09:02:31Z 병합 커밋, setup 28 `9756172`보다 새 판). 이보다 새 판이면 정상이다. 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
+1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 여섯 번째 상위 세션은 `8e9695c 2026-10-18`이었다. 일곱 번째는 setup 29 `b0b9917 2026-10-19`이거나 그보다 새 판이어야 한다(하네스 관리 세션 `session_01WusoPNSswrf4gH76sh9bF2`의 10-18T22:04:55Z 알림). 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`는 `add_repo`(access push)로 붙인다. 하네스 문장을 직접 읽으려면 `jihune/agent-harness`를 `add_repo`(access read)로 붙이고 GitHub 도구로 파일을 읽는다.
-5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T15:16Z 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 6회째 `trig_01Cb42R3JdZyD1BNvn9mig5p`(10-18T23:15Z, 5회째는 19:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
-6. 모든 하위 세션(아래 6의 일하는 네 곳과 쉬는 네 곳)에 새 상위 세션 id를 `send_message`(priority later)로 알린다. 하위 세션의 `@parent`는 자기를 연 옛 상위 세션을 가리키므로, 앞으로는 새 상위 세션 id로 보내라고 적는다. 옛 상위 세션에도 알리고, 그 세션은 보관하지 않는다.
+5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T22:1xZ 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 6회째 `trig_01Cb42R3JdZyD1BNvn9mig5p`(10-18T23:15Z, 5회째는 19:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
+6. 모든 하위 세션(아래 6의 일하는 두 곳과 쉬는 여섯 곳)에 새 상위 세션 id를 `send_message`(priority later)로 알린다. 하위 세션의 `@parent`는 자기를 연 옛 상위 세션을 가리키므로, 앞으로는 새 상위 세션 id로 보내라고 적는다. 옛 상위 세션에도 알리고, 그 세션은 보관하지 않는다.
 7. 결과(돌린 명령과 실제 출력)를 이 문서 아래 7에 적어 기록 PR로 넣고, 사용자에게 한국어로 짧게 보고한다.
 
 ### 2. 지금도 따르는 사용자 지시
@@ -52,20 +52,20 @@
 
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
-| main | 이 기록 PR이 들어간다. 그 앞은 `1e03978`(PR #166, U07 PR 다), `14ec90d`(PR #169, C04 기록), `704fa8d`(PR #168, 기록), `2453e2d`(PR #163, C04 예산), `2e6fe5f`(PR #165, D07 PR 3) | `git log --oneline -6 origin/main` |
-| 열린 PR | 없음(10-18T17:0xZ). 실행기 저장소도 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
+| main | 이 기록 PR이 들어간다. 그 앞은 `86c122b`(PR #170, 기록), `1e03978`(PR #166, U07 PR 다), `14ec90d`(PR #169, C04 기록), `2453e2d`(PR #163, C04 예산), `2e6fe5f`(PR #165, D07 PR 3) | `git log --oneline -6 origin/main` |
+| 열린 PR | yukemuri #171(U07 후속, #166 4번째 검토 P3 다섯 건). Codex 3회와 이어 가는 Claude 검토 1회(4번째, P2 1건: 단추 표시와 원문 `lang`을 나누게 함)를 받았고 U07이 고치는 중이다. 다음은 5번째 검토이고, 사용자에게 묻지 않고 받는 마지막 검토다. 실행기 저장소는 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
 | 운영 배포 | 마지막 코드 배포는 PR #166(`1e03978`, run 39146801535, 10-18T16:50:06Z–17:00:55Z, Worker `4e7ed2fb`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `903a706551314896`, 24,208곳, 생성 읽기 125,002행)이다. 10-18의 코드 배포 일곱 번은 `deployments.md`에 있다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분(`37 * * * *`, 실행기 PR #14, 10-18T12:31Z)이다. GitHub `schedule`이 늦게 와서 첫 실행은 16:06:57Z였다(실행기 run 39143537085). `collection-budget.mjs`(PR #163)는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000이다. 0쪽 실행은 수집기와 스냅숏을 건너뛰어 D1을 읽지 않는다. 마지막 앱 `collect.yml` 실행은 run 39143547354(16:07:05Z–16:34:59Z, 성공, 120쪽) | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, 실행기 `yukemuri-catalog.yml`도 같은 방법 |
 | 하위 세션 | 일함: O03(C05 측정), U07(#166 P3 후속 PR). 쉼: C04, D07, U05, U06, L01, D05(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 여섯 번째 상위 세션에 묶인 예약 세 개(위 1-5). 하위 세션 예약: O03의 첫 매일 점검 확인(10-19T02:45Z)과 C05 이틀 측정(10-21T02:10Z), 그 밖에 U07이 자기 PR 확인용으로 잡는 것. 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
-| 사용량 | 10-18T17:01:01Z 5시간 창 0.16(재설정 20:40Z), 7일 창 0.56(재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여섯 번째 상위 세션에 설치된 판은 `8e9695c`(하네스 main head와 같음, 10-18T09:16Z `list_commits`) | 위 1-1 |
+| 사용량 | 10-18T22:06:12Z 5시간 창 0.05(재설정 10-19T01:40Z), 7일 창 0.58(재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
+| 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여섯 번째 상위 세션에 설치된 판은 `8e9695c`, 새 세션은 setup 29 `b0b9917` | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
 1. H01 7단계: 6일차(10-19T01:20Z)와 7일차(10-20T01:20Z)를 예약대로 본다(`H01-20261011.md` 「7단계 기록(매일)」). 6일차에는 PR #130의 `writesPerPage` 151·`snapshotReads` 330,000으로 그날 쓰기가 85% 안에 들었는지 본다. 7일차 뒤 아래 ‘C1’ 항목을 닫고 7단계를 정리한다. PR #130의 회차 경위는 `docs/history/work-handoff-20261018.md` 「상위 세션 인계」 4의 H01 항목에 있다.
 2. O03 사용량 점검 자동화(이후 아이디어 10, 하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`): 앱 PR #131과 실행기 PR #11이 병합됐다. 실행기 예약이 매일 01:41Z에 앱 점검을 부르고, 85% 이상·1102·0쪽 수집(그날 실행이 모두 0쪽일 때만)·26분 초과·백업 실패면 실패 메일이 간다. 첫 예약 실행(10-19T01:41Z)은 O03이 10-19T02:45Z에 확인한다. 7일차(10-20) 뒤 상위 세션의 Claude 매일 점검을 끝내고, 실패 메일이 온 날만 run 요약을 본다.
-3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR 가(#133), 할 것 7(#148), PR 나(#151), PR 다(#166, 설명을 데스크톱 Chrome·Edge의 브라우저 내장 번역으로 그 자리에서 번역)가 모두 병합·배포됐다. 다음은 #166 4번째 검토가 남긴 P3 다섯 건의 작은 후속 PR이다(최신 main에서): 모델을 받는 중 언마운트되면 번역기를 destroy, 검사의 ‘줄마다’ 판정, 데스크톱인데 쓸 수 없을 때의 안내 문구와 모델 크기(약 110MB), 번역 없는 원문 단락의 `lang`, U07 문서의 Edge 지원 표 출처. 코드 PR이라 검토 규칙은 같다.
+3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR 가(#133), 할 것 7(#148), PR 나(#151), PR 다(#166, 설명을 데스크톱 Chrome·Edge의 브라우저 내장 번역으로 그 자리에서 번역)가 모두 병합·배포됐다. #166 4번째 검토가 남긴 P3 다섯 건의 후속 PR #171이 열려 있다(위 3의 열린 PR). 4번째 검토의 P2(영어 판정이 장음 부호 ō를 막아 운영 숙소 trip-687323의 단추가 사라짐)는 같은 갈래 세 번째라, 상위 세션이 단추 표시와 원문 언어는 main 규칙으로, 원문 `lang`은 엄격한 규칙으로 나누게 했다(10-18T21:4xZ). U07이 고친 뒤 5번째 검토를 요청하면 상위 세션이 검토 세션을 연다.
 4. C04 쪽당 D1 쓰기 줄이기(하위 세션 `session_01BFCCsaQ7tWzZRYedC5aTVL`, 상세 `C04-20261019.md`와 아래 「C04」): 예산 PR #163과 첫 실측 기록 PR #169가 병합됐다. C04는 쉰다. 다음 작업 후보 두 가지(실행 안에서 쓴 행·읽은 행을 재며 멈춤, 몇 쪽짜리 마지막 실행 건너뛰기)는 아래 6의 C05 측정 뒤 상위 세션이 사용자에게 함께 제안한다.
 5. D07 한국어·영어 이름 넓히기(하위 세션 `session_01P9cAoY1mYPco2JKPBhvgqv`, 상세 `D07-20261019.md`): PR 1(#145, Wikidata), PR 2(#154, Jalan 한국어·영어 목록 이름), PR 3(#165, 사진 출처 이름·파서 계약 한도·로컬 사이트 마이그레이션)이 모두 병합·배포됐다. 정해진 다음 일은 없다. Jalan 이름 수집은 수집 실행마다 낮은 우선순위로 이어진다.
 6. C05 수집 예약을 매시간으로(사용자 10-18T11:3xZ, O03 세션, brief `C05-20261018.md`): 앱 PR #160과 실행기 PR #14가 병합됐다. 첫 매시간 실행은 cron 변경 뒤 3시간 반 만에 왔다. 이 저장소들의 GitHub `schedule` 실행은 늘 몇 시간씩 늦다(앱 `collect-watch.yml` 4–5시간, 실행기 백업 2–3시간; 근거는 옮긴 파일 8의 14:06Z·15:15Z 기록과 `docs/evidence/h01-schedule-gap-20261018/`). O03이 10-19·10-20 이틀(실행 수, 처리 쪽수, D1 비율, 실행기 Actions 분)을 재어 10-21T02:10Z에 알린다. 그 뒤 상위 세션이 사용자에게 제안할 것: 실행마다 드는 고정 읽기(실행 끝 대기열 읽기 약 8.5만 행, 스냅숏 약 12.5만 행)를 줄이는 방안과 C04의 두 후보, 그리고 예약이 계속 늦거나 빠지면 GitHub `schedule` 밖에서 부르는 방안. C04의 모의로는 지금 값에서 하루 약 930–1,190쪽(10-17은 679쪽)이고 읽기가 쪽수를 묶는다. `snapshotReads` 168,000은 스냅숏 증가 속도로 이틀 남짓 버티므로 측정 때 다시 본다.
@@ -97,8 +97,8 @@
 
 | 세션 | 맡은 일 | 상태 |
 |---|---|---|
-| `session_01T2rEzYyaSi8qtavjsZawQB` | 여섯 번째 상위 세션(지금, 10-18T09:15Z 시작, 하네스 `8e9695c`) | 일함 |
-| `session_01XUUTkd9FhQQbmKkqVnsnCj` | 다섯 번째 상위 세션 | 10-18T09:15Z에 인계함. 보관하지 않음. 받은 메시지를 새 상위 세션에 넘긴다 |
+| `session_01T2rEzYyaSi8qtavjsZawQB` | 여섯 번째 상위 세션(10-18T09:15Z 시작, 하네스 `8e9695c`) | 10-18T22:1xZ에 인계함. 보관하지 않음. 받은 메시지를 새 상위 세션에 넘긴다 |
+| `session_01XUUTkd9FhQQbmKkqVnsnCj` | 다섯 번째 상위 세션 | 10-18T09:15Z에 인계함. 보관하지 않음 |
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01PuNgLiSyMdn35DxmRigJmK`, `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 세 번째, 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화와 C05 수집 예약 매시간(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함. 첫 매일 점검 확인(10-19T02:45Z), C05 이틀 측정(10-21T02:10Z) |
@@ -114,7 +114,7 @@
 
 ### 7. 인계 결과(다음 상위 세션이 적는다)
 
-다섯 번째 → 여섯 번째 상위 세션의 결과는 `docs/history/work-handoff-20261018T1250Z.md` 「상위 세션 인계」 7에 있다. 다음 인계 때 받는 세션이 여기에 적는다.
+여섯 번째 → 일곱 번째 상위 세션: 받는 세션이 위 1의 결과를 여기에 적는다. 다섯 번째 → 여섯 번째의 결과는 `docs/history/work-handoff-20261018T1250Z.md` 「상위 세션 인계」 7에 있다.
 
 ### 8. 기록
 
@@ -127,6 +127,7 @@
 - 10-18T20:57Z U07 요청으로 #171의 4번째 검토(이어 가는 Claude 검토 1회째) 세션 `session_01SCZ6RqhjwEt917mkqPUJKH`를 열었다(검토 커밋 `d57db19`, `checks`·GitGuardian 성공, 충돌 없음). Codex 세 번은 P2 1건씩이었고 모두 고쳤다(영어 설명 검사, 한자만 있는 중국어의 `lang`, 결합 문자 악센트).
 - 10-18T21:35Z #171 4번째 검토(review 5565067303)는 P2 1건이다. 영어 판정이 A-Za-z만 받아, 운영 숙소 trip-687323(`Sensō-ji`의 ō)에서 main에 있던 번역 단추가 사라진다(브라우저 재현, 공개 상세 API 표본 202곳 가운데 1곳). #166 P3 다섯 건과 Codex P2 세 건은 해결됐고, `cloud-check --full` 47개와 브라우저 검사 20개가 통과했다. 같은 갈래 지적이 세 번째라, 상위 세션이 근본 원인을 고치게 했다. 원인은 함수 하나가 원문 `lang`과 단추 표시를 함께 정한 것이다. 단추와 원문 언어는 main 규칙으로, `lang`은 지금의 엄격한 규칙으로 나눈다. 다음은 5번째 검토이고, 사용자에게 묻지 않고 받는 마지막 검토다. 검토 세션은 이 결과를 기록하기 전에 보관했다(순서 실수, 결과는 PR 리뷰와 이 줄에 있음).
 - 10-18T22:04Z 사용자 지시 ‘U07 교훈도 하네스 관리 세션에 넘겨라, 최신 하네스 관리 세션은 변경되었을 수 있다’(새 관리 세션 `session_01WusoPNSswrf4gH76sh9bF2`)에 따라, U07 문서(브랜치 `claude/u07-ui` `d57db19`)의 ‘## U07 교훈’ 아홉 항목을 원문 그대로 새 관리 세션에 보냈다(delivered).
+- 10-18T22:1xZ 하네스 setup 29가 새 세션에 닿아 일곱 번째 상위 세션에 넘기기로 했다(위 머리 문단). 계보 깊이 5(한도 8)라 사용자가 웹에서 연다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
