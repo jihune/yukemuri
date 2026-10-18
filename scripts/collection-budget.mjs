@@ -13,12 +13,15 @@ export const BUDGET=Object.freeze({
  maxPages:120,         // one run; the runner dispatches hourly (C05), so later runs of a day often get 0
  fallbackPages:16,     // usage unreadable: the run size before C03
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
- writesPerPage:151,    // 2026-10-17: up to 150.4 a page between runs (day average 129.7; 77 on 10-13).
+ writesPerPage:80,     // 2026-10-18, after C04: at most 56.0 a page between runs (150.4 before), about
+                       // 75 estimated for the most list pages a run has had, 79 for a D07 names page.
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
- readsPerPage:3000,    // 2026-10-17: 2,713-2,981 a page between runs, snapshot taken out
- snapshotReads:330000  // 2026-10-17: the last snapshot build read 257,099 rows (23,032 hotels), up
-                       // 33,760 that day as hotels grew; this leaves two more days of that growth
+ readsPerPage:3100,    // 2026-10-17: up to 2,981 a page between runs, snapshot taken out; D07 names
+                       // claims add up to 93 (PR #154 review)
+ snapshotReads:168000  // 2026-10-18: the last snapshot build read 122,302 rows (23,784 hotels, after
+                       // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
+                       // growth (5.73 rows a hotel, 3,051 hotels on 10-17)
 });
 
 // usage: {rowsRead, rowsWritten} of the account today; null counts mean no
