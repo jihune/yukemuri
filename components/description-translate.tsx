@@ -51,14 +51,16 @@ export default function DescriptionTranslate({text}:{text:string}){
  }
  if(state.kind==='checking')return null;
  if(state.kind==='unsupported')return <p className="translate-note">이 브라우저에서는 바로 번역을 쓸 수 없습니다. 데스크톱 Chrome·Edge에서는 이 자리에서 번역할 수 있습니다.</p>;
- if(state.kind==='done')return <div className="browser-translation">
-  <p className="description-caption">브라우저 번역 · 이 기기 안에서 자동으로 번역해 틀릴 수 있습니다</p>
-  <p className="hotel-intro" lang="ko">{state.text}</p>
-  <button type="button" className="translate-button" onClick={()=>setState({kind:'ready'})}><X size={16} aria-hidden="true"/>번역 닫기</button>
- </div>;
+ const done=state.kind==='done',busy=state.kind==='translating';
+ const status=state.kind==='failed'?'번역하지 못했습니다.':busy?(state.progress!==undefined&&state.progress<100?`번역 모델을 받는 중 ${state.progress}%`:'번역하는 중…'):done?'한국어 번역을 원문 아래에 붙였습니다.':'';
+ // One status line and one button in every state: a keyboard user's focus stays on the button as
+ // the translation arrives or closes (a removed or disabled button drops it to the sheet), and a
+ // screen reader hears each step, the last one too.
  return <div className="browser-translation">
-  {state.kind==='failed'?<p className="translate-note" role="status">번역하지 못했습니다.</p>:state.kind==='translating'&&<p className="translate-note" role="status">{state.progress!==undefined&&state.progress<100?`번역 모델을 받는 중 ${state.progress}%`:'번역하는 중…'}</p>}
-  <button type="button" className="translate-button" onClick={translate} disabled={state.kind==='translating'}>{state.kind==='failed'?<RotateCw size={16} aria-hidden="true"/>:<Languages size={16} aria-hidden="true"/>}{state.kind==='failed'?'다시 시도':'이 자리에서 한국어로 번역'}</button>
+  {done&&<p className="description-caption">브라우저 번역 · 이 기기 안에서 자동으로 번역해 틀릴 수 있습니다</p>}
+  {done&&<p className="hotel-intro" lang="ko">{state.text}</p>}
+  <p className={status&&!done?'translate-note':'sr-only'} role="status">{status}</p>
+  <button type="button" className="translate-button" aria-disabled={busy||undefined} onClick={busy?undefined:done?()=>setState({kind:'ready'}):translate}>{done?<X size={16} aria-hidden="true"/>:state.kind==='failed'?<RotateCw size={16} aria-hidden="true"/>:<Languages size={16} aria-hidden="true"/>}{done?'번역 닫기':state.kind==='failed'?'다시 시도':'이 자리에서 한국어로 번역'}</button>
   {state.kind==='ready'&&<p className="translate-note">브라우저 안에서 번역합니다. 처음 한 번은 번역 모델을 받습니다.</p>}
  </div>;
 }

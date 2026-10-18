@@ -7,7 +7,9 @@
 // - Chrome (checked at 390px) or Edge (at 1280px) with the pair available shows a 44px button and
 //   never the note, not even for a frame while it asks the browser; pressing it shows the
 //   download progress, then the translation under the original, marked as the browser's, in
-//   Korean, line by line; the original stays; ‘번역 닫기’ hides it;
+//   Korean, line by line; the original stays; ‘번역 닫기’ hides it; the status line says it is
+//   done; on the wide screen the button is pressed with the keyboard and the focus stays on it
+//   (‘번역 닫기’ once the translation is there, the translate button again once it is closed);
 // - a failed translation says so and offers ‘다시 시도’, which works;
 // - a stay whose description is already Korean shows neither button nor note.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -88,10 +90,12 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   if(!await button.count()){check(`${brand}: 번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음`,false,{buttons:0});await c.close();continue}
   const box=await button.boundingBox(),label=await button.textContent(),flashed=await page.evaluate(()=>window.__u07.sawUnsupported);
   // The first press fails (the stand-in's network error), the second works.
-  await (mobile?button.tap():button.click());await page.waitForTimeout(400);
+  // The phone taps; the wide screen presses Enter on the focused button (a keyboard user's path).
+  const press=async()=>{if(mobile)await button.tap();else{await button.focus();await page.keyboard.press('Enter')}};
+  await press();await page.waitForTimeout(400);
   const failed={note:await d.locator('.translate-note[role=status]').textContent().catch(()=>null),label:await button.textContent()};
   check(`${brand}: 번역 단추(44px)가 원문 아래에 있고(‘쓸 수 없습니다’ 안내는 한 번도 보이지 않음), 실패하면 ‘번역하지 못했습니다’와 ‘다시 시도’`,!flashed&&/이 자리에서 한국어로 번역/.test(label)&&box.height>=44&&/번역하지 못했습니다/.test(failed.note??'')&&/다시 시도/.test(failed.label),{label,box,failed,flashed});
-  await (mobile?button.tap():button.click());
+  await press();
   // The stand-in reports 0% at once and 50% after 0.4s, then finishes 0.4s later.
   let progress=null;for(let t=0;t<12&&!/50%/.test(progress??'');t++){await page.waitForTimeout(50);progress=await d.locator('.translate-note[role=status]').textContent().catch(()=>null)}
   if(shots)await d.screenshot({path:join(shots,`translate-progress-${w}.png`)});
@@ -100,7 +104,16 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   const lines=foreign.description.split('\n'),want=lines.map(l=>l.trim()?'번역: '+l.slice(0,12):'').join('\n');
   if(shots)await d.screenshot({path:join(shots,`translate-done-${w}.png`)});
   check('다시 누르면 번역 모델 받는 진행률을 보인 뒤, 원문 아래에 ‘브라우저 번역’ 표시와 함께 한국어 번역(줄마다)이 붙고 원문은 그대로',/번역 모델을 받는 중 50%/.test(progress??'')&&done.translation===want&&done.lang==='ko'&&/브라우저 번역/.test(done.caption??'')&&done.order&&done.original.trim()===foreign.description.trim()&&done.log.create===2&&done.log.activation===true&&done.log.translate.length===lines.filter(l=>l.trim()).length&&errors.length===0,{progress,done:{...done,original:undefined},want});
-  await (mobile?d.locator('.translate-button',{hasText:'번역 닫기'}).tap():d.locator('.translate-button',{hasText:'번역 닫기'}).click());await page.waitForTimeout(200);
+  // Where the keyboard's focus is once the translation arrives, and what the status line says.
+  const focused=()=>page.evaluate(()=>document.activeElement?.matches('.translate-button')?document.activeElement.textContent.trim():'(not the button: '+(document.activeElement?.tagName??'none')+')');
+  const focusDone=await focused(),announced=await d.locator('[role=status]').allTextContents();
+  // The wide screen closes with the keyboard when the focus is on ‘번역 닫기’, else with a click
+  // (so the close check below still judges the closing).
+  if(!mobile&&/번역 닫기/.test(focusDone))await page.keyboard.press('Enter');
+  else await (mobile?d.locator('.translate-button',{hasText:'번역 닫기'}).tap():d.locator('.translate-button',{hasText:'번역 닫기'}).click());
+  await page.waitForTimeout(200);
+  const focusClosed=await focused();
+  check(mobile?'번역이 붙으면 상태 줄이 ‘번역을 원문 아래에 붙였습니다’를 알림':'키보드: 번역이 붙은 뒤 포커스가 ‘번역 닫기’에, 닫은 뒤 ‘이 자리에서 한국어로 번역’에 남고, 상태 줄이 완료를 알림',announced.some(t=>/원문 아래에 붙였습니다/.test(t))&&(mobile||/번역 닫기/.test(focusDone)&&/이 자리에서 한국어로 번역/.test(focusClosed)),{focusDone,focusClosed,announced});
   check('‘번역 닫기’로 번역이 사라지고 원문과 번역 단추가 남음',await d.locator('.browser-translation .hotel-intro').count()===0&&await d.locator('.translate-button',{hasText:'이 자리에서 한국어로 번역'}).count()===1);
   await c.close();
  }

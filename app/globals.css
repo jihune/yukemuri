@@ -1165,7 +1165,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .browser-translation{margin-top:12px}
 .translate-button{display:inline-flex;align-items:center;gap:6px;min-height:var(--yk-tap);padding:0 12px;border:1px solid var(--yk-line);border-radius:var(--yk-radius-sm);background:var(--yk-bg);color:var(--yk-primary);font-size:var(--yk-fs-sm);font-weight:650}
 .translate-button:hover{background:var(--yk-primary-soft)}
-.translate-button:disabled{color:var(--yk-text-3);cursor:progress}
+.translate-button[aria-disabled=true]{color:var(--yk-text-3);cursor:progress}
 .translate-button:focus-visible{outline:2px solid var(--yk-primary);outline-offset:2px}
 .translate-note{margin:6px 0;font-size:var(--yk-fs-xs);color:var(--yk-text-3)}
 .browser-translation>.hotel-intro{padding:10px 14px;border-left:3px solid var(--yk-primary-soft);margin-bottom:8px}
