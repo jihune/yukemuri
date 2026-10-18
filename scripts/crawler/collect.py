@@ -224,8 +224,57 @@ def json_hotels(raw, url=None):
             yield from walk(payload)
 
 
+# D07: one page of Jalan's Korean or English stay list for a prefecture, in this parameter order
+# only (lib/crawl-contract.ts LOCALE_LIST, lib/jalan-locale-names.ts localeListUrl). No stay date:
+# Jalan answers for its default date, so a later visit lists another day's vacancies.
+LOCALE_LIST = re.compile(r'https://www\.jalan\.net/ui/uip1400/uiw1402\.do\?langCd=(ko_KR|en_US)&kenCd=(0[1-9]|[1-3]\d|4[0-7])0000&stayCount=1&roomCount=1&distCd=01&crcyCd=(KRW|USD)&activeSort=1&screenId=UIW1402&idx=([1-9]\d{0,2})&pageNum=\4')
+
+
+def locale_page(url):
+    page = LOCALE_LIST.fullmatch(url)
+    return page if page and (page[1] == 'ko_KR') == (page[3] == 'KRW') else None
+
+
+def locale_list_url(lang, code, page):
+    lang_cd, currency = ('ko_KR', 'KRW') if lang == 'ko' else ('en_US', 'USD')
+    return f'https://www.jalan.net/ui/uip1400/uiw1402.do?langCd={lang_cd}&kenCd={code:02d}0000&stayCount=1&roomCount=1&distCd=01&crcyCd={currency}&activeSort=1&screenId=UIW1402&idx={page}&pageNum={page}'
+
+
+def parse_locale_names(raw, url):
+    """Names of the stays on one locale list page, by Jalan number, and the list's other pages.
+    A stay counts only when its block has one name link and its booking button's number, and every
+    other number in the block (map link, photo path) is that number. No name is translated."""
+    page = locale_page(url)
+    lang = 'ko' if page[1] == 'ko_KR' else 'en'
+    names, refused = [], 0
+    blocks = raw.split('jsc-cassette-container')[1:]
+    for block in blocks:
+        links = re.findall(r'<h3 class="cassette-hotel-name"><a href="(/(?:kr|en)/japan_hotels_ryokan/[^"?#]+)[^"]*">([^<]*)</a></h3>', block)
+        booked = set(re.findall(r"openPlanSyosai\('(\d+)'", block))
+        numbers = booked | set(re.findall(r'hotelId=(\d+)', block)) | set(re.findall(r'/pictM/Y\d/Y(\d+)/Y\1[0-9A-Za-z]*\.jpg', block))
+        name = re.sub(r'\s+', ' ', html.unescape(links[0][1])).strip() if len(links) == 1 else ''
+        if not name or len(booked) != 1 or len(numbers) != 1 or len(name) > 400:
+            refused += 1
+            continue
+        names.append(dict(id='jalan-' + numbers.pop(), name=name, url='https://www.jalan.net' + urllib.parse.quote(html.unescape(links[0][0]), safe='/')))
+    pages = sorted({int(n) for n in re.findall(r"selectNextPage\('\d+',\s*'(\d+)'", raw) if 1 <= int(n) <= 999})
+    links = {locale_list_url(lang, int(page[2]), n): ('names', None) for n in pages if n != int(page[4])}
+    counted = re.search(r'검색된 호텔 ([\d,]+)개|>\s*([\d,]+) Hotels\b', raw)
+    review = None
+    if len(blocks) > 30 or len({n['id'] for n in names}) != len(names):
+        review = 'locale_list_requires_review'
+    elif not blocks and not counted:
+        review = 'empty_listing'
+    elif blocks and not names:
+        review = 'locale_block_identity_mismatch'
+    return names, links, dict(blocks=len(blocks), names=len(names), refused=refused, links=len(links), listed=int((counted[1] or counted[2]).replace(',', '')) if counted else None, reviewReason=review)
+
+
 def canonical(url, base):
-    parsed = urllib.parse.urlsplit(urllib.parse.urljoin(base, html.unescape(url)))
+    locale = urllib.parse.urljoin(base, html.unescape(url))
+    if locale_page(locale):
+        return locale
+    parsed = urllib.parse.urlsplit(locale)
     if parsed.hostname not in ['www.jalan.net', 'www.trip.com', 'kr.trip.com'] or parsed.scheme not in ['http', 'https']:
         return None
     if parsed.hostname=='kr.trip.com':

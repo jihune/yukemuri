@@ -1,0 +1,217 @@
+{
+ "note": "D07 Wikidata research, 2026-10-18, WDQS SPARQL GETs one at a time with User-Agent YukemuriCatalogUpdater/1.0 (+https://github.com/jihune/yukemuri). The Action API answered 429 from this environment and was not used again.",
+ "queries": [
+  {
+   "savedAt": "2026-10-18T05:57:15Z",
+   "purpose": "External-id properties whose English label names hotels, Jalan, ryokan, Rakuten, onsen, accommodation or lodging",
+   "query": "SELECT ?p ?l WHERE { ?p a wikibase:Property ; wikibase:propertyType wikibase:ExternalId ; rdfs:label ?l FILTER(LANG(?l)=\"en\") FILTER(CONTAINS(LCASE(?l),\"hotel\") || CONTAINS(LCASE(?l),\"jalan\") || CONTAINS(LCASE(?l),\"ryokan\") || CONTAINS(LCASE(?l),\"rakuten\") || CONTAINS(LCASE(?l),\"onsen\") || CONTAINS(LCASE(?l),\"accommodation\") || CONTAINS(LCASE(?l),\"lodging\")) }",
+   "result": [
+    [
+     "P3607",
+     "Booking.com hotel ID"
+    ],
+    [
+     "P3898",
+     "Hotels.com hotel ID"
+    ],
+    [
+     "P5651",
+     "Expedia hotel ID"
+    ],
+    [
+     "P5734",
+     "Historic Hotels of America ID"
+    ],
+    [
+     "P5735",
+     "Historic Hotels Worldwide ID"
+    ],
+    [
+     "P5774",
+     "Historic Hotels of Europe ID"
+    ],
+    [
+     "P5834",
+     "Leading Hotels of the World hotel ID"
+    ],
+    [
+     "P5890",
+     "Preferred Hotels & Resorts hotel ID"
+    ],
+    [
+     "P6008",
+     "Agoda hotel ID"
+    ],
+    [
+     "P6985",
+     "OYO hotel ID"
+    ],
+    [
+     "P7133",
+     "Cleartrip hotel ID"
+    ],
+    [
+     "P7136",
+     "Goibibo Hotel ID"
+    ],
+    [
+     "P8868",
+     "AAA hotel ID"
+    ],
+    [
+     "P9821",
+     "Unconsenting Media ID"
+    ],
+    [
+     "P10388",
+     "MakeMyTrip hotel ID"
+    ],
+    [
+     "P10425",
+     "Trip.com hotel ID"
+    ],
+    [
+     "P10426",
+     "tiket.com hotel ID"
+    ],
+    [
+     "P10427",
+     "PegiPegi Hotel ID"
+    ],
+    [
+     "P10448",
+     "Traveloka hotel ID"
+    ],
+    [
+     "P10487",
+     "Skyscanner hotel ID"
+    ],
+    [
+     "P10522",
+     "RedDoorz hotel ID"
+    ],
+    [
+     "P10533",
+     "Agoda hotel numeric ID"
+    ],
+    [
+     "P10547",
+     "Kayak hotel ID"
+    ],
+    [
+     "P10595",
+     "Marriott hotel ID"
+    ],
+    [
+     "P11187",
+     "ihg Hotel ID"
+    ],
+    [
+     "P11216",
+     "Best Western hotel ID"
+    ],
+    [
+     "P11219",
+     "Travel Weekly hotel ID"
+    ],
+    [
+     "P11222",
+     "Accor hotel ID"
+    ],
+    [
+     "P11388",
+     "Hilton Hotel ID"
+    ],
+    [
+     "P11458",
+     "Wyndham hotel ID"
+    ],
+    [
+     "P12387",
+     "Qantas hotel ID"
+    ],
+    [
+     "P12552",
+     "Hyatt hotel ID"
+    ],
+    [
+     "P14490",
+     "Rakuten Music artist ID"
+    ],
+    [
+     "P14638",
+     "Rakuten TV adult person ID"
+    ],
+    [
+     "P14640",
+     "Rakuten Books author ID"
+    ],
+    [
+     "P14781",
+     "Rakuten TV adult maker ID"
+    ]
+   ]
+  },
+  {
+   "savedAt": "2026-10-18T05:59:12Z",
+   "purpose": "Every item with a Trip.com hotel ID and its ko/en/ja labels and country (19 MB, kept out of the repository)",
+   "query": "SELECT ?item ?trip ?ko ?en ?ja ?country WHERE { ?item wdt:P10425 ?trip . OPTIONAL { ?item wdt:P17 ?country } OPTIONAL { ?item rdfs:label ?ko FILTER(LANG(?ko)=\"ko\") } OPTIONAL { ?item rdfs:label ?en FILTER(LANG(?en)=\"en\") } OPTIONAL { ?item rdfs:label ?ja FILTER(LANG(?ja)=\"ja\") } }",
+   "result": {
+    "bindings": 43789,
+    "items": 43776,
+    "tripIds": 43735,
+    "tripIdsOnTwoItems": 39,
+    "itemsInJapan": 1902,
+    "matchedOurTrip": 298,
+    "matchedInJapan": 296,
+    "newKorean": 22,
+    "newEnglish": 1,
+    "ourTripRecords": 1648,
+    "snapshot": "2004e2cb8ddb5a06"
+   }
+  },
+  {
+   "savedAt": "2026-10-18T06:03:54Z",
+   "purpose": "Lodging items in Japan by class, with Korean labels and Trip.com ids (a class counted twice for an item in two)",
+   "query": "SELECT ?cls (COUNT(DISTINCT ?item) AS ?n) (COUNT(DISTINCT ?ko) AS ?nko) (COUNT(DISTINCT ?tr) AS ?ntrip) WHERE { VALUES ?cls { wd:Q27686 wd:Q562930 wd:Q11562938 wd:Q48835818 } ?item wdt:P31 ?cls . ?item wdt:P17 wd:Q17 . OPTIONAL { ?item rdfs:label ?ko FILTER(LANG(?ko)=\"ko\") } OPTIONAL { ?item wdt:P10425 ?tr } } GROUP BY ?cls",
+   "result": [
+    {
+     "cls": "Q27686",
+     "n": "3393",
+     "nko": "286",
+     "ntrip": "1854"
+    },
+    {
+     "cls": "Q562930",
+     "n": "124",
+     "nko": "4",
+     "ntrip": "29"
+    },
+    {
+     "cls": "Q11562938",
+     "n": "23",
+     "nko": "2",
+     "ntrip": "4"
+    },
+    {
+     "cls": "Q48835818",
+     "n": "9",
+     "nko": "0",
+     "ntrip": "0"
+    }
+   ]
+  }
+ ],
+ "failed": [
+  "P856/P973/P2699/P1581 URLs containing jalan.net (502 after 35 s)",
+  "external-id property counts over Japanese hotel items (502)",
+  "class counts starting from P17=Q17 (504 after 65 s)"
+ ],
+ "sources": {
+  "licensing": "https://www.wikidata.org/wiki/Wikidata:Licensing (action=raw, last edited 2026-09-24)",
+  "copyright": "https://www.wikidata.org/wiki/Wikidata:Copyright (action=raw)",
+  "wdqsLimits": "https://www.mediawiki.org/wiki/Wikidata_Query_Service/User_Manual ‘Query limits’ (action=raw)",
+  "rateLimits": "https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits (action=raw)",
+  "userAgent": "https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy (action=raw)"
+ }
+}

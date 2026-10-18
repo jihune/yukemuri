@@ -18,7 +18,7 @@ from source_safety import SourceGuard,SourcePolicyDenied,policy_failure,check_so
 import urllib.error
 import urllib.parse
 import urllib.request
-from collect import canonical, now, source_request_url, provider_id, parse_source_page, json_hotels
+from collect import canonical, now, source_request_url, provider_id, parse_source_page, parse_locale_names, json_hotels
 
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--max-pages',type=int,default=40)
@@ -115,8 +115,9 @@ if args.prepare_only:sys.exit(0)
 completed=0;next_request={};next_claim={};first_written=None;blocked_hosts=set();redirect_counts={};first_detail_claims=set()
 guard=SourceGuard(args.interval,args.jitter)
 # Each round gives both providers list discovery and detail enrichment.
-groups=[('jalan','list'),('jalan','detail'),('jalan','baths'),('trip','list'),('trip','detail'),('trip','names')]
-if args.gentle:groups=[('jalan','detail'),('jalan','baths'),('trip','detail'),('jalan','refresh'),('trip','refresh'),('jalan','list'),('trip','list'),('trip','names')]
+# Jalan's Korean and English list pages (names only, D07) come last in each round.
+groups=[('jalan','list'),('jalan','detail'),('jalan','baths'),('trip','list'),('trip','detail'),('trip','names'),('jalan','localnames')]
+if args.gentle:groups=[('jalan','detail'),('jalan','baths'),('trip','detail'),('jalan','refresh'),('trip','refresh'),('jalan','list'),('trip','list'),('trip','names'),('jalan','localnames')]
 groups=[('jalan','refresh'),('trip','refresh')] if args.refresh_only else [('jalan','baths')] if args.enrich_baths else [('trip','names')] if args.enrich_names else [g for g in groups if (not args.provider or g[0]==args.provider) and (not args.kind or ('detail' if g[1] in ['names','baths'] else g[1])==args.kind)]
 while completed<args.max_pages:
  progress=False
@@ -149,12 +150,16 @@ while completed<args.max_pages:
     stage='body_check';check_source_body(raw)
     if guard.redirects:print(json.dumps(dict(sourceDiagnostic=True,url=url,redirects=guard.redirects,approved=True)),flush=True)
     stage='source_parse'
-    observations,links,foreign,diagnostic=parse_source_page(raw,provider,url,now(),job['prefecture'],kind)
+    if kind=='names':
+     names,links,diagnostic=parse_locale_names(raw,url);observations,foreign=[],False
+     print(json.dumps(dict(sourceDiagnostic=True,url=url,**diagnostic)),flush=True)
+    else:
+     names=[];observations,links,foreign,diagnostic=parse_source_page(raw,provider,url,now(),job['prefecture'],kind)
     if provider=='trip':
      title=re.search(r'<title\b[^>]*>(.*?)</title>',raw,re.S|re.I)
      print(json.dumps(dict(sourceDiagnostic=True,url=url,bodyBytes=len(body),contentType=response.headers.get('Content-Type',''),contentEncoding=response.headers.get('Content-Encoding','identity'),title=re.sub(r'\s+',' ',title[1])[:200] if title else '',**diagnostic)),flush=True)
     if diagnostic['reviewReason']:raise SourcePolicyDenied('source_data_requires_review')
-    payload=dict(url=url,status='skipped' if foreign else 'done',error='Explicit non-Japanese source country' if foreign else None,observations=observations,links=[dict(url=u,kind=k,prefecture=p) for u,(k,p) in links.items()])
+    payload=dict(url=url,status='skipped' if foreign else 'done',error='Explicit non-Japanese source country' if foreign else None,observations=observations,links=[dict(url=u,kind=k,prefecture=p if k!='names' else job['prefecture']) for u,(k,p) in links.items()],**({'localeNames':names} if kind=='names' else {}))
     city=re.search(r'/hotels/([a-z0-9-]+)-hotels-list-\d+/',url)
     if foreign and kind=='list' and city and all(str(d.get('url','')).startswith('https://www.trip.com/hotels/'+city[1]+'-hotel-detail-') for d in json_hotels(raw,url)):
      payload['excludedCity']=city[1]

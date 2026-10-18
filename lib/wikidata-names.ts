@@ -9,10 +9,10 @@ import extract from '../data/wikidata-trip-names.json';
 // the detail and comparison API), never written to D1.
 const HANGUL=/[가-힣]/;
 // displayNames' English rule (Latin letters, no Hangul, kana or kanji) for one name.
-const english=(name:string)=>displayNames({ko:'',ja:'',en:name}).titleLang==='en';
+export const english=(name:string)=>displayNames({ko:'',ja:'',en:name}).titleLang==='en';
 // Latin words of a name, accents dropped (Frésa is Fresa), generic ones left out.
 const GENERIC=new Set(['hotel','hotels','the','and','inn','resort','spa','by','of','collection']);
-const words=(name:string)=>new Set(name.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().match(/[a-z0-9]{3,}/g)?.filter(w=>!GENERIC.has(w))??[]);
+export const words=(name:string)=>new Set(name.normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().match(/[a-z0-9]{3,}/g)?.filter(w=>!GENERIC.has(w))??[]);
 // The item still names this hotel: the Latin words of its English label and of one of the
 // record's names contain one another. A Trip.com id keeps its hotel through a rename while the
 // item keeps the old name (15 of the 296 records the extract reached on 2026-10-18, as

@@ -41,6 +41,12 @@ export const priceQuotes=sqliteTable('price_quotes',{
 export const hotelNameLocalizations=sqliteTable('hotel_name_localizations',{
  hotelId:text('hotel_id').primaryKey(),payload:text('payload'),checkedAt:text('checked_at').notNull(),
 });
+// D07: a Jalan stay's names on Jalan's own Korean and English list pages, by its Jalan number,
+// each with its page on that site and when the name was first read as it stands. Shown where
+// hotels are read (lib/jalan-locale-names.ts); the hotels row is not changed.
+export const hotelLocaleNames=sqliteTable('hotel_locale_names',{
+ hotelId:text('hotel_id').primaryKey(),nameKo:text('name_ko'),koUrl:text('ko_url'),koCheckedAt:text('ko_checked_at'),nameEn:text('name_en'),enUrl:text('en_url'),enCheckedAt:text('en_checked_at'),
+});
 
 export const hotelDescriptionTranslations=sqliteTable('hotel_description_translations',{
  hotelId:text('hotel_id').primaryKey(),sourceText:text('source_text').notNull(),textKo:text('text_ko').notNull(),translatedAt:text('translated_at').notNull(),

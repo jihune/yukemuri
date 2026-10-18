@@ -1,13 +1,14 @@
 import {refreshIntervalSql,collectionPlan} from './collection-priorities';
-import {publicUrl} from './crawl-contract';
+import {crawlJobUrl,publicUrl} from './crawl-contract';
 import {z} from 'zod';
 import {favoritesDb} from './favorites-db';
 import {verifiedHotels} from './hotel-enrichment';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 
-export const crawlClaim=z.object({provider:z.enum(['jalan','trip']),phase:z.enum(['list','detail','names','baths','refresh']),kind:z.enum(['list','detail']).optional(),url:publicUrl.optional(),lane:z.enum(['priority','national']).default('priority'),token:z.string().uuid()}).strict().refine(v=>v.phase!=='names'||v.provider==='trip').refine(v=>v.phase!=='baths'||v.provider==='jalan');
+export const crawlClaim=z.object({provider:z.enum(['jalan','trip']),phase:z.enum(['list','detail','names','baths','refresh','localnames']),kind:z.enum(['list','detail']).optional(),url:crawlJobUrl.optional(),lane:z.enum(['priority','national']).default('priority'),token:z.string().uuid()}).strict().refine(v=>v.phase!=='names'||v.provider==='trip').refine(v=>v.phase!=='baths'||v.provider==='jalan').refine(v=>v.phase!=='localnames'||v.provider==='jalan');
 export type CrawlClaim=z.infer<typeof crawlClaim>;
 export const LEASE_SECONDS=180;
+export const LOCALE_REFRESH_DAYS=14;
 export const legacyRedirectRepair=z.object({action:z.literal('isolate-legacy-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
 export const reviewedRedirectRepair=z.object({action:z.literal('release-reviewed-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
 // After a read-only source check succeeds, release one obsolete page hold.
@@ -51,13 +52,14 @@ export const BATHS_CANDIDATE="(EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-
 // The selection and lease write share one SQL statement. A provider has at
 // most one active claim, across processes/isolates and enrichment phases.
 export async function claimCrawlJob(claim:CrawlClaim){
- const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):['names','baths'].includes(claim.phase)?'detail':claim.phase;
+ const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):claim.phase==='localnames'?'names':['names','baths'].includes(claim.phase)?'detail':claim.phase;
  const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
  if(repeated.results.length)return repeated.results;
- const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
+ // D07: a Jalan locale list page is read again LOCALE_REFRESH_DAYS after it was done, on another default stay date.
+ const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now})`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
  const extraArgs=claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[];
- const statuses=claim.phase==='refresh'?['done','failed']:['names','baths'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
+ const statuses=claim.phase==='refresh'?['done','failed']:['names','baths','localnames'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.
