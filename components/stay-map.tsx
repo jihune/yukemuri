@@ -7,7 +7,7 @@ import { displayNames } from '@/lib/hotel-names';
 import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/static-search';
-import { viewGroups, nearestMean, spotGroups, type ResultPositions, type ViewGroups } from '@/lib/map-groups';
+import { viewGroups, spotGroups, type ResultPositions, type ViewGroups } from '@/lib/map-groups';
 type Props={hotels:HotelSummary[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean;
@@ -89,8 +89,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
     const spots=result?[]:props.current.spots;
     const groups=map.getZoom()<16?spotGroups(spots,h=>{const p=map.latLngToLayerPoint([h.lat,h.lng]);return [p.x,p.y]},52):spots.map(h=>[h]);
     for(const hs of groups){
-     const first=hs[0];
-     const {lat,lng}=nearestMean(hs);
+     const first=hs[0],{lat,lng}=first;
      const active=hs.some(h=>h.id===props.current.activeId);
      const marker=L.marker([lat,lng],{icon:L.divIcon({className:'stay-marker-wrap',html:`<span class="stay-marker ${active?'is-active':''} ${hs.length>1?'is-cluster':''} ${hs.every(h=>h.approximate)?'is-approximate':''}">${hs.length>1?hs.length+'곳':first.label}</span>`,iconSize:[52,44],iconAnchor:[26,TIP]}),keyboard:true,autoPanOnFocus:false,title:hs.length>1?`${first.place} 주변 ${hs.length}개 숙소`:first.title,alt:first.title});
      add(marker,{stayIds:hs.map(h=>h.id).join(' ')},keyboard=>{
