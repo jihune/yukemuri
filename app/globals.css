@@ -972,8 +972,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-chip small{color:var(--yk-text-3);font-size:var(--yk-fs-xs);font-weight:500;font-variant-numeric:tabular-nums}
 .filter-chip[aria-pressed=true]{background:var(--yk-primary);border-color:var(--yk-primary);color:var(--yk-on-primary)}
 .filter-chip[aria-pressed=true] small{color:inherit}
-.filter-chip[aria-pressed=true]>span::before{content:'✓ '}
-.filter-chip.is-verified{grid-column:1/-1;justify-content:flex-start}
+.filter-quick>.filter-option:has(.is-verified){grid-column:1/-1}
+.filter-chip.is-verified{justify-content:flex-start}
 .filter-chip>span{white-space:nowrap}
 .filter-chip.is-verified small{margin-left:auto}
 .filter-chip.is-verified[aria-pressed=true]{background:var(--yk-accent);border-color:var(--yk-accent);color:var(--yk-on-accent)}
@@ -1098,3 +1098,56 @@ body{word-break:keep-all;overflow-wrap:break-word}
  .u06-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"detail fill" "pages fill" "trend fill" "geo usage" "defs defs" "credits credits";grid-template-rows:auto auto 1fr auto auto auto;column-gap:40px;align-items:start}
  .u06-o1{grid-area:detail}.u06-o2{grid-area:pages}.u06-o3{grid-area:fill}.u06-o4{grid-area:geo}.u06-o5{grid-area:defs}.u06-o6{grid-area:credits}.u06-o7{grid-area:trend}.u06-o8{grid-area:usage}
 }
+/* U07 names: Korean, else English, else the original name, then the original beside it; each
+   English or original name has a copy button. The button's tap area is 44px, its negative margin
+   keeps the name's line as tall as before; ‘복사됨’ shows above it for two seconds. */
+.card-name,.name-row{display:flex;align-items:flex-start;gap:2px;min-width:0}
+.card-name>.card-title{flex:1;min-width:0;width:auto}
+.card-name>.name-ja{flex:0 1 auto;min-width:0}
+.copy-name{position:relative;flex-shrink:0;display:inline-grid;place-items:center;width:var(--yk-tap);height:var(--yk-tap);margin:-12px -12px -12px 0;border-radius:50%;color:var(--yk-text-3)}
+.card-name>.card-title+.copy-name{margin-top:0}
+.name-row>[data-slot=sheet-title]+.copy-name{margin-top:-6px}
+.copy-name:hover{color:var(--yk-primary);background:var(--yk-primary-soft)}
+.copy-name.is-done{color:var(--yk-primary)}
+.copy-name:focus-visible{outline:2px solid var(--yk-primary);outline-offset:-4px}
+.copy-name-status{position:absolute;right:4px;bottom:calc(100% - 6px);z-index:2;padding:2px 8px;border-radius:6px;background:var(--yk-text);color:#fff;font-size:var(--yk-fs-xs);font-weight:600;line-height:1.5;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s}
+.copy-name.is-done .copy-name-status{opacity:1}
+.copy-name-status:empty{padding:0}
+.name-row>p,.name-row>[data-slot=sheet-title]{flex:0 1 auto;min-width:0;overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){.copy-name-status{transition:none}}
+/* U07 filter options. The check mark has its place before the label from the start (an empty box,
+   then ✓), so pressing moves no letter. A bath chip in the 2-column grid puts its count under the
+   name: at 1280px a chip is 100px, too narrow for ‘카케나가시’, its count and the mark on one line.
+   Each option's help: a tooltip right of the panel on hover or focus (Radix, .option-tip-float), and
+   on a touch screen or in the phone's bottom sheet a ‘?’ in the option that opens the same text
+   under it across the list. */
+.filter-quick,.filter-group-items{position:relative}
+.filter-option{min-width:0}
+.filter-option-row{position:relative;display:flex;min-width:0}
+.filter-option-row>.filter-chip,.filter-option-row>.filter-toggle{flex:1;min-width:0}
+.filter-chip{padding-left:8px;padding-right:8px}
+.filter-chip:not(.is-verified){display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:6px;row-gap:0;align-content:center;justify-items:start}
+.filter-chip:not(.is-verified) small{grid-column:2}
+.filter-check{flex-shrink:0;display:inline-grid;place-items:center;width:14px;height:14px;border:1.5px solid currentColor;border-radius:3px;opacity:.55;font-style:normal}
+.filter-chip[aria-pressed=true] .filter-check{opacity:1;border-color:transparent}
+.filter-chip[aria-pressed=true] .filter-check::before{content:'✓';font-size:14px;font-weight:800;line-height:1}
+.option-help{display:none;place-items:center;position:absolute;top:0;right:0;bottom:0;width:var(--yk-tap);min-height:var(--yk-tap);border-radius:var(--yk-radius-sm);color:var(--yk-primary);font-weight:800;font-size:var(--yk-fs-sm)}
+.filter-option-row:has([aria-pressed=true]) .option-help{color:var(--yk-on-primary)}
+.filter-option-row:has(.is-verified[aria-pressed=true]) .option-help{color:var(--yk-on-accent)}
+.option-help[aria-expanded=true]{background:var(--yk-primary-soft);color:var(--yk-primary)!important}
+.option-help:focus-visible{outline:2px solid var(--yk-primary);outline-offset:-2px}
+.option-tip{position:absolute;left:0;right:0;z-index:5;margin:4px 0 0;padding:8px 10px;border-radius:var(--yk-radius-sm);background:var(--yk-text);color:#fff;font-size:var(--yk-fs-xs);font-weight:500;line-height:1.6;box-shadow:0 4px 14px #0d2a3040}
+.option-tip[hidden]{display:none}
+.option-tip-float{max-width:min(280px,calc(100vw - 16px));font-size:var(--yk-fs-xs)!important;line-height:1.6;font-weight:500}
+/* It fades in where it stays; sliding in from the left would cross the panel's edge. */
+.option-tip-float[data-side]{--tw-enter-translate-x:0;--tw-enter-translate-y:0;--tw-exit-translate-x:0;--tw-exit-translate-y:0}
+/* The ‘?’ takes the button's right 44px: two columns of bath buttons only while ‘카케나가시’ still
+   ends before it (90px from the button's left), so a 248px panel (from 1251px) lists one per row. */
+@media (hover:none){
+  .option-help{display:inline-grid}
+  .filter-option-row>.filter-chip,.filter-option-row>.filter-toggle{padding-right:var(--yk-tap)}
+  .filter-quick{grid-template-columns:repeat(auto-fit,minmax(max(136px,calc(50% - 3px)),1fr))}
+}
+.filter-drawer .option-help{display:inline-grid}
+.filter-drawer .filter-option-row>.filter-chip,.filter-drawer .filter-option-row>.filter-toggle{padding-right:var(--yk-tap)}
+.filter-drawer .filter-quick{grid-template-columns:repeat(auto-fit,minmax(max(136px,calc(50% - 3px)),1fr))}

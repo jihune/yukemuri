@@ -22,7 +22,10 @@
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u05-detail-browser.mjs [base] [evidence.json] [screenshot dir]
 import {createRequire} from 'node:module';
-import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {compileLib} from './build-search-snapshot.mjs';
 import {siteSearch} from './site-search-node.mjs';
 const require=createRequire(new URL('../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
@@ -31,6 +34,10 @@ if(shots)mkdirSync(shots,{recursive:true});
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const search=await siteSearch(base);
+// Names: Korean, else English, else the original, then the English and original ones (U07).
+const nameTemp=mkdtempSync(join(tmpdir(),'yukemuri-u05-detail-names-'));
+let displayNames;
+try{({displayNames}=createRequire(import.meta.url)(compileLib(nameTemp,'lib/hotel-names.ts')))}finally{rmSync(nameTemp,{recursive:true,force:true})}
 // A stay with Trip.com and Jalan sources and two photos, and one with neither source id.
 const ID='jalan-327522',BARE='daiichi-takimotokan';
 const card=id=>search.snapshot.cards[search.snapshot.position.get(id)];
@@ -131,7 +138,8 @@ for(const w of [360,390,1280]){
  // 1. The full detail with rooms, years and room photos.
  mode='rooms';await open(ID);await shot('rooms-top');
  let s=await read();const h=api,c=card(ID);
- check('요약: 한국어 이름 제목과 일본어 이름 한 줄(영어 이름은 이름 칸에 없음), 출처별 평점',s.title===c.names.ko&&same(s.names,[{lang:'ja',text:c.names.ja}])&&s.ratings===h.ratings.filter(r=>r.provider==='trip'||r.provider==='jalan').length&&s.ratings>0,{title:s.title,names:s.names,ratings:s.ratings});
+ const n=displayNames(c.names);
+ check('요약: 이름이 한국어 → 영어 → 원어 순서(U07), 출처별 평점',s.title===n.title&&same(s.names,[n.en&&{lang:'en',text:n.en},n.ja&&{lang:'ja',text:n.ja}].filter(Boolean))&&s.ratings===h.ratings.filter(r=>r.provider==='trip'||r.provider==='jalan').length&&s.ratings>0,{title:s.title,names:s.names,ratings:s.ratings});
  check('요약의 탕 6칸이 상세 응답으로 따로 계산한 값과 같음',same(s.cells,expected(h)),{cells:s.cells,want:expected(h)});
  if(mobile)check('휴대폰: 시트가 화면 너비 전체이고 6칸이 첫 화면에서 실행 막대 위에 보임',s.sheet.w===w&&s.cellsBox.bottom<=s.bar.box.top,{sheet:s.sheet,cells:s.cellsBox,bar:s.bar.box});
  else check('데스크톱: 오른쪽 시트 720px, 요약은 왼쪽 단·상세는 오른쪽 단',Math.abs(s.sheet.w-720)<=1&&s.sheet.right===w&&s.lead.right<=s.main.left&&s.lead.top===s.main.top,{sheet:s.sheet,lead:s.lead,main:s.main});

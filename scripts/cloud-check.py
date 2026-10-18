@@ -40,6 +40,7 @@ commands = [
     ['node', 'scripts/check-map-bounds.mjs'],
     ['node', 'scripts/check-map-groups.mjs'],
     ['node', 'scripts/check-comparison-differences.mjs'],
+    ['node', 'scripts/check-hotel-names.mjs'],
     ['node', 'scripts/check-source-policy.mjs'],
     ['node', 'scripts/check-snapshot-geo.mjs'],
 ]
