@@ -49,12 +49,14 @@ export async function writeHotels(observations:Hotel[]){
  // The search snapshot shows new records from its next build (P03).
  return written;
 }
-type CoverageCounts={records:number;prefectures:number};
-type CoverageJobs={provider:'trip'|'jalan';discovered:number;completed:number;details:number;pending:number;failed:number;updated:string|null};
+export type CoverageCounts={records:number;prefectures:number};
+export type CoverageJobs={provider:'trip'|'jalan';discovered:number;completed:number;details:number;pending:number;failed:number;updated:string|null};
 function coverageStatements(db:D1Database){
  return [db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels'),db.prepare("SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS details,SUM(CASE WHEN status IN ('pending','retry','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,MAX(fetched_at) AS updated FROM crawl_jobs WHERE status!='skipped' GROUP BY provider")];
 }
-function coverageFrom(counts:CoverageCounts|undefined,jobs:CoverageJobs[]){
+// The collection summary from the counts and the queue rows (the snapshot
+// builder derives both from its own reads, P04).
+export function coverageFrom(counts:CoverageCounts|undefined,jobs:CoverageJobs[]){
  const aggregate={...catalogCoverage,records:counts?.records??0,prefectures:counts?.prefectures??0,crawledRecords:(counts?.records??0)-20,discoveredDetailUrls:0,completedDetailPages:0,pending:0,failed:0,providers:{jalan:{discovered:0,completed:0},trip:{discovered:0,completed:0}}};
  for(const job of jobs){aggregate.providers[job.provider]={discovered:job.discovered,completed:job.completed};aggregate.discoveredDetailUrls+=job.discovered;aggregate.completedDetailPages+=job.details;aggregate.pending+=job.pending;aggregate.failed+=job.failed;if(job.updated&&job.updated>aggregate.updatedAt)aggregate.updatedAt=job.updated}
  return aggregate;

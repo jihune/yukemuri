@@ -1,0 +1,29 @@
+{
+ "measuredAt": "2026-10-18T03:22:07.706Z",
+ "base": "HEAD",
+ "current": "183771d",
+ "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1.",
+ "builds": {
+  "base": {
+   "id": "6ebfe6ca64d27b1c",
+   "hotels": 23032,
+   "queries": 120,
+   "rowsRead": 304186,
+   "files": 7
+  },
+  "current": {
+   "id": "6ebfe6ca64d27b1c",
+   "hotels": 23032,
+   "queries": 115,
+   "rowsRead": 134489,
+   "files": 7
+  }
+ },
+ "tables": {
+  "hotels": 23032,
+  "hotel_names": 25994,
+  "crawl_jobs": 29944,
+  "hotel_lifecycle": 21263
+ },
+ "failures": []
+}
