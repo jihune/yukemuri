@@ -66,7 +66,7 @@ try{
  const hit=q=>{const s=localHotelSuggestions(titled,q,DEFAULT_FILTERS)[0];return s&&[s.name,s.matchedName]};
  assert.deepEqual(hit('料亭テスト'),['테스트 료칸','料亭テスト'],'a name query shows the matched name');
  assert.deepEqual(hit('벳푸'),['테스트 료칸','테스트 료칸'],'a place query shows no other name');
- // The title is trimmed (displayNames) and 145 stored first names of the public snapshot fetched 2026-10-18T01:03Z
+ // The title is trimmed (displayNames) and 145 stored first names of the 2026-10-18 public snapshot
  // carry spaces around them: the name matched is the title, not a second name.
  const spaced=prepareSearchIndex([{...titled[0].hotel,names:[' 테스트 료칸 ','料亭テスト']}]);
  assert.deepEqual((({name,matchedName})=>[name,matchedName])(localHotelSuggestions(spaced,'테스트 료칸',DEFAULT_FILTERS)[0]),['테스트 료칸','테스트 료칸'],'a stored name with spaces is not shown twice');
