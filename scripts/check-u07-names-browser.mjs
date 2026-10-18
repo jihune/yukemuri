@@ -3,8 +3,10 @@
 // English, else the original), as the cards and the detail do. No stay in the checked-in data
 // has a title other than its names.ko yet, so one stay is served here as a stay with no Korean
 // name and an English one (names.ko holding the original, the shape the sources give): the
-// snapshot's cards and the comparison response are rewritten for it in the browser. Expected:
-// - the map: its marker's title, the preview's name and the stay list's name are the English one;
+// snapshot's cards, its core name column and the comparison response are rewritten for it in the
+// browser. Expected:
+// - the map: its marker's title, the preview's name and the stay list's name are the English one,
+//   and so is the marker's title after ‘이 지역에서 검색’ (the area search's points);
 // - the comparison: its name is the English one with the original under it, and so are its
 //   remove button's label and, on a phone, an evidence row (a wide screen has none: the cells
 //   show everything);
@@ -39,6 +41,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
  width=w;
  const context=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});
  await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
+ await context.route(/\/snapshot\/v\/[^/]+\/core\.json$/,async route=>{const response=await route.fetch();const core=await response.json();core.name[core.ids.indexOf(stay.id)]=original;await route.fulfill({response,json:core})});
  await context.route(/\/snapshot\/v\/[^/]+\/cards\.json$/,async route=>{const response=await route.fetch();const cards=await response.json();cards.forEach(rename);await route.fulfill({response,json:cards})});
  await context.route(/\/api\/hotel-comparison/,async route=>{const response=await route.fetch();const data=await response.json();data.hotels?.forEach(rename);await route.fulfill({response,json:data})});
  await context.addInitScript(()=>{document.modelContext={registerTool(tool){(window.__tools??={})[tool.name]=tool}}});
@@ -58,6 +61,13 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
  const visible=await page.evaluate(()=>window.__tools?.read_visible_stays?.execute({})).catch(e=>({error:String(e)}));
  const row=visible?.hotels?.find(h=>h.id===stay.id);
  check(`에이전트 도구 read_visible_stays가 ‘${english}’를 돌려줌`,row?.name===english,{row,error:visible?.error});
+ // The area search: the map moved one zoom step, then ‘이 지역에서 검색’ (lib/static-search.ts mapArea).
+ await page.getByRole('button',{name:'지도 확대'}).evaluate(e=>e.click());await page.waitForTimeout(800);
+ if(await page.locator('.map-area-search').count())await page.locator('.map-area-search').evaluate(e=>e.click());
+ await page.waitForTimeout(1500);
+ const searched=await page.locator('.map-area-search').textContent().catch(()=>null);
+ const areaTitle=await page.locator(`.leaflet-marker-icon[data-stay-ids~="${stay.id}"]`).first().getAttribute('title',{timeout:8000}).catch(()=>null);
+ check(`지도를 옮겨 ‘이 지역에서 검색’을 누른 뒤에도 표지 제목이 ‘${english}’`,/다시 검색/.test(searched??'')&&!!areaTitle?.startsWith(english),{searched,areaTitle});
  // The comparison of the stay and another one.
  await page.goto(base+'/',{waitUntil:'networkidle'});
  await page.evaluate(ids=>localStorage.setItem('yukemuri-comparison-v1',JSON.stringify(ids)),[stay.id,other.id]);

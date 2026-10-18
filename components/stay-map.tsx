@@ -7,7 +7,7 @@ import { displayNames } from '@/lib/hotel-names';
 import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/static-search';
-import { viewGroups, type ResultPositions, type ViewGroups } from '@/lib/map-groups';
+import { viewGroups, nearestMean, type ResultPositions, type ViewGroups } from '@/lib/map-groups';
 type Props={hotels:HotelSummary[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean;
@@ -23,8 +23,6 @@ const NO_CELLS:MapCell[]=[];
 // is the caret's tip, 43px below the icon's top (U07: anchored at the icon's middle, the caret
 // pointed 21px below the stay, out at sea off a small island at a low zoom).
 const TIP=43;
-// Stays drawn as one marker sit on the member nearest their mean, never on the mean (U07).
-const nearestMean=<T extends {lat:number;lng:number}>(list:T[])=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
 export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=null,points=null,cells=NO_CELLS,onSearchArea,areaBusy=false,areaFailed=false,result=null,onView,onOpenGroup}:Props){
  const container=useRef<HTMLDivElement>(null),mapRef=useRef<Leaflet.Map|null>(null),api=useRef<typeof Leaflet|null>(null),layer=useRef<Leaflet.LayerGroup|null>(null);
  const spots:Spot[]=points?points.map(p=>({id:p.id,lat:p.lat,lng:p.lng,label:p.score===null?'숙소':p.score.toFixed(1),title:p.name+((p.grade??1)>=2?' (대략 위치)':''),place:p.name,approximate:(p.grade??1)>=2})):hotels.filter(hasCoordinates).map(h=>({id:h.id,lat:h.location.latitude,lng:h.location.longitude,label:displayRating(h)?.score.toFixed(1)??'숙소',title:displayNames(h.names).title,place:h.location.label,approximate:false}));

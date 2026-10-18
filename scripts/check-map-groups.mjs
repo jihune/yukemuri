@@ -18,7 +18,7 @@ const dir=mkdtempSync(join(tmpdir(),'yukemuri-map-groups-'));
 try{
  const compile=spawnSync(process.execPath,['node_modules/typescript/bin/tsc','lib/map-groups.ts','--outDir',dir,'--module','commonjs','--target','es2022','--skipLibCheck'],{encoding:'utf8'});
  if(compile.status!==0)throw new Error(compile.stdout+compile.stderr);
- const {resultPositions,viewGroups,markerCount,MARKER_PX,mercatorPoint,GROUP_CELL_PX}=createRequire(join(dir,'x.cjs'))(join(dir,'map-groups.js'));
+ const {resultPositions,viewGroups,markerCount,MARKER_PX,mercatorPoint,GROUP_CELL_PX,nearestMean}=createRequire(join(dir,'x.cjs'))(join(dir,'map-groups.js'));
  // A fixed pseudo-random fixture.
  let seed=7;const rnd=()=>(seed=(seed*1103515245+12345)%2147483648)/2147483648;
  const N=13000,lat=[],lng=[],grade=[],geoLat=[],geoLng=[];
@@ -111,6 +111,14 @@ try{
  const atMean=v=>{const g=viewGroups(p,v);return{...g,markers:g.markers.map(m=>m.kind==='stay'?m:{...m,lat:m.rows.reduce((n,r)=>n+p.lat[rowIndex.get(r)],0)/m.count,lng:m.rows.reduce((n,r)=>n+p.lng[rowIndex.get(r)],0)/m.count})}};
  const meanCaught=views.filter(v=>!audit(v,atMean(v)).onMember).length;
  assert.ok(meanCaught>0,'groups at the mean are caught');
+ // nearestMean, where the area search's grouped spots and grid cells put their marker: the member
+ // nearest the members' mean on the screen. At 45°N a degree north is 1.41 times as long on the
+ // screen as a degree east, so a stay 0.12° east is nearer the mean than one 0.1° north. The same
+ // pick in degrees (as before) chooses the one north and is caught.
+ const cross=[{lat:45.1,lng:141},{lat:44.9,lng:141},{lat:45,lng:141.12},{lat:45,lng:140.88}];
+ assert.equal(nearestMean(cross),cross[2],'nearestMean measures on the screen (Web Mercator)');
+ const inDegrees=list=>{const la=list.reduce((a,h)=>a+h.lat,0)/list.length,lo=list.reduce((a,h)=>a+h.lng,0)/list.length;return list.reduce((b,h)=>(h.lat-la)**2+(h.lng-lo)**2<(b.lat-la)**2+(b.lng-lo)**2?h:b)};
+ assert.notEqual(inDegrees(cross),cross[2],'a pick in degrees is caught');
  // The grid alone (no merging of neighbouring cells) puts icons on top of each other.
  const gridOnly=v=>{const scale=256*2**v.zoom/GROUP_CELL_PX,cells=new Map();for(let k=0;k<p.rows.length;k++){if(!inside(v,p.lat[k],p.lng[k]))continue;const key=Math.floor(p.x[k]*scale)+':'+Math.floor(p.y[k]*scale);(cells.get(key)??cells.set(key,[]).get(key)).push(k)}return[...cells.values()].map(ks=>({lat:ks.reduce((n,k)=>n+p.lat[k],0)/ks.length,lng:ks.reduce((n,k)=>n+p.lng[k],0)/ks.length}))};
  const overlapping=views.filter(v=>overlaps(v,gridOnly(v))>0).length;

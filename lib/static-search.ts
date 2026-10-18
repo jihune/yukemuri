@@ -1,7 +1,8 @@
 import type {HotelFilters,FeatureKey} from './hotel-types';
 import type {SortOrder} from './hotel-search';
 import {FEATURE_KEYS} from './hotel-bath-facts';
-import {normalizeSearch} from './hotel-names';
+import {normalizeSearch,displayNames} from './hotel-names';
+import {nearestMean} from './map-groups';
 import {prepareSearchIndex,searchIndexMatches,localHotelSuggestions,type PreparedSearchIndex,type SearchIndexHotel} from './hotel-search-index';
 import {rankHotelAlternatives} from './hotel-alternatives';
 import type {HotelSuggestion} from './hotel-suggestions';
@@ -156,14 +157,10 @@ export function resultPage(s:SearchSnapshot,r:SearchResult,page:number):SearchRe
  const hotels=r.order.slice((actual-1)*PAGE_SIZE,actual*PAGE_SIZE).map(i=>s.cards[i]);
  return{hotels,total:r.total,unknownExcluded:r.unknownExcluded,page:actual,pageSize:PAGE_SIZE,featureCounts:r.featureCounts,ryokanCount:r.ryokanCount,coverage:s.manifest.coverage,similarCount:r.similarCount,similarHotelIds:pageSimilar(r,hotels),alternatives:r.alternatives};
 }
-// A cell's marker sits on the point of the member nearest the members' mean, not on the mean
-// (U07: around islands and bays the mean lies in the sea). The former Worker answered the SQL
-// average, so scripts/compare-static-search.mjs now differs from it in cells' lat and lng only.
-function nearestMean(lats:number[],lngs:number[]){
- const la=lats.reduce((a,v)=>a+v,0)/lats.length,lo=lngs.reduce((a,v)=>a+v,0)/lngs.length;
- let best=0;for(let k=1;k<lats.length;k++)if((lats[k]-la)**2+(lngs[k]-lo)**2<(lats[best]-la)**2+(lngs[best]-lo)**2)best=k;
- return{lat:lats[best],lng:lngs[best]};
-}
+// A cell's marker sits on the point of the member nearest the members' mean on the screen
+// (lib/map-groups.ts nearestMean), not on the mean (U07: around islands and bays the mean lies in
+// the sea). The former Worker answered the SQL average, so scripts/compare-static-search.mjs now
+// differs from it in cells' lat and lng only.
 // Every matching hotel inside the bounds: points (id order) up to the limit,
 // else counts on a 16 x 16 grid over the bounds.
 export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=false,savedIds:string[]=[],geo:GeoColumns|null=null):MapAreaResponse{
@@ -182,13 +179,13 @@ export function mapArea(s:SearchSnapshot,f:HotelFilters,b:MapBounds,savedOnly=fa
  const result:MapAreaResponse={total,inBounds:inside.length,outOfBounds:total-withoutCoordinates-inside.length,withoutCoordinates,limit:MAP_POINT_LIMIT,points:[],cells:[]};
  if(!inside.length)return result;
  const at=(i:number):[number,number,number]=>c.lat[i]!==null&&c.lng[i]!==null?[c.lat[i]!,c.lng[i]!,Math.max(1,geo?.grade[i]??1)]:[geo!.lat[i]!,geo!.lng[i]!,geo!.grade[i]!];
- if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:c.name[i],lat,lng,score:score[i],grade}});return result}
+ if(inside.length<=MAP_POINT_LIMIT){result.points=inside.map(i=>{const [lat,lng,grade]=at(i);return{id:c.ids[i],name:displayNames(s.cards[i].names).title,lat,lng,score:score[i],grade}});return result}
  const latStep=(b.north-b.south)/16||1e-9,lngStep=(b.east-b.west)/16||1e-9,cells=new Map<number,{row:number;col:number;lats:number[];lngs:number[];approximate:number}>();
  for(const i of inside){
   const [lat,lng,grade]=at(i),row=Math.min(15,Math.trunc((lat-b.south)/latStep)),col=Math.min(15,Math.trunc((lng-b.west)/lngStep));
   const cell=cells.get(row*16+col)??{row,col,lats:[],lngs:[],approximate:0};cell.lats.push(lat);cell.lngs.push(lng);if(grade>=2)cell.approximate++;cells.set(row*16+col,cell);
  }
- result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({...nearestMean(x.lats,x.lngs),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
+ result.cells=[...cells.values()].sort((x,y)=>x.row-y.row||x.col-y.col).map(x=>({...nearestMean(x.lats.map((lat,k)=>({lat,lng:x.lngs[k]}))),count:x.lats.length,south:b.south+x.row*latStep,north:b.south+(x.row+1)*latStep,west:b.west+x.col*lngStep,east:b.west+(x.col+1)*lngStep,approximate:x.approximate}));
  return result;
 }
 export function suggestions(s:SearchSnapshot,f:HotelFilters,savedOnly=false,savedIds:string[]=[]):HotelSuggestion[]{

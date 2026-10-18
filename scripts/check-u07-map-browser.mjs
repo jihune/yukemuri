@@ -3,17 +3,21 @@
 // first view and four zoom steps in (all Japan, with groups at every width, and a name search
 // for Okinawa's islands, whose four points in the checked-in data group only on a phone):
 // - a single stay's caret tip is within 2px of that stay's point;
-// - a group's caret tip is within 2px of the point of a stay in view (a group sits on a member,
-//   never on the members' mean, which lay 40 km out at sea between Miyako and Ishigaki).
+// - a group's caret tip is within 2px of the point of one of its own members (a group sits on a
+//   member, never on the members' mean, which lay 40 km out at sea between Miyako and Ishigaki);
+//   the members are the page's own groups for the view it reports, recomputed here with
+//   lib/map-groups.ts (resultPositions and viewGroups, as components/use-result-map.ts calls them).
 // The tip is found by hit testing down the marker's middle, so it is where the caret is drawn.
 // Points are projected from the view the map reports (data-view) as Leaflet does (Web Mercator).
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-u07-map-browser.mjs [base] [evidence.json] [screenshot folder]
 import {createRequire} from 'node:module';
-import {writeFileSync,mkdirSync} from 'node:fs';
+import {writeFileSync,mkdirSync,mkdtempSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
+import {tmpdir} from 'node:os';
 import {siteSearch} from './site-search-node.mjs';
+import {compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(new URL('../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
 const [base='http://127.0.0.1:8787',evidence,shots]=process.argv.slice(2);
@@ -24,6 +28,9 @@ const search=await siteSearch(base),s=search.snapshot,geo=search.geo;
 // The page's rule (lib/map-groups.ts resultPositions): the source's point, else a graded D06 point.
 const point=i=>{let a=s.core.lat[i],b=s.core.lng[i];if((a===null||b===null)&&geo&&(geo.grade[i]??0)>0){a=geo.lat[i];b=geo.lng[i]}return a===null||b===null?null:[a,b]};
 const mx=lng=>(lng+180)/360,my=lat=>{const t=Math.sin(Math.max(-85.0511,Math.min(85.0511,lat))*Math.PI/180);return 0.5-Math.log((1+t)/(1-t))/(4*Math.PI)};
+const temp=mkdtempSync(join(tmpdir(),'yukemuri-u07-map-'));
+let resultPositions,viewGroups;
+try{({resultPositions,viewGroups}=createRequire(import.meta.url)(compileLib(temp,'lib/map-groups.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
 const browser=await chromium.launch();
 for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  width=w;
@@ -31,7 +38,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e).slice(0,200)));
  for(const [params,label] of [['','전국'],['q=오키나와','오키나와']]){
-  const order=search.order(params),ids=new Map(order.map(i=>[s.core.ids[i],i]));
+  const order=search.order(params),ids=new Map(order.map(i=>[s.core.ids[i],i])),positions=resultPositions(order,s.core,geo);
   await page.goto(base+'/'+(params?'?'+params:''),{waitUntil:'networkidle'});
   if(mobile)await page.locator('.mobile-map-toggle').tap();
   await page.locator('.stay-map').scrollIntoViewIfNeeded();
@@ -55,11 +62,13 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
    await page.waitForTimeout(700);const r=await read();
    const [west,south,east,north,zoom]=r.view.split(',').map(Number),W=256*2**zoom;
    const at=i=>{const p=point(i);return p&&{x:(mx(p[1])-mx(west))*W,y:(my(p[0])-my(north))*W,lat:p[0],lng:p[1]}};
-   const inView=order.map(at).filter(p=>p&&p.lat>=south&&p.lat<=north&&p.lng>=west&&p.lng<=east);
+   // The page's groups for this view (a group marker is named by its first member's id).
+   const members=new Map(viewGroups(positions,{west,south,east,north,zoom}).markers.filter(g=>g.kind==='group').map(g=>[s.cards[g.rows[0]].id,g.rows]));
    const off=[],covered=r.markers.filter(m=>m.covered).length;
    for(const m of r.markers.filter(m=>!m.covered)){
     if(!m.tip){off.push({...m,why:'no tip'});continue}
-    const near=m.stay?[at(ids.get(m.stay.split(' ')[0]))]:inView;
+    const near=m.stay?m.stay.split(' ').map(id=>at(ids.get(id))):m.group?(members.get(m.group)??[]).map(at):[];
+    if(!near.filter(Boolean).length){off.push({text:m.text,stay:m.stay,group:m.group,why:'no members'});continue}
     const d=Math.min(...near.filter(Boolean).map(p=>Math.hypot(p.x-m.tip.x,p.y-m.tip.y)));
     if(!(d<=2))off.push({text:m.text,stay:m.stay,group:m.group,tip:m.tip,distance:+d.toFixed(1)});
    }
@@ -71,7 +80,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   const zoomIn=page.getByRole('button',{name:'지도 확대'});
   for(let i=0;i<4;i++){await zoomIn.evaluate(e=>e.click());offs.push(await audit('확대 '+(i+1)))}
   const bad=offs.flat(),checked=steps.reduce((n,x)=>n+x.markers,0),groups=steps.reduce((n,x)=>n+x.groups,0);
-  check(`${label}: 처음과 확대 4단계에서 표지 ${checked}개(묶음 ${groups}개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 화면 안 숙소 하나의 점 위)`,checked>0&&(label!=='전국'||groups>0)&&bad.length===0,{steps,off:bad.slice(0,8)});
+  check(`${label}: 처음과 확대 4단계에서 표지 ${checked}개(묶음 ${groups}개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)`,checked>0&&(label!=='전국'||groups>0)&&bad.length===0,{steps,off:bad.slice(0,8)});
  }
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();

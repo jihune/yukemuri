@@ -123,5 +123,15 @@ function place(p:ResultPositions,members:number[]){
  return{lat:p.lat[best],lng:p.lng[best]};
 }
 
+// The member nearest the members' mean on the screen (Web Mercator, as place above): where the
+// area search's grouped spots and grid cells put their marker (components/stay-map.tsx,
+// lib/static-search.ts mapArea). Never the mean itself (U07: around islands it lies in the sea).
+export function nearestMean<T extends {lat:number;lng:number}>(list:T[]):T{
+ const ps=list.map(h=>mercatorPoint(h.lat,h.lng)),mx=ps.reduce((a,p)=>a+p[0],0)/ps.length,my=ps.reduce((a,p)=>a+p[1],0)/ps.length;
+ const d=(k:number)=>(ps[k][0]-mx)**2+(ps[k][1]-my)**2;
+ let best=0;for(let k=1;k<ps.length;k++)if(d(k)<d(best))best=k;
+ return list[best];
+}
+
 // Stays a marker stands for (one for a single marker, every member for a group).
 export const markerCount=(m:MapMarker)=>m.kind==='stay'?1:m.count;
