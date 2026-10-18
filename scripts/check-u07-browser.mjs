@@ -1,12 +1,15 @@
-// U07 in real Chromium (360·390px touch, 1280px mouse), docs/U07-20261019.md:
+// U07 in real Chromium, docs/U07-20261019.md: 360·390px touch and 720px mouse (the filter in the
+// bottom sheet), 1280px mouse and 1366px touch (the filter panel beside the list, two columns):
 // - the filter's bath buttons keep every letter in place when pressed: the label's text box, the
 //   count's line and the button's height are the same before and after, the check mark has its
-//   own place from the start, and no button cuts its text, even with a 5-digit count;
-// - every filter option has a help, read with it (aria-describedby); a mouse sees it as a tooltip
-//   past the panel's right edge (covering no other option) on hover and on keyboard focus, and
-//   Escape hides it; a touch screen has a 44px ‘?’ in the option that opens the same text under
-//   the option, inside the screen, and a press elsewhere closes it; a tap on an option opens no
-//   tooltip;
+//   own place from the start, and no button cuts its text or puts it under its ‘?’, even with a
+//   5-digit count;
+// - every filter option has a help, read with it (aria-describedby); a mouse beside the panel
+//   sees it as a tooltip past the panel's right edge (covering no other option) on hover and on
+//   keyboard focus, and Escape hides it; a touch screen, and any pointer in the bottom sheet
+//   (no room beside it), has a 44px ‘?’ in the option that opens the same text under the option,
+//   inside the screen, clear of the option's name, and a press elsewhere closes it; a press on an
+//   option opens no tooltip;
 // - names: Korean, else English, else the original name (lib/hotel-names.ts displayNames, user
 //   decision 2026-10-17), the original beside it; the detail shows Korean, English, original in
 //   that order; each English or original name has a 44px copy button that puts the name on the
@@ -35,9 +38,11 @@ const QUICK=['내 기준','천연온천','노천탕','전세탕','객실 온천'
 // A stay with Korean, English and original names, for the detail's order.
 const first=search.list('').hotels,full=first.find(h=>{const n=displayNames(h.names);return n.titleLang==='ko'&&n.en&&n.ja});
 const browser=await chromium.launch();
-for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
+for(const [w,mobile] of [[360,true],[390,true],[720,false],[1280,false],[1366,true]]){
  width=w;
- const context=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR',permissions:['clipboard-read','clipboard-write']});
+ // The filter is in the bottom sheet up to 900px, beside the list from 901px.
+ const sheet=w<=900;
+ const context=await browser.newContext({viewport:{width:w,height:mobile&&!sheet?1024:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR',permissions:['clipboard-read','clipboard-write']});
  await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e).slice(0,200)));page.setDefaultTimeout(8000);
  const press=l=>mobile?l.tap():l.click();
@@ -91,8 +96,8 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
 
  // The filter: the panel on a wide screen, the bottom sheet on a phone.
  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(400);
- if(mobile){await press(page.locator('.chip-bar .mobile-filter'));await page.waitForTimeout(800)}
- const panel=page.locator(mobile?'.filter-drawer':'.desktop-filters');
+ if(sheet){await press(page.locator('.chip-bar .mobile-filter'));await page.waitForTimeout(800)}
+ const panel=page.locator(sheet?'.filter-drawer':'.desktop-filters');
  // Each quick button: its label's own text box (a Range, so a mark drawn before it counts),
  // the count's line, the button's size and whether it cuts anything; then the same with a
  // 5-digit count, the most the whole country gives.
@@ -100,7 +105,9 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   const label=[...b.querySelectorAll('span')].find(s=>s.textContent.trim()&&!s.querySelector('span')),range=document.createRange();range.selectNodeContents(label);
   const t=range.getBoundingClientRect(),c=b.querySelector('small').getBoundingClientRect(),r=b.getBoundingClientRect();
   const slot=b.querySelector('.filter-check')?.getBoundingClientRect();
-  return{name:label.textContent.trim(),on:b.getAttribute('aria-pressed')==='true',x:+(t.left-r.left).toFixed(1),y:+(t.top-r.top).toFixed(1),lines:Math.round(t.height),count:+(c.top-r.top).toFixed(1),w:Math.round(r.width),h:Math.round(r.height),cut:b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1||t.right>r.right-1||c.right>r.right-1,slot:slot?Math.round(slot.width):0};
+  // A ‘?’ drawn over the button's right end: the name and the count must end before it.
+  const help=b.parentElement.querySelector('.option-help'),end=help?.checkVisibility()?help.getBoundingClientRect().left:r.right;
+  return{name:label.textContent.trim(),on:b.getAttribute('aria-pressed')==='true',x:+(t.left-r.left).toFixed(1),y:+(t.top-r.top).toFixed(1),lines:Math.round(t.height),count:+(c.top-r.top).toFixed(1),w:Math.round(r.width),h:Math.round(r.height),cut:b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1||t.right>end-1||c.right>end-1,slot:slot?Math.round(slot.width):0};
  }));
  const before=await measure();
  await shot(panel,'filter-before');
@@ -117,7 +124,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  await page.waitForTimeout(300);
  const bigOff=await big();
  const cut=[...before,...after,...bigOn,...bigOff].filter(b=>b.cut);
- check('어느 버튼도 글자를 자르지 않음(누르기 전후, 숫자가 다섯 자리여도)',cut.length===0,{cut});
+ check('어느 버튼도 글자를 자르거나 ‘?’ 밑에 두지 않음(누르기 전후, 숫자가 다섯 자리여도)',cut.length===0,{cut});
 
  // Every option has its help, read with it.
  const toggleAll=async state=>{const closed=panel.locator(`.filter-group-toggle[aria-expanded=${state}]`);for(let n=await closed.count();n>0;n--){await press(closed.first());await page.waitForTimeout(150)}};
@@ -126,16 +133,17 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  check(`필터 옵션 ${helps.length}개마다 도움말이 있고 옵션과 함께 읽힘(aria-describedby), 문구가 서로 다름`,helps.length>=15&&helps.every(h=>h.text.length>=10)&&new Set(helps.map(h=>h.text)).size===helps.length&&/대욕탕만 확인된 숙소/.test(helps.find(h=>h.name==='천연온천')?.text??''),{helps});
  // A help opened from inside a group lies under its option across the group's list.
  const underOption=b=>{const t=document.getElementById(b.getAttribute('aria-controls')),r=t.getBoundingClientRect(),own=b.closest('.filter-option').getBoundingClientRect(),list=b.closest('.filter-quick,.filter-group-items').getBoundingClientRect();return{expanded:b.getAttribute('aria-expanded'),text:t.checkVisibility()?t.textContent:'',top:Math.round(r.top-own.bottom),left:Math.round(r.left-list.left),right:Math.round(list.right-r.right),inScreen:r.left>=0&&r.right<=innerWidth}};
- if(mobile){
-  // A touch screen: a 44px ‘?’ in every option, the 7 quick ones and the 8 inside the groups
-  // (all open here); each opens its help under the option.
-  const buttons=await panel.locator('.option-help').evaluateAll(list=>list.map(b=>{const r=b.getBoundingClientRect();return{visible:b.checkVisibility(),w:Math.round(r.width),h:Math.round(r.height),label:b.getAttribute('aria-label')}}));
+ if(mobile||sheet){
+  // A touch screen or the bottom sheet: a 44px ‘?’ in every option, the 7 quick ones and the 8
+  // inside the groups (all open here), clear of the option's name; each opens its help under the
+  // option.
+  const buttons=await panel.locator('.option-help').evaluateAll(list=>list.map(b=>{const r=b.getBoundingClientRect(),own=b.parentElement.querySelector('.filter-chip,[role=switch]'),label=[...own.querySelectorAll('span')].find(s=>s.textContent.trim()&&!s.querySelector('span')),range=document.createRange();range.selectNodeContents(label);return{visible:b.checkVisibility(),w:Math.round(r.width),h:Math.round(r.height),label:b.getAttribute('aria-label'),overName:range.getBoundingClientRect().right>r.left}}));
   const help=panel.locator('.filter-quick .option-help',{hasText:'?'}).nth(5);
-  if(!await help.count()){check('휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',false,{buttons})}else{
+  if(!await help.isVisible()){check(`${mobile?'터치':'마우스'}·${sheet?'아래 시트':'옆 패널'}: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음`,false,{buttons})}else{
   await press(help);await page.waitForTimeout(300);
   const open=await help.evaluate(underOption);
   await shot(panel,'filter-help');
-  const title=page.locator('.filter-drawer .mobile-sheet-title h2,.filter-drawer [data-slot=drawer-title]').first();
+  const title=page.locator(sheet?'.filter-drawer .mobile-sheet-title h2,.filter-drawer [data-slot=drawer-title]':'.desktop-filters .filter-title h2').first();
   await press(title);await page.waitForTimeout(300);
   const closed=await help.getAttribute('aria-expanded');
   // One inside a group: ‘료칸만 보기’.
@@ -150,7 +158,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   await press(quick.nth(2));await page.waitForTimeout(600);
   const tooltips=await page.locator('[data-slot=tooltip-content]').count();
   const fits=o=>o.expanded==='true'&&o.top>=0&&o.top<=8&&o.left===0&&o.right===0&&o.inScreen;
-  check('휴대폰: 옵션 15개(빠른 조건 7개, 묶음 안 8개)마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며(빠른 조건과 묶음 안 옵션 하나씩), 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',buttons.length===15&&new Set(buttons.map(b=>b.label)).size===15&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label))&&fits(open)&&/원천을 흘려보내는/.test(open.text)&&closed==='false'&&!!groupOpen&&fits(groupOpen)&&/료칸/.test(groupOpen.text)&&groupClosed==='false'&&tooltips===0,{buttons,open,closed,groupOpen,groupClosed,tooltips});
+  check(`${mobile?'터치':'마우스'}·${sheet?'아래 시트':'옆 패널'}: 옵션 15개(빠른 조건 7개, 묶음 안 8개)마다 44px ‘?’가 이름과 겹치지 않게 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며(빠른 조건과 묶음 안 옵션 하나씩), 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음`,buttons.length===15&&new Set(buttons.map(b=>b.label)).size===15&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label)&&!b.overName)&&fits(open)&&/원천을 흘려보내는/.test(open.text)&&closed==='false'&&!!groupOpen&&fits(groupOpen)&&/료칸/.test(groupOpen.text)&&groupClosed==='false'&&tooltips===0,{buttons,open,closed,groupOpen,groupClosed,tooltips});
   }
  }else{
   // A mouse: no ‘?’ in the options; hovering shows the tooltip past the panel's right edge.

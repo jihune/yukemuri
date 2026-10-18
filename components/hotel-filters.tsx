@@ -12,10 +12,11 @@ import {Tooltip,TooltipContent,TooltipProvider,TooltipTrigger} from '@/component
 // that start closed. Every row and button is 44px and up, its count beside it; a group's
 // explanation is behind its ‘?’.
 // U07: every option has a short help in the words of the cards and lib/collection-status.ts, read
-// with the option (aria-describedby, the text under it). A mouse or a keyboard focus shows it as a
-// tooltip right of the panel, where it covers no other option; Escape hides it. A touch screen
-// has a ‘?’ in the option instead, which opens the same text under the option, across the whole
-// list (its containing block is .filter-quick or the group), until a press elsewhere.
+// with the option (aria-describedby, the text under it). Beside the list, a mouse or a keyboard
+// focus shows it as a tooltip right of the panel, where it covers no other option; Escape hides
+// it. A touch screen, and the phone's bottom sheet for any pointer (no room beside it for a
+// tooltip), has a ‘?’ in the option instead, which opens the same text under the option, across
+// the whole list (its containing block is .filter-quick or the group), until a press elsewhere.
 // 전망 욕탕 (viewBath) is shown in the detail only, never filtered.
 type FilterKey=Exclude<FeatureKey,'viewBath'>;
 type HelpKey=FilterKey|'verified'|'ryokan';
@@ -36,20 +37,20 @@ const OPTION_HELP:Record<HelpKey,string>={
  jalanHighClass:'자란넷 숙소 페이지의 제목 옆에 하이클래스 표시가 있는 숙소입니다.',
  ryokan:'숙소 이름에 료칸(일본어나 영어 표기)이 들어간 곳입니다.',
 };
-type Tip={open:string|null;setOpen:(key:string|null)=>void};
+type Tip={open:string|null;setOpen:(key:string|null)=>void;float:boolean};
 function Option({tip,name,label,children}:{tip:Tip;name:HelpKey;label:string;children:(describedBy:string)=>ReactNode}){
  const id=useId(),box=useRef<HTMLDivElement>(null),open=tip.open===name,{setOpen}=tip,[offset,setOffset]=useState(10);
  // Past the panel's outer right edge (its scrollbar included), so the tooltip never covers the
  // option beside this one. Measured as the pointer comes in or the focus arrives, before the
  // tooltip opens (Radix places it once with the offset it opens with).
- const measure=()=>{const panel=box.current?.closest('.desktop-filters,.filter-content')?.getBoundingClientRect(),own=box.current?.getBoundingClientRect();if(panel&&own)setOffset(Math.max(10,Math.round(panel.right-own.right+12)))};
+ const measure=()=>{const panel=box.current?.closest('.desktop-filters')?.getBoundingClientRect(),own=box.current?.getBoundingClientRect();if(panel&&own)setOffset(Math.max(10,Math.round(panel.right-own.right+12)))};
  useEffect(()=>{
   if(!open)return;
   const away=(e:PointerEvent)=>{if(!box.current?.contains(e.target as Node))setOpen(null)};
   document.addEventListener('pointerdown',away);return()=>document.removeEventListener('pointerdown',away);
  },[open,setOpen]);
  return <div ref={box} className={'filter-option'+(open?' is-open':'')}>
-  <div className="filter-option-row"><Tooltip><TooltipTrigger asChild onPointerEnter={measure} onFocus={measure}>{children(id)}</TooltipTrigger><TooltipContent side="right" align="start" sideOffset={offset} collisionPadding={8} className="option-tip-float">{OPTION_HELP[name]}</TooltipContent></Tooltip>
+  <div className="filter-option-row">{tip.float?<Tooltip><TooltipTrigger asChild onPointerEnter={measure} onFocus={measure}>{children(id)}</TooltipTrigger><TooltipContent side="right" align="start" sideOffset={offset} collisionPadding={8} className="option-tip-float">{OPTION_HELP[name]}</TooltipContent></Tooltip>:children(id)}
    <button type="button" className="option-help" aria-label={label+' 도움말'} aria-expanded={open} aria-controls={id} onClick={()=>setOpen(open?null:name)}>?</button></div>
   <p className="option-tip" id={id} hidden={!open}>{OPTION_HELP[name]}</p>
  </div>;
@@ -76,14 +77,14 @@ const MORE:{label:string;help:string;keys:FilterKey[]}[]=[
  {label:'공용·전세 목욕 시설 세부',help:'확인된 시설만 포함합니다. 확인 전인 시설은 있음으로 치지 않습니다.',keys:['largeBath','communalOutdoor','privateOutdoor']},
  {label:'객실 목욕 시설 세부',help:'객실탕은 해당 객실 타입을 예약해야 이용할 수 있습니다. 확인된 시설만 포함합니다.',keys:['roomIndoorOnsen','roomOutdoor','roomOutdoorOnsen']},
 ];
-export default function HotelFilters({filters,setFilters,counts,ryokanCount,title=true}:{filters:HotelFilters;setFilters:(f:HotelFilters)=>void;counts:SearchResponse['featureCounts'];ryokanCount:number;title?:boolean}){
- const verified=isVerifiedCriteria(filters),[helpOpen,setHelpOpen]=useState(false),helpId=useId(),[open,setOpen]=useState<string|null>(null),tip={open,setOpen};
+export default function HotelFilters({filters,setFilters,counts,ryokanCount,sheet=false}:{filters:HotelFilters;setFilters:(f:HotelFilters)=>void;counts:SearchResponse['featureCounts'];ryokanCount:number;sheet?:boolean}){
+ const verified=isVerifiedCriteria(filters),[helpOpen,setHelpOpen]=useState(false),helpId=useId(),[open,setOpen]=useState<string|null>(null),tip={open,setOpen,float:!sheet};
  const helpButton=<button type="button" className="filter-help" aria-expanded={helpOpen} aria-controls={helpId} aria-label="탕 조건 설명" onClick={()=>setHelpOpen(o=>!o)}>?</button>;
  const ratingOptions=filters.ratingProvider==='trip'?[8,8.5,9,9.5]:[4,4.2,4.5,4.8];
  const feature=(key:FeatureKey,on:boolean)=>setFilters({...filters,features:on?[...new Set([...filters.features,key])]:filters.features.filter(k=>k!==key)});
  return <TooltipProvider delayDuration={300}><div className="filter-content">
   {/* The bath conditions' explanation sits behind a ‘?’ in the title row (the phone's sheet has no title row). */}
-  {title?<div className="filter-title"><h2>숙소 필터</h2>{helpButton}<button onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button></div>:<div className="filter-group-head filter-quick-head"><h3>탕 조건</h3>{helpButton}</div>}
+  {!sheet?<div className="filter-title"><h2>숙소 필터</h2>{helpButton}<button onClick={()=>setFilters({...DEFAULT_FILTERS,region:filters.region,query:filters.query})}>초기화</button></div>:<div className="filter-group-head filter-quick-head"><h3>탕 조건</h3>{helpButton}</div>}
   <p id={helpId} className="filter-hint" hidden={!helpOpen}>확인된 조건을 모두 갖춘 숙소만 표시합니다. 천연온천은 대욕탕만 확인된 숙소를 포함하지 않습니다. 카케나가시는 원천을 흘려보내는 방식이고, 가수·가온 없음과는 별개입니다. 내 기준은 Trip.com 9.0점 이상·리뷰 50개 이상입니다.</p>
   <div className="filter-quick" role="group" aria-label="탕 조건">
    <Option tip={tip} name="verified" label="내 기준">{id=><button type="button" className="filter-chip is-verified" aria-pressed={verified} aria-describedby={id} onClick={()=>{setOpen(null);setFilters({...filters,ratingProvider:'trip',minRating:verified?0:9,minReviews:verified?0:50})}}><Check/><ShieldCheck size={16} aria-hidden="true"/><span>내 기준</span><small>9.0+ · 리뷰 50+</small></button>}</Option>
