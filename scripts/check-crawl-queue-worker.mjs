@@ -245,7 +245,9 @@ try{
  assert.equal((await api('/api/crawl','POST',{provider:'trip',phase:'names',token:randomUUID()})).jobs[0].url,trip.sources[0].url);
  await api('/api/crawl?report=1','GET',undefined,403,false);
  const health=await api('/api/crawl?report=1');assert(health.quality.records>1600);assert(health.phases.some(p=>p.active===1));assert.equal(health.inventoryComplete,false);
- const plan=await db.prepare("EXPLAIN QUERY PLAN SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending' AND next_at<=0").all();assert(plan.results.some(r=>r.detail.includes('idx_crawl_jobs_provider_ready')));
+ // The queue reads one provider, kind and status through an index, not the
+ // whole queue (C04 dropped idx_crawl_jobs_provider_ready; a claim index serves it).
+ const plan=await db.prepare("EXPLAIN QUERY PLAN SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending' AND next_at<=0").all();assert(plan.results.some(r=>/^SEARCH crawl_jobs USING (COVERING )?INDEX idx_crawl_jobs_claim_\w+ \(provider=\? AND kind=\? AND status=\?/.test(r.detail)),JSON.stringify(plan.results));
  // A large new-page backlog must not starve due retries. Future page waits,
  // failed pages, wrong kinds and genuine provider pauses remain ineligible.
  await db.prepare('DELETE FROM crawl_jobs').run();
