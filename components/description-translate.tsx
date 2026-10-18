@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {Languages,RotateCw,X} from 'lucide-react';
 // U07: the description translated in place by the browser's own on-device translator, the
 // Translator API of Chrome 138+ and Edge 148+ on a desktop (no payment, no new window, and not a
@@ -14,6 +14,8 @@ type TranslatorApi={
  create:(o:{sourceLanguage:string;targetLanguage:string;monitor?:(m:EventTarget)=>void})=>Promise<Translator>;
 };
 const translatorApi=()=>(globalThis as {Translator?:TranslatorApi}).Translator;
+// The answer does not change while the page is open, so there is nothing to subscribe to.
+const noSubscription=()=>()=>{};
 const chromeOrEdge=()=>((navigator as Navigator&{userAgentData?:{brands?:{brand:string}[]}}).userAgentData?.brands??[]).some(b=>b.brand==='Google Chrome'||b.brand==='Microsoft Edge');
 // Kana or kanji: Japanese (the sources are Japanese sites); Latin letters only: English.
 export function descriptionLanguage(text:string){
@@ -23,14 +25,18 @@ export function descriptionLanguage(text:string){
 type State={kind:'checking'|'unsupported'|'ready'|'translating'|'failed'|'done';progress?:number;text?:string};
 export default function DescriptionTranslate({text}:{text:string}){
  const source=descriptionLanguage(text),translator=useRef<Translator|null>(null);
- const [state,setState]=useState<State>(()=>source&&translatorApi()&&chromeOrEdge()?{kind:'checking'}:{kind:'unsupported'});
+ // Whether this browser has the translator, read as React reads browser-only values: null on the
+ // server and while hydrating, so the first render is the same wherever it runs.
+ const capable=useSyncExternalStore(noSubscription,()=>!!translatorApi()&&chromeOrEdge(),()=>null);
+ const [answer,setState]=useState<State>({kind:'checking'});
+ const state:State=!source||capable===false?{kind:'unsupported'}:capable===null?{kind:'checking'}:answer;
  useEffect(()=>{
   const api=translatorApi();
-  if(!source||!api||!chromeOrEdge())return;
+  if(!source||!api||!capable)return;
   let live=true;
   api.availability({sourceLanguage:source,targetLanguage:'ko'}).then(a=>{if(live)setState({kind:a==='unavailable'?'unsupported':'ready'})},()=>{if(live)setState({kind:'unsupported'})});
   return()=>{live=false;translator.current?.destroy?.();translator.current=null};
- },[source]);
+ },[source,capable]);
  // Called from the click itself: the first use downloads the model, which needs the user's press.
  async function translate(){
   const api=translatorApi();if(!api||!source)return;

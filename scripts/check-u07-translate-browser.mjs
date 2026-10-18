@@ -4,9 +4,10 @@
 // what is checked, not Chrome's model:
 // - a browser that is not Chrome or Edge, or says the pair is unavailable, shows a note and no
 //   button, and is never asked to translate (a Chromium build without the service ended the page);
-// - Chrome (checked at 390px) or Edge (at 1280px) with the pair available shows a 44px button;
-//   pressing it shows the download progress, then the translation under the original, marked as
-//   the browser's, in Korean, line by line; the original stays; ‘번역 닫기’ hides it;
+// - Chrome (checked at 390px) or Edge (at 1280px) with the pair available shows a 44px button and
+//   never the note, not even for a frame while it asks the browser; pressing it shows the
+//   download progress, then the translation under the original, marked as the browser's, in
+//   Korean, line by line; the original stays; ‘번역 닫기’ hides it;
 // - a failed translation says so and offers ‘다시 시도’, which works;
 // - a stay whose description is already Korean shows neither button nor note.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -37,7 +38,9 @@ if(!foreign||!korean)throw new Error('No checked-in stay for the translation che
 // The stand-in: brands, availability and translation are set per run through window.__u07.
 const standIn=({brand,availability,fail})=>{
  Object.defineProperty(Navigator.prototype,'userAgentData',{configurable:true,get:()=>({brands:[{brand,version:'141'}],mobile:false,platform:'Linux'})});
- const log=window.__u07={availability:0,create:0,translate:[],fail};
+ const log=window.__u07={availability:0,create:0,translate:[],fail,sawUnsupported:false};
+ // Whether the unsupported note ever showed, even for a frame (a supported browser must not see it).
+ new MutationObserver(()=>{if(document.body?.textContent.includes('바로 번역을 쓸 수 없습니다'))log.sawUnsupported=true}).observe(document,{subtree:true,childList:true,characterData:true});
  window.Translator={
   availability:async o=>{log.availability++;log.pair=o.sourceLanguage+'>'+o.targetLanguage;return availability},
   create:async o=>{log.create++;log.activation=navigator.userActivation?.isActive??null;
@@ -83,11 +86,11 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   const d=await open(page,foreign.id),button=d.locator('.translate-button');
   // A page without the button (a build from before U07) fails here and goes on, as a control.
   if(!await button.count()){check(`${brand}: 번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음`,false,{buttons:0});await c.close();continue}
-  const box=await button.boundingBox(),label=await button.textContent();
+  const box=await button.boundingBox(),label=await button.textContent(),flashed=await page.evaluate(()=>window.__u07.sawUnsupported);
   // The first press fails (the stand-in's network error), the second works.
   await (mobile?button.tap():button.click());await page.waitForTimeout(400);
   const failed={note:await d.locator('.translate-note[role=status]').textContent().catch(()=>null),label:await button.textContent()};
-  check(`${brand}: 번역 단추(44px)가 원문 아래에 있고, 실패하면 ‘번역하지 못했습니다’와 ‘다시 시도’`,/이 자리에서 한국어로 번역/.test(label)&&box.height>=44&&/번역하지 못했습니다/.test(failed.note??'')&&/다시 시도/.test(failed.label),{label,box,failed});
+  check(`${brand}: 번역 단추(44px)가 원문 아래에 있고(‘쓸 수 없습니다’ 안내는 한 번도 보이지 않음), 실패하면 ‘번역하지 못했습니다’와 ‘다시 시도’`,!flashed&&/이 자리에서 한국어로 번역/.test(label)&&box.height>=44&&/번역하지 못했습니다/.test(failed.note??'')&&/다시 시도/.test(failed.label),{label,box,failed,flashed});
   await (mobile?button.tap():button.click());
   // The stand-in reports 0% at once and 50% after 0.4s, then finishes 0.4s later.
   let progress=null;for(let t=0;t<12&&!/50%/.test(progress??'');t++){await page.waitForTimeout(50);progress=await d.locator('.translate-note[role=status]').textContent().catch(()=>null)}
