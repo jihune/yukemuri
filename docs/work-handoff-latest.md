@@ -101,6 +101,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
+| `session_0198gznZcCmyo385sXAu9HpC` | PR #151 이어 가는 Claude 검토 2회째(5번째 검토, 커밋 `d3ee9d9`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -138,6 +139,7 @@
 - 10-18T10:54Z PR #154 4번째 검토(커밋 `a211968`, review 5562616205)는 P0~P2 없음, P3 2건이다. 3회째 P2(계약이 거절하는 칸 하나가 실행을 멈춤)와 P3-1은 해결됐다(재현 세 경우가 거름으로 빠지고 남은 페이로드는 Worker PUT 200, 새 단언은 대조 사본에서 실패). `cloud-check --full` 47개 rc 0, 수집기 release를 다시 만들어 `cmp`가 같았다. 세션은 결과를 적은 뒤 보관했다. 마지막 검토가 남긴 P3라 이 PR에서 고치지 않고 다음 일로 둔다.
   - P3-1(C04 예산 PR 몫): `names` 작업 받기가 끝난 이름 쪽을 모두 훑어 받기마다 525행(끝난 쪽 520개)이다. 운영 gentle 실행 두 번(10-18T05:13Z 120쪽, 10-17T23:31Z 79쪽)으로 세면 쪽당 79–93행이 늘고, D07 문서 결과 19와 PR 설명의 ‘쪽당 약 60행, `readsPerPage` 3,000 안’은 맞지 않는다(60행이어도 2,981+60). 스냅숏 읽기 여유가 커서 지금 85%를 넘을 위험은 낮다고 검토가 판단했다. C04가 예산 PR에서 `readsPerPage`와 함께 정한다.
   - P3-2(D07 다음 일): 파서는 받고 계약은 거절하는 칸이 두 가지 남았다. 전각 숫자 번호(파이썬 `\d`)와 U+FEFF만인 이름(파이썬 `strip`은 남기고 zod `trim`은 지움)이고, fixture로는 PUT 400이었다. 실제로 나온 근거는 없다. 번호 9자리·이름 400자·주소 600자 조건은 `check.py`가 판정하지 않는다.
+- 10-18T10:59Z U07이 PR #151의 4번째 검토 지적 3건을 `42672e0`에서 고쳤다(자동완성이 스냅숏 색인의 카드 제목 `displayNames(card.names).title`을 보임, 사진 출처 API가 `displayNames(withWikidataNames(h).names).title`, 비교 표의 `lang={nameLang(...)}`). 고치기 전 빌드에서 `check-u07-names-browser` 14개 중 4개, `check-public-reads-worker`의 사진 출처 대조가 실패했다고 한다. 상위 세션이 head `d3ee9d9`의 `checks`·GitGuardian 성공(10:55:46Z), main과 합친 트리 충돌 없음, #154 head `a211968`과도 글자 충돌 없음을 확인하고, 5번째 검토(이어 가는 Claude 검토 2회째, 묻지 않고 받는 마지막 검토) 세션 `session_0198gznZcCmyo385sXAu9HpC`를 열었다(10:59:04Z). 두 PR이 모두 병합되면 사진 출처 API가 #154의 Jalan 이름을 거치지 않을 수 있어 검토 세션에 판정을 맡겼다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
