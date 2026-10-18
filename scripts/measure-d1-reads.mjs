@@ -87,6 +87,9 @@ try{
   }
  }
  for(const table of ['hotels','hotel_names','crawl_jobs','hotel_lifecycle'])counts[table]=(await db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first()).n;
+ // A Jalan list name (D07) for every hotel, so a photo-credits page reads its worst case: a name row
+ // for each of its hotels, as on a page of 40 named Jalan hotels.
+ await db.prepare("INSERT INTO hotel_locale_names (hotel_id,name_en,en_url,en_checked_at) SELECT id,'Measured Hotel','https://www.jalan.net/en/japan_hotels_ryokan/a/b/c/d/','2026-10-18T00:00:00Z' FROM hotels").run();
  // One pending Trip detail job whose observation is a checked-in record with a
  // newer retrieval time, so the PUT really writes like a collector page does.
  const puts=JSON.parse(readFileSync('lib/hotels.crawled.json','utf8')).filter(h=>/^trip-\d+$/.test(h.id)&&h.sources?.[0]?.url&&h.links?.[0]?.url===h.sources[0].url).slice(0,2).map(base=>{
@@ -200,8 +203,11 @@ try{
   // lane's index order and the jobs verified links name, not the whole queue.
   const claims=Object.fromEntries(results.filter(r=>r.key==='crawlClaim'||r.key.startsWith('claim:')).map(r=>[r.key,bound(0.05,200)]));
   // Public routes (P03 PR C): fixed caps that hold at any catalogue size, and
-  // no D1 write on a read. A favourite save writes its one row.
-  const publicCaps={detailCold:50,detail:50,detailMissing:50,compare:120,compare4:160,favoritesPut:50,favoritesGet:50,photoCredits:60,photoCreditsNext:60,google:0,prices:0,collectionStatusPublic:0};
+  // no D1 write on a read. A favourite save writes its one row. A photo-credits
+  // page reads its 40 hotels and the next one (41 rows), their Jalan list names
+  // (D07, one row each; the seed above names every hotel: 41) and the record
+  // counter (1): 83 on 2026-10-18.
+  const publicCaps={detailCold:50,detail:50,detailMissing:50,compare:120,compare4:160,favoritesPut:50,favoritesGet:50,photoCredits:90,photoCreditsNext:90,google:0,prices:0,collectionStatusPublic:0};
   // L01 evidence: a lifecycle PUT reads its hotel and lifecycle rows and the
   // hotel it returns, writes the lifecycle row and one event, and nothing when
   // the same entry comes again.
