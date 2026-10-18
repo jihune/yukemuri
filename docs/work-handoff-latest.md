@@ -52,7 +52,7 @@
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
 | main | 이 기록 PR이 들어간다. 그 앞은 `2653d84`(PR #138, P04 스냅숏 생성 읽기)와 `4caa224`(PR #137, C04 색인 정리) | `git log --oneline -5 origin/main` |
-| 열린 PR | yukemuri #133(U07 화면 PR 가, Claude 검토 중). 실행기 저장소는 없음(10-18T04:1xZ, 실행기 #11은 `31daed7`로 병합) | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
+| 열린 PR | yukemuri #141(검토 규칙 문서, 이 PR). 실행기 저장소는 없음(10-18T05:3xZ) | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
 | 운영 배포 | 마지막 코드 배포는 PR #138(`2653d84`, 10-18T04:17–04:28Z, Worker `74e83e91`, 스냅숏 `779f9e15be28ad23`, 23,032곳, 생성 읽기 117,433행). 그 앞은 PR #137(`4caa224`, Worker `4c83684d`, 운영 D1에 마이그레이션 0014 적용, 생성 읽기 257,099행). 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03) | 10-17에 6회 쪽수를 정했고 처음으로 85% 상한이 쪽수를 정했다(23:31Z 79쪽). 쪽당 쓰기 평균 129.7행(실행별 최대 150.4), `writesPerPage` 90이라 10-17 쓰기가 88.1%로 상한을 넘었다. 읽기 73.3%(경고). 스냅숏 1회 읽기 257,099행. PR #130 배포부터 `writesPerPage` 151, `snapshotReads` 330,000 | `H01-20261011.md` 「7단계 기록(매일)」 5일차, `collect.yml` 'Size the run' 출력 |
 | 하위 세션 | O03·U07이 10-18T01:01Z, C04가 02:34Z에 일을 시작했다. U05·U06·L01·D05는 쉰다(아래 6). D05 브랜치의 `d2f7d53`은 문구만 고쳐 main `f2a3cc3`에 있다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
@@ -93,9 +93,8 @@
 | `session_01XUUTkd9FhQQbmKkqVnsnCj` | 다섯 번째 상위 세션(지금) | 일함 |
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음. 10-18T00:5xZ 인계 끝 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함(10-18T01:01Z 시작) |
-| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함(10-18T01:01Z 시작), PR #133 |
+| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함(10-18T01:01Z 시작). PR #133 병합(10-18T05:3xZ), 다음은 할 것 7 작은 PR과 PR 나·다 |
 | `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기, 이어서 P04(브랜치 `claude/c04-writes`) | 일함(10-18T02:34Z 시작). #137·#138 병합, 배포 뒤 수집 실측으로 예산 PR 준비 |
-| `session_01QRdQHRsfj4b6fZePbqMLpC` | PR #133 Claude 검토(이 PR의 3회째 검토, 커밋 `eff9155`) | 일함(10-18T04:57Z 시작). 결과를 기록한 뒤 보관한다 |
 | `session_01PuNgLiSyMdn35DxmRigJmK` | 세 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
