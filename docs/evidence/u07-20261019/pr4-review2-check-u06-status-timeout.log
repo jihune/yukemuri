@@ -1,0 +1,8 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.evaluate: Target page, context or browser has been closed
+    at /home/user/yukemuri/scripts/check-u06-status-browser.mjs:60:14
+
+Node.js v24.22.0
