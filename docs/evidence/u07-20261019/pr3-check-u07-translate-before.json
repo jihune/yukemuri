@@ -1,0 +1,78 @@
+{
+ "checkedAt": "2026-10-18T12:54:08.242Z",
+ "base": "http://127.0.0.1:8791",
+ "stays": {
+  "foreign": "jalan-300001",
+  "korean": "trip-1061004"
+ },
+ "results": [
+  {
+   "width": 390,
+   "name": "Chrome·Edge가 아닌 브라우저: 번역 단추 없이 ‘이 브라우저에서는 바로 번역을 쓸 수 없습니다’를 보이고 원문은 그대로, 페이지 오류 없음",
+   "pass": false,
+   "detail": {
+    "note": null,
+    "buttons": 0,
+    "original": "バーデン明日の宿泊・予約情報・2名税込17000円～。『天然の化粧水』とも称される優しい温泉が自慢の山あいの一軒宿/じゃらんならお得な期間限定プランや直前割引情報が満載。当日／直前のオンライン予約もOK。バーデン明日の宿泊予約は国内最大級の旅行情報サイト＜じゃらん＞",
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "브라우저가 언어 쌍을 못 한다고 하면(unavailable) 단추 없이 같은 안내",
+   "pass": false,
+   "detail": {
+    "note": null,
+    "buttons": 0,
+    "log": {
+     "availability": 0,
+     "create": 0,
+     "translate": [],
+     "fail": 0
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음",
+   "pass": false,
+   "detail": {
+    "buttons": 0
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Chrome·Edge가 아닌 브라우저: 번역 단추 없이 ‘이 브라우저에서는 바로 번역을 쓸 수 없습니다’를 보이고 원문은 그대로, 페이지 오류 없음",
+   "pass": false,
+   "detail": {
+    "note": null,
+    "buttons": 0,
+    "original": "バーデン明日の宿泊・予約情報・2名税込17000円～。『天然の化粧水』とも称される優しい温泉が自慢の山あいの一軒宿/じゃらんならお得な期間限定プランや直前割引情報が満載。当日／直前のオンライン予約もOK。バーデン明日の宿泊予約は国内最大級の旅行情報サイト＜じゃらん＞",
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "브라우저가 언어 쌍을 못 한다고 하면(unavailable) 단추 없이 같은 안내",
+   "pass": false,
+   "detail": {
+    "note": null,
+    "buttons": 0,
+    "log": {
+     "availability": 0,
+     "create": 0,
+     "translate": [],
+     "fail": 0
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음",
+   "pass": false,
+   "detail": {
+    "buttons": 0
+   }
+  }
+ ]
+}

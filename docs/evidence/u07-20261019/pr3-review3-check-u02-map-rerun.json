@@ -1,0 +1,721 @@
+{
+ "measuredAt": "2026-10-18T16:06:50.891Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium 141.0.7390.37",
+ "viewport": "360x780, 390x780 · isMobile · hasTouch · deviceScaleFactor 2; 1280x800 desktop hover",
+ "externalRequests": "blocked",
+ "results": [
+  {
+   "width": 1280,
+   "name": "데스크톱에서 지도를 옮긴 뒤 목록 카드에 마우스를 올려도 지도가 그대로 있음",
+   "pass": true,
+   "detail": {
+    "moved": "translate3d(-43px, -29px, 0px)",
+    "after": "translate3d(-43px, -29px, 0px)"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "데스크톱에서 확대하면 지도 안에 다 보이는 지점만 Tab 정지(가장자리에 걸친 지점 포함)",
+   "pass": true,
+   "detail": {
+    "wrong": 0,
+    "inside": 3,
+    "outside": 1
+   }
+  },
+  {
+   "width": 1280,
+   "name": "창 크기가 바뀌어 지도가 줄어든 뒤에도 지도 안에 다 보이는 지점만 Tab 정지",
+   "pass": true,
+   "detail": {
+    "afterResize": {
+     "wrong": 0,
+     "inside": 4,
+     "outside": 0
+    },
+    "edge": true,
+    "wrong": 0,
+    "inside": 2,
+    "outside": 2,
+    "wideMap": 458,
+    "narrowMap": 370.078125
+   }
+  },
+  {
+   "width": 1280,
+   "name": "데스크톱에서 Enter로 지점의 미리보기를 열면 포커스가 미리보기로 가고 닫으면 지점으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "trip": {
+     "pass": true,
+     "opened": true,
+     "onClose": true,
+     "back": true,
+     "scrolled": 6808,
+     "focus": {
+      "ids": [
+       "jalan-300454"
+      ],
+      "cell": null,
+      "cluster": false,
+      "title": "ちりはまホテルゆ華",
+      "card": true,
+      "inside": true
+     }
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "미리보기를 연 지점이 지도 밖으로 나간 뒤 닫으면 포커스는 그 지점이 아니라 지도로 감",
+   "pass": true,
+   "detail": {
+    "away": {
+     "again": true,
+     "gone": null,
+     "preview": 0,
+     "focus": {
+      "tag": "DIV",
+      "label": "숙소 위치 지도",
+      "text": "11곳2곳2곳4.5/5 Leaflet | © OpenStreetMap"
+     },
+     "onMap": true
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도를 열기만 하면 이 지역 검색 버튼과 요청이 없음",
+   "pass": true,
+   "detail": {
+    "buttons": 0,
+    "requests": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "터치로 지도를 움직이면 이 지역에서 검색 버튼이 보이고 요청은 아직 없음",
+   "pass": true,
+   "detail": {
+    "requests": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않고 높이 44px 이상, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 110.125,
+     "top": 143.796875,
+     "right": 249.875,
+     "bottom": 187.796875,
+     "width": 139.75,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "누르면 요청 없이 이 지역 결과",
+   "pass": true,
+   "detail": {
+    "requests": 0,
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 360,
+   "name": "이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 스냅숏 값과 같음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 60곳 범위 밖 0곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기",
+    "caption": "이 지역 60곳",
+    "expected": {
+     "total": 1655,
+     "inBounds": 60,
+     "outOfBounds": 0,
+     "withoutCoordinates": 1595,
+     "limit": 500,
+     "points": 60,
+     "cells": []
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 범위 결과는 목록을 바꾸지 않음",
+   "pass": true,
+   "detail": {
+    "listTotal": 1655,
+    "mapTotal": 1655
+   }
+  },
+  {
+   "width": 360,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 60곳 범위 밖 0곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Enter로 겹친 지점을 열면 누를 때처럼 확대되고 포커스는 같은 숙소가 든 지점에 남아 지도 안에 보임",
+   "pass": true,
+   "detail": {
+    "before": 22,
+    "after": {
+     "ids": [
+      "akan-tsuruga",
+      "hinanoza"
+     ],
+     "cell": null,
+     "cluster": true,
+     "title": "아칸 유쿠노사토 쓰루가 주변 2개 숙소",
+     "card": true,
+     "inside": true
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "목록에 없는 지점을 Enter로 열면 요청 없이 미리보기가 열리고 포커스가 숙소 이름으로 감",
+   "pass": true,
+   "detail": {
+    "details": [],
+    "focus": {
+     "tag": "BUTTON",
+     "label": null,
+     "text": "Hotel Towadaso"
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "미리보기를 키보드로 닫으면 포커스가 그 지점으로 돌아오고 Space로 다시 열고 닫아도 같음(페이지 스크롤 없음)",
+   "pass": true,
+   "detail": {
+    "closed": true,
+    "space": {
+     "pass": true,
+     "opened": true,
+     "onClose": true,
+     "back": true,
+     "scrolled": 0,
+     "focus": {
+      "ids": [
+       "trip-1679075"
+      ],
+      "cell": null,
+      "cluster": false,
+      "title": "Hotel Towadaso",
+      "card": false,
+      "inside": true
+     }
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
+   "pass": true,
+   "detail": {
+    "title": "소운카쿠 마운틴 리조트 1923",
+    "preview": "소운쿄 온천 · 가미카와 · 홋카이도\n소운카쿠 마운틴 리조트 19238.9 · Trip.com /10 · 리뷰 87개"
+   }
+  },
+  {
+   "width": 360,
+   "name": "방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음",
+   "pass": true,
+   "detail": {
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 360,
+   "name": "확대·이동·축소 때마다 지도 안에 다 보이는 지점만 Tab 정지",
+   "pass": true,
+   "detail": {
+    "zoomedStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "pannedStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "outStops": {
+     "wrong": 0,
+     "inside": 2,
+     "outside": 24
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 80px, 0px)",
+    "panAfter": "translate3d(-140px, 80px, 0px)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 4,
+    "bodyFocus": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "확대 뒤 Tab이 멈춘 지점은 모두 지도 안에 보임(화면 밖 지점은 Tab 순서에서 빠짐)",
+   "pass": true,
+   "detail": {
+    "walkStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "markerStops": 1,
+    "hiddenStops": 0
+   }
+  },
+  {
+   "width": 360,
+   "name": "Enter로 다시 검색하면 포커스는 이 지역 검색 버튼에 남고 이 지역 수 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 2곳 범위 밖 58곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  },
+  {
+   "width": 360,
+   "name": "상한 초과 결과는 구역 개수 지점과 안내로 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 630곳 범위 밖 0곳 위치 미확인 1,025곳 조건에 맞는 전체 1,655곳 숙소가 500곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다. 검색 결과 지도로 돌아가기",
+    "biggest": 601
+   }
+  },
+  {
+   "width": 360,
+   "name": "구역 지점을 누르면 지도가 그 구역으로 이동(3단계 이상 확대되고 지점이 지도 안에 보임)",
+   "pass": true,
+   "detail": {
+    "cellBefore": 154.50889942006575,
+    "cellAfter": 38.897300677553446,
+    "zoomBefore": 4,
+    "zoomAfter": 7
+   }
+  },
+  {
+   "width": 360,
+   "name": "Space로 구역 지점을 열면 그 구역으로 이동하고 포커스는 그 구역 지점에 남음(페이지 스크롤 없음)",
+   "pass": true,
+   "detail": {
+    "cellAway": 110.60289327137875,
+    "cellBack": 38.897300677553446,
+    "cellFocus": {
+     "ids": [],
+     "cell": "42.0230075,142.69043250000001",
+     "cluster": true,
+     "title": "이 구역 601개 숙소, 눌러서 확대",
+     "card": false,
+     "inside": true
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "구역도 대략 위치만 든 구역은 점선, 섞인 구역은 실선, 지도 안내는 대략 위치(점선)",
+   "pass": true,
+   "detail": {
+    "geoServed": true,
+    "graded": [
+     {
+      "n": 600,
+      "dashed": true
+     },
+     {
+      "n": 20,
+      "dashed": false
+     }
+    ],
+    "note": "예약 사이트 위치와 주소로 찾은 대략 위치(점선) · 상세에서 출처 확인"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Enter로 검색 결과 지도로 돌아가면 이 화면·검색 결과 안내로 돌아옴",
+   "pass": true,
+   "detail": {
+    "text": "이 화면 620곳 화면 밖 0곳 위치 미확인 1,035곳 목록 검색 결과 1,655곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 110.125,
+     "top": 163.796875,
+     "right": 249.875,
+     "bottom": 207.796875,
+     "width": 139.75,
+     "height": 44,
+     "vw": 360,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "범위 검색 결과가 지도 표시 줄에 보이고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 56곳 범위 밖 4곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도를 열기만 하면 이 지역 검색 버튼과 요청이 없음",
+   "pass": true,
+   "detail": {
+    "buttons": 0,
+    "requests": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "터치로 지도를 움직이면 이 지역에서 검색 버튼이 보이고 요청은 아직 없음",
+   "pass": true,
+   "detail": {
+    "requests": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않고 높이 44px 이상, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 125.125,
+     "top": 143.796875,
+     "right": 264.875,
+     "bottom": 187.796875,
+     "width": 139.75,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "누르면 요청 없이 이 지역 결과",
+   "pass": true,
+   "detail": {
+    "requests": 0,
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 390,
+   "name": "이 지역 수·범위 밖·위치 미확인·전체 수가 같은 범위의 스냅숏 값과 같음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 60곳 범위 밖 0곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기",
+    "caption": "이 지역 60곳",
+    "expected": {
+     "total": 1655,
+     "inBounds": 60,
+     "outOfBounds": 0,
+     "withoutCoordinates": 1595,
+     "limit": 500,
+     "points": 60,
+     "cells": []
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 범위 결과는 목록을 바꾸지 않음",
+   "pass": true,
+   "detail": {
+    "listTotal": 1655,
+    "mapTotal": 1655
+   }
+  },
+  {
+   "width": 390,
+   "name": "검색 뒤에도 지도가 사용자가 고른 범위에 그대로 있음",
+   "pass": true,
+   "detail": {
+    "viewBefore": "translate3d(-60px, 0px, 0px)",
+    "viewAfter": "translate3d(-60px, 0px, 0px)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "같은 범위에서 다시 누르면 요청 없이 같은 결과",
+   "pass": true,
+   "detail": {
+    "sent": 0,
+    "text": "이 지역 60곳 범위 밖 0곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Enter로 겹친 지점을 열면 누를 때처럼 확대되고 포커스는 같은 숙소가 든 지점에 남아 지도 안에 보임",
+   "pass": true,
+   "detail": {
+    "before": 22,
+    "after": {
+     "ids": [
+      "akan-tsuruga",
+      "hinanoza"
+     ],
+     "cell": null,
+     "cluster": true,
+     "title": "아칸 유쿠노사토 쓰루가 주변 2개 숙소",
+     "card": true,
+     "inside": true
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록에 없는 지점을 Enter로 열면 요청 없이 미리보기가 열리고 포커스가 숙소 이름으로 감",
+   "pass": true,
+   "detail": {
+    "details": [],
+    "focus": {
+     "tag": "BUTTON",
+     "label": null,
+     "text": "Hotel Towadaso"
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "미리보기를 키보드로 닫으면 포커스가 그 지점으로 돌아오고 Space로 다시 열고 닫아도 같음(페이지 스크롤 없음)",
+   "pass": true,
+   "detail": {
+    "closed": true,
+    "space": {
+     "pass": true,
+     "opened": true,
+     "onClose": true,
+     "back": true,
+     "scrolled": 0,
+     "focus": {
+      "ids": [
+       "trip-1679075"
+      ],
+      "cell": null,
+      "cluster": false,
+      "title": "Hotel Towadaso",
+      "card": false,
+      "inside": true
+     }
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "지점을 누르면 기존 지도 미리보기에 그 숙소가 보임",
+   "pass": true,
+   "detail": {
+    "title": "소운카쿠 마운틴 리조트 1923",
+    "preview": "소운쿄 온천 · 가미카와 · 홋카이도\n소운카쿠 마운틴 리조트 19238.9 · Trip.com /10 · 리뷰 87개"
+   }
+  },
+  {
+   "width": 390,
+   "name": "방향키로 지도를 움직이면 다시 검색 버튼이 보이고 요청은 없음",
+   "pass": true,
+   "detail": {
+    "button": "이 지역에서 다시 검색"
+   }
+  },
+  {
+   "width": 390,
+   "name": "확대·이동·축소 때마다 지도 안에 다 보이는 지점만 Tab 정지",
+   "pass": true,
+   "detail": {
+    "zoomedStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "pannedStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "outStops": {
+     "wrong": 0,
+     "inside": 2,
+     "outside": 24
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "화면 밖 지점에 포커스가 가도 지도가 옮겨지지 않고 포커스가 그 지점에 남음",
+   "pass": true,
+   "detail": {
+    "panBefore": "translate3d(-140px, 80px, 0px)",
+    "panAfter": "translate3d(-140px, 80px, 0px)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "확대해 지점이 화면 밖에 있어도 지도에서 앞으로 Tab하면 이 지역 검색 버튼에 도달",
+   "pass": true,
+   "detail": {
+    "tabs": 4,
+    "bodyFocus": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "확대 뒤 Tab이 멈춘 지점은 모두 지도 안에 보임(화면 밖 지점은 Tab 순서에서 빠짐)",
+   "pass": true,
+   "detail": {
+    "walkStops": {
+     "wrong": 0,
+     "inside": 1,
+     "outside": 33
+    },
+    "markerStops": 1,
+    "hiddenStops": 0
+   }
+  },
+  {
+   "width": 390,
+   "name": "Enter로 다시 검색하면 포커스는 이 지역 검색 버튼에 남고 이 지역 수 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 2곳 범위 밖 58곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  },
+  {
+   "width": 390,
+   "name": "상한 초과 결과는 구역 개수 지점과 안내로 표시",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 630곳 범위 밖 0곳 위치 미확인 1,025곳 조건에 맞는 전체 1,655곳 숙소가 500곳보다 많아 구역별 개수로 표시합니다. 구역을 누르면 확대합니다. 검색 결과 지도로 돌아가기",
+    "biggest": 603
+   }
+  },
+  {
+   "width": 390,
+   "name": "구역 지점을 누르면 지도가 그 구역으로 이동(3단계 이상 확대되고 지점이 지도 안에 보임)",
+   "pass": true,
+   "detail": {
+    "cellBefore": 155.08062419270823,
+    "cellAfter": 92.04890004774637,
+    "zoomBefore": 4,
+    "zoomAfter": 7
+   }
+  },
+  {
+   "width": 390,
+   "name": "Space로 구역 지점을 열면 그 구역으로 이동하고 포커스는 그 구역 지점에 남음(페이지 스크롤 없음)",
+   "pass": true,
+   "detail": {
+    "cellAway": 138.53880322855397,
+    "cellBack": 92.04890004774637,
+    "cellFocus": {
+     "ids": [],
+     "cell": "42.0230075,141.30614875",
+     "cluster": true,
+     "title": "이 구역 603개 숙소, 눌러서 확대",
+     "card": false,
+     "inside": true
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "구역도 대략 위치만 든 구역은 점선, 섞인 구역은 실선, 지도 안내는 대략 위치(점선)",
+   "pass": true,
+   "detail": {
+    "geoServed": true,
+    "graded": [
+     {
+      "n": 600,
+      "dashed": true
+     },
+     {
+      "n": 20,
+      "dashed": false
+     }
+    ],
+    "note": "예약 사이트 위치와 주소로 찾은 대략 위치(점선) · 상세에서 출처 확인"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Enter로 검색 결과 지도로 돌아가면 이 화면·검색 결과 안내로 돌아옴",
+   "pass": true,
+   "detail": {
+    "text": "이 화면 620곳 화면 밖 0곳 위치 미확인 1,035곳 목록 검색 결과 1,655곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 화면을 연 위치 그대로 이 지역 검색 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음",
+   "pass": true,
+   "detail": {
+    "button": {
+     "left": 125.125,
+     "top": 163.796875,
+     "right": 264.875,
+     "bottom": 207.796875,
+     "width": 139.75,
+     "height": 44,
+     "vw": 390,
+     "vh": 780
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "범위 검색 결과가 지도 표시 줄에 보이고 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "이 지역 60곳 범위 밖 0곳 위치 미확인 1,595곳 조건에 맞는 전체 1,655곳 검색 결과 지도로 돌아가기"
+   }
+  }
+ ],
+ "notCovered": [
+  "실제 모바일 기기·모바일 브라우저 주소창·안전 영역",
+  "스크린리더 읽기 순서",
+  "외부 지도 타일",
+  "운영 D1 자료(검사는 로컬 개발 DB와 체크인된 스냅샷 사용)",
+  "구역 개수 응답은 검사에서 만든 응답으로 화면만 확인(실제 상한 초과는 Worker 검사)"
+ ]
+}
