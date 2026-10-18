@@ -33,7 +33,8 @@ async function run(page,height){
   const closed=page.locator('.desktop-filters .filter-group-toggle[aria-expanded=false]');
   for(let i=0;i<10&&await closed.count();i++)await closed.first().click();
   await page.locator('.desktop-filters').evaluate(e=>{e.scrollTop=e.scrollHeight});await page.waitForTimeout(100);
-  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button,.desktop-filters input')],shown=all.filter(e=>e.checkVisibility());all.at(-1).dataset.u03Last='1';return {controls:all.length,shown:shown.length,name:all.at(-1).getAttribute('aria-label')}});
+  // The options' ‘?’ (U07) is for touch screens only; a mouse gets a tooltip instead.
+  const last=await page.evaluate(()=>{const all=[...document.querySelectorAll('.desktop-filters button:not(.option-help),.desktop-filters input')],shown=all.filter(e=>e.checkVisibility());all.at(-1).dataset.u03Last='1';return {controls:all.length,shown:shown.length,name:all.at(-1).getAttribute('aria-label')}});
   const end=await reach('[data-u03-last]');
   check(`목록 끝에서 필터 패널 전체가 화면 안·푸터 위에 있고, 묶음을 모두 연 뒤 첫·마지막 조작 요소(‘최소 리뷰 수’)를 누를 수 있음(${label})`,atEnd&&box.top>=0&&box.bottom<=box.footer&&first.ok&&last.shown===last.controls&&last.name==='최소 리뷰 수'&&end.ok,{atEnd,box,first,last,end});
   // Close the groups again so the next state starts like a visitor's.

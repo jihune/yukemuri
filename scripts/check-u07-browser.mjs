@@ -39,7 +39,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  width=w;
  const context=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR',permissions:['clipboard-read','clipboard-write']});
  await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
- const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e).slice(0,200)));
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e).slice(0,200)));page.setDefaultTimeout(8000);
  const press=l=>mobile?l.tap():l.click();
  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(500);
  const shot=async(locator,name)=>{if(shots)await locator.screenshot({path:join(shots,`${name}-${w}.png`)})};
@@ -60,12 +60,16 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  const kinds=first.reduce((m,h)=>(m[displayNames(h.names).titleLang]++,m),{ko:0,en:0,ja:0});
  check(`카드 ${cards.length}곳: 이름이 한국어 → 영어 → 원어 순으로 정해지고 원어가 다르면 둘째 줄, 영어·원어 이름마다 44px 복사 단추(제목 ${JSON.stringify(kinds)})`,cards.length===first.length&&cards.length>0&&wrongNames.length===0,{cards:cards.length,kinds,wrong:wrongNames.slice(0,3)});
 
- // Copying: the clipboard gets the name and the button says so.
- const card=page.locator('.hotel-list .hotel-card').first(),copy=card.locator('.card-name .copy-name').last(),name=(await card.locator('.card-name').last().locator('h3,.name-ja').textContent()).trim();
- await press(copy);await page.waitForTimeout(250);
- const copied={clip:await page.evaluate(()=>navigator.clipboard.readText()),status:(await copy.locator('[role=status]').textContent()).trim(),shown:await copy.locator('[role=status]').evaluate(e=>getComputedStyle(e).opacity==='1')};
- await shot(card,'card-copied');
- check(`첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 ‘${name}’이 들어가고 ‘복사됨’이 보임`,copied.clip===name&&copied.status==='복사됨'&&copied.shown,{name,...copied});
+ // Copying: the clipboard gets the name and the button says so. (A page without the button fails
+ // here instead of waiting for it, so a build from before U07 runs to the end as a control.)
+ const card=page.locator('.hotel-list .hotel-card').first(),copy=card.locator('.card-name .copy-name').last();
+ if(await copy.count()){
+  const name=(await card.locator('.card-name').last().locator('h3,.name-ja').textContent()).trim();
+  await press(copy);await page.waitForTimeout(250);
+  const copied={clip:await page.evaluate(()=>navigator.clipboard.readText()),status:(await copy.locator('[role=status]').textContent()).trim(),shown:await copy.locator('[role=status]').evaluate(e=>getComputedStyle(e).opacity==='1')};
+  await shot(card,'card-copied');
+  check(`첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 ‘${name}’이 들어가고 ‘복사됨’이 보임`,copied.clip===name&&copied.status==='복사됨'&&copied.shown,{name,...copied});
+ }else check('첫 카드의 원어 이름 복사 단추를 누르면 클립보드에 이름이 들어가고 ‘복사됨’이 보임',false,{copyButtons:0});
 
  // The detail: Korean, English, original, each English or original name with a copy button.
  await page.goto(base+'/?'+new URLSearchParams({q:full.names.ko}),{waitUntil:'networkidle'});await page.waitForTimeout(500);
@@ -78,9 +82,10 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  check(`상세 ‘${n.title}’: 이름이 한국어 → 영어 → 원어 순서이고 영어·원어 옆에 44px 복사 단추, ‘다른 이름’에 같은 이름을 다시 쓰지 않음`,order&&!detail.other.includes(n.en)&&!detail.other.includes(n.ja),{detail,want:n});
  if(!mobile){
   // The keyboard reaches the detail's copy button and Enter copies.
-  const button=page.locator('.detail-name .copy-name').last();await button.focus();await page.keyboard.press('Enter');await page.waitForTimeout(250);
-  const clip=await page.evaluate(()=>navigator.clipboard.readText());
-  check('상세의 원어 이름 복사 단추는 키보드 초점과 Enter로도 복사됨',clip===n.ja&&await button.evaluate(b=>b===document.activeElement),{clip});
+  const button=page.locator('.detail-name .copy-name').last();
+  if(await button.count()){await button.focus();await page.keyboard.press('Enter');await page.waitForTimeout(250)}
+  const clip=await page.evaluate(()=>navigator.clipboard.readText().catch(()=>''));
+  check('상세의 원어 이름 복사 단추는 키보드 초점과 Enter로도 복사됨',clip===n.ja&&await button.count()>0&&await button.evaluate(b=>b===document.activeElement),{clip});
  }
  await page.keyboard.press('Escape');await page.waitForTimeout(400);
 
@@ -125,6 +130,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   // A touch screen: a 44px ‘?’ in each option; it opens the help under the option.
   const buttons=await panel.locator('.filter-quick .option-help').evaluateAll(list=>list.map(b=>{const r=b.getBoundingClientRect();return{visible:b.checkVisibility(),w:Math.round(r.width),h:Math.round(r.height),label:b.getAttribute('aria-label')}}));
   const help=panel.locator('.filter-quick .option-help',{hasText:'?'}).nth(5);
+  if(!await help.count()){check('휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',false,{buttons})}else{
   await press(help);await page.waitForTimeout(300);
   const open=await help.evaluate(b=>{const t=document.getElementById(b.getAttribute('aria-controls')),r=t.getBoundingClientRect(),own=b.closest('.filter-option').getBoundingClientRect(),list=b.closest('.filter-quick').getBoundingClientRect();return{expanded:b.getAttribute('aria-expanded'),text:t.checkVisibility()?t.textContent:'',top:Math.round(r.top-own.bottom),left:Math.round(r.left-list.left),right:Math.round(list.right-r.right),inScreen:r.left>=0&&r.right<=innerWidth}});
   await shot(panel,'filter-help');
@@ -133,6 +139,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   await press(quick.nth(2));await page.waitForTimeout(600);
   const tooltips=await page.locator('[data-slot=tooltip-content]').count();
   check('휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',buttons.length===7&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label))&&open.expanded==='true'&&/원천을 흘려보내는/.test(open.text)&&open.top>=0&&open.top<=8&&open.left===0&&open.right===0&&open.inScreen&&closed==='false'&&tooltips===0,{buttons,open,closed,tooltips});
+  }
  }else{
   await toggleAll(true);
   await page.waitForTimeout(300);
@@ -140,17 +147,21 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
   const visibleHelp=await panel.locator('.option-help').evaluateAll(list=>list.filter(b=>b.checkVisibility()).length);
   await page.mouse.move(5,5);await page.waitForTimeout(200);
   const chip=quick.nth(5);await chip.hover();await page.waitForTimeout(800);
-  const tip=()=>page.evaluate(()=>{const t=[...document.querySelectorAll('[data-slot=tooltip-content]')].find(e=>e.checkVisibility());if(!t)return null;const r=t.getBoundingClientRect(),p=document.querySelector('.desktop-filters').getBoundingClientRect();return{text:t.textContent,left:Math.round(r.left),panelRight:Math.round(p.right),right:Math.round(r.right),vw:innerWidth}});
-  const hovered=await tip();
-  await shot(page.locator('.workspace'),'filter-hover');
-  await page.mouse.move(5,5);await page.waitForTimeout(500);
-  const gone=await tip();
+  const tip=()=>page.evaluate(()=>{const t=[...document.querySelectorAll('[data-slot=tooltip-content]')].find(e=>e.checkVisibility()&&e.dataset.state!=='closed');if(!t)return null;const r=t.getBoundingClientRect(),p=document.querySelector('.desktop-filters').getBoundingClientRect();return{text:t.textContent,left:Math.round(r.left),panelRight:Math.round(p.right),right:Math.round(r.right),vw:innerWidth}});
+  // The tooltip opens after 0.3s and fades out when it closes: poll up to 2s for each state.
+  const until=async want=>{for(let t=0;t<20;t++){const r=await tip();if(!!r===want)return r;await page.waitForTimeout(100)}return tip()};
+  const hovered=await until(true);
+  if(shots)await page.screenshot({path:join(shots,`filter-hover-${w}.png`),clip:{x:0,y:0,width:720,height:640}});
+  // A real mouse moves in many small steps; Radix keeps the tooltip while the pointer may be on
+  // its way to it and closes it on the next move outside that path.
+  await page.mouse.move(5,5,{steps:10});
+  const gone=await until(false);
   check('마우스: 옵션에 ‘?’ 단추 없이, 올리면 도움말 툴팁이 패널 오른쪽 바깥(다른 옵션을 가리지 않음)에 화면 안으로 뜨고, 벗어나면 사라짐',visibleHelp===0&&hovered&&/원천을 흘려보내는/.test(hovered.text)&&hovered.left>=hovered.panelRight&&hovered.right<=hovered.vw&&!gone,{visibleHelp,hovered,gone});
   // A keyboard: focus shows it, Escape hides it and the focus stays.
-  await quick.nth(4).focus();await page.keyboard.press('Tab');await page.waitForTimeout(600);
-  const focused=await tip(),onChip=await quick.nth(5).evaluate(b=>b===document.activeElement);
-  await page.keyboard.press('Escape');await page.waitForTimeout(400);
-  const escaped=await tip(),still=await quick.nth(5).evaluate(b=>b===document.activeElement);
+  await quick.nth(4).focus();await page.keyboard.press('Tab');
+  const focused=await until(true),onChip=await quick.nth(5).evaluate(b=>b===document.activeElement);
+  await page.keyboard.press('Escape');
+  const escaped=await until(false),still=await quick.nth(5).evaluate(b=>b===document.activeElement);
   check('키보드: Tab으로 옵션에 가면 같은 툴팁이 뜨고, Escape로 닫히며 초점은 옵션에 남음',onChip&&focused&&/원천을 흘려보내는/.test(focused.text)&&!escaped&&still,{onChip,focused,escaped,still});
  }
  check('가로 넘침 없음',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -165,10 +176,10 @@ width=390;
  await context.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'clipboard',{get:()=>undefined,configurable:true})});
  const page=await context.newPage();
  await page.goto(base+'/',{waitUntil:'networkidle'});await page.waitForTimeout(500);
- const card=page.locator('.hotel-list .hotel-card').first(),copy=card.locator('.card-name .copy-name').last(),name=(await card.locator('.card-name').last().locator('h3,.name-ja').textContent()).trim();
- await copy.tap();await page.waitForTimeout(250);
- const result={selected:await page.evaluate(()=>getSelection().toString()),status:(await copy.locator('[role=status]').textContent()).trim(),clipboard:await page.evaluate(()=>typeof navigator.clipboard)};
- check(`클립보드를 쓸 수 없는 브라우저: 복사 단추가 이름 ‘${name}’을 선택해 두고 ‘이름을 선택했어요’라고 알림`,result.clipboard==='undefined'&&result.selected.trim()===name&&result.status==='이름을 선택했어요',result);
+ const card=page.locator('.hotel-list .hotel-card').first(),copy=card.locator('.card-name .copy-name').last(),name=await copy.count()?(await card.locator('.card-name').last().locator('h3,.name-ja').textContent()).trim():'';
+ if(await copy.count()){await copy.tap();await page.waitForTimeout(250)}
+ const result={selected:await page.evaluate(()=>getSelection().toString()),status:await copy.count()?(await copy.locator('[role=status]').textContent()).trim():null,clipboard:await page.evaluate(()=>typeof navigator.clipboard)};
+ check(`클립보드를 쓸 수 없는 브라우저: 복사 단추가 이름 ‘${name}’을 선택해 두고 ‘이름을 선택했어요’라고 알림`,result.clipboard==='undefined'&&!!name&&result.selected.trim()===name&&result.status==='이름을 선택했어요',result);
  await context.close();
 }
 await browser.close();
