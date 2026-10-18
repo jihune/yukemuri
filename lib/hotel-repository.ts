@@ -14,6 +14,7 @@ import localizedNames from '../data/korean-hotel-names.json';
 import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
 import {validComparisonIds} from './hotel-comparison';
+import {withWikidataNames} from './wikidata-names';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
 async function indexNames(hotels:Hotel[]){
@@ -265,7 +266,8 @@ export const hotelRepository={
    if(row.text_ko&&row.translated_at)hotel.descriptionTranslation={text:row.text_ko,translatedAt:row.translated_at};
    return[row.id,hotel];
   }));
-  return attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})));
+  // Wikidata names as the search snapshot shows them (D07).
+  return(await attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})))).map(withWikidataNames);
  },
  async ready(){await ensureCatalog()},
 };

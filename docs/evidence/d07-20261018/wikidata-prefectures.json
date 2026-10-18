@@ -1,0 +1,221 @@
+{
+ "checkedAt": "2026-10-18T08:29:52Z",
+ "snapshot": "909da47bc703c163",
+ "queries": [
+  "SELECT ?iso ?ja WHERE { ?p wdt:P300 ?iso ; rdfs:label ?ja . FILTER(STRSTARTS(?iso,\"JP-\") && LANG(?ja)=\"ja\") }",
+  "SELECT ?item ?iso WHERE { VALUES ?item { … } ?item wdt:P131+ ?p . ?p wdt:P300 ?iso . FILTER(STRSTARTS(?iso,\"JP-\")) }"
+ ],
+ "codes": 47,
+ "counts": {
+  "same": 22,
+  "other": 0,
+  "none": 1
+ },
+ "rows": [
+  {
+   "id": "trip-1426722",
+   "item": "Q111406723",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-1454519",
+   "item": "Q111406745",
+   "ours": "pref-kanagawa",
+   "item_prefectures": [
+    "pref-kanagawa"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-1489108",
+   "item": "Q11337901",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-22678179",
+   "item": "Q112009337",
+   "ours": "pref-oosaka",
+   "item_prefectures": [],
+   "verdict": "none"
+  },
+  {
+   "id": "trip-50999069",
+   "item": "Q112008946",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-52320512",
+   "item": "Q112008954",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-686316",
+   "item": "Q11524193",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-686539",
+   "item": "Q111406698",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-688249",
+   "item": "Q11314630",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-688271",
+   "item": "Q11524379",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-688422",
+   "item": "Q11337903",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-688621",
+   "item": "Q58161897",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-704012",
+   "item": "Q111406738",
+   "ours": "pref-kanagawa",
+   "item_prefectures": [
+    "pref-kanagawa"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-704030",
+   "item": "Q3530524",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-759807",
+   "item": "Q3224503",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-926340",
+   "item": "Q11330335",
+   "ours": "pref-chiba",
+   "item_prefectures": [
+    "pref-chiba"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-993483",
+   "item": "Q11502616",
+   "ours": "pref-kanagawa",
+   "item_prefectures": [
+    "pref-kanagawa"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-993510",
+   "item": "Q712476",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-994533",
+   "item": "Q11337870",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-994617",
+   "item": "Q3143638",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-994639",
+   "item": "Q6383787",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-994895",
+   "item": "Q3482163",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  },
+  {
+   "id": "trip-994914",
+   "item": "Q3482258",
+   "ours": "pref-tokyo",
+   "item_prefectures": [
+    "pref-tokyo"
+   ],
+   "verdict": "same"
+  }
+ ]
+}

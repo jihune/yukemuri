@@ -17,6 +17,10 @@ export type HotelSummary={
  features:Partial<Record<FeatureKey,Pick<FeatureFact,'value'|'scope'>>>;
  ratings:Pick<Hotel['ratings'][number],'provider'|'score'|'scale'|'reviewCount'>[];
  lifecycle?:{state:NonNullable<Hotel['lifecycle']>['state'];reviewNeeded:boolean;evidence?:{openedAt?:string}};
+ // The names lib/wikidata-names.ts added (D07): the item and the values the added names replaced,
+ // so the public audit (scripts/check-wikidata-names.mjs --public) tells them from collected
+ // names. No page reads it, so adding it did not change SNAPSHOT_FORMAT.
+ wikidataNames?:{item:string;was:Partial<Pick<Hotel['names'],'ko'|'en'>>};
 };
 export function hotelSummary(h:Hotel):HotelSummary{
  const features:HotelSummary['features']={};
