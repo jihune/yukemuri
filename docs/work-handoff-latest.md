@@ -18,7 +18,7 @@
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`는 `add_repo`(access push)로 붙인다. 하네스 문장을 직접 읽으려면 `jihune/agent-harness`를 `add_repo`(access read)로 붙이고 GitHub 도구로 파일을 읽는다.
-5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T15:16Z 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 5회째 `trig_013mWuDHU8Vq4gvk4FrCKpJe`(10-18T19:15Z, 4회째는 15:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
+5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T15:16Z 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 6회째(10-18T23:15Z, `send_later`, 5회째는 19:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
 6. 모든 하위 세션(아래 6의 일하는 네 곳과 쉬는 네 곳)에 새 상위 세션 id를 `send_message`(priority later)로 알린다. 하위 세션의 `@parent`는 자기를 연 옛 상위 세션을 가리키므로, 앞으로는 새 상위 세션 id로 보내라고 적는다. 옛 상위 세션에도 알리고, 그 세션은 보관하지 않는다.
 7. 결과(돌린 명령과 실제 출력)를 이 문서 아래 7에 적어 기록 PR로 넣고, 사용자에게 한국어로 짧게 보고한다.
 
@@ -123,6 +123,7 @@
 - 10-18T17:0xZ 이 문서가 53 KB가 되어 지금 상태만 남게 다시 썼다(옛 문서는 `docs/history/work-handoff-20261018T1702Z.md`, `cmp` 같음). 하위 세션이 고치는 U07·D07 절은 글자 그대로 두었다. 기록 PR #170으로 병합했다(`86c122b`).
 - 10-18T17:06Z O03 확인: 첫 매시간 실행(실행기 run 39143537085, 16:06:57Z, job 9초, dispatch 성공)과 같은 때 앱 `collect-watch.yml`도 16:06:34Z에 돌았다(12:41Z 예약이 약 3시간 25분 늦음). 두 저장소의 예약이 함께 풀려, GitHub 쪽 지연으로 본다. 12:37Z–15:37Z 예약 네 번 가운데 실행은 이 1건이다.
 - 10-18T17:41Z U07이 #166 P3 다섯 건의 후속 PR #171을 열었다(head `f8c1408`, main `1e03978`에서 시작). U07의 확인: 번역 검사 16개 통과(고치기 전 main 빌드에서 8개 실패), `cloud-check --full` 47개, 브라우저 검사 20개 통과. CI 뒤 Codex 1회째를 요청한다. U07 교훈 절(`docs/U07-20261019.md` ‘## U07 교훈’)도 이 PR에 들어 있다.
+- 10-18T19:15Z 안전망 확인 5회째: 사용량 5시간 0.20, 7일 0.57. 두 번째 매시간 실행이 18:53Z에 왔다(실행기 run 39156219002, 앱 collect run 39156227847 진행 중). 16:37Z·17:37Z·18:37Z 예약 가운데 하나만 실행돼, 매시간 cron인데도 실제 간격이 약 3시간이다(C05 측정에서 확인). #171은 Codex 2회째(`dfdb1e2`)에서 P2 1건(중국어 원문에 일본어 `lang`)이 나와 U07이 처리 중이다. 다음 안전망 확인은 23:15Z.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
