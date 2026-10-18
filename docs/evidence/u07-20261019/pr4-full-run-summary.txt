@@ -1,0 +1,24 @@
+cloud-check rc=0 commands=47 2026-10-18T17:18:17Z
+manifest=200 Local snapshot 80e4ce9a7b4be41c (1655 hotels) in dist/client/snapshot and public/snapshot
+check-p03-followups-browser rc=0 checks=9 failed=0 PASS
+check-u01-browser rc=0 checks=50 failed=0 PASS
+check-u02-browser rc=0 checks=52 failed=0 PASS
+check-u02-map-browser rc=0 checks=55 failed=0 PASS
+check-u03-comparison-browser rc=0 checks=60 failed=0 PASS
+check-u03-desktop-browser rc=0 checks=12 failed=0 PASS
+check-u04-browser rc=0 checks=57 failed=0 PASS
+check-u05-comparison-browser rc=0 checks=24 failed=0 PASS
+check-u05-detail-browser rc=0 checks=69 failed=0 PASS
+check-u05-favorites-browser rc=0 checks=23 failed=0 PASS
+check-u05-filter-browser rc=0 checks=53 failed=0 PASS
+check-u05-foundation-browser rc=0 checks=53 failed=0 PASS
+check-u05-list-browser rc=0 checks=28 failed=0 PASS
+check-u05-map-browser rc=0 checks=23 failed=0 PASS
+check-u06-status-browser rc=0 101/101 passed
+check-u07-browser rc=0 checks=58 failed=0 PASS
+check-u07-map-browser rc=0 checks=9 failed=0 PASS
+check-u07-names-browser rc=0 checks=14 failed=0 PASS
+check-u07-region-browser rc=0 checks=18 failed=0 PASS
+check-u07-translate-browser rc=0 checks=16 failed=0 PASS
+TOTAL scripts=20 failing=0
+2026-10-18T17:37:41Z
