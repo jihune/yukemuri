@@ -15,18 +15,19 @@ const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdir
 const mf=new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:JSON.parse(readFileSync('dist/server/wrangler.json','utf8')).d1_databases[0].database_id},d1Persist:resolve('.wrangler/state/v3/d1'),bindings:{CRAWL_ACCESS_KEY:KEY}});
 try{
  const db=await mf.getD1Database('DB');
- // The migrations this D1 lacks: all of them on a fresh D1; on one made before a migration was added
- // (0015 after a D1 made at 0014, D07), those after the newest whose last statement shows in the
- // schema. Every migration so far is DDL, so its last statement shows as an object or column.
+ // The migrations this D1 lacks (D07): its schema is compared with the schema after each prefix of
+ // drizzle/, built in a scratch D1 in memory, and the rest is applied. A fresh D1 matches the empty
+ // prefix; one made before 0015 matches 0000-0014. A D1 that stopped inside a migration, or whose
+ // schema two prefixes share, matches no single prefix and stops here.
  const files=readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort(),migrations=files.map(f=>readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean));
- const object=name=>db.prepare('SELECT 1 FROM sqlite_master WHERE name=?').bind(name).first();
- const shows=async s=>{let m;
-  if((m=/^CREATE (?:UNIQUE )?(?:TABLE|INDEX) `(\w+)`/.exec(s)))return!!await object(m[1]);
-  if((m=/^DROP INDEX `(\w+)`/.exec(s)))return!await object(m[1]);
-  if((m=/^ALTER TABLE `(\w+)` ADD `(\w+)`/.exec(s)))return!!await db.prepare('SELECT 1 FROM pragma_table_info(?) WHERE name=?').bind(m[1],m[2]).first();
-  throw new Error('Cannot tell whether a local migration is applied: '+s.slice(0,80))};
- let applied=-1;
- if(await object('hotels'))for(let i=migrations.length-1;i>=0&&applied<0;i--)if(await shows(migrations[i].at(-1)))applied=i;
+ const schema=async d=>JSON.stringify((await d.prepare("SELECT type,name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND name NOT LIKE 'd1_%' ORDER BY type,name").all()).results);
+ const scratch=new Miniflare({modules:true,script:'export default {fetch(){return new Response("")}}',d1Databases:{DB:'migrations'}}),matches=[];
+ try{
+  const s=await scratch.getD1Database('DB'),local=await schema(db);
+  for(let i=-1;i<migrations.length;i++){if(i>=0)for(const q of migrations[i])await s.prepare(q).run();if(await schema(s)===local)matches.push(i)}
+ }finally{await scratch.dispose()}
+ if(matches.length!==1)throw new Error(`The local D1 (.wrangler/state/v3/d1) matches ${matches.length} migration prefixes of drizzle/, not one: remove it and run again`);
+ const applied=matches[0];
  for(const s of migrations.slice(applied+1).flat())await db.prepare(s).run();
  if(applied+1<files.length)console.log('Local migrations applied: '+files.slice(applied+1).join(', '));
  const prepared=await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY}});
