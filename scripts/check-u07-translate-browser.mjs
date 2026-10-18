@@ -17,7 +17,8 @@
 // - a stay whose description is already Korean shows neither button nor note;
 // - closing the sheet while the model downloads aborts the signal given to create(), and leaves no
 //   translator behind: the one made after that is destroyed and never translates;
-// - an English description has lang="en", asks for the English pair and gives the one-pack size;
+// - an English description, long vowels of romaji included, has lang="en", asks for the English
+//   pair and gives the one-pack size;
 // - a description whose language is not guessed (Chinese, French) is marked lang="", not Japanese or
 //   English, and gets neither a button nor a note, the browser never asked.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -48,8 +49,10 @@ if(!foreign||!korean)throw new Error('No checked-in stay for the translation che
 // The detail the page receives carries that description in two lines (no checked-in description
 // has a line break), so the translation line by line is what is judged.
 const described=foreign.description.trim()+'\n客室は全室和室です。';
-// The same stay with an English description (the catalogue has none), for the English pair.
-const english='A quiet hot spring inn by the river.\nAll rooms are Japanese style.';
+// The same stay with an English description (the catalogue has none), for the English pair. It
+// names places in Hepburn romaji as Trip.com descriptions do (trip-687323 has `Sensō-ji`), the
+// second line with its long vowels as combining marks (NFD).
+const english='A quiet hot spring inn near Sensō-ji Temple.\n'+'All rooms look out on Tōkyō Bay.'.normalize('NFD');
 // Kanji without kana and accented Latin: the cases descriptionLanguage() must not guess.
 // The French one also with its accents as combining marks (NFD), as some sources store text.
 const unguessed={chinese:'酒店设有餐厅和温泉。',french:'Cet hôtel propose un petit-déjeuner payant.',frenchDecomposed:'Cet hôtel propose un petit-déjeuner payant.'.normalize('NFD')};
@@ -162,7 +165,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   const c=await context({brand:'Google Chrome',availability:'downloadable',fail:0},english),page=await c.newPage();
   const d=await open(page,foreign.id);
   const r={original:await d.locator('.hotel-intro').first().textContent(),lang:await d.locator('.hotel-intro').first().getAttribute('lang'),readyNote:await d.locator('.translate-note').first().textContent().catch(()=>null),pair:await page.evaluate(()=>window.__u07.pair??null)};
-  check('영어 설명: 원문은 lang="en"이고 영어→한국어 쌍(en>ko)으로 물음',r.original.trim()===english&&r.lang==='en'&&r.pair==='en>ko',r);
+  check('영어 설명(로마자 장음 ō, 조합형과 분해형): 원문은 lang="en"이고 영어→한국어 쌍(en>ko)으로 물음',r.original.trim()===english&&r.lang==='en'&&r.pair==='en>ko',r);
   check('영어 설명: 단추 아래 안내가 모델 크기 약 57MB를 알림(일본어의 약 110MB가 아님)',/약 57MB/.test(r.readyNote??'')&&!/110MB/.test(r.readyNote??''),r);
   await c.close();
  }

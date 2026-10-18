@@ -17,12 +17,13 @@ const translatorApi=()=>(globalThis as {Translator?:TranslatorApi}).Translator;
 // The answer does not change while the page is open, so there is nothing to subscribe to.
 const noSubscription=()=>()=>{};
 const chromeOrEdge=()=>((navigator as Navigator&{userAgentData?:{brands?:{brand:string}[]}}).userAgentData?.brands??[]).some(b=>b.brand==='Google Chrome'||b.brand==='Microsoft Edge');
-// Kana: Japanese (the sources are Japanese sites); letters that are all plain Latin: English.
-// Anything else is not guessed: kanji without kana may be Chinese, accents may be French (a
-// combining accent, U+0300 and on, counts as one too).
+// Kana: Japanese (the sources are Japanese sites). English: letters that are all plain Latin or
+// the long vowels of Hepburn romaji (`Sensō-ji` in a Trip.com description), read once composed
+// (NFC). Anything else is not guessed: kanji without kana may be Chinese, other accents French.
 export function descriptionLanguage(text:string){
  if(/[ぁ-ゖァ-ヺ]/.test(text))return 'ja';
- return /[A-Za-z]/.test(text)&&!/(?![A-Za-z])[\p{L}\p{M}]/u.test(text)?'en':null;
+ const composed=text.normalize('NFC');
+ return /[A-Za-z]/.test(composed)&&!/(?![A-Za-zĀāĒēĪīŌōŪū])[\p{L}\p{M}]/u.test(composed)?'en':null;
 }
 // The first download, as Google's component server sized the language packs on 2026-10-18 (Chrome's
 // documents give no size): Japanese goes through English, en-ja and en-ko, 113,091,783 bytes;
