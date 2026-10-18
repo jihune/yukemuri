@@ -1,0 +1,25 @@
+[
+ {
+  "log": "117593558607.txt",
+  "pages": 120,
+  "roundsAtLeast": 18,
+  "claimReadsPerPage": 78.8,
+  "kinds": {
+   "jalan detail": 44,
+   "jalan list": 25,
+   "trip detail": 36,
+   "trip list": 15
+  }
+ },
+ {
+  "log": "117532975755.txt",
+  "pages": 79,
+  "roundsAtLeast": 14,
+  "claimReadsPerPage": 93.0,
+  "kinds": {
+   "jalan detail": 33,
+   "jalan list": 20,
+   "trip detail": 26
+  }
+ }
+]
