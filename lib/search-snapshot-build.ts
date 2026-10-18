@@ -13,7 +13,7 @@ import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 import {needsKoreanDescription} from './hotel-description';
-import {normalizeSearch} from './hotel-names';
+import {displayNames,normalizeSearch} from './hotel-names';
 import {withWikidataNames} from './wikidata-names';
 import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
@@ -124,10 +124,11 @@ export async function buildSearchSnapshot(now:Date){
   const lifecycles=rows.length?new Map((await db.prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id>? AND hotel_id<=?').bind(cursor,rows.at(-1)!.id).all<Record<string,unknown>>()).results.map(r=>[r.hotel_id,r])):new Map();
   const hotels=await attach(rows.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
   rows.forEach((r,i)=>{
-   // Wikidata names (D07) on the card, the name column and the name search, as the detail API adds them.
+   // Wikidata names (D07) on the card, the name column (the shown title, which the area map labels
+   // markers with) and the name search, as the detail API adds them.
    const h=withWikidataNames(hotels[i]),state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
    const added=h===hotels[i]?[]:[h.names.ko,h.names.en].filter(n=>!Object.values(hotels[i].names).includes(n));
-   core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(h.names.ko!==hotels[i].names.ko?h.names.ko:r.name);core.kind.push(r.kind);
+   core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(h===hotels[i]?r.name:displayNames(h.names).title);core.kind.push(r.kind);
    core.tripScore.push(r.trip_score);core.tripReviews.push(r.trip_reviews);core.jalanScore.push(r.jalan_score);core.jalanReviews.push(r.jalan_reviews);
    core.natural.push(r.natural);core.features.push(r.bath_features);core.known.push(r.bath_known);core.lat.push(r.lat);core.lng.push(r.lng);core.state.push(state);
    const own=aliases.get(r.id)??[];

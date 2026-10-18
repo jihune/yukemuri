@@ -32,6 +32,10 @@ try{
  const curated=JSON.parse(readFileSync('lib/hotels.verified.json','utf8'))[0].id;
  assert.equal((await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.names.en','Stored English name') WHERE id=?").bind(curated).run()).meta.changes,1);
  await db.prepare('DELETE FROM hotel_lifecycle WHERE hotel_id=?').bind(curated).run();
+ // A Trip.com hotel named in kana with its Latin name, whose item has only an English label: the
+ // English name becomes the title, and the name column follows it (Codex P2 on PR #145).
+ const mixed='成田東武ホテルエアポート(Narita Tobu Hotel Airport)';
+ assert.equal((await db.prepare("UPDATE hotels SET name=?,payload=json_set(payload,'$.names',json(?)) WHERE id='trip-703896'").bind(mixed,JSON.stringify({ko:mixed,ja:mixed,en:mixed})).run()).meta.changes,1);
  await db.prepare("UPDATE hotels SET payload=json_set(payload,'$.location.latitude','35.1') WHERE id=(SELECT id FROM hotels WHERE json_type(payload,'$.location.latitude')='real' ORDER BY id LIMIT 1)").run();
 
  // U06 data status: places and pages in every state the screen tells apart. A Jalan detail read
@@ -88,12 +92,14 @@ try{
  for(const r of (await db.prepare("SELECT id,json_extract(payload,'$.names') AS names FROM hotels").all()).results){
   const names=JSON.parse(r.names),w=withWikidataNames({id:r.id,names,aliases:[],sources:[]}).names,item=items.get(r.id);
   const ko=w.ko!==names.ko?w.ko:null,en=w.en!==names.en?w.en:null;
-  if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean)});
+  if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean),shown:w});
  }
  assert([...added.values()].some(a=>a.ko),'the seed reaches a Trip.com hotel that gets a Wikidata Korean name');
- const {normalizeSearch}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
+ assert.deepEqual([added.get('trip-703896')?.ko,added.get('trip-703896')?.en],[null,'Narita Tobu Hotel Airport'],'and one that gets an English name only');
+ const {normalizeSearch,displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
  const columns={region:'region',prefecture:'prefecture',name:'name',kind:'kind',tripScore:'trip_score',tripReviews:'trip_reviews',jalanScore:'jalan_score',jalanReviews:'jalan_reviews',natural:'natural',features:'bath_features',known:'bath_known',lat:'lat',lng:'lng',state:'state'};
- rows.forEach((row,i)=>{assert.equal(core.ids[i],row.id);for(const [k,c] of Object.entries(columns))assert.equal(core[k][i],k==='name'?added.get(row.id)?.ko??row[c]:row[c],row.id+' '+k)});
+ assert.equal(core.name[core.ids.indexOf('trip-703896')],'Narita Tobu Hotel Airport','the name column is the English title');
+ rows.forEach((row,i)=>{assert.equal(core.ids[i],row.id);for(const [k,c] of Object.entries(columns))assert.equal(core[k][i],k==='name'&&added.has(row.id)?displayNames(added.get(row.id).shown).title:row[c],row.id+' '+k)});
  assert(core.lat.some(v=>v!==null)&&core.lat.filter(v=>v!==null).length<rows.length-1,'some, not all, coordinates');
  const states=new Set(core.state);for(const s of ['closed','temporarily_closed','operating','unverified',null])assert(states.has(s),'state '+s);
 
@@ -275,7 +281,6 @@ try{
  assert.deepEqual(first.hotels,expectedOrder.map(id=>cards[core.ids.indexOf(id)]));assert.deepEqual(first.coverage,manifest.coverage);
  const pageOf=()=>readFileSync(join(local,'index.html'),'utf8'),titles=html=>[...html.matchAll(/class="card-title"[^>]*><h3[^>]*>([^<]*)<\/h3>/g)].map(m=>m[1].replaceAll('&amp;','&').replaceAll('&#x27;',"'").replaceAll('&quot;','"'));
  // A card is named in Korean, else English, else the original (U07, lib/hotel-names.ts).
- const {displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
  const html=pageOf();
  assert(html.includes(`data-first-page="${manifest.id}"`),'static page marks its snapshot');
  assert.deepEqual(titles(html),first.hotels.map(h=>displayNames(h.names).title),'static page renders the first page cards in order');

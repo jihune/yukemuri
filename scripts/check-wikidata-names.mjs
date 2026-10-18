@@ -4,10 +4,11 @@
 // two signs that the Trip.com id points at another hotel on Wikidata (its point over 1 km from
 // our source coordinates, or its English label sharing no word with our names), and a control
 // pairs one hotel with another hotel's item to prove those signs fire.
-// Usage: node scripts/check-wikidata-names.mjs [--public [--dir saved-snapshot] [--json out.json]]
+// Usage: node scripts/check-wikidata-names.mjs [--public [--dir saved-snapshot] [--previous extract.json] [--json out.json]]
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdtempSync,rmSync,existsSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {compileLib} from './build-search-snapshot.mjs';
@@ -100,28 +101,39 @@ async function auditPublic(){
   return{distance:distance===null?null:Math.round(distance*1000),named,suspicious:distance!==null&&distance>1||named===false};
  };
  const shown=list=>({ko:list.filter(c=>displayNames(c.names).titleLang==='ko').length,en:list.filter(c=>{const d=displayNames(c.names);return d.titleLang==='en'||d.en!==null}).length});
- const after=[],added=[];
+ // The cards show names some extract's rule added (Codex P2 on PR #145, rounds 1-3). --previous is
+ // the extract the shown snapshot was built with: by default the one on origin/main, which every
+ // merge deploys, else the current one. A card that rule named is put back to the names it had
+ // before (its original in place of the added name), then named again with the current extract:
+ // a name the next deploy keeps or adds ('shows', 'adds') is judged, one it drops ('drops') is
+ // listed. A shown label no rule explains whose item disagrees with the hotel fails, unless
+ // OWN_NAMES records that the hotel showed that name before the rule existed (a match by chance).
+ const previousText=arg('--previous')?readFileSync(arg('--previous'),'utf8'):(()=>{try{return execFileSync('git',['show','origin/main:data/wikidata-trip-names.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore']})}catch{return readFileSync(OUT,'utf8')}})();
+ const previousDir=mkdtempSync(join(temp,'previous-')),previousEntry=compileLib(previousDir,'lib/wikidata-names.ts');
+ writeFileSync(join(previousDir,'data/wikidata-trip-names.json'),previousText);
+ const {withWikidataNames:previousRule}=require(previousEntry);
+ const previous=JSON.parse(previousText),previousLabels=new Map(previous.hotels.map(([trip,item,ko,en])=>[trip,{item,ko,en}]));
+ const same=(a,b)=>a.ko===b.ko&&a.ja===b.ja&&a.en===b.en;
+ const after=[],added=[],dropped=[],coincident=[];
  cards.forEach((card,i)=>{
-  const h=withWikidataNames({...card,aliases:[],sources:[]});after.push(h);
-  if(h.names===card.names)return;
-  const trip=card.id.slice(5),label=labels.get(trip),j=judge(card,i,label,points.get(trip));
-  added.push({id:card.id,item:label.item,state:'adds',before:card.names,ko:h.names.ko!==card.names.ko?h.names.ko:null,en:h.names.en!==card.names.en?h.names.en:null,labelEn:label.en,grade:geo?.grade[i]??null,...j});
- });
- // A snapshot built with the rule already shows the names (Codex P2 on PR #145): a Trip.com card
- // showing its item's Korean label, or its English label beside another original, is audited too.
- // The cards carry no sources, and the detail API refuses tools without the maintenance key, so
- // a shown label whose item disagrees with the hotel fails unless OWN_NAMES records, after a look,
- // that the hotel showed that name before the rule existed (a match by chance). A name the rule
- // added under an older extract whose label has changed since fails here (Codex P2, round 2).
- const coincident=[];
- cards.forEach((card,i)=>{
-  const trip=/^trip-\d+$/.test(card.id)?card.id.slice(5):null,label=trip&&labels.get(trip);
-  if(!label||added.some(a=>a.id===card.id))return;
-  const ko=label.ko&&card.names.ko===label.ko?label.ko:null,en=label.en&&card.names.en===label.en&&card.names.en!==card.names.ja?label.en:null;
+  const trip=/^trip-\d+$/.test(card.id)?card.id.slice(5):null,label=trip&&labels.get(trip),old=trip&&previousLabels.get(trip);
+  if(!label&&!old){after.push(card);return}
+  const fromOld={ko:old?.ko&&card.names.ko===old.ko,en:old?.en&&card.names.en===old.en&&card.names.en!==card.names.ja};
+  const reverted={...card.names,...(fromOld.ko?{ko:card.names.ja}:{}),...(fromOld.en?{en:card.names.ja}:{})};
+  const explained=(fromOld.ko||fromOld.en)&&same(previousRule({...card,names:reverted,aliases:[],sources:[]}).names,card.names);
+  const base=explained?{...card,names:reverted}:card,h=withWikidataNames({...base,aliases:[],sources:[]});
+  after.push({...card,names:h.names});
+  if(h.names!==base.names){
+   added.push({id:card.id,item:label.item,state:same(h.names,card.names)?'shows':'adds',before:base.names,ko:h.names.ko!==base.names.ko?h.names.ko:null,en:h.names.en!==base.names.en?h.names.en:null,labelEn:label.en,grade:geo?.grade[i]??null,...judge(base,i,label,points.get(trip))});
+   return;
+  }
+  if(explained){dropped.push({id:card.id,item:old.item,shown:card.names,next:reverted});return}
+  const ko=label?.ko&&card.names.ko===label.ko?label.ko:null,en=label?.en&&card.names.en===label.en&&card.names.en!==card.names.ja?label.en:null;
   if(!ko&&!en)return;
   const j=judge(card,i,label,points.get(trip));
-  if(j.named===false&&OWN_NAMES.has(card.id)){coincident.push({id:card.id,item:label.item,ko,en,labelEn:label.en,reviewed:OWN_NAMES.get(card.id),...j});return}
-  added.push({id:card.id,item:label.item,state:'shows',before:card.names,ko,en,labelEn:label.en,grade:geo?.grade[i]??null,...j});
+  if(j.named!==false)return;
+  if(OWN_NAMES.has(card.id)){coincident.push({id:card.id,item:label.item,ko,en,labelEn:label.en,reviewed:OWN_NAMES.get(card.id),...j});return}
+  added.push({id:card.id,item:label.item,state:'unexplained',before:card.names,ko,en,labelEn:label.en,grade:geo?.grade[i]??null,...j});
  });
  // Controls: each hotel judged against another hotel's item must be flagged. By point: two
  // Trip.com hotels with both points over 1 km apart. By name: the hotels above, each against
@@ -136,14 +148,15 @@ async function auditPublic(){
  // Every Trip.com hotel the extract reaches, named or not: how often its item looks like another hotel.
  const matched=core.ids.flatMap((id,i)=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))?[{id,...judge(cards[i],i,labels.get(id.slice(5)),points.get(id.slice(5)))}]:[]);
  const odd=matched.filter(m=>m.suspicious);
- const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,coincident,suspicious:suspicious.map(a=>a.id),matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,suspicious:odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint},byName}};
+ const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,dropped,coincident,previousExtract:previous.retrievedAt,suspicious:suspicious.map(a=>a.id),matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,suspicious:odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint},byName}};
  if(arg('--json'))writeFileSync(arg('--json'),JSON.stringify(report,null,1)+'\n');
  for(const a of added)console.log(`  ${a.suspicious?'SUSPICIOUS ':''}${a.state} ${a.id} ${a.item}: ${a.ko??'-'} / ${a.en??'-'} (was ${a.before.ko}; Wikidata en ${a.labelEn}; ${a.distance===null?'no point to compare':a.distance+' m'}; names agree ${a.named})`);
  for(const c of missed)console.log(`  CONTROL MISSED ${c.id} against ${c.label}`);
+ for(const d of dropped)console.log(`  drops ${d.id} ${d.item}: ${d.shown.ko} / ${d.shown.en} (an older extract's name the current one no longer gives)`);
  for(const c of coincident)console.log(`  note: ${c.id} shows ${c.ko??c.en}, the label of ${c.item}, which disagrees with it (${c.labelEn}); its own name by OWN_NAMES: ${c.reviewed}`);
  for(const m of odd)console.log(`  note: ${m.id} reached by the extract but not named here looks like another item (${m.distance===null?'no point':m.distance+' m'}; names agree ${m.named})`);
  const pass=control&&suspicious.length===0;
- console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names and ${added.filter(a=>a.state==='shows').length} already show them (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); ${suspicious.length} suspicious (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, swapped labels ${byName.length-missed.length}/${byName.length} flagged -> ${pass?'PASS':'FAIL'}`);
+ console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names, ${added.filter(a=>a.state==='shows').length} already show them, ${dropped.length} lose an older extract's name (previous extract ${previous.retrievedAt}; Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); ${suspicious.length} suspicious (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, swapped labels ${byName.length-missed.length}/${byName.length} flagged -> ${pass?'PASS':'FAIL'}`);
  if(!pass)process.exitCode=1;
  return` Public audit: ${added.length} hotels, ${suspicious.length} suspicious, ${pass?'PASS':'FAIL'}.`;
 }
