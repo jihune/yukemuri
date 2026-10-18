@@ -200,7 +200,9 @@ async function run(page){
   const button=coverage.getByRole('button',{name:/위치 미확인/}),b=await box(button);
   check(name,inView(b)&&await fullyReachable(button),{button:b});
  };
- await page.goto(base+'/?view=map',{waitUntil:'networkidle'});
+ // Network quiet is waited for at most 10s here: once at 360px it never came within the 30s limit
+ // and stopped the width (U07, 2026-10-18); firstView waits for the map's line itself.
+ await page.goto(base+'/?view=map');await page.waitForLoadState('networkidle',{timeout:10000}).catch(()=>{});
  await firstView('주소의 view=map으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
  await page.goto(base+'/',{waitUntil:'networkidle'});
  // A card below the first screen: the page is already scrolled when the map opens.

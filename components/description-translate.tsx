@@ -22,7 +22,8 @@ const chromeOrEdge=()=>((navigator as Navigator&{userAgentData?:{brands?:{brand:
 // documents give no size): Japanese goes through English, en-ja and en-ko, 113,091,783 bytes;
 // English needs en-ko alone, 56,601,733 bytes.
 const modelSize={ja:'약 110MB',en:'약 57MB'};
-// unsupported: not this browser at all; unavailable: Chrome or Edge that cannot translate this pair.
+// unsupported: not this browser at all; unavailable: Chrome or Edge that cannot translate this pair,
+// or a description whose language it cannot name (Chrome or Edge is no help there either).
 type State={kind:'checking'|'unsupported'|'unavailable'|'ready'|'translating'|'failed'|'done';progress?:number;text?:string};
 export default function DescriptionTranslate({text}:{text:string}){
  const source=translationSource(text),translator=useRef<Translator|null>(null),pending=useRef<AbortController|null>(null);
@@ -30,7 +31,7 @@ export default function DescriptionTranslate({text}:{text:string}){
  // server and while hydrating, so the first render is the same wherever it runs.
  const capable=useSyncExternalStore(noSubscription,()=>!!translatorApi()&&chromeOrEdge(),()=>null);
  const [answer,setState]=useState<State>({kind:'checking'});
- const state:State=!source||capable===false?{kind:'unsupported'}:capable===null?{kind:'checking'}:answer;
+ const state:State=capable===false?{kind:'unsupported'}:capable===null?{kind:'checking'}:!source?{kind:'unavailable'}:answer;
  useEffect(()=>{
   const api=translatorApi();
   if(!source||!api||!capable)return;
