@@ -51,7 +51,8 @@ const described=foreign.description.trim()+'\n客室は全室和室です。';
 // The same stay with an English description (the catalogue has none), for the English pair.
 const english='A quiet hot spring inn by the river.\nAll rooms are Japanese style.';
 // Kanji without kana and accented Latin: the cases descriptionLanguage() must not guess.
-const unguessed={chinese:'酒店设有餐厅和温泉。',french:'Cet hôtel propose un petit-déjeuner payant.'};
+// The French one also with its accents as combining marks (NFD), as some sources store text.
+const unguessed={chinese:'酒店设有餐厅和温泉。',french:'Cet hôtel propose un petit-déjeuner payant.',frenchDecomposed:'Cet hôtel propose un petit-déjeuner payant.'.normalize('NFD')};
 // The stand-in: brands, availability and translation are set per run through window.__u07.
 const standIn=({brand,availability,fail})=>{
  Object.defineProperty(Navigator.prototype,'userAgentData',{configurable:true,get:()=>({brands:[{brand,version:'141'}],mobile:false,platform:'Linux'})});
@@ -165,12 +166,12 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   check('영어 설명: 단추 아래 안내가 모델 크기 약 57MB를 알림(일본어의 약 110MB가 아님)',/약 57MB/.test(r.readyNote??'')&&!/110MB/.test(r.readyNote??''),r);
   await c.close();
  }
- // 7. Chinese and French (Chrome, available): lang="", no button, no note, nothing asked.
+ // 7. Chinese and French, composed and decomposed (Chrome, available): lang="", no button, no note, nothing asked.
  for(const [label,text] of Object.entries(unguessed)){
   const c=await context({brand:'Google Chrome',availability:'available',fail:0},text),page=await c.newPage();
   const d=await open(page,foreign.id);
   const r={original:await d.locator('.hotel-intro').first().textContent(),lang:await d.locator('.hotel-intro').first().getAttribute('lang'),buttons:await d.locator('.translate-button').count(),notes:await d.locator('.translate-note').count(),availability:await page.evaluate(()=>window.__u07.availability)};
-  check(`${label==='chinese'?'중국어(가나 없는 한자)':'프랑스어(악센트 있는 라틴 문자)'} 설명: 원문은 lang=""(일본어·영어로 짐작하지 않음)이고 번역 단추도 안내도 없으며 브라우저에 묻지 않음`,r.original.trim()===text&&r.lang===''&&r.buttons===0&&r.notes===0&&r.availability===0,r);
+  check(`${{chinese:'중국어(가나 없는 한자)',french:'프랑스어(악센트 있는 라틴 문자)',frenchDecomposed:'프랑스어(악센트가 결합 문자인 분해형)'}[label]} 설명: 원문은 lang=""(일본어·영어로 짐작하지 않음)이고 번역 단추도 안내도 없으며 브라우저에 묻지 않음`,r.original.trim()===text&&r.lang===''&&r.buttons===0&&r.notes===0&&r.availability===0,r);
   await c.close();
  }
 }
