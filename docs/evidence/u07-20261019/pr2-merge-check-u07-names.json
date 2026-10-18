@@ -1,0 +1,144 @@
+{
+ "checkedAt": "2026-10-18T09:57:05.800Z",
+ "base": "http://127.0.0.1:8787",
+ "stay": "ginrinsou",
+ "results": [
+  {
+   "width": 390,
+   "name": "지도: 표지 제목·미리보기 이름·숙소 목록 이름이 ‘Kawabata Riverside Onsen Inn’",
+   "pass": true,
+   "detail": {
+    "markerTitle": "Kawabata Riverside Onsen Inn",
+    "preview": "Kawabata Riverside Onsen Inn",
+    "listNames": [
+     "Kawabata Riverside Onsen Inn"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "에이전트 도구 read_visible_stays가 ‘Kawabata Riverside Onsen Inn’를 돌려줌",
+   "pass": true,
+   "detail": {
+    "row": {
+     "id": "ginrinsou",
+     "name": "Kawabata Riverside Onsen Inn",
+     "score": 9.7,
+     "scale": 10,
+     "reviewCount": 62,
+     "ratingProvider": "trip",
+     "saved": false,
+     "isMock": false
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도를 옮겨 ‘이 지역에서 검색’을 누른 뒤에도 표지 제목이 ‘Kawabata Riverside Onsen Inn’",
+   "pass": true,
+   "detail": {
+    "searched": "이 지역에서 다시 검색",
+    "areaTitle": "Kawabata Riverside Onsen Inn"
+   }
+  },
+  {
+   "width": 390,
+   "name": "비교 표: 이름이 ‘Kawabata Riverside Onsen Inn’이고 그 아래 원어, 빼기 단추 이름과 근거 줄도 같은 이름",
+   "pass": true,
+   "detail": {
+    "head": [
+     {
+      "name": "Kawabata Riverside Onsen Inn",
+      "original": "料亭湯宿 銀鱗荘",
+      "remove": "Kawabata Riverside Onsen Inn 비교에서 빼기"
+     },
+     {
+      "name": "샬레 아이비 조잔케이",
+      "original": "シャレーアイビー定山渓",
+      "remove": "샬레 아이비 조잔케이 비교에서 빼기"
+     }
+    ],
+    "evidence": [
+     "Kawabata Riverside Onsen Inn",
+     "9.7 / 10",
+     "샬레 아이비 조잔케이",
+     "9.6 / 10"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도: 표지 제목·미리보기 이름·숙소 목록 이름이 ‘Kawabata Riverside Onsen Inn’",
+   "pass": true,
+   "detail": {
+    "markerTitle": "Kawabata Riverside Onsen Inn",
+    "preview": "Kawabata Riverside Onsen Inn",
+    "listNames": [
+     "Kawabata Riverside Onsen Inn"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "에이전트 도구 read_visible_stays가 ‘Kawabata Riverside Onsen Inn’를 돌려줌",
+   "pass": true,
+   "detail": {
+    "row": {
+     "id": "ginrinsou",
+     "name": "Kawabata Riverside Onsen Inn",
+     "score": 9.7,
+     "scale": 10,
+     "reviewCount": 62,
+     "ratingProvider": "trip",
+     "saved": false,
+     "isMock": false
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도를 옮겨 ‘이 지역에서 검색’을 누른 뒤에도 표지 제목이 ‘Kawabata Riverside Onsen Inn’",
+   "pass": true,
+   "detail": {
+    "searched": "이 지역에서 다시 검색",
+    "areaTitle": "Kawabata Riverside Onsen Inn"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "비교 표: 이름이 ‘Kawabata Riverside Onsen Inn’이고 그 아래 원어, 빼기 단추 이름도 같은 이름",
+   "pass": true,
+   "detail": {
+    "head": [
+     {
+      "name": "Kawabata Riverside Onsen Inn",
+      "original": "料亭湯宿 銀鱗荘",
+      "remove": "Kawabata Riverside Onsen Inn 비교에서 빼기"
+     },
+     {
+      "name": "샬레 아이비 조잔케이",
+      "original": "シャレーアイビー定山渓",
+      "remove": "샬레 아이비 조잔케이 비교에서 빼기"
+     }
+    ],
+    "evidence": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

@@ -37,9 +37,10 @@ export function hotelRelevance(plan:HotelQueryPlan,names:PreparedName[],context:
     if(nameCovered){
       const score=45+35*covered/plan.tokens.length+15*nameCovered/plan.tokens.length+.02*sum/plan.tokens.length;
       if(score>(best?.score??0))best={score,similar,matchedName};
-    }else if(covered===plan.tokens.length&&!best)best={score:30,similar:false,matchedName:names[0]?.name??''};
+    }else if(covered===plan.tokens.length&&!best)best={score:30,similar:false,matchedName:''};
   }
-  if(!best&&(context.includes(plan.key)||plan.core&&context.includes(plan.core)))best={score:30,similar:false,matchedName:names[0]?.name??''};
+  // Matched by the place only: no name matched, so none is named (a suggestion shows its title).
+  if(!best&&(context.includes(plan.key)||plan.core&&context.includes(plan.core)))best={score:30,similar:false,matchedName:''};
   return best;
 }
 export function prepareHotelRelevance(names:string[],context:string){return{names:names.map(prepareHotelName),context:normalizeSearch(context)}};

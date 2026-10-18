@@ -1,0 +1,330 @@
+{
+ "checkedAt": "2026-10-18T09:56:37.573Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "전국: 처음과 확대 4단계에서 표지 17개(묶음 14개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 4,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 5,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 6,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 7,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 8,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 5개(묶음 2개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 9,
+      "markers": 2,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 10,
+      "markers": 3,
+      "covered": 1,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 11,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "전국: 처음과 확대 4단계에서 표지 17개(묶음 14개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 4,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 5,
+      "markers": 4,
+      "covered": 0,
+      "groups": 4,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 6,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 7,
+      "markers": 3,
+      "covered": 1,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 8,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 7개(묶음 2개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 9,
+      "markers": 2,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 10,
+      "markers": 4,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 11,
+      "markers": 1,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "전국: 처음과 확대 4단계에서 표지 23개(묶음 17개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 5,
+      "markers": 6,
+      "covered": 1,
+      "groups": 6,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 6,
+      "markers": 6,
+      "covered": 0,
+      "groups": 3,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 7,
+      "markers": 4,
+      "covered": 0,
+      "groups": 3,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 8,
+      "markers": 4,
+      "covered": 0,
+      "groups": 3,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 9,
+      "markers": 3,
+      "covered": 0,
+      "groups": 2,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "오키나와: 처음과 확대 4단계에서 표지 6개(묶음 0개)의 꼬리 끝이 숙소 점에서 2px 안(묶음은 자기 구성원 하나의 점 위)",
+   "pass": true,
+   "detail": {
+    "steps": [
+     {
+      "step": "처음",
+      "zoom": 10,
+      "markers": 4,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 1",
+      "zoom": 11,
+      "markers": 2,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 2",
+      "zoom": 12,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 3",
+      "zoom": 13,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     },
+     {
+      "step": "확대 4",
+      "zoom": 14,
+      "markers": 0,
+      "covered": 0,
+      "groups": 0,
+      "off": 0
+     }
+    ],
+    "off": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

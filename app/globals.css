@@ -1156,3 +1156,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .filter-drawer .option-help{display:inline-grid}
 .filter-drawer .filter-option-row>.filter-chip,.filter-drawer .filter-option-row>.filter-toggle{padding-right:var(--yk-tap)}
 .filter-drawer .filter-quick{grid-template-columns:repeat(auto-fit,minmax(max(136px,calc(50% - 3px)),1fr))}
+/* U07 map markers: the caret under the label is centred, and its tip is the marker's point
+   (stay-map.tsx TIP). The active marker grows around that tip, so it keeps pointing at the stay. */
+.stay-marker:after{left:calc(50% - 4px)}
+.stay-marker.is-active{transform-origin:50% calc(100% + 6px)}
