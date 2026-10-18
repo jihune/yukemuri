@@ -128,3 +128,11 @@
 ## D06 — 지도 좌표 보강
 
 하위 세션은 보관했다. 상세는 `D06-20261013.md`. 후속(한국어 이름 등)은 새 세션으로 연다.
+
+## O03 — 사용량 점검 자동화
+
+하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`, 브랜치 `claude/o03-usage-check`(두 저장소 모두, main `0885eab`에서 시작). 상세는 `O03-20261019.md`.
+
+- 앱 PR: `usage.yml`에 매일 점검(`check: true`, 대조 입력 `control`)과 `scripts/daily-check.mjs`·`scripts/check-daily-check.mjs`를 더한다. 방법은 `cloudflare-deploy.md` ‘매일 점검(O03)’.
+- 실행기 PR: 매일 cron이 앱 점검을 부르고 전날 백업 실패를 본다. 10-18T01:0xZ `add_repo`(push)가 자동 권한 검사에서 거부돼 아직 만들지 못했다. 상위 세션에 알렸다.
+- 끝나는 조건(병합 뒤 상위 세션과 확인): 정상인 날 성공하는 run, 대조 입력 네 가지(`over-85`·`exceeded`·`zero-pages`·`no-permission`)가 실패하는 run.

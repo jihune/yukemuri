@@ -180,7 +180,26 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 - 사용자 조치(실행 전에 한 번): Cloudflare 대시보드 → My Profile → API Tokens → 앱 레포 Secret `CLOUDFLARE_API_TOKEN`으로 쓰는 토큰의 Edit → Permissions에 `Account` / `Account Analytics` / `Read`를 더하고 저장한다. 토큰 값은 바뀌지 않으므로 GitHub Secret은 그대로 둔다. 실행기 레포의 같은 이름 Secret이 다른 토큰이면 그 토큰은 바꿀 필요 없다.
 - 검사: `scripts/check-cloudflare-usage.mjs`(`cloud-check.py` 기본 목록). 가짜 GraphQL 응답으로 요청 변수, 값 변환, 70% 경고, 빈 날의 ‘기록 없음’, 권한 실패 5종과 그 밖의 실패 5종(rate limit, 스키마 오류, JSON 아님, 데이터셋 없음, 계정 합계 없음)이 0으로 읽히지 않는지 본다. 실제 API는 부르지 않았다. 필드 이름은 Cloudflare 문서 원본(`cloudflare/cloudflare-docs` production, 2026-10-12)의 예시와 같다. 실제 스키마 수용은 첫 실행에서 확인한다.
 - 무료 한도(2026-10-15 UTC 확인, Cloudflare 문서 원본 markdown을 `curl`로 받음): D1 Pricing(`developers.cloudflare.com/d1/platform/pricing/index.md`) ‘Rows read 5 million / day’, ‘Rows written 100,000 / day’, ‘Free limits reset daily at 00:00 UTC’. Workers Limits(`developers.cloudflare.com/workers/platform/limits/index.md`) ‘daily request limit of 100,000 requests, resetting at midnight UTC’, 넘으면 오류 1027. `scripts/cloudflare-usage.mjs`의 `LIMITS`와 같다.
+- 매일 점검(O03): 아래 ‘매일 점검(O03)’ 절이다.
 - 자료 현황 화면(U06): 검색 스냅숏을 만들 때(`build-search-snapshot.mjs --remote`, 배포 workflow의 스냅숏 단계) `usageToday`가 같은 질의로 그날(UTC) 계정 전체 D1 읽기·쓰기와 Worker 요청을 한 번 읽어 `status.json`의 `fill.usage`에 넣는다. 같은 단계가 이미 받는 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`를 쓰므로 새 Secret과 Worker 경로는 없다. 토큰·권한이 없거나, API가 실패하거나, 20초 안에 답이 없으면 `account: null`로 두고(오류 문구는 넣지 않음) 스냅숏과 배포는 그대로 진행하며, 화면은 ‘사용량을 읽지 못함’이라고 보인다. `--sqlite` 빌드(로컬·검사)는 Cloudflare에 묻지 않는다. 화면은 측정 시각, ‘약 N시간 전 기준’, 매일 09:00(KST) 초기화를 함께 보인다. 실시간 조회가 아니므로 측정 뒤 쓴 양은 다음 스냅숏에 반영된다.
+
+## 매일 점검(O03)
+
+기록: 2026-10-18T01:13Z(O03 하위 세션). H01 7단계에서 Claude가 매일 하던 점검(`usage.yml` 실행, 수집 로그 읽기)을 GitHub 실행으로 바꾼다. 문제가 있을 때만 실패 메일이 가고 사람이 본다. 설계·검사 기록은 `O03-20261019.md`다.
+
+- 시작: `usage.yml`을 입력 `check: true`로 부른다. 이 public 레포에는 cron을 두지 않는다(60일 활동이 없으면 꺼진다). private 실행기 레포의 매일 예약이 `collect.yml`을 부를 때와 같은 방식으로 부른다(실행기 PR은 따로). 수동으로도 돌릴 수 있다. 실행 이름은 `Cloudflare usage (daily check)`, 대조 입력이 있으면 `Cloudflare usage (daily check, control <값>)`이다.
+- 점검하는 날: 입력 `date`, 비우면 어제(UTC). `days`는 쓰지 않는다. 스크립트는 `scripts/daily-check.mjs`이고 workflow 토큰(`actions: read`)과 기존 Secret `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`만 쓴다. 새 Secret은 없다.
+- 실패 조건(하나라도 걸리면 run이 실패로 끝나 부른 계정에 실패 메일이 간다):
+  - 그날 계정 전체 Worker 요청·D1 읽기·D1 쓰기 가운데 하나라도 무료 한도의 85% 이상. 한도와 계정 합계는 위 ‘사용량 측정’과 같다(`cloudflare-usage.mjs`의 `queryDay`·`LIMITS`).
+  - 이 Worker의 `exceededResources`(1102·1027)가 1 이상.
+  - 사용량을 읽지 못함(권한·네트워크·API 오류). 권한이 있는 조회에서 계정 값이 ‘기록 없음’이어도 판단할 수 없어 실패로 본다.
+  - 그날(UTC, 실행을 만든 시각) 만든 gentle 수집(`collect.yml`) 가운데 0쪽 실행, collect job이 26분 이상(job `timeout-minutes`), 성공하지 않은 실행(실패·취소·시간 초과), 끝난 실행의 로그에 `pages=` 줄이 없음. 진행 중인 실행은 표에만 쓴다. 그날 실행이 0회면 표에 0회로 쓰고 실패로 보지 않는다(수집이 멈추면 `collect-watch.yml`의 12시간 감시가 알린다).
+  - GitHub API로 실행·job·로그를 읽지 못함.
+- 결과: run 요약(`GITHUB_STEP_SUMMARY`) 첫 줄에 통과나 실패 건수, 이어서 실패 항목, ‘사용량 측정’과 같은 사용량 표, gentle 실행 표를 쓴다. gentle 표는 실행마다 만든 시각, 결과, ‘Size the run’의 `pages=`·`reason=`, 수집 단계 시간, collect job 시간, 처리 쪽수, 쪽 상태(done·retry·failed 수), 끝난 뒤 대기·상세 완료다. H01 7단계 매일 기록과 같은 항목이다. 로그에서 숫자만 뽑고 원출처 주소와 비밀값은 쓰지 않는다. 실패 항목마다 `::error::`도 남긴다.
+- 백업: 실행기 백업은 private 실행기 레포의 실행이라 이 레포 토큰으로 읽을 수 없다. 전날 백업 실패는 실행기 레포의 매일 점검 job이 자기 토큰으로 보고 실패로 끝난다.
+- 대조 입력 `control`(점검이 실패하는지 실제 실행으로 보이는 용도): `over-85`는 계정 D1 쓰기를 한도의 85%로, `exceeded`는 `exceededResources`를 1로, `zero-pages`는 그날 첫 gentle 실행의 쪽수를 0으로 바꾼다. 실제 값을 읽은 뒤 하나만 바꾼다. `no-permission`은 Cloudflare 조회에 일부러 틀린 토큰을 보내 실제 API의 거절이 0으로 읽히지 않는지 본다. 요약 첫 줄에 대조 입력이라고 쓴다. 대조 run도 실패 메일을 보낸다.
+- Actions 사용 시간: 이 레포는 public이라 한도가 없다. 실행기 레포의 부르기 job은 하루 약 1분이다.
+- 검사: `scripts/check-daily-check.mjs`(`cloud-check.py` 기본 목록). `usage.yml` 설정, 이 점검이 읽는 `collect.yml`의 job·단계와 수집기 출력 형식, 85% 경계(한 단위 아래 통과, 85% 실패, 세 값 각각), `exceededResources`, 기록 없는 날, 권한·네트워크·토큰 없음, 로컬 GitHub API 대역(로그 주소 302 이동 포함)으로 0쪽·26분·실패·취소·`pages=` 없음·진행 중·다른 날과 check-access 제외, GitHub 오류, 대조 입력 네 가지가 정상인 날을 실패시키는지 본다.
 
 ## 롤백
 
