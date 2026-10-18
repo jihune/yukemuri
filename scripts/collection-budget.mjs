@@ -13,12 +13,14 @@ export const BUDGET=Object.freeze({
  maxPages:120,         // one run; the runner dispatches hourly (C05), so later runs of a day often get 0
  fallbackPages:16,     // usage unreadable: the run size before C03
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
- writesPerPage:80,     // 2026-10-18, after C04: at most 56.0 a page between runs (150.4 before), about
-                       // 75 estimated for the most list pages a run has had, 79 for a D07 names page.
+ writesPerPage:180,    // 2026-10-18, after C04: runs wrote at most 56.0 a page, but a round of
+                       // update-site.py --gentle can hold only a Jalan detail page (11 rows) and a Jalan
+                       // list page of 30 new properties (348): 179.5 a page (measure-d1-writes.mjs --check).
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
- readsPerPage:3100,    // 2026-10-17: up to 2,981 a page between runs, snapshot taken out; D07 names
-                       // claims add up to 93 (PR #154 review)
+ readsPerPage:3600,    // 2026-10-17: up to 2,981 a page between runs, snapshot taken out; each round
+                       // also scans the done D07 names jobs (525 rows, PR #154 review), and a round
+                       // may hold a single page
  snapshotReads:168000  // 2026-10-18: the last snapshot build read 122,302 rows (23,784 hotels, after
                        // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
                        // growth (5.73 rows a hotel, 3,051 hotels on 10-17)

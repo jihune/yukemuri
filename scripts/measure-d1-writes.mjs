@@ -17,6 +17,7 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFileSync,execSync} from 'node:child_process';
 import assert from 'node:assert/strict';
+import {BUDGET} from './collection-budget.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const argv=process.argv.slice(2),arg=k=>argv.includes(k)?argv[argv.indexOf(k)+1]:null;
@@ -134,6 +135,13 @@ try{
   // seen again.
   const locale={'jalan locale names (new)':[2,20],'jalan locale names (other language)':[1,20],'jalan locale names (seen again)':[0,10]};
   const failures=report.pages.flatMap(p=>{const max=locale[p.page]?locale[p.page][0]*p.names+locale[p.page][1]:caps[p.page]?caps[p.page]*p.observations:p.page.startsWith('trip detail (new')?30:12;return p.rowsWritten>max?[`${p.page}: ${p.rowsWritten} rows written > ${max}`]:[]});
+  // collection-budget.mjs counts every page at writesPerPage. update-site.py --gentle takes at most
+  // one page of each group a round, and Jalan's detail queue lasts for months (19,700 jobs on
+  // 2026-10-18), so a Jalan list page comes with a Jalan detail page. The other pages a round may
+  // hold write less than that pair's average (Trip.com list pages saved at most 3 properties each
+  // on 2026-10-18) and only lower it.
+  const cost=name=>report.pages.find(p=>p.page===name).rowsWritten,round=(cost('jalan detail (listed before)')+cost('jalan list (new properties)'))/2;
+  if(round>BUDGET.writesPerPage)failures.push(`a round of a Jalan detail and a new Jalan list page: ${round} rows a page > writesPerPage ${BUDGET.writesPerPage}`);
   console.log(failures.length?'D1 write bounds FAIL '+failures.length+': '+failures.join('; '):`D1 write bounds PASS (${report.pages.length} pages)`);
   if(failures.length)process.exitCode=1;
  }
