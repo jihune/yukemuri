@@ -78,6 +78,13 @@ try{
  await paced();assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'refresh',token:randomUUID()})).jobs.length,0,'refresh never takes a names page');
  await paced();assert.equal((await claim()).jobs.length,1,'while the names phase does');
  await db.prepare("UPDATE crawl_jobs SET status='done' WHERE kind<>'names'").run();
+ // A names page that failed three times waits out its wait (7 days), then the names phase reads it again.
+ await db.prepare('UPDATE crawl_jobs SET lease_until=0,lease_token=NULL').run();
+ await db.prepare("UPDATE crawl_jobs SET status='failed',attempts=3,next_at=? WHERE url=?").bind(Math.floor(Date.now()/1000)+3600,page('ko',44,3)).run();
+ await paced();assert.equal((await claim(page('ko',44,3))).jobs.length,0,'a failed names page waits');
+ await db.prepare('UPDATE crawl_jobs SET next_at=? WHERE url=?').bind(Math.floor(Date.now()/1000)-1,page('ko',44,3)).run();
+ await paced();assert.equal((await claim(page('ko',44,3))).jobs.length,1,'then the names phase reads it again');
+ await db.prepare('UPDATE crawl_jobs SET lease_until=0,lease_token=NULL').run();
  // Shown names: Korean with Hangul whose Latin words are in the English name; no Hangul, or an
  // old Latin word, leaves English as the title. The record's own name stays the original.
  const shown=async id=>(await api('/api/hotels/'+id));

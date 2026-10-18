@@ -56,10 +56,11 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
  if(repeated.results.length)return repeated.results;
- // D07: a Jalan locale list page is read again LOCALE_REFRESH_DAYS after it was done, on another default stay date.
- const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now})`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
+ // D07: a Jalan locale list page is read again LOCALE_REFRESH_DAYS after it was done, on another default stay date,
+ // and one that failed three times once its wait is over (as refresh does for list and detail pages).
+ const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now}) AND (j.status<>'failed' OR j.next_at>0)`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
  const extraArgs=claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[];
- const statuses=claim.phase==='refresh'?['done','failed']:['names','baths','localnames'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
+ const statuses=claim.phase==='refresh'?['done','failed']:claim.phase==='localnames'?['done','pending','retry','failed']:['names','baths'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.
