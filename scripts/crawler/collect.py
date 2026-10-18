@@ -255,10 +255,11 @@ def parse_locale_names(raw, url):
     for block in blocks:
         # The whole href, unescaped before the query is cut: a slug may hold &#034; (tawaraya_ryokan_("shirasagikan")_...).
         links = re.findall(r'<h3 class="cassette-hotel-name"><a href="(/(?:kr|en)/japan_hotels_ryokan/[^"]+)">([^<]*)</a></h3>', block)
-        booked = set(re.findall(r"openPlanSyosai\('(\d+)'", block))
-        photos = re.findall(r'/pictM/Y\d/Y(\d+)/(Y[0-9A-Za-z]+)\.jpg', block)
-        numbers = booked | set(re.findall(r'hotelId=(\d+)', block)) | {folder for folder, _ in photos}
-        name = re.sub(r'\s+', ' ', html.unescape(links[0][1])).strip() if len(links) == 1 else ''
+        # ASCII digits and no U+FEFF, as the contract reads them (Python's \d takes full-width digits; JS trim drops U+FEFF).
+        booked = set(re.findall(r"openPlanSyosai\('([0-9]+)'", block))
+        photos = re.findall(r'/pictM/Y[0-9]/Y([0-9]+)/(Y[0-9A-Za-z]+)\.jpg', block)
+        numbers = booked | set(re.findall(r'hotelId=([0-9]+)', block)) | {folder for folder, _ in photos}
+        name = re.sub(r'\s+', ' ', html.unescape(links[0][1]).replace('\ufeff', '')).strip() if len(links) == 1 else ''
         stay = 'https://www.jalan.net' + urllib.parse.quote(re.split(r'[?#]', html.unescape(links[0][0]))[0], safe='/') if name else ''
         # The contract's limits: a 9-digit number, 400 UTF-16 units of name, 600 characters of URL in the page's language.
         if not name or len(booked) != 1 or len(numbers) != 1 or len(name.encode('utf-16-le')) > 800 or any(not file.startswith('Y' + folder) for folder, file in photos) \
