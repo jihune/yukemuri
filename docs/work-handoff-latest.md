@@ -60,7 +60,7 @@
 | 하위 세션 | O03·U07이 10-18T01:01Z, C04가 02:34Z, D07이 05:54Z에 일을 시작했다. U05·U06·L01·D05는 쉰다(아래 6). D05 브랜치의 `d2f7d53`은 문구만 고쳐 main `f2a3cc3`에 있다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 상위 세션에 묶인 예약: H01 6일차 `trig_016nnsiwLz8WjSaHjmz16GPg`(10-19T01:20Z), 7일차 `trig_015ChLhywzoX2vwBFcopWLFq`(10-20T01:20Z). 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
 | 사용량 | 10-18T03:27Z에 5시간 창 0.43, 7일 창 0.11(`isUsingOverage` false) | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_011ayTaQQUY8VUJQqLdxTrSz`(10-18T02:24Z부터, 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 27 `087e582`(10-18T08:35Z 알림, 하네스 main에서 확인), 이 세션은 `0366863` | 위 1-1 |
+| 하네스 | 하네스 관리 세션은 `session_01M7TTyzzQPadBMiWAGFWCR4`(10-18T09:03Z 알림부터, 그 앞은 `session_011ayTaQQUY8VUJQqLdxTrSz`, 그 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 28 `9756172`(10-18T09:03Z 알림, 하네스 main에서 확인), 이 세션은 `0366863` | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
@@ -104,7 +104,8 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
-| `session_011ayTaQQUY8VUJQqLdxTrSz` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T02:24Z부터) | 다른 저장소 |
+| `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T09:03Z 알림부터) | 다른 저장소 |
+| `session_011ayTaQQUY8VUJQqLdxTrSz` | 앞 하네스 관리 세션(10-18T02:24Z부터, 10-18T09:03Z 알림으로 넘김) | 일을 맡지 않음 |
 | `session_01T99PGUq2MSWNS3NAJgNdrp`, `session_01Hb6mZa55hebUCaeC7z29mG` | 앞 하네스 관리 세션들 | 일을 맡지 않음 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -164,6 +165,10 @@
   - 4회째 P2 2건과 P3 1건은 사본 재현으로 모두 해소된 것을 확인했다. 점검 스크립트에 출처를 짐작하는 갈래는 남아 있지 않다.
   - 대조군 두 가지도 돌렸다. 표시가 있는 카드의 좌표를 97 km 옮기면 FAIL(rc 1)이었다. 빌더가 표시를 쓰지 않으면 `check-search-snapshot-worker`가 실패(rc 1)했다.
   - `cloud-check --full`은 rc 0(46개, 08:52:58Z)이었다.
+- 10-18T08:56Z PR #145를 병합했다(`17d66a6`). 배포 run 39113387040이 성공했다(08:56:33Z–09:07:30Z, Worker `ef25d892`, 스냅숏 `328a9a3b27cf2b8e`, 23,429곳, 생성 읽기 119,706행, 마이그레이션 없음, smoke 통과). D07에 배포 뒤 점검과 공개 `status.json`의 한국어 이름 수를 확인하라고 알렸다(09:09Z).
+- 10-18T08:26Z C04가 `collect.yml`이 05:13Z 뒤로 돌지 않았다고 알렸다. 실행기 예약의 최근 다섯 번 간격이 2시간 28분에서 5시간 42분이라 손으로 부르지 않고 기다린다. 상위 세션이 11:15Z 안전망 확인에서 다시 본다. 그때까지 없으면 사용자에게 알린다. C04는 다음 수집 실행의 written이 있어야 예산 PR을 연다(다음 확인 10:25Z).
+- 10-18T09:05Z U07 PR #151의 Codex 1·2회째 P2를 `5fdaaa3`·`394b271`에서 고쳤고, 3회째(마지막 Codex) 검토를 요청했다.
+- 10-18T09:03Z 하네스 관리 세션이 `session_01M7TTyzzQPadBMiWAGFWCR4`로 바뀌었다. 알려진 마지막 판은 setup 28 `9756172`이다(하네스 저장소 STATE의 인계 계획과 맞음). 새 `cloud-session-ops` §8 「When to hand off」에 따르면, 일에 걸리는 하네스 변경이 새 세션에 닿았고 이 세션의 판(`0366863`)이 더 오래됐다. 그래서 D07 배포 기록 뒤 여섯 번째 상위 세션에 넘기기로 했다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
