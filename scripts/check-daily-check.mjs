@@ -193,7 +193,10 @@ try{
  assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${roomy}: 0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| \\*\\*실패\\*\\* \\|$`,'m'));
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${zero} \\| 19:35Z \\| success \\| 0 \\|.*\\| 통과\\(예산 소진\\) \\|$`,'m'),'a 0-page run after the share is used passes');
- runs=runs.filter(r=>![zero,roomy,slow,failed,running].includes(r.id));
+ runs=runs.filter(r=>![roomy,slow,failed,running].includes(r.id));
+ result=await check();assert.deepEqual(result.failures,[]);
+ assert.ok(result.lines.includes('**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
+ runs=runs.filter(r=>r.id!==zero);
  // GitHub errors and missing settings fail; the usage table stays.
  for(const [fail,pattern] of [[{path:'/workflows/',status:403},/GitHub API 403 \(\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\)/],[{path:'/logs',status:410},/GitHub API 410/],[{path:'/blob/',status:404},/GitHub API 404/]]){
   ghFail=fail;result=await check();ghFail=null;

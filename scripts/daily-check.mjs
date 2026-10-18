@@ -182,7 +182,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
  }
  const lines=[`# 매일 점검(O03) — ${date}(UTC)`,''];
  if(control!=='none')lines.push(`> 대조 입력 \`${control}\`: 실제 값 하나를 일부러 바꿔 점검이 실패하는지 본다. 아래 표의 해당 값은 실제 값이 아니다.`,'');
- lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 85% 이상인 한도, exceededResources, 0쪽·26분 이상·성공하지 않은 gentle 실행이 없다.','');
+ lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.','');
  for(const f of failures)lines.push('- 실패: '+f);
  if(failures.length)lines.push('');
  lines.push(...details);
