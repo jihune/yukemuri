@@ -2,10 +2,10 @@ import {favoritesDb} from './favorites-db';
 import {enrichHotel} from './hotel-enrichment';
 import {attachSourceGroups} from './hotel-source-groups';
 import {composePreferredHotel} from './source-policy';
-import {attachLifecycle} from './hotel-lifecycle';
+import {withLifecycle} from './hotel-lifecycle';
 import {formatHotelLocation,hotelPlaceSearchText,geocodeInput} from './japan-place-labels';
-import {queryCoverage,catalogPreparation} from './hotel-repository';
-import {readCollectionStatus} from './read-collection-status';
+import {coverageFrom,catalogPreparation,type CoverageJobs} from './hotel-repository';
+import {collectionStatusFrom,collectionStatusSideRows,type ProviderRow} from './read-collection-status';
 import {hotelSummary,GEO_GRADE,type HotelSummary,type SnapshotCore,type SnapshotText,type SnapshotGeo,type GeocodeInput} from './search-snapshot';
 // The builder writes the manifest with this format (scripts/build-search-snapshot.mjs).
 export {SNAPSHOT_FORMAT} from './search-snapshot';
@@ -13,7 +13,7 @@ import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 import {needsKoreanDescription} from './hotel-description';
-import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type CollectionProvider,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
+import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
 // enrichHotel, then the linked source rows, then the lifecycle. Both lookups
@@ -22,10 +22,25 @@ import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type CollectionProvider
 // lifecycle row is left as it is (attachLifecycle), and per-id lookups of every
 // hotel would read about 100,000 index rows at production size.
 const PAGE=500;
-async function attach(hotels:Hotel[],members:Set<string>,lifecycles:Set<string>){
+// The lifecycle rows of a page come from one id-range read (P04): per-id lookups
+// read about three rows a hotel.
+async function attach(hotels:Hotel[],members:Set<string>,lifecycles:Map<unknown,Record<string,unknown>>){
  const merge=async(list:Hotel[],has:Set<string>,run:(h:Hotel[])=>Promise<Hotel[]>,otherwise:(h:Hotel)=>Hotel)=>{const done=await run(list.filter(h=>has.has(h.id)));let i=0;return list.map(h=>has.has(h.id)?done[i++]:otherwise(h))};
- return merge(await merge(hotels,members,attachSourceGroups,h=>composePreferredHotel(h,[])),lifecycles,attachLifecycle,h=>h);
+ return(await merge(hotels,members,attachSourceGroups,h=>composePreferredHotel(h,[]))).map(h=>withLifecycle(h,lifecycles.get(h.id)));
 }
+// One read of the queue for every page count the snapshot carries: the data
+// status pages, the collection summary (queryCoverage) and the collection
+// status per provider (readCollectionStatus). Grouped in the order of a claim
+// index, so each job is read once; the three used to read the queue apart (P04).
+type JobGroup={provider:string;kind:string;status:string;count:number;updated:string|null;last_success:number|null;recent:number;active:number};
+async function jobGroups(db:ReturnType<typeof favoritesDb>,now:Date){
+ return(await db.prepare(`SELECT provider,kind,status,COUNT(*) AS count,MAX(fetched_at) AS updated,MAX(unixepoch(fetched_at)) AS last_success,
+  SUM(CASE WHEN status='done' AND unixepoch(fetched_at)>CAST(? AS REAL) THEN 1 ELSE 0 END) AS recent,SUM(CASE WHEN lease_until>CAST(? AS REAL) THEN 1 ELSE 0 END) AS active
+  FROM crawl_jobs WHERE status!='skipped' GROUP BY provider,kind,status`).bind(now.getTime()/1000-86400,now.getTime()/1000).all<JobGroup>()).results;
+}
+const total=(groups:JobGroup[],keep:(g:JobGroup)=>boolean,field:'count'|'recent'|'active'='count')=>groups.reduce((n,g)=>keep(g)?n+g[field]:n,0);
+const latest=<T extends string|number>(values:(T|null)[])=>values.reduce<T|null>((a,v)=>v!==null&&(a===null||v>a)?v:a,null);
+const WAITING=['pending','retry','running'],OPEN=['pending','running'];
 // U06 data status (docs/U06-20261015.md 4절): each place in its scopes, one state per row.
 // geo stays zero here; the builder fills it after geocoding (addFillGeo).
 const emptyScope=():FillScope=>({records:0,rows:Object.fromEntries(FILL_ROWS.map(r=>[r.key,{filled:0,none:0,empty:0}])) as FillScope['rows'],geo:[0,0,0,0,0,0,0],staleTranslations:0});
@@ -37,19 +52,17 @@ export function addFillGeo(fill:CollectionFill,ids:string[],grades:number[]){
 }
 // The Cloudflare API source sends every parameter as a string (build-search-snapshot.mjs), so
 // numbers are cast in SQL.
-async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
+async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date,groups:JobGroup[]){
  // Places whose Korean name was looked for and not found (hotel-names route, deferNameResearch).
  const researched=new Set((await db.prepare('SELECT hotel_id FROM hotel_name_localizations WHERE payload IS NULL').all<{hotel_id:string}>()).results.map(r=>r.hotel_id));
  // A translation counts when it is of the current source text, as the detail API joins it.
  const translations=new Map((await db.prepare("SELECT t.hotel_id,CASE WHEN t.source_text=json_extract(h.payload,'$.description') THEN 1 ELSE 0 END AS current FROM hotel_description_translations t JOIN hotels h ON h.id=t.hotel_id").all<{hotel_id:string;current:number}>()).results.map(r=>[r.hotel_id,r.current===1]));
  const zero=():PageCounts=>({done:0,pending:0,retry:0,failed:0});
  const pages={jalan:{detail:zero(),list:zero(),detailChecked24h:0},trip:{detail:zero(),list:zero(),detailChecked24h:0}};
- for(const r of (await db.prepare(`SELECT provider,kind,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS done,
-  SUM(CASE WHEN status IN ('pending','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='retry' THEN 1 ELSE 0 END) AS retry,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,
-  SUM(CASE WHEN status='done' AND unixepoch(fetched_at)>CAST(? AS REAL) THEN 1 ELSE 0 END) AS recent
-  FROM crawl_jobs WHERE provider IN ('jalan','trip') AND kind IN ('detail','list') AND status!='skipped' GROUP BY provider,kind`).bind(now.getTime()/1000-86400).all<{provider:CollectionProvider;kind:'detail'|'list';recent:number}&PageCounts>()).results){
-  pages[r.provider][r.kind]={done:r.done,pending:r.pending,retry:r.retry,failed:r.failed};
-  if(r.kind==='detail')pages[r.provider].detailChecked24h=r.recent;
+ for(const provider of ['jalan','trip'] as const)for(const kind of ['detail','list'] as const){
+  const of=(g:JobGroup)=>g.provider===provider&&g.kind===kind;
+  pages[provider][kind]={done:total(groups,g=>of(g)&&g.status==='done'),pending:total(groups,g=>of(g)&&OPEN.includes(g.status)),retry:total(groups,g=>of(g)&&g.status==='retry'),failed:total(groups,g=>of(g)&&g.status==='failed')};
+  if(kind==='detail')pages[provider].detailChecked24h=total(groups,of,'recent');
  }
  // The last 30 UTC days' rows of the collector's end-of-run read (lib/hotel-repository.ts readCoverage).
  const day=(ms:number)=>new Date(ms).toISOString().slice(0,10);
@@ -86,7 +99,8 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date){
 }
 export async function buildSearchSnapshot(now:Date){
  const db=favoritesDb();
- const {fill,add}=await collectionFill(db,now);
+ const queue=await jobGroups(db,now);
+ const {fill,add}=await collectionFill(db,now,queue);
  const core:SnapshotCore={ids:[],region:[],prefecture:[],name:[],kind:[],tripScore:[],tripReviews:[],jalanScore:[],jalanReviews:[],natural:[],features:[],known:[],lat:[],lng:[],state:[]};
  const text:SnapshotText={searchText:[],nameKeys:[],names:[],location:[],context:[]},cards:HotelSummary[]=[];
  // Map positions: the payload coordinates here; scripts/build-search-snapshot.mjs
@@ -97,12 +111,15 @@ export async function buildSearchSnapshot(now:Date){
  for(const r of (await db.prepare('SELECT hotel_id,name_key,name FROM hotel_names ORDER BY hotel_id,name_key').all<{hotel_id:string;name_key:string;name:string}>()).results){const list=aliases.get(r.hotel_id);if(list)list.push({key:r.name_key,name:r.name});else aliases.set(r.hotel_id,[{key:r.name_key,name:r.name}])}
  const groups=(await db.prepare('SELECT hotel_id,trip_hotel_id,jalan_hotel_id FROM hotel_source_groups').all<{hotel_id:string;trip_hotel_id:string|null;jalan_hotel_id:string|null}>()).results;
  const members=new Set(groups.flatMap(g=>[g.hotel_id,g.trip_hotel_id,g.jalan_hotel_id].filter((id):id is string=>!!id)));
- const lifecycles=new Set((await db.prepare('SELECT hotel_id FROM hotel_lifecycle').all<{hotel_id:string}>()).results.map(r=>r.hotel_id));
- type Row={id:string;region:string;prefecture:string|null;name:string;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;natural:number|null;bath_features:number|null;bath_known:number|null;search_text:string;lat:number|null;lng:number|null;payload:string};
+ type Row={id:string;region:string;prefecture:string|null;name:string;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;natural:number|null;room_onsen:number|null;bath_features:number|null;bath_known:number|null;search_text:string;lat:number|null;lng:number|null;payload:string};
+ // The record counts of the collection summary and status, counted on this pass
+ // with the rules of their former queries (queryCoverage, readCollectionStatus).
+ const prefectures=new Set<string>(),quality={records:0,detailRecords:0,bathKnownRecords:0,naturalOnsenRecords:0,roomOnsenRecords:0};
  // The same coordinate rule as the former map query and hasCoordinates.
  const numeric=`json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real')`;
  for(let cursor='';;){
-  const rows=(await db.prepare(`SELECT id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,bath_features,bath_known,search_text,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng,payload FROM hotels WHERE id>? ORDER BY id LIMIT ${PAGE}`).bind(cursor).all<Row>()).results;
+  const rows=(await db.prepare(`SELECT id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,room_onsen,bath_features,bath_known,search_text,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng,payload FROM hotels WHERE id>? ORDER BY id LIMIT ${PAGE}`).bind(cursor).all<Row>()).results;
+  const lifecycles=rows.length?new Map((await db.prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id>? AND hotel_id<=?').bind(cursor,rows.at(-1)!.id).all<Record<string,unknown>>()).results.map(r=>[r.hotel_id,r])):new Map();
   const hotels=await attach(rows.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
   rows.forEach((r,i)=>{
    const h=hotels[i],state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
@@ -122,17 +139,25 @@ export async function buildSearchSnapshot(now:Date){
    geocodeInputs.push(located?null:geocodeInput(place));
    cards.push(hotelSummary(h));
    add(r.id,raw,h,r.bath_known);
+   if(r.prefecture!==null)prefectures.add(r.prefecture);
+   quality.records++;if(raw.sources[0]?.label?.includes('상세'))quality.detailRecords++;if((r.bath_known??0)&BATH_FEATURE_MASK)quality.bathKnownRecords++;
+   if(r.natural===1)quality.naturalOnsenRecords++;if(r.room_onsen===1)quality.roomOnsenRecords++;
   });
   if(rows.length<PAGE)break;cursor=rows.at(-1)!.id;
  }
- const [coverage,status,unprepared]=await Promise.all([queryCoverage(),readCollectionStatus(now.getTime()),catalogPreparation()]);
+ const providers=[...new Set(queue.map(g=>g.provider))].sort();
+ const jobs:CoverageJobs[]=providers.map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as CoverageJobs['provider'],discovered:total(queue,g=>of(g)&&g.kind==='detail'),completed:total(queue,g=>of(g)&&g.status==='done'),details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&WAITING.includes(g.status)),failed:total(queue,g=>of(g)&&g.status==='failed'),updated:latest(queue.filter(of).map(g=>g.updated))}});
+ const statusRows:ProviderRow[]=providers.filter(p=>p==='jalan'||p==='trip').map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as ProviderRow['provider'],last_success:latest(queue.filter(of).map(g=>g.last_success)),completed_details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&OPEN.includes(g.status)),retry:total(queue,g=>of(g)&&g.status==='retry'),failed:total(queue,g=>of(g)&&g.status==='failed'),active:total(queue,of,'active')}});
+ const coverage=coverageFrom({records:quality.records,prefectures:prefectures.size},jobs);
+ const [side,unprepared]=await Promise.all([collectionStatusSideRows(db),catalogPreparation()]);
+ const status=collectionStatusFrom(now.getTime(),{providers:statusRows,...side,quality});
  // unprepared: seed steps crawl-prepare has not run on this database (a
  // deploy that changes the seed prepares it and builds again, deploy.yml).
  return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,first:firstPage(core,cards,coverage)};
 }
 // The first page of the default view (no conditions, recommended order): put
 // in the static page so the list shows before core and cards arrive.
-export function firstPage(core:SnapshotCore,cards:HotelSummary[],coverage:Awaited<ReturnType<typeof queryCoverage>>):SearchResponse{
+export function firstPage(core:SnapshotCore,cards:HotelSummary[],coverage:ReturnType<typeof coverageFrom>):SearchResponse{
  const s=openSnapshot({coverage} as Parameters<typeof openSnapshot>[0],core,cards);
  return resultPage(s,searchSnapshot(s,DEFAULT_FILTERS,'recommended'),1);
 }
