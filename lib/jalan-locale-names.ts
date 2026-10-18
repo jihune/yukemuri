@@ -9,7 +9,8 @@ import {english,words} from './wikidata-names';
 export const LOCALE_PRIORITY=95;
 export type LocaleLang='ko'|'en';
 export type LocaleNameRow={hotel_id:string;name_ko:string|null;ko_url:string|null;ko_checked_at:string|null;name_en:string|null;en_url:string|null;en_checked_at:string|null};
-// Page `page` of prefecture `code` (1-47, JIS order as data/prefectures.json) in one language,
+// Page `page` of prefecture `code` (Jalan's kenCd 1-47, the order of data/prefectures.json, which is
+// not JIS: kenCd 17 is Niigata, checked 2026-10-18) in one language,
 // as lib/crawl-contract.ts LOCALE_LIST and scripts/crawler/collect.py locale_list_url write it.
 export function localeListUrl(lang:LocaleLang,code:number,page:number){
  return`https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=${lang==='ko'?'ko_KR':'en_US'}&kenCd=${String(code).padStart(2,'0')}0000&stayCount=1&roomCount=1&distCd=01&crcyCd=${lang==='ko'?'KRW':'USD'}&activeSort=1&screenId=UIW1402&idx=${page}&pageNum=${page}`;
