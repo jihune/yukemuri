@@ -15,6 +15,11 @@ import {extract,OUT} from './update-wikidata-names.mjs';
 
 const require=createRequire(import.meta.url),argv=process.argv.slice(2),arg=name=>argv.includes(name)?argv[argv.indexOf(name)+1]:null;
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-wikidata-names-'));
+// Trip.com cards that show their item's label as their own name, though the item disagrees with
+// them, each checked by hand: the public snapshot named here was built before lib/wikidata-names.ts.
+const OWN_NAMES=new Map([
+ ['trip-993398','2026-10-18: 삿포로 엑셀 호텔 도큐 in snapshot 2004e2cb8ddb5a06 (before the rule); the item\'s English label is misspelt "Sappro Excel Hotel Tokyu"'],
+]);
 const hotel=(id,ko,ja=ko,en=ko)=>({id,names:{ko,ja,en},aliases:[],sources:[{sourceId:id,sourceType:'web',label:'숙소 상세',retrievedAt:'2026-10-01T00:00:00Z',verifiedAt:'2026-10-01',url:'https://www.trip.com/hotels/x-hotel-detail-1/',isMock:false}]});
 try{
  // The rule on fixture labels: the compiled module reads the extract beside it.
@@ -104,8 +109,10 @@ async function auditPublic(){
  });
  // A snapshot built with the rule already shows the names (Codex P2 on PR #145): a Trip.com card
  // showing its item's Korean label, or its English label beside another original, is audited too.
- // One whose names disagree with the item cannot have got them from the rule (its guard refuses
- // that item), so it holds the hotel's own name that happens to match, and is only noted.
+ // The cards carry no sources, and the detail API refuses tools without the maintenance key, so
+ // a shown label whose item disagrees with the hotel fails unless OWN_NAMES records, after a look,
+ // that the hotel showed that name before the rule existed (a match by chance). A name the rule
+ // added under an older extract whose label has changed since fails here (Codex P2, round 2).
  const coincident=[];
  cards.forEach((card,i)=>{
   const trip=/^trip-\d+$/.test(card.id)?card.id.slice(5):null,label=trip&&labels.get(trip);
@@ -113,7 +120,7 @@ async function auditPublic(){
   const ko=label.ko&&card.names.ko===label.ko?label.ko:null,en=label.en&&card.names.en===label.en&&card.names.en!==card.names.ja?label.en:null;
   if(!ko&&!en)return;
   const j=judge(card,i,label,points.get(trip));
-  if(j.named===false){coincident.push({id:card.id,item:label.item,ko,en,labelEn:label.en,...j});return}
+  if(j.named===false&&OWN_NAMES.has(card.id)){coincident.push({id:card.id,item:label.item,ko,en,labelEn:label.en,reviewed:OWN_NAMES.get(card.id),...j});return}
   added.push({id:card.id,item:label.item,state:'shows',before:card.names,ko,en,labelEn:label.en,grade:geo?.grade[i]??null,...j});
  });
  // Controls: each hotel judged against another hotel's item must be flagged. By point: two
@@ -133,7 +140,7 @@ async function auditPublic(){
  if(arg('--json'))writeFileSync(arg('--json'),JSON.stringify(report,null,1)+'\n');
  for(const a of added)console.log(`  ${a.suspicious?'SUSPICIOUS ':''}${a.state} ${a.id} ${a.item}: ${a.ko??'-'} / ${a.en??'-'} (was ${a.before.ko}; Wikidata en ${a.labelEn}; ${a.distance===null?'no point to compare':a.distance+' m'}; names agree ${a.named})`);
  for(const c of missed)console.log(`  CONTROL MISSED ${c.id} against ${c.label}`);
- for(const c of coincident)console.log(`  note: ${c.id} shows ${c.ko??c.en}, the label of ${c.item}, but its names disagree with the item (${c.labelEn}): its own name, not the rule's`);
+ for(const c of coincident)console.log(`  note: ${c.id} shows ${c.ko??c.en}, the label of ${c.item}, which disagrees with it (${c.labelEn}); its own name by OWN_NAMES: ${c.reviewed}`);
  for(const m of odd)console.log(`  note: ${m.id} reached by the extract but not named here looks like another item (${m.distance===null?'no point':m.distance+' m'}; names agree ${m.named})`);
  const pass=control&&suspicious.length===0;
  console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names and ${added.filter(a=>a.state==='shows').length} already show them (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); ${suspicious.length} suspicious (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, swapped labels ${byName.length-missed.length}/${byName.length} flagged -> ${pass?'PASS':'FAIL'}`);

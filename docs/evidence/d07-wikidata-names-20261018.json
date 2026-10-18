@@ -2,7 +2,7 @@
  "snapshot": "2004e2cb8ddb5a06",
  "generatedAt": "2026-10-18T05:42:25.944Z",
  "hotels": 23429,
- "checkedAt": "2026-10-18T06:54:01.922Z",
+ "checkedAt": "2026-10-18T07:06:33.898Z",
  "koreanTitles": {
   "before": 1543,
   "after": 1565
@@ -2706,6 +2706,7 @@
    "ko": "삿포로 엑셀 호텔 도큐",
    "en": null,
    "labelEn": "Sappro Excel Hotel Tokyu",
+   "reviewed": "2026-10-18: 삿포로 엑셀 호텔 도큐 in snapshot 2004e2cb8ddb5a06 (before the rule); the item's English label is misspelt \"Sappro Excel Hotel Tokyu\"",
    "distance": null,
    "named": false,
    "suspicious": true
