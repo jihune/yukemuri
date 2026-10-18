@@ -228,6 +228,10 @@ for lang,expected in [('ko',['SUGINOI HOTEL','Hotel BOKAI','그랜드브리오 �
  for path in [f'/{site}/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Kannawa.Myoban_Hotels/suginoi_hotel/',f'/{site}/japan_hotels_ryokan/Hotels/Oita_Hotels/suginoi_hotel/',f'/{"en" if lang=="ko" else "kr"}/japan_hotels_ryokan/Hotels/Oita_Hotels/Beppu_Hotels/Beppu_Hotels/suginoi_hotel/']:
   other=page.replace(link,'<h3 class="cassette-hotel-name"><a href="'+path)
   assert [n['id'] for n in parse_locale_names(other,url)[0]]==['jalan-328944','jalan-339956','jalan-399732'],path
+ # So does a number or name the contract would refuse: full-width digits, more than 9 digits, a name that is only U+FEFF or over 400 UTF-16 units, a URL over 600 characters.
+ for old,new in [('344350','３４４３５０'),('344350','1234567890'),('>SUGINOI HOTEL<','>&#xFEFF;<'),('>SUGINOI HOTEL<','>'+'A'*401+'<'),('suginoi_hotel/','suginoi_'+'x'*600+'/')]:
+  assert [n['id'] for n in parse_locale_names(page.replace(old,new),url)[0]]==['jalan-328944','jalan-339956','jalan-399732'],new[:12]
+ assert parse_locale_names(page.replace('>SUGINOI HOTEL<','>&#xFEFF;'+'A'*400+'<'),url)[0][0]['name']=='A'*400
  # A slug with an escaped quote keeps its whole path, unescaped before the query is cut, then percent-encoded.
  quoted=parse_locale_names(page.replace(link+'?',link.replace('suginoi_hotel/','suginoi_(&#034;hotel&#034;)/')+'?'),url)[0]
  assert quoted[0]['url'].endswith('/Beppu_Hotels/Beppu_Hotels/suginoi_%28%22hotel%22%29/') and len(quoted)==4,quoted[0]['url']
