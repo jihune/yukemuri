@@ -36,9 +36,10 @@ export async function writeHotels(observations:Hotel[]){
    return [h.id,h.regionId,h.prefecture??null,h.names.ko,search,h.kind,trip?.score??null,trip?.reviewCount??null,jalan?.score??null,jalan?.reviewCount??null,...Object.keys(coreColumns).map(k=>hotelFeature(h,k as FeatureKey).value===null?null:Number(hotelFeature(h,k as FeatureKey).value)),mask.features,mask.knownFeatures,JSON.stringify(h)];
   });
   // One transaction: add the ids this upsert inserts to the record counter
-  // (a primary-key lookup per row), then write.
-  const json=JSON.stringify(rows);
-  const [,accepted]=await db.batch<{id:string;payload:string}>([db.prepare("UPDATE catalog_meta SET value=CAST(value AS INTEGER)+(SELECT COUNT(DISTINCT json_extract(j.value,'$[0]')) FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM hotels h WHERE h.id=json_extract(j.value,'$[0]'))) WHERE key=?").bind(json,RECORD_COUNTER),db.prepare(sql).bind(json)]);
+  // (a primary-key lookup per row), then write. Without a new id the counter
+  // row is not rewritten (C04).
+  const json=JSON.stringify(rows),fresh="FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM hotels h WHERE h.id=json_extract(j.value,'$[0]'))";
+  const [,accepted]=await db.batch<{id:string;payload:string}>([db.prepare(`UPDATE catalog_meta SET value=CAST(value AS INTEGER)+(SELECT COUNT(DISTINCT json_extract(j.value,'$[0]')) ${fresh}) WHERE key=? AND EXISTS (SELECT 1 ${fresh})`).bind(json,RECORD_COUNTER,json),db.prepare(sql).bind(json)]);
   written+=accepted.results.length;
   // Index only committed records. Stale/list observations rejected by the
   // UPSERT must not inject their aliases into search.

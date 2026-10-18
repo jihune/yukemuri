@@ -16,15 +16,20 @@ export const hotels=sqliteTable('hotels',{
  natural:integer('natural'),largeBath:integer('large_bath'),outdoor:integer('outdoor'),privateBath:integer('private_bath'),roomOnsen:integer('room_onsen'),roomOutdoor:integer('room_outdoor'),
  bathFeatures:integer('bath_features'),bathKnown:integer('bath_known'),
  payload:text('payload').notNull(),
-},table=>[index('idx_hotels_prefecture').on(table.prefecture),index('idx_hotels_region').on(table.region),index('idx_hotels_trip_score_reviews').on(table.tripScore,table.tripReviews),index('idx_hotels_jalan_score_reviews').on(table.jalanScore,table.jalanReviews)]);
+});
+// C04: every index adds a written row to each insert, and to each update that
+// sets its columns. Lists, search and the map read the static snapshot (P03),
+// so the hotels, hotel_names and hotel_lifecycle indexes and two crawl_jobs
+// ones served only row counts and the manual health report (0014,
+// docs/C04-20261019.md).
 export const catalogMeta=sqliteTable('catalog_meta',{key:text('key').primaryKey(),value:text('value').notNull()});
 export const hotelNames=sqliteTable('hotel_names',{
  hotelId:text('hotel_id').notNull(),nameKey:text('name_key').notNull(),name:text('name').notNull(),
-},table=>[primaryKey({columns:[table.hotelId,table.nameKey]}),index('idx_hotel_names_key').on(table.nameKey,table.hotelId)]);
+},table=>[primaryKey({columns:[table.hotelId,table.nameKey]})]);
 export const crawlJobs=sqliteTable('crawl_jobs',{
  url:text('url').primaryKey(),provider:text('provider').notNull(),kind:text('kind').notNull(),prefecture:text('prefecture'),status:text('status').notNull(),attempts:integer('attempts').notNull(),nextAt:real('next_at').notNull(),error:text('error'),fetchedAt:text('fetched_at'),
  leaseToken:text('lease_token'),leaseUntil:real('lease_until').notNull().default(0),lastToken:text('last_token'),priority:integer('priority').notNull().default(90),
-},table=>[index('idx_crawl_jobs_ready').on(table.status,table.nextAt),index('idx_crawl_jobs_provider_ready').on(table.provider,table.kind,table.status,table.nextAt),index('idx_crawl_jobs_provider_lease').on(table.provider,table.leaseUntil),
+},table=>[index('idx_crawl_jobs_provider_lease').on(table.provider,table.leaseUntil),
  // Claim order of each lane (lib/crawl-queue.ts), so a claim reads the first
  // eligible job in index order instead of sorting every waiting job.
  index('idx_crawl_jobs_claim_priority').on(table.provider,table.kind,table.status,table.priority,sql`COALESCE(unixepoch(${table.fetchedAt}),0)`,table.attempts,table.url),
@@ -55,7 +60,7 @@ export const hotelLifecycle=sqliteTable('hotel_lifecycle',{
  hotelId:text('hotel_id').primaryKey(),firstSeenAt:text('first_seen_at').notNull(),lastSeenAt:text('last_seen_at').notNull(),lastDetailAt:text('last_detail_at'),
  missingCount:integer('missing_count').notNull().default(0),missingAt:text('missing_at'),state:text('state').notNull().default('unverified'),
  checkedAt:text('checked_at'),evidence:text('evidence'),
-},table=>[index('idx_lifecycle_review').on(table.state,table.missingCount)]);
+});
 export const hotelLifecycleEvents=sqliteTable('hotel_lifecycle_events',{
  id:text('id').primaryKey(),hotelId:text('hotel_id').notNull(),checkedAt:text('checked_at').notNull(),payload:text('payload').notNull(),
 },table=>[index('idx_lifecycle_events_hotel').on(table.hotelId,table.checkedAt)]);

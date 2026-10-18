@@ -59,6 +59,7 @@ if args.full:
         ['node', 'scripts/check-snapshot-geo.mjs', '--built'],
         ['node', 'scripts/check-public-reads-worker.mjs'],
         ['node', 'scripts/measure-d1-reads.mjs', '--check'],
+        ['node', 'scripts/measure-d1-writes.mjs', '--check'],
     ]
 for command in commands:
     if shutil.which(command[0]) is None:

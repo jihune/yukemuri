@@ -6,7 +6,8 @@
 // a Jalan list page (30 properties, new to the catalogue), a Jalan detail page
 // for one of them, and a Trip.com detail page; then the same three pages again
 // with a newer retrieval time (a refresh, or a list seen again).
-// Usage: node scripts/measure-d1-writes.mjs [--out evidence.json] [--dist dir --label commit]
+// Usage: node scripts/measure-d1-writes.mjs [--check] [--out evidence.json] [--dist dir --label commit]
+//  --check  fail when a page writes more rows than its C04 upper bound
 // Row counts come from the meta that Miniflare's D1 returns per statement.
 // Whether Miniflare counts rows exactly like production D1 is unverified;
 // docs/C04-20261019.md compares them with the production runs of 2026-10-17.
@@ -19,7 +20,7 @@ import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const argv=process.argv.slice(2),arg=k=>argv.includes(k)?argv[argv.indexOf(k)+1]:null;
-const out=arg('--out'),dist=arg('--dist')??'dist',label=arg('--label');
+const out=arg('--out'),dist=arg('--dist')??'dist',label=arg('--label'),check=argv.includes('--check');
 const KEY='measure-d1-only';
 // The collector's parser on the fixtures, as update-site.py builds a PUT body.
 const pages=at=>JSON.parse(execFileSync('python3',['-c',`
@@ -112,5 +113,15 @@ try{
  await page('jalan list (seen again)',again.jalanList,'jalan','list');
  await page('jalan detail (refresh)',again.jalanDetail,'jalan','detail');
  await page('trip detail (refresh)',again.tripDetail,'trip','detail');
+ if(check){
+  // C04 (2026-10-18): a new property costs its hotel row, name rows, lifecycle
+  // row and detail job with their remaining indexes (11 rows); a property seen
+  // again its row updates; a detail page about 11 rows. Before C04 these pages
+  // wrote 598, 315, 21, 36, 285, 21 and 21 rows.
+  const caps={'jalan list (new properties)':12,'jalan list (known properties)':4,'jalan list (seen again)':3};
+  const failures=report.pages.flatMap(p=>{const max=caps[p.page]?caps[p.page]*p.observations:p.page.startsWith('trip detail (new')?30:12;return p.rowsWritten>max?[`${p.page}: ${p.rowsWritten} rows written > ${max}`]:[]});
+  console.log(failures.length?'D1 write bounds FAIL '+failures.length+': '+failures.join('; '):`D1 write bounds PASS (${report.pages.length} pages)`);
+  if(failures.length)process.exitCode=1;
+ }
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
