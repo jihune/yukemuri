@@ -218,8 +218,9 @@ for lang,expected in [('ko',['SUGINOI HOTEL','Hotel BOKAI','그랜드브리오 �
  assert sorted(links)==[locale_list_url(lang,44,2),locale_list_url(lang,44,3)] and set(links.values())=={('names',None)}
  assert diagnostic==dict(blocks=4,names=4,refused=0,links=2,listed=68,reviewReason=None)
  # A block whose photo or booking number is another stay's, or that has no booking button, is left out.
- other=page.replace('Y344350/Y344350BV4','Y300000/Y300000BV4',1)
- assert [n['id'] for n in parse_locale_names(other,url)[0]]==['jalan-328944','jalan-339956','jalan-399732']
+ for photo in ['Y300000/Y300000BV4','Y300000/Y344350BV4','Y344350/Y300000BV4']:
+  other=page.replace('Y344350/Y344350BV4',photo,1)
+  assert [n['id'] for n in parse_locale_names(other,url)[0]]==['jalan-328944','jalan-339956','jalan-399732'],photo
  unbooked=page.replace("openPlanSyosai('328944'","openPlan('328944'")
  assert parse_locale_names(unbooked,url)[2]['refused']==1
  # Every block refused, a stay listed twice, more than 30 blocks, or no list at all: the page is reviewed.

@@ -243,7 +243,8 @@ def locale_list_url(lang, code, page):
 def parse_locale_names(raw, url):
     """Names of the stays on one locale list page, by Jalan number, and the list's other pages.
     A stay counts only when its block has one name link and its booking button's number, and every
-    other number in the block (map link, photo path) is that number. No name is translated."""
+    other number in the block (map link, photo folder) is that number. A photo file is named Y<number>
+    and a suffix that may be digits, so its name must start with its folder's. No name is translated."""
     page = locale_page(url)
     lang = 'ko' if page[1] == 'ko_KR' else 'en'
     names, refused = [], 0
@@ -251,9 +252,10 @@ def parse_locale_names(raw, url):
     for block in blocks:
         links = re.findall(r'<h3 class="cassette-hotel-name"><a href="(/(?:kr|en)/japan_hotels_ryokan/[^"?#]+)[^"]*">([^<]*)</a></h3>', block)
         booked = set(re.findall(r"openPlanSyosai\('(\d+)'", block))
-        numbers = booked | set(re.findall(r'hotelId=(\d+)', block)) | set(re.findall(r'/pictM/Y\d/Y(\d+)/Y\1[0-9A-Za-z]*\.jpg', block))
+        photos = re.findall(r'/pictM/Y\d/Y(\d+)/(Y[0-9A-Za-z]+)\.jpg', block)
+        numbers = booked | set(re.findall(r'hotelId=(\d+)', block)) | {folder for folder, _ in photos}
         name = re.sub(r'\s+', ' ', html.unescape(links[0][1])).strip() if len(links) == 1 else ''
-        if not name or len(booked) != 1 or len(numbers) != 1 or len(name) > 400:
+        if not name or len(booked) != 1 or len(numbers) != 1 or len(name) > 400 or any(not file.startswith('Y' + folder) for folder, file in photos):
             refused += 1
             continue
         names.append(dict(id='jalan-' + numbers.pop(), name=name, url='https://www.jalan.net' + urllib.parse.quote(html.unescape(links[0][0]), safe='/')))
