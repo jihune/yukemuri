@@ -129,7 +129,7 @@ export async function buildSearchSnapshot(now:Date){
   rows.forEach((r,i)=>{
    // Wikidata and Jalan locale names (D07) on the card, the name column (the shown title, which the
    // area map labels markers with) and the name search, as the detail API adds them.
-   const h=withJalanLocaleNames(withWikidataNames(hotels[i]),locale.get(r.id)),state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
+   const w=withWikidataNames(hotels[i]),h=withJalanLocaleNames(w,locale.get(r.id)),state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
    const added=h===hotels[i]?[]:[h.names.ko,h.names.en].filter(n=>!Object.values(hotels[i].names).includes(n));
    core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(h===hotels[i]?r.name:displayNames(h.names).title);core.kind.push(r.kind);
    core.tripScore.push(r.trip_score);core.tripReviews.push(r.trip_reviews);core.jalanScore.push(r.jalan_score);core.jalanReviews.push(r.jalan_reviews);
@@ -146,8 +146,9 @@ export async function buildSearchSnapshot(now:Date){
    const located=r.lat!==null&&r.lng!==null;
    geo.grade.push(located?raw.location.isApproximate?GEO_GRADE.city:GEO_GRADE.source:GEO_GRADE.none);geo.lat.push(located?r.lat:null);geo.lng.push(located?r.lng:null);
    geocodeInputs.push(located?null:geocodeInput(place));
-   const item=h===hotels[i]?null:h.sources.find(s=>s.sourceId==='wikidata-name:'+h.id)!.url!.split('/').pop()!;
-   cards.push(item?{...hotelSummary(h),wikidataNames:{item,was:Object.fromEntries((['ko','en'] as const).filter(k=>h.names[k]!==hotels[i].names[k]).map(k=>[k,hotels[i].names[k]]))}}:hotelSummary(h));
+   // The card notes only the Wikidata step's names (Jalan names are kept in hotel_locale_names).
+   const item=w===hotels[i]?null:w.sources.find(s=>s.sourceId==='wikidata-name:'+w.id)!.url!.split('/').pop()!;
+   cards.push(item?{...hotelSummary(h),wikidataNames:{item,was:Object.fromEntries((['ko','en'] as const).filter(k=>w.names[k]!==hotels[i].names[k]).map(k=>[k,hotels[i].names[k]]))}}:hotelSummary(h));
    add(r.id,raw,h,r.bath_known);
    if(r.prefecture!==null)prefectures.add(r.prefecture);
    quality.records++;if(raw.sources[0]?.label?.includes('상세'))quality.detailRecords++;if((r.bath_known??0)&BATH_FEATURE_MASK)quality.bathKnownRecords++;
