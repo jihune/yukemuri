@@ -93,7 +93,8 @@
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음. 10-18T00:5xZ 인계 끝 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함(10-18T01:01Z 시작) |
 | `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함(10-18T01:01Z 시작), PR #133 |
-| `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기, 이어서 P04(브랜치 `claude/c04-writes`) | 일함(10-18T02:34Z 시작) |
+| `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기, 이어서 P04(브랜치 `claude/c04-writes`) | 일함(10-18T02:34Z 시작), PR #138 |
+| `session_01Cz7adKH5EFnx3nKicEkhkh` | PR #138 Claude 검토(Codex 대체 1회째, 커밋 `b28b979`) | 일함(10-18T03:44Z 시작). 결과를 기록한 뒤 보관한다 |
 | `session_01PuNgLiSyMdn35DxmRigJmK` | 세 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
@@ -129,7 +130,7 @@
 - 10-18T01:0xZ–02:1xZ 수집 예산 값 코드 PR #130을 열어 병합했다(`3a7ea3b`). Codex 3회 P2 3건(평균 130 → 실행별 최대 150 → 올림 151, 스냅숏 260,000 → 이틀 치 증가분 330,000)을 반영하고, 어떤 사용량에서도 85% 안에 드는지 훑는 검사를 더했다. 이어 가는 Claude 검토 세션 `session_01Nj9HfHmjtX7yvN9WziEwUv`(P0~P2 없음, P3 2건)를 열고 결과를 위 4에 적은 뒤 보관했다. 배포 run 39088373014 성공(Worker `3fc6c2ff`). O03 하위 세션은 실행기 저장소 `add_repo`가 자동 권한 검사에서 거부돼 앱 PR #131부터 열었다. 사용자 승인이 없으면 실행기 PR은 상위 세션이 맡는다. 하네스 관리 세션이 바뀌어 위 3·6을 고쳤다.
 - 10-18T02:2xZ–02:4xZ 사용자 지시(실행기에도 하네스 규칙)대로 실행기 PR #12를 열어 Codex 2회(1회째 P2 2건: 기록 줄의 정확한 UTC 시각, `project-files.json`의 `recordedAt`) 뒤 병합했다(`492ea75`). O03 앱 PR #131을 병합 조건(마지막 검토 커밋+main 트리와 head 비교, CI, 충돌, 스레드, workflow diff)을 직접 본 뒤 병합했고(`48cc071`), 배포와 O03의 확인 run을 확인했다. C04 하위 세션을 열었다(`session_01BFCCsaQ7tWzZRYedC5aTVL`). U07은 화면 PR #133을 열었고, 지도 바다 위 표지의 원인(묶음 표지가 구성원 평균 위치, 꼬리 끝이 점보다 약 21px 아래)과 Chrome 내장 Translator API(데스크톱 Chrome 138·Edge 148, 번역 전용 모델, 결제 없음, 상위 세션이 공식 문서로 확인)로 그 자리 번역을 하는 계획을 알렸다.
 - 10-18T02:5xZ–03:1xZ 실행기 PR #11(O03, `31daed7`)을 병합 조건을 직접 본 뒤 병합했고, O03 기록 PR #135를 병합했다. 사용자 지시(10-18T03:0xZ, ‘실행기 저장소에도 하네스 규칙을 반영했다는거나 이 세션에서 진행한 내용 중 하네스에 반영할 만한 내용이나, 시행착오, 교훈, 스킬이나 룰 제안 등을 가장 최신 하네스 관리 세션에 넘겨라’)대로 가장 최신 하네스 관리 세션 `session_011ayTaQQUY8VUJQqLdxTrSz`에 실행기 규칙 적용 알림과 교훈·제안 9가지를 보냈다(delivered). 그 세션이 알려 준 하네스 관리 세션 id와 판만 위 1·3·6에 고쳤다.
-- 10-18T03:2xZ–03:3xZ C04 PR #137을 병합 조건(Codex 1회 ‘큰 문제 없음’ `183771d`=head, CI `checks` 성공, 스레드 없음, merge-tree 결과와 head의 차이가 main 기록 PR #136의 이 문서뿐, 남은 P3 없음)을 직접 본 뒤 병합했다(03:28Z, `4caa224`). 마이그레이션 0014 SQL(DROP INDEX 8개)과 `route.ts`·`hotel-repository.ts`의 건너뛰기 조건을 읽었다. C04는 브랜치를 `4caa224`에서 다시 시작해 P04 PR #138을 열었다. 「C04」 절을 누가 고칠지 두 메시지가 두 번 엇갈려, 상위 세션 기록 PR이 쓰고 #138은 인계 문서를 바꾸지 않기로 정했다(03:3xZ). 배포 run 39093721785(03:28–03:38Z)가 성공했다: 운영 D1에 0014 적용, Worker `4c83684d`, 스냅숏 `2a2f4d71a3a43c22`, smoke 통과(`deployments.md`). 이 뒤의 첫 수집 실행부터가 C04의 쪽당 쓰기 실측 대상이다.
+- 10-18T03:2xZ–03:3xZ C04 PR #137을 병합 조건(Codex 1회 ‘큰 문제 없음’ `183771d`=head, CI `checks` 성공, 스레드 없음, merge-tree 결과와 head의 차이가 main 기록 PR #136의 이 문서뿐, 남은 P3 없음)을 직접 본 뒤 병합했다(03:28Z, `4caa224`). 마이그레이션 0014 SQL(DROP INDEX 8개)과 `route.ts`·`hotel-repository.ts`의 건너뛰기 조건을 읽었다. C04는 브랜치를 `4caa224`에서 다시 시작해 P04 PR #138을 열었다. 「C04」 절을 누가 고칠지 두 메시지가 두 번 엇갈려, 상위 세션 기록 PR이 쓰고 #138은 인계 문서를 바꾸지 않기로 정했다(03:3xZ). 배포 run 39093721785(03:28–03:38Z)가 성공했다: 운영 D1에 0014 적용, Worker `4c83684d`, 스냅숏 `2a2f4d71a3a43c22`, smoke 통과(`deployments.md`). 이 뒤의 첫 수집 실행부터가 C04의 쪽당 쓰기 실측 대상이다. #138 검토 요청(03:42Z)에 Codex가 사용량 한도 안내만 남겨(03:43Z, 회복 시각 없음), 이 PR을 구현하지 않은 Claude 검토 세션 `session_01Cz7adKH5EFnx3nKicEkhkh`를 열었다(03:44Z). 한도 안내만 받은 요청은 검토 횟수에 세지 않는다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
@@ -166,5 +167,5 @@
 
 - 원인(10-18T02:4xZ): 쓰기 행은 표의 행에 색인마다 1행이 더해진다. 10-17 하루 쓰기의 대부분은 Jalan 목록 쪽(679쪽 가운데 165쪽)이 새 숙소와 새 상세 작업을 넣는 쓰기였다(새 숙소 한 곳 약 19.6행, 상세 쪽 21행). 쪽당 평균이 날마다 는 것은 목록 쪽 비중과 쪽마다 새로 넣는 숙소 수 때문으로 본다.
 - C04 PR #137(10-18T03:28Z 상위 세션이 병합, `4caa224`, Codex 1회 지적 없음, 남은 P3 없음): 마이그레이션 0014로 쓰지 않는 색인 8개를 지우고, 저장 PUT에서 값이 그대로인 갱신 세 곳을 건너뛴다. 임시 D1에서 상세 쪽 21 → 11행, 새 숙소 30곳 목록 쪽 598 → 348행. 수정 전 빌드와 응답·저장 행·스냅숏이 같음을 `compare-write-builds.mjs`로 보였다. `cloud-check.py --full` 통과(10-18T03:11Z). `writesPerPage`(151)는 바꾸지 않았다.
-- P04 PR #138(10-18T03:3xZ 열림, 검토 전): 스냅숏 생성이 `crawl_jobs`를 한 번 묶어 읽고, 상태 행을 쪽마다 id 범위로 읽고, 숙소 수·품질 집계를 숙소 훑기에서 센다. C04 세션이 운영 규모 임시 D1에서 잰 읽기는 304,186 → 134,489행이고, 스냅숏 파일 7개가 바이트까지 같다(`compare-snapshot-builds.mjs`). 바뀐 숙소만 다시 읽는 방식은 쓰기가 다시 늘어 하지 않는다. `snapshotReads`(330,000)·마이그레이션·수집 경로는 바꾸지 않는다.
+- P04 PR #138(10-18T03:3xZ 열림, Codex 한도로 Claude 검토 세션 `session_01Cz7adKH5EFnx3nKicEkhkh`가 검토 중): 스냅숏 생성이 `crawl_jobs`를 한 번 묶어 읽고, 상태 행을 쪽마다 id 범위로 읽고, 숙소 수·품질 집계를 숙소 훑기에서 센다. C04 세션이 운영 규모 임시 D1에서 잰 읽기는 304,186 → 134,489행이고, 스냅숏 파일 7개가 바이트까지 같다(`compare-snapshot-builds.mjs`). 바뀐 숙소만 다시 읽는 방식은 쓰기가 다시 늘어 하지 않는다. `snapshotReads`(330,000)·마이그레이션·수집 경로는 바꾸지 않는다.
 - 다음: #138 검토·병합. 그 뒤 #137·#138 배포 다음의 첫 수집 실행들(Actions 로그의 `today … written, … read`)로 쪽당 쓰기와 스냅숏 읽기를 재서 `writesPerPage`·`snapshotReads`와 `check-collection-budget.mjs` 훑기의 기준값을 내리는 PR(10-17 쪽 구성으로 어림하면 쪽당 66.2–72.7행). 이 절은 상위 세션 기록 PR이 고치고, C04 세션은 `C04-20261019.md`만 고친다(10-18T03:3xZ 정함).
