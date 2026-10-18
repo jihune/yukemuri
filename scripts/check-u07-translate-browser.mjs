@@ -89,6 +89,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   const c=await context({brand:'Google Chrome',availability:mobile?'unavailable':'reject',fail:0}),page=await c.newPage();
   const d=await open(page,foreign.id);
   const r={note:await d.locator('.translate-note').textContent().catch(()=>null),buttons:await d.locator('.translate-button').count(),log:await page.evaluate(()=>window.__u07)};
+  if(shots)await d.screenshot({path:join(shots,`translate-unavailable-${w}.png`)});
   check(`Chrome이 언어 쌍을 못 하면(${mobile?'unavailable':'availability() 거절'}) 단추 없이 ‘이 브라우저에서는 이 설명을 번역할 수 없습니다’(Chrome·Edge로 보내지 않음)`,/이 설명을 번역할 수 없습니다/.test(r.note??'')&&!/Chrome·Edge에서는/.test(r.note??'')&&r.buttons===0&&r.log.availability===1&&r.log.pair==='ja>ko',r);
   await c.close();
  }
@@ -101,6 +102,7 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   // A page without the button (a build from before U07) fails here and goes on, as a control.
   if(!await button.count()){check(`${brand}: 번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음`,false,{buttons:0});await c.close();continue}
   const box=await button.boundingBox(),label=await button.textContent(),flashed=await page.evaluate(()=>window.__u07.sawUnsupported),readyNote=await d.locator('.translate-note').first().textContent().catch(()=>null);
+  if(shots)await d.screenshot({path:join(shots,`translate-ready-${w}.png`)});
   // The first press fails (the stand-in's network error), the second works.
   // The phone taps; the wide screen presses Enter on the focused button (a keyboard user's path).
   const press=async()=>{if(mobile)await button.tap();else{await button.focus();await page.keyboard.press('Enter')}};
