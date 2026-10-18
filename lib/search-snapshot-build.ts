@@ -143,7 +143,8 @@ export async function buildSearchSnapshot(now:Date){
    const located=r.lat!==null&&r.lng!==null;
    geo.grade.push(located?raw.location.isApproximate?GEO_GRADE.city:GEO_GRADE.source:GEO_GRADE.none);geo.lat.push(located?r.lat:null);geo.lng.push(located?r.lng:null);
    geocodeInputs.push(located?null:geocodeInput(place));
-   cards.push(hotelSummary(h));
+   const item=h===hotels[i]?null:h.sources.find(s=>s.sourceId==='wikidata-name:'+h.id)!.url!.split('/').pop()!;
+   cards.push(item?{...hotelSummary(h),wikidataNames:{item,was:Object.fromEntries((['ko','en'] as const).filter(k=>h.names[k]!==hotels[i].names[k]).map(k=>[k,hotels[i].names[k]]))}}:hotelSummary(h));
    add(r.id,raw,h,r.bath_known);
    if(r.prefecture!==null)prefectures.add(r.prefecture);
    quality.records++;if(raw.sources[0]?.label?.includes('상세'))quality.detailRecords++;if((r.bath_known??0)&BATH_FEATURE_MASK)quality.bathKnownRecords++;

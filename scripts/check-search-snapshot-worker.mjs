@@ -92,7 +92,7 @@ try{
  for(const r of (await db.prepare("SELECT id,json_extract(payload,'$.names') AS names FROM hotels").all()).results){
   const names=JSON.parse(r.names),w=withWikidataNames({id:r.id,names,aliases:[],sources:[]}).names,item=items.get(r.id);
   const ko=w.ko!==names.ko?w.ko:null,en=w.en!==names.en?w.en:null;
-  if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean),shown:w});
+  if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean),shown:w,was:{...(ko?{ko:names.ko}:{}),...(en?{en:names.en}:{})}});
  }
  assert([...added.values()].some(a=>a.ko),'the seed reaches a Trip.com hotel that gets a Wikidata Korean name');
  assert.deepEqual([added.get('trip-703896')?.ko,added.get('trip-703896')?.en],[null,'Narita Tobu Hotel Airport'],'and one that gets an English name only');
@@ -129,7 +129,8 @@ try{
  assert.equal(cards.length,rows.length);const workerHotels=new Map();
  for(let i=0;i<core.ids.length;i+=4){
   const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));
-  hotels.forEach((h,n)=>{assert.deepEqual(cards[i+n],summary(h),h.id);workerHotels.set(h.id,h)});
+  // A card the rule named also notes the item and the names the added ones replaced.
+  hotels.forEach((h,n)=>{const a=added.get(h.id);assert.deepEqual(cards[i+n],a?{...summary(h),wikidataNames:{item:a.item,was:a.was}}:summary(h),h.id);workerHotels.set(h.id,h)});
  }
  // The Worker's hotels carry the same Wikidata names, with the item among the sources; the
  // detail API too.
