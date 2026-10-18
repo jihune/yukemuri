@@ -2,7 +2,7 @@
  "snapshot": "2004e2cb8ddb5a06",
  "generatedAt": "2026-10-18T05:42:25.944Z",
  "hotels": 23429,
- "checkedAt": "2026-10-18T06:23:01.251Z",
+ "checkedAt": "2026-10-18T06:54:01.922Z",
  "koreanTitles": {
   "before": 1543,
   "after": 1565
@@ -15,6 +15,7 @@
   {
    "id": "trip-1426722",
    "item": "Q111406723",
+   "state": "adds",
    "before": {
     "ko": "The Prince Sakura Tower Tokyo, Autograph Collection",
     "ja": "The Prince Sakura Tower Tokyo, Autograph Collection",
@@ -31,6 +32,7 @@
   {
    "id": "trip-1454519",
    "item": "Q111406745",
+   "state": "adds",
    "before": {
     "ko": "Daiwa Roynet Hotel Yokohama-Koen",
     "ja": "Daiwa Roynet Hotel Yokohama-Koen",
@@ -47,6 +49,7 @@
   {
    "id": "trip-1489108",
    "item": "Q11337901",
+   "state": "adds",
    "before": {
     "ko": "Hotel Metropolitan Tokyo Ikebukuro",
     "ja": "Hotel Metropolitan Tokyo Ikebukuro",
@@ -63,6 +66,7 @@
   {
    "id": "trip-22678179",
    "item": "Q112009337",
+   "state": "adds",
    "before": {
     "ko": "호텔 블로에멘 노스 하나조노(Hotel Bloemen North Hanazono)",
     "ja": "호텔 블로에멘 노스 하나조노(Hotel Bloemen North Hanazono)",
@@ -79,6 +83,7 @@
   {
    "id": "trip-50999069",
    "item": "Q112008946",
+   "state": "adds",
    "before": {
     "ko": "Mesm Tokyo, Autograph Collection",
     "ja": "Mesm Tokyo, Autograph Collection",
@@ -95,6 +100,7 @@
   {
    "id": "trip-52320512",
    "item": "Q112008954",
+   "state": "adds",
    "before": {
     "ko": "Mitsui Garden Hotel Toyosu Premier / Tokyo",
     "ja": "Mitsui Garden Hotel Toyosu Premier / Tokyo",
@@ -111,6 +117,7 @@
   {
    "id": "trip-686316",
    "item": "Q11524193",
+   "state": "adds",
    "before": {
     "ko": "The Tokyo Station Hotel",
     "ja": "The Tokyo Station Hotel",
@@ -127,6 +134,7 @@
   {
    "id": "trip-686539",
    "item": "Q111406698",
+   "state": "adds",
    "before": {
     "ko": "THE GATE HOTEL KAMINARIMON by HULIC",
     "ja": "THE GATE HOTEL KAMINARIMON by HULIC",
@@ -143,6 +151,7 @@
   {
    "id": "trip-688249",
    "item": "Q11314630",
+   "state": "adds",
    "before": {
     "ko": "Hotel the Celestine Tokyo Shiba",
     "ja": "Hotel the Celestine Tokyo Shiba",
@@ -159,6 +168,7 @@
   {
    "id": "trip-688271",
    "item": "Q11524379",
+   "state": "adds",
    "before": {
     "ko": "Tokyo Prince Hotel",
     "ja": "Tokyo Prince Hotel",
@@ -175,6 +185,7 @@
   {
    "id": "trip-688422",
    "item": "Q11337903",
+   "state": "adds",
    "before": {
     "ko": "Hotel Metropolitan Edmont Tokyo",
     "ja": "Hotel Metropolitan Edmont Tokyo",
@@ -191,6 +202,7 @@
   {
    "id": "trip-688621",
    "item": "Q58161897",
+   "state": "adds",
    "before": {
     "ko": "The Prince Park Tower Tokyo - Preferred Hotels & Resorts, LVX Collection",
     "ja": "The Prince Park Tower Tokyo - Preferred Hotels & Resorts, LVX Collection",
@@ -207,6 +219,7 @@
   {
    "id": "trip-704012",
    "item": "Q111406738",
+   "state": "adds",
    "before": {
     "ko": "The Yokohama Bay Hotel Tokyu",
     "ja": "The Yokohama Bay Hotel Tokyu",
@@ -223,6 +236,7 @@
   {
    "id": "trip-704030",
    "item": "Q3530524",
+   "state": "adds",
    "before": {
     "ko": "Tokyo Dome Hotel",
     "ja": "Tokyo Dome Hotel",
@@ -239,6 +253,7 @@
   {
    "id": "trip-759807",
    "item": "Q3224503",
+   "state": "adds",
    "before": {
     "ko": "Grand Nikko Tokyo Daiba",
     "ja": "Grand Nikko Tokyo Daiba",
@@ -255,6 +270,7 @@
   {
    "id": "trip-926340",
    "item": "Q11330335",
+   "state": "adds",
    "before": {
     "ko": "Hilton Tokyo Bay",
     "ja": "Hilton Tokyo Bay",
@@ -271,6 +287,7 @@
   {
    "id": "trip-993483",
    "item": "Q11502616",
+   "state": "adds",
    "before": {
     "ko": "Shin Yokohama Prince Hotel",
     "ja": "Shin Yokohama Prince Hotel",
@@ -287,6 +304,7 @@
   {
    "id": "trip-993510",
    "item": "Q712476",
+   "state": "adds",
    "before": {
     "ko": "Imperial Hotel, Tokyo",
     "ja": "Imperial Hotel, Tokyo",
@@ -303,6 +321,7 @@
   {
    "id": "trip-994533",
    "item": "Q11337870",
+   "state": "adds",
    "before": {
     "ko": "Sotetsu Grand Fresa Tokyo-Bay Ariake",
     "ja": "Sotetsu Grand Fresa Tokyo-Bay Ariake",
@@ -319,6 +338,7 @@
   {
    "id": "trip-994617",
    "item": "Q3143638",
+   "state": "adds",
    "before": {
     "ko": "Hyatt Regency Tokyo",
     "ja": "Hyatt Regency Tokyo",
@@ -335,6 +355,7 @@
   {
    "id": "trip-994639",
    "item": "Q6383787",
+   "state": "adds",
    "before": {
     "ko": "Keio Plaza Hotel Tokyo",
     "ja": "Keio Plaza Hotel Tokyo",
@@ -351,6 +372,7 @@
   {
    "id": "trip-994895",
    "item": "Q3482163",
+   "state": "adds",
    "before": {
     "ko": "Shinagawa Prince Hotel",
     "ja": "Shinagawa Prince Hotel",
@@ -367,6 +389,7 @@
   {
    "id": "trip-994914",
    "item": "Q3482258",
+   "state": "adds",
    "before": {
     "ko": "Shinjuku Washington Hotel",
     "ja": "Shinjuku Washington Hotel",
@@ -379,6 +402,2313 @@
    "distance": null,
    "named": true,
    "suspicious": false
+  },
+  {
+   "id": "trip-10546798",
+   "item": "Q112009226",
+   "state": "shows",
+   "before": {
+    "ko": "더 그랜드웨스트 아라시야마",
+    "ja": "ザ グランドウエスト嵐山",
+    "en": "The GrandWest Arashiyama"
+   },
+   "ko": null,
+   "en": "The GrandWest Arashiyama",
+   "labelEn": "The GrandWest Arashiyama",
+   "grade": 1,
+   "distance": 10,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1060942",
+   "item": "Q111406801",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 케이한 교바시 그랜드",
+    "ja": "ホテル京阪 京橋 グランデ",
+    "en": "Hotel Keihan Kyobashi Grande"
+   },
+   "ko": null,
+   "en": "Hotel Keihan Kyobashi Grande",
+   "labelEn": "Hotel Keihan Kyobashi Grande",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-10933133",
+   "item": "Q111866489",
+   "state": "shows",
+   "before": {
+    "ko": "이비스 버짓 오사카 우메다",
+    "ja": "イビス バジェット 大阪 梅田",
+    "en": "Ibis Budget Osaka Umeda"
+   },
+   "ko": null,
+   "en": "Ibis Budget Osaka Umeda",
+   "labelEn": "Ibis Budget Osaka Umeda",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-11152564",
+   "item": "Q112009150",
+   "state": "shows",
+   "before": {
+    "ko": "사카 호텔 교토",
+    "ja": "清水小路 坂のホテル京都",
+    "en": "Saka Hotel Kyoto"
+   },
+   "ko": null,
+   "en": "Saka Hotel Kyoto",
+   "labelEn": "Saka Hotel Kyoto",
+   "grade": 1,
+   "distance": 7,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-12591944",
+   "item": "Q111866824",
+   "state": "shows",
+   "before": {
+    "ko": "스마일 호텔 프리미엄 삿포로 스스키노",
+    "ja": "スマイルホテルプレミアム札幌すすきの",
+    "en": "Smile Hotel Premium Sapporo Susukino"
+   },
+   "ko": null,
+   "en": "Smile Hotel Premium Sapporo Susukino",
+   "labelEn": "Smile Hotel Premium Sapporo Susukino",
+   "grade": 1,
+   "distance": 6,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-12663342",
+   "item": "Q112008894",
+   "state": "shows",
+   "before": {
+    "ko": "소테츠 프레사 인 도쿄 간다",
+    "ja": "相鉄フレッサイン 東京神田",
+    "en": "Sotetsu Fresa Inn Tokyo Kanda"
+   },
+   "ko": null,
+   "en": "Sotetsu Fresa Inn Tokyo Kanda",
+   "labelEn": "Sotetsu Fresa Inn Tokyo Kanda",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-12829051",
+   "item": "Q111866826",
+   "state": "shows",
+   "before": {
+    "ko": "토큐 스테이 삿포로",
+    "ja": "東急ステイ札幌",
+    "en": "Tokyu Stay Sapporo"
+   },
+   "ko": null,
+   "en": "Tokyu Stay Sapporo",
+   "labelEn": "Tokyu Stay Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-12870233",
+   "item": "Q11495603",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 마이스테이스 프리미어 나리타",
+    "ja": "ホテルマイステイズプレミア成田",
+    "en": "HOTEL MYSTAYS Premier Narita"
+   },
+   "ko": "호텔 마이스테이스 프리미어 나리타",
+   "en": null,
+   "labelEn": "Hotel Mystays Premier Narita",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1331005",
+   "item": "Q111406669",
+   "state": "shows",
+   "before": {
+    "ko": "센고쿠하라 시나노키 이치노유",
+    "ja": "仙石原品の木一の湯",
+    "en": "Sengokuhara Shinanoki Ichinoyu"
+   },
+   "ko": null,
+   "en": "Sengokuhara Shinanoki Ichinoyu",
+   "labelEn": "Sengokuhara Shinanoki Ichinoyu",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-13873050",
+   "item": "Q112008571",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 하카타 나카스 인",
+    "ja": "HOTEL博多中洲ＩＮＮ",
+    "en": "Hotel Hakata Nakasu Inn"
+   },
+   "ko": null,
+   "en": "Hotel Hakata Nakasu Inn",
+   "labelEn": "Hotel Hakata Nakasu Inn",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1437724",
+   "item": "Q111406776",
+   "state": "shows",
+   "before": {
+    "ko": "미츠이 가든 호텔 교토 시조",
+    "ja": "三井ガーデンホテル京都四条",
+    "en": "Mitsui Garden Hotel Kyoto Shijo"
+   },
+   "ko": null,
+   "en": "Mitsui Garden Hotel Kyoto Shijo",
+   "labelEn": "Mitsui Garden Hotel Kyoto Shijo",
+   "grade": 1,
+   "distance": 7,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1458350",
+   "item": "Q11598439",
+   "state": "shows",
+   "before": {
+    "ko": "쇼게츠 그랜드 호텔",
+    "ja": "章月グランドホテル",
+    "en": "Shogetsu Grand Hotel"
+   },
+   "ko": null,
+   "en": "Shogetsu Grand Hotel",
+   "labelEn": "Shogetsu Grand Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1465318",
+   "item": "Q5363534",
+   "state": "shows",
+   "before": {
+    "ko": "고베 메리켄 파크 오리엔탈 호텔",
+    "ja": "神戸メリケンパークオリエンタルホテル",
+    "en": "Kobe Meriken Park Oriental Hotel"
+   },
+   "ko": "고베 메리켄 파크 오리엔탈 호텔",
+   "en": "Kobe Meriken Park Oriental Hotel",
+   "labelEn": "Kobe Meriken Park Oriental Hotel",
+   "grade": 1,
+   "distance": 81,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1483139",
+   "item": "Q111866811",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 레솔 삿포로 나카지마 코엔",
+    "ja": "ホテルリソル札幌 中島公園",
+    "en": "Hotel Resol Sapporo Nakajima Koen"
+   },
+   "ko": null,
+   "en": "Hotel Resol Sapporo Nakajima Koen",
+   "labelEn": "Hotel Resol Sapporo Nakajima Koen",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1483550",
+   "item": "Q111865637",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 마리노아 리조트 후쿠오카",
+    "ja": "ホテルマリノアリゾート福岡",
+    "en": "Hotel Marinoa Resort Fukuoka"
+   },
+   "ko": null,
+   "en": "Hotel Marinoa Resort Fukuoka",
+   "labelEn": "Hotel Marinoa Resort Fukuoka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1489160",
+   "item": "Q111866549",
+   "state": "shows",
+   "before": {
+    "ko": "네기야 료후카쿠",
+    "ja": "ねぎや 陵楓閣",
+    "en": "Negiya Ryofukaku"
+   },
+   "ko": null,
+   "en": "Negiya Ryofukaku",
+   "labelEn": "Negiya Ryofukaku",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-15790719",
+   "item": "Q111866353",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 레졸 교토 가와라마치 산조",
+    "ja": "ホテルリソル京都河原町三条",
+    "en": "Hotel Resol Kyoto Kawaramachi Sanjo"
+   },
+   "ko": null,
+   "en": "Hotel Resol Kyoto Kawaramachi Sanjo",
+   "labelEn": "Hotel Resol Kyoto Kawaramachi Sanjo",
+   "grade": 1,
+   "distance": 17,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-15839702",
+   "item": "Q112009338",
+   "state": "shows",
+   "before": {
+    "ko": "반데 호텔 오사카",
+    "ja": "バンデホテル大阪",
+    "en": "Bande Hotel Osaka"
+   },
+   "ko": null,
+   "en": "Bande Hotel Osaka",
+   "labelEn": "Bande Hotel Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-15907875",
+   "item": "Q112008807",
+   "state": "shows",
+   "before": {
+    "ko": "쿠레타케 인 나고야 히사야오도리",
+    "ja": "くれたけイン 名古屋久屋大通",
+    "en": "Kuretake Inn Nagoya Hisayaodori"
+   },
+   "ko": null,
+   "en": "Kuretake Inn Nagoya Hisayaodori",
+   "labelEn": "Kuretake Inn Nagoya Hisayaodori",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1635497",
+   "item": "Q111406684",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 그린 플라자 하코네",
+    "ja": "ホテルグリーンプラザ箱根",
+    "en": "Hotel Green Plaza Hakone"
+   },
+   "ko": null,
+   "en": "Hotel Green Plaza Hakone",
+   "labelEn": "Hotel Green Plaza Hakone",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1635606",
+   "item": "Q111866165",
+   "state": "shows",
+   "before": {
+    "ko": "요시이케 료칸",
+    "ja": "箱根湯本温泉　吉池旅館",
+    "en": "Yoshiike Ryokan"
+   },
+   "ko": null,
+   "en": "Yoshiike Ryokan",
+   "labelEn": "Yoshiike Ryokan",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1646544",
+   "item": "Q111866154",
+   "state": "shows",
+   "before": {
+    "ko": "류구덴",
+    "ja": "芦ノ湖畔 蛸川温泉 龍宮殿別館",
+    "en": "Ryuguden"
+   },
+   "ko": null,
+   "en": "Ryuguden",
+   "labelEn": "Ryuguden",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1678519",
+   "item": "Q111866501",
+   "state": "shows",
+   "before": {
+    "ko": "KKR 호텔 오사카",
+    "ja": "KKRホテル 大阪",
+    "en": "KKR Hotel Osaka"
+   },
+   "ko": null,
+   "en": "KKR Hotel Osaka",
+   "labelEn": "KKR Hotel Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1679115",
+   "item": "Q17214571",
+   "state": "shows",
+   "before": {
+    "ko": "프리미어 호텔 -츠바키- 삿포로",
+    "ja": "プレミアホテル -TSUBAKI- 札幌",
+    "en": "Premier Hotel -Tsubaki- Sapporo"
+   },
+   "ko": null,
+   "en": "Premier Hotel -Tsubaki- Sapporo",
+   "labelEn": "Premier Hotel -Tsubaki- Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1679165",
+   "item": "Q111866345",
+   "state": "shows",
+   "before": {
+    "ko": "교토 가든 팰리스",
+    "ja": "京都ガーデンパレス",
+    "en": "Kyoto Garden Palace"
+   },
+   "ko": null,
+   "en": "Kyoto Garden Palace",
+   "labelEn": "Kyoto Garden Palace",
+   "grade": 1,
+   "distance": 35,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-1836788",
+   "item": "Q11287461",
+   "state": "shows",
+   "before": {
+    "ko": "인터컨티넨탈 오사카 바이 IHG",
+    "ja": "インターコンチネンタルホテル大阪",
+    "en": "InterContinental Osaka"
+   },
+   "ko": null,
+   "en": "InterContinental Osaka",
+   "labelEn": "InterContinental Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2107894",
+   "item": "Q11330333",
+   "state": "shows",
+   "before": {
+    "ko": "힐튼 도쿄 나리타 에어포트",
+    "ja": "ヒルトン成田",
+    "en": "Hilton Tokyo Narita Airport"
+   },
+   "ko": "힐튼 도쿄 나리타 에어포트",
+   "en": "Hilton Tokyo Narita Airport",
+   "labelEn": "Hilton Tokyo Narita Airport",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2113114",
+   "item": "Q111406892",
+   "state": "shows",
+   "before": {
+    "ko": "이비스 스타일 삿포로",
+    "ja": "イビス スタイルズ 札幌",
+    "en": "Ibis Styles Sapporo"
+   },
+   "ko": null,
+   "en": "Ibis Styles Sapporo",
+   "labelEn": "Ibis Styles Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-21133708",
+   "item": "Q112009494",
+   "state": "shows",
+   "before": {
+    "ko": "도큐스테이 삿포로 오도오리",
+    "ja": "東急ステイ札幌大通",
+    "en": "Tokyu Stay Sapporo Odori"
+   },
+   "ko": null,
+   "en": "Tokyu Stay Sapporo Odori",
+   "labelEn": "Tokyu Stay Sapporo Odori",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-21369036",
+   "item": "Q111406825",
+   "state": "shows",
+   "before": {
+    "ko": "소테츠 프레사 인 오사카 신사이바시",
+    "ja": "相鉄フレッサイン大阪心斎橋",
+    "en": "Sotetsu Fresa Inn Osaka-Shinsaibashi"
+   },
+   "ko": null,
+   "en": "Sotetsu Fresa Inn Osaka-Shinsaibashi",
+   "labelEn": "Sotetsu Fresa Inn Osaka-Shinsaibashi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2196109",
+   "item": "Q111406642",
+   "state": "shows",
+   "before": {
+    "ko": "슈호카쿠 고게츠",
+    "ja": "秀峰閣 湖月",
+    "en": "Shuhokaku Kogetsu"
+   },
+   "ko": null,
+   "en": "Shuhokaku Kogetsu",
+   "labelEn": "Shuhokaku Kogetsu",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2196828",
+   "item": "Q11189375",
+   "state": "shows",
+   "before": {
+    "ko": "ANA 크라운 플라자 호텔 그랜드 코트 나고야",
+    "ja": "ANAクラウンプラザホテルグランコート名古屋 by IHG",
+    "en": "ANA Crowne Plaza Hotel Grand Court Nagoya by IHG"
+   },
+   "ko": "ANA 크라운 플라자 호텔 그랜드 코트 나고야",
+   "en": null,
+   "labelEn": "ANA Crowne Plaza Grand Court Nagoya",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2199655",
+   "item": "Q111866716",
+   "state": "shows",
+   "before": {
+    "ko": "슈퍼 모텔 하코다테",
+    "ja": "スーパーホテル函館",
+    "en": "Super Hotel Hakodate"
+   },
+   "ko": null,
+   "en": "Super Hotel Hakodate",
+   "labelEn": "Super Hotel Hakodate",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2200346",
+   "item": "Q112008955",
+   "state": "shows",
+   "before": {
+    "ko": "유신테이",
+    "ja": "遊心亭",
+    "en": "Yushintei"
+   },
+   "ko": null,
+   "en": "Yushintei",
+   "labelEn": "Yushintei",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-22421912",
+   "item": "Q111866572",
+   "state": "shows",
+   "before": {
+    "ko": "고베 루미너스 호텔 산노미야",
+    "ja": "神戸ルミナスホテル三宮",
+    "en": "Kobe Luminous Hotel Sannomiya"
+   },
+   "ko": null,
+   "en": "Kobe Luminous Hotel Sannomiya",
+   "labelEn": "Kobe Luminous Hotel Sannomiya",
+   "grade": 1,
+   "distance": 0,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2495183",
+   "item": "Q22118207",
+   "state": "shows",
+   "before": {
+    "ko": "오다큐 호텔 데 야마",
+    "ja": "小田急 山のホテル",
+    "en": "Odakyu Hotel de Yama"
+   },
+   "ko": null,
+   "en": "Odakyu Hotel de Yama",
+   "labelEn": "Odakyu Hotel de Yama",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-25098057",
+   "item": "Q111865600",
+   "state": "shows",
+   "before": {
+    "ko": "오리엔탈 호텔 후쿠오카 하카타 스테이션",
+    "ja": "オリエンタルホテル福岡 博多ステーション",
+    "en": "Oriental Hotel Fukuoka Hakata Station"
+   },
+   "ko": null,
+   "en": "Oriental Hotel Fukuoka Hakata Station",
+   "labelEn": "Oriental Hotel Fukuoka Hakata Station",
+   "grade": 1,
+   "distance": 18,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-25098077",
+   "item": "Q111866503",
+   "state": "shows",
+   "before": {
+    "ko": "베스트 웨스턴 플러스 호텔 피노 오사카 기타하마",
+    "ja": "ベストウェスタンプラス ホテルフィーノ大阪北浜",
+    "en": "Best Western Plus Hotel Fino Osaka Kitahama"
+   },
+   "ko": null,
+   "en": "Best Western Plus Hotel Fino Osaka Kitahama",
+   "labelEn": "Best Western Plus Hotel Fino Osaka Kitahama",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2511953",
+   "item": "Q111866203",
+   "state": "shows",
+   "before": {
+    "ko": "다이와 로이넷 호텔 누마즈",
+    "ja": "ダイワロイネットホテルぬまづ",
+    "en": "Daiwa Roynet Hotel Numazu"
+   },
+   "ko": null,
+   "en": "Daiwa Roynet Hotel Numazu",
+   "labelEn": "Daiwa Roynet Hotel Numazu",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-25195212",
+   "item": "Q111865952",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 잘 시티 나고야 니시키",
+    "ja": "ホテルJALシティ名古屋 錦",
+    "en": "Hotel JAL City Nagoya Nishiki"
+   },
+   "ko": null,
+   "en": "Hotel JAL City Nagoya Nishiki",
+   "labelEn": "Hotel JAL City Nagoya Nishiki",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2612287",
+   "item": "Q28684512",
+   "state": "shows",
+   "before": {
+    "ko": "하얏트 리젠시 나하 오키나와",
+    "ja": "ハイアット リージェンシー 那覇 沖縄",
+    "en": "Hyatt Regency Naha, Okinawa"
+   },
+   "ko": "하얏트 리젠시 나하 오키나와",
+   "en": null,
+   "labelEn": "Hyatt Regency Naha Okinawa",
+   "grade": 1,
+   "distance": 12,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2652964",
+   "item": "Q111865775",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 로코 인 오키나와",
+    "ja": "ホテルロコイン沖縄",
+    "en": "Hotel Roco Inn Okinawa"
+   },
+   "ko": null,
+   "en": "Hotel Roco Inn Okinawa",
+   "labelEn": "Hotel Roco Inn Okinawa",
+   "grade": 1,
+   "distance": 1,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2803775",
+   "item": "Q21654147",
+   "state": "shows",
+   "before": {
+    "ko": "더 파크 프런트 호텔 앳 유니버설 스튜디오 재팬",
+    "ja": "ザ パークフロントホテル アット ユニバーサル・スタジオ・ジャパン",
+    "en": "The Park Front Hotel at Universal Studios Japan"
+   },
+   "ko": "더 파크 프런트 호텔 앳 유니버설 스튜디오 재팬",
+   "en": "The Park Front Hotel at Universal Studios Japan",
+   "labelEn": "The Park Front Hotel at Universal Studios Japan",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-2804070",
+   "item": "Q111406846",
+   "state": "shows",
+   "before": {
+    "ko": "시사이드 호텔 마이코 빌라 고베",
+    "ja": "シーサイドホテル舞子ビラ神戸",
+    "en": "Seaside Hotel Maiko Villa Kobe"
+   },
+   "ko": null,
+   "en": "Seaside Hotel Maiko Villa Kobe",
+   "labelEn": "Seaside Hotel Maiko Villa Kobe",
+   "grade": 1,
+   "distance": 15,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-28828458",
+   "item": "Q112009144",
+   "state": "shows",
+   "before": {
+    "ko": "모가나",
+    "ja": "モガナ",
+    "en": "Mogana"
+   },
+   "ko": null,
+   "en": "Mogana",
+   "labelEn": "Mogana",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-3139473",
+   "item": "Q111866724",
+   "state": "shows",
+   "before": {
+    "ko": "료칸 이치노마츠",
+    "ja": "純和風旅館一乃松",
+    "en": "Ryokan Ichinomatsu"
+   },
+   "ko": null,
+   "en": "Ryokan Ichinomatsu",
+   "labelEn": "Ryokan Ichinomatsu",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-35953012",
+   "item": "Q112008685",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 컬렉티브",
+    "ja": "ホテル コレクティブ",
+    "en": "Hotel Collective"
+   },
+   "ko": null,
+   "en": "Hotel Collective",
+   "labelEn": "Hotel Collective",
+   "grade": 1,
+   "distance": 6,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-3645542",
+   "item": "Q112008690",
+   "state": "shows",
+   "before": {
+    "ko": "르와지르 스파 타워 나하",
+    "ja": "ロワジール スパタワー 那覇",
+    "en": "Loisir Spa Tower Naha"
+   },
+   "ko": null,
+   "en": "Loisir Spa Tower Naha",
+   "labelEn": "Loisir Spa Tower Naha",
+   "grade": 1,
+   "distance": 113,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-42344626",
+   "item": "Q112008818",
+   "state": "shows",
+   "before": {
+    "ko": "컴포트 호텔 나고야 신칸센구치",
+    "ja": "コンフォートホテル名古屋新幹線口",
+    "en": "Comfort Hotel Nagoya Shinkansenguchi"
+   },
+   "ko": null,
+   "en": "Comfort Hotel Nagoya Shinkansenguchi",
+   "labelEn": "Comfort Hotel Nagoya Shinkansenguchi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-4396882",
+   "item": "Q111662081",
+   "state": "shows",
+   "before": {
+    "ko": "노쿠 교토",
+    "ja": "ノク京都",
+    "en": "Noku Kyoto"
+   },
+   "ko": null,
+   "en": "Noku Kyoto",
+   "labelEn": "Noku Kyoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-45987505",
+   "item": "Q112008688",
+   "state": "shows",
+   "before": {
+    "ko": "도큐 스테이 오키나와 나하",
+    "ja": "東急ステイ 沖縄那覇",
+    "en": "Tokyu Stay Okinawa Naha"
+   },
+   "ko": null,
+   "en": "Tokyu Stay Okinawa Naha",
+   "labelEn": "Tokyu Stay Okinawa Naha",
+   "grade": 1,
+   "distance": 20,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-4601938",
+   "item": "Q112009318",
+   "state": "shows",
+   "before": {
+    "ko": "더 월 호텔",
+    "ja": "ザ ウォールホテル",
+    "en": "The Wall Hotel"
+   },
+   "ko": null,
+   "en": "The Wall Hotel",
+   "labelEn": "The Wall Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-47758200",
+   "item": "Q11325964",
+   "state": "shows",
+   "before": {
+    "ko": "더 베이직스 후쿠오카",
+    "ja": "THE BASICS FUKUOKA ザ・ベーシックス福岡",
+    "en": "The Basics Fukuoka"
+   },
+   "ko": null,
+   "en": "The Basics Fukuoka",
+   "labelEn": "The Basics Fukuoka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-480887",
+   "item": "Q11337863",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 그란비아 오사카",
+    "ja": "ホテル グランヴィア大阪",
+    "en": "Hotel Granvia Osaka-Jr Hotel Group"
+   },
+   "ko": "호텔 그란비아 오사카",
+   "en": null,
+   "labelEn": "Hotel Granvia Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-48684259",
+   "item": "Q112009483",
+   "state": "shows",
+   "before": {
+    "ko": "포르톰 인터내셔널 홋카이도",
+    "ja": "ポルトム インターナショナル 北海道",
+    "en": "Portom International Hokkaido"
+   },
+   "ko": null,
+   "en": "Portom International Hokkaido",
+   "labelEn": "Portom International Hokkaido",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-4971052",
+   "item": "Q112009279",
+   "state": "shows",
+   "before": {
+    "ko": "사쿠라 가든 호텔",
+    "ja": "桜ガーデンホテル",
+    "en": "Sakura Garden Hotel"
+   },
+   "ko": null,
+   "en": "Sakura Garden Hotel",
+   "labelEn": "Sakura Garden Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-4977280",
+   "item": "Q111865887",
+   "state": "shows",
+   "before": {
+    "ko": "라 비스타 후지카와구치코",
+    "ja": "ラビスタ富士河口湖",
+    "en": "La Vista Fujikawaguchiko"
+   },
+   "ko": null,
+   "en": "La Vista Fujikawaguchiko",
+   "labelEn": "La Vista Fujikawaguchiko",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-52845134",
+   "item": "Q100253376",
+   "state": "shows",
+   "before": {
+    "ko": "우메코지 포텔 교토",
+    "ja": "梅小路ポテル京都",
+    "en": "Umekoji Potel Kyoto"
+   },
+   "ko": "우메코지 포텔 교토",
+   "en": "Umekoji Potel Kyoto",
+   "labelEn": "Umekoji Potel Kyoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-55210543",
+   "item": "Q112009350",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 몬토레 고베",
+    "ja": "ホテルモントレ神戸",
+    "en": "Hotel Monterey Kobe"
+   },
+   "ko": "호텔 몬토레 고베",
+   "en": "Hotel Monterey Kobe",
+   "labelEn": "Hotel Monterey Kobe",
+   "grade": 1,
+   "distance": 120,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-57039795",
+   "item": "Q112009287",
+   "state": "shows",
+   "before": {
+    "ko": "하얏트 하우스 카나자와",
+    "ja": "ハイアット ハウス 金沢",
+    "en": "Hyatt House Kanazawa"
+   },
+   "ko": "하얏트 하우스 카나자와",
+   "en": "Hyatt House Kanazawa",
+   "labelEn": "Hyatt House Kanazawa",
+   "grade": 1,
+   "distance": 10,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-57048188",
+   "item": "Q111865950",
+   "state": "shows",
+   "before": {
+    "ko": "닛코 스타일 나고야",
+    "ja": "ニッコースタイル名古屋",
+    "en": "Nikko Style Nagoya"
+   },
+   "ko": null,
+   "en": "Nikko Style Nagoya",
+   "labelEn": "Nikko Style Nagoya",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-58071089",
+   "item": "Q100253504",
+   "state": "shows",
+   "before": {
+    "ko": "에이스 호텔 교토",
+    "ja": "エースホテル 京都",
+    "en": "Ace Hotel Kyoto"
+   },
+   "ko": null,
+   "en": "Ace Hotel Kyoto",
+   "labelEn": "Ace Hotel Kyoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-5816633",
+   "item": "Q111406832",
+   "state": "shows",
+   "before": {
+    "ko": "더 브릿지 호텔 신사이바시",
+    "ja": "ブリッジホテル心斎橋",
+    "en": "The Bridge Hotel Shinsaibashi"
+   },
+   "ko": null,
+   "en": "The Bridge Hotel Shinsaibashi",
+   "labelEn": "The Bridge Hotel Shinsaibashi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-6345931",
+   "item": "Q111866329",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 메트로폴리탄 센다이 이스트",
+    "ja": "ホテルメトロポリタン仙台イースト",
+    "en": "Hotel Metropolitan Sendai East"
+   },
+   "ko": null,
+   "en": "Hotel Metropolitan Sendai East",
+   "labelEn": "Hotel Metropolitan Sendai East",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-6391237",
+   "item": "Q111406828",
+   "state": "shows",
+   "before": {
+    "ko": "신사이바시 그랜드 호텔 오사카",
+    "ja": "心斎橋グランドホテル大阪",
+    "en": "Shinsaibashi Grand Hotel Osaka"
+   },
+   "ko": null,
+   "en": "Shinsaibashi Grand Hotel Osaka",
+   "labelEn": "Shinsaibashi Grand Hotel Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-6509780",
+   "item": "Q111866597",
+   "state": "shows",
+   "before": {
+    "ko": "이즈미사노 센터 호텔",
+    "ja": "泉佐野センターホテル",
+    "en": "Izumisano Center Hotel Kansai International Airport"
+   },
+   "ko": null,
+   "en": "Izumisano Center Hotel Kansai International Airport",
+   "labelEn": "Izumisano Center Hotel Kansai International Airport",
+   "grade": 1,
+   "distance": 5,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-686460",
+   "item": "Q112009309",
+   "state": "shows",
+   "before": {
+    "ko": "요칸 쿠라모토",
+    "ja": "旅館くら本",
+    "en": "Osaka Ryokan Kuramoto"
+   },
+   "ko": null,
+   "en": "Osaka Ryokan Kuramoto",
+   "labelEn": "Osaka Ryokan Kuramoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-686519",
+   "item": "Q111406829",
+   "state": "shows",
+   "before": {
+    "ko": "다이와 로이넷 호텔 오사카 우에혼마치",
+    "ja": "ダイワロイネットホテル大阪上本町",
+    "en": "Daiwa Roynet Hotel Osaka-Uehonmachi"
+   },
+   "ko": null,
+   "en": "Daiwa Roynet Hotel Osaka-Uehonmachi",
+   "labelEn": "Daiwa Roynet Hotel Osaka-Uehonmachi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-68686982",
+   "item": "Q111865628",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 JAL 시티 후쿠오카 텐진",
+    "ja": "ホテルJALシティ福岡 天神",
+    "en": "Hotel JAL City Fukuoka Tenjin"
+   },
+   "ko": null,
+   "en": "Hotel JAL City Fukuoka Tenjin",
+   "labelEn": "Hotel JAL City Fukuoka Tenjin",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688138",
+   "item": "Q11288496",
+   "state": "shows",
+   "before": {
+    "ko": "더 웨스틴 오사카",
+    "ja": "ウェスティンホテル大阪",
+    "en": "The Westin Osaka"
+   },
+   "ko": "더 웨스틴 오사카",
+   "en": "The Westin Osaka",
+   "labelEn": "The Westin Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688186",
+   "item": "Q111406848",
+   "state": "shows",
+   "before": {
+    "ko": "간사이 공항 워싱턴 호텔",
+    "ja": "関西エアポートワシントンホテル",
+    "en": "Kansai Airport Washington Hotel"
+   },
+   "ko": null,
+   "en": "Kansai Airport Washington Hotel",
+   "labelEn": "Kansai Airport Washington Hotel",
+   "grade": 1,
+   "distance": 0,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688203",
+   "item": "Q111406809",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 플라자 오사카",
+    "ja": "ホテルプラザオーサカ",
+    "en": "Hotel Plaza Osaka"
+   },
+   "ko": null,
+   "en": "Hotel Plaza Osaka",
+   "labelEn": "Hotel Plaza Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688204",
+   "item": "Q111406835",
+   "state": "shows",
+   "before": {
+    "ko": "크로스 호텔 오사카",
+    "ja": "クロスホテル大阪",
+    "en": "Cross Hotel Osaka"
+   },
+   "ko": "크로스 호텔 오사카",
+   "en": "Cross Hotel Osaka",
+   "labelEn": "Cross Hotel Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688216",
+   "item": "Q111406838",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 몬토레 그라스미아 오사카",
+    "ja": "ホテルモントレ グラスミア大阪",
+    "en": "Hotel Monterey Grasmere Osaka"
+   },
+   "ko": null,
+   "en": "Hotel Monterey Grasmere Osaka",
+   "labelEn": "Hotel Monterey Grasmere Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688227",
+   "item": "Q11312020",
+   "state": "shows",
+   "before": {
+    "ko": "스타 게이트 호텔 간사이 에어포트",
+    "ja": "スターゲイトホテル関西エアポート",
+    "en": "Star Gate Hotel Kansai Airport"
+   },
+   "ko": null,
+   "en": "Star Gate Hotel Kansai Airport",
+   "labelEn": "Star Gate Hotel Kansai Airport",
+   "grade": 1,
+   "distance": 56,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688228",
+   "item": "Q111866598",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 가든 팰리스 앤드 간사이 에어포트 스파",
+    "ja": "関空温泉ホテルガーデンパレス",
+    "en": "Kansai Airport Spa Hotel Garden Palace"
+   },
+   "ko": null,
+   "en": "Kansai Airport Spa Hotel Garden Palace",
+   "labelEn": "Kansai Airport Spa Hotel Garden Palace",
+   "grade": 1,
+   "distance": 3,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-688230",
+   "item": "Q21654607",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 유니버설 포트",
+    "ja": "ホテル ユニバーサル ポート",
+    "en": "HOTEL UNIVERSAL PORT"
+   },
+   "ko": "호텔 유니버설 포트",
+   "en": null,
+   "labelEn": "Hotel Universal Port",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703352",
+   "item": "Q38333153",
+   "state": "shows",
+   "before": {
+    "ko": "하코다테 고쿠사이 호텔",
+    "ja": "函館国際ホテル",
+    "en": "Hakodate Kokusai Hotel"
+   },
+   "ko": null,
+   "en": "Hakodate Kokusai Hotel",
+   "labelEn": "Hakodate Kokusai Hotel",
+   "grade": 1,
+   "distance": 42,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703354",
+   "item": "Q111866714",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 레솔 하코다테",
+    "ja": "ホテルリソル 函館",
+    "en": "Hotel Resol Hakodate"
+   },
+   "ko": null,
+   "en": "Hotel Resol Hakodate",
+   "labelEn": "Hotel Resol Hakodate",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703404",
+   "item": "Q11337886",
+   "state": "shows",
+   "before": {
+    "ko": "뉴 오타니 인 삿포로",
+    "ja": "ニューオータニイン札幌",
+    "en": "New Otani Inn Sapporo"
+   },
+   "ko": null,
+   "en": "New Otani Inn Sapporo",
+   "labelEn": "New Otani Inn Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703493",
+   "item": "Q28052505",
+   "state": "shows",
+   "before": {
+    "ko": "그랜드 머큐어 삿포로 오도리 공원",
+    "ja": "グランドメルキュール札幌大通公園",
+    "en": "Grand Mercure Sapporo Odori Park"
+   },
+   "ko": null,
+   "en": "Grand Mercure Sapporo Odori Park",
+   "labelEn": "Grand Mercure Sapporo Odori Park",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703599",
+   "item": "Q111866759",
+   "state": "shows",
+   "before": {
+    "ko": "카나자와 코쿠사이 호텔",
+    "ja": "金沢国際ホテル",
+    "en": "Kanazawa Kokusai Hotel"
+   },
+   "ko": null,
+   "en": "Kanazawa Kokusai Hotel",
+   "labelEn": "Kanazawa Kokusai Hotel",
+   "grade": 1,
+   "distance": 29,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703671",
+   "item": "Q111406612",
+   "state": "shows",
+   "before": {
+    "ko": "알몬트 호텔 나하 오모로마치",
+    "ja": "アルモントホテル那覇おもろまち",
+    "en": "Almont Hotel Naha Omoromachi"
+   },
+   "ko": null,
+   "en": "Almont Hotel Naha Omoromachi",
+   "labelEn": "Almont Hotel Naha Omoromachi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703777",
+   "item": "Q111406647",
+   "state": "shows",
+   "before": {
+    "ko": "나고야 도큐 호텔",
+    "ja": "名古屋東急ホテル",
+    "en": "Nagoya Tokyu Hotel"
+   },
+   "ko": null,
+   "en": "Nagoya Tokyu Hotel",
+   "labelEn": "Nagoya Tokyu Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703878",
+   "item": "Q11337884",
+   "state": "shows",
+   "before": {
+    "ko": "뉴 오타니 마쿠하리 호텔",
+    "ja": "ホテルニューオータニ幕張",
+    "en": "Hotel New Otani Makuhari"
+   },
+   "ko": null,
+   "en": "Hotel New Otani Makuhari",
+   "labelEn": "Hotel New Otani Makuhari",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-703883",
+   "item": "Q111406753",
+   "state": "shows",
+   "before": {
+    "ko": "리치몬드 호텔 나리타",
+    "ja": "リッチモンドホテル成田",
+    "en": "Richmond Hotel Narita"
+   },
+   "ko": null,
+   "en": "Richmond Hotel Narita",
+   "labelEn": "Richmond Hotel Narita",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704014",
+   "item": "Q85883139",
+   "state": "shows",
+   "before": {
+    "ko": "하코네 유노하나 프린스 호텔",
+    "ja": "箱根湯の花プリンスホテル",
+    "en": "Hakone Yunohana Prince Hotel"
+   },
+   "ko": null,
+   "en": "Hakone Yunohana Prince Hotel",
+   "labelEn": "Hakone Yunohana Prince Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704269",
+   "item": "Q52224520",
+   "state": "shows",
+   "before": {
+    "ko": "더 프린스 하코네 레이크 아시노코",
+    "ja": "ザ・プリンス 箱根芦ノ湖",
+    "en": "The Prince Hakone Lake Ashinoko"
+   },
+   "ko": null,
+   "en": "The Prince Hakone Lake Ashinoko",
+   "labelEn": "The Prince Hakone Lake Ashinoko",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704279",
+   "item": "Q111406732",
+   "state": "shows",
+   "before": {
+    "ko": "유모토 후지야 호텔",
+    "ja": "湯本富士屋ホテル",
+    "en": "Yumoto Fujiya Hotel"
+   },
+   "ko": null,
+   "en": "Yumoto Fujiya Hotel",
+   "labelEn": "Yumoto Fujiya Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704371",
+   "item": "Q111865899",
+   "state": "shows",
+   "before": {
+    "ko": "후지 레이크 호텔",
+    "ja": "富士レークホテル",
+    "en": "Fuji Lake Hotel"
+   },
+   "ko": null,
+   "en": "Fuji Lake Hotel",
+   "labelEn": "Fuji Lake Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704525",
+   "item": "Q11589772",
+   "state": "shows",
+   "before": {
+    "ko": "고베 베이 쉐라톤 호텔 & 타워",
+    "ja": "神戸ベイシェラトン ホテル＆タワーズ",
+    "en": "Kobe Bay Sheraton Hotel & Towers"
+   },
+   "ko": "고베 베이 쉐라톤 호텔 & 타워",
+   "en": "Kobe Bay Sheraton Hotel & Towers",
+   "labelEn": "Kobe Bay Sheraton Hotel & Towers",
+   "grade": 1,
+   "distance": 13,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-7045649",
+   "item": "Q111866371",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 더 셀레스틴 교토 기온",
+    "ja": "ホテル ザ セレスティン京都祇園",
+    "en": "Hotel the Celestine Kyoto Gion"
+   },
+   "ko": "호텔 더 셀레스틴 교토 기온",
+   "en": null,
+   "labelEn": "Hotel The Celestine Kyoto Gion",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704687",
+   "item": "Q111865903",
+   "state": "shows",
+   "before": {
+    "ko": "야마기시 료칸",
+    "ja": "山岸旅館",
+    "en": "Yamagisi Ryokan"
+   },
+   "ko": null,
+   "en": "Yamagisi Ryokan",
+   "labelEn": "Yamagisi Ryokan",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704886",
+   "item": "Q111866344",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 헤이안노모리 교토",
+    "ja": "ホテル平安の森京都",
+    "en": "Heian No Mori Kyoto"
+   },
+   "ko": null,
+   "en": "Heian No Mori Kyoto",
+   "labelEn": "Heian No Mori Kyoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704891",
+   "item": "Q111406762",
+   "state": "shows",
+   "before": {
+    "ko": "더 로열 파크 호텔 교토 산조",
+    "ja": "ザ ロイヤルパークホテル 京都三条",
+    "en": "The Royal Park Hotel Kyoto Sanjo"
+   },
+   "ko": null,
+   "en": "The Royal Park Hotel Kyoto Sanjo",
+   "labelEn": "The Royal Park Hotel Kyoto Sanjo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-704990",
+   "item": "Q11337855",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 오쿠라 고베",
+    "ja": "ホテルオークラ神戸",
+    "en": "Hotel Okura Kobe"
+   },
+   "ko": null,
+   "en": "Hotel Okura Kobe",
+   "labelEn": "Hotel Okura Kobe",
+   "grade": 1,
+   "distance": 39,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705197",
+   "item": "Q11408974",
+   "state": "shows",
+   "before": {
+    "ko": "미야코 호텔 하카타",
+    "ja": "都ホテル 博多",
+    "en": "Miyako Hotel Hakata"
+   },
+   "ko": null,
+   "en": "Miyako Hotel Hakata",
+   "labelEn": "Miyako Hotel Hakata",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705211",
+   "item": "Q111406567",
+   "state": "shows",
+   "before": {
+    "ko": "니시테츠 그랜드 호텔",
+    "ja": "西鉄グランドホテル",
+    "en": "Nishitetsu Grand Hotel"
+   },
+   "ko": "니시테츠 그랜드 호텔",
+   "en": "Nishitetsu Grand Hotel",
+   "labelEn": "Nishitetsu Grand Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705213",
+   "item": "Q111406561",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 레졸 트리니티 하카타",
+    "ja": "ホテルリソルトリニティ博多",
+    "en": "Hotel Resol Trinity Hakata"
+   },
+   "ko": null,
+   "en": "Hotel Resol Trinity Hakata",
+   "labelEn": "Hotel Resol Trinity Hakata",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705217",
+   "item": "Q111866713",
+   "state": "shows",
+   "before": {
+    "ko": "토요코인 홋카이도 하코다테 에키마에 아사이치",
+    "ja": "東横INN函館駅前朝市",
+    "en": "Toyoko Inn Hokkaido Hakodate Ekimae Asaichi"
+   },
+   "ko": null,
+   "en": "Toyoko Inn Hokkaido Hakodate Ekimae Asaichi",
+   "labelEn": "Toyoko Inn Hokkaido Hakodate Ekimae Asaichi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705242",
+   "item": "Q111865625",
+   "state": "shows",
+   "before": {
+    "ko": "플라자 호텔 프리미어",
+    "ja": "プラザホテルプルミエ",
+    "en": "Plaza Hotel Premier"
+   },
+   "ko": null,
+   "en": "Plaza Hotel Premier",
+   "labelEn": "Plaza Hotel Premier",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705248",
+   "item": "Q111662068",
+   "state": "shows",
+   "before": {
+    "ko": "솔라리아 니시테츠 호텔 후쿠오카",
+    "ja": "ソラリア西鉄ホテル福岡",
+    "en": "Solaria Nishitetsu Hotel Fukuoka"
+   },
+   "ko": null,
+   "en": "Solaria Nishitetsu Hotel Fukuoka",
+   "labelEn": "Solaria Nishitetsu Hotel Fukuoka",
+   "grade": 1,
+   "distance": 27,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705253",
+   "item": "Q11337883",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 뉴 오타니 하카타",
+    "ja": "ホテルニューオータニ博多",
+    "en": "Hotel New Otani Hakata"
+   },
+   "ko": null,
+   "en": "Hotel New Otani Hakata",
+   "labelEn": "Hotel New Otani Hakata",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705337",
+   "item": "Q111866727",
+   "state": "shows",
+   "before": {
+    "ko": "하코다테 호텔 반소",
+    "ja": "函館・湯の川温泉 ホテル万惣",
+    "en": "Hakodate Hotel Banso"
+   },
+   "ko": null,
+   "en": "Hakodate Hotel Banso",
+   "labelEn": "Hakodate Hotel Banso",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705362",
+   "item": "Q112008575",
+   "state": "shows",
+   "before": {
+    "ko": "후쿠오카 가든 팰리스",
+    "ja": "福岡ガーデンパレス",
+    "en": "Hotel Fukuoka Garden Palace"
+   },
+   "ko": null,
+   "en": "Hotel Fukuoka Garden Palace",
+   "labelEn": "Hotel Fukuoka Garden Palace",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705508",
+   "item": "Q111865612",
+   "state": "shows",
+   "before": {
+    "ko": "야오지 하카타 호텔",
+    "ja": "八百治博多ホテル",
+    "en": "Yaoji Hakata Hotel"
+   },
+   "ko": null,
+   "en": "Yaoji Hakata Hotel",
+   "labelEn": "Yaoji Hakata Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705526",
+   "item": "Q11337854",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 오쿠라 후쿠오카",
+    "ja": "ホテルオークラ福岡",
+    "en": "Hotel Okura Fukuoka"
+   },
+   "ko": null,
+   "en": "Hotel Okura Fukuoka",
+   "labelEn": "Hotel Okura Fukuoka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705545",
+   "item": "Q111865620",
+   "state": "shows",
+   "before": {
+    "ko": "니시테츠 인 후쿠오카",
+    "ja": "西鉄イン福岡",
+    "en": "Nishitetsu Inn Fukuoka"
+   },
+   "ko": null,
+   "en": "Nishitetsu Inn Fukuoka",
+   "labelEn": "Nishitetsu Inn Fukuoka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705561",
+   "item": "Q111406608",
+   "state": "shows",
+   "before": {
+    "ko": "베셀 호텔 캄파나 오키나와",
+    "ja": "ベッセルホテルカンパーナ沖縄",
+    "en": "Vessel Hotel Campana Okinawa"
+   },
+   "ko": "베셀 호텔 캄파나 오키나와",
+   "en": "Vessel Hotel Campana Okinawa",
+   "labelEn": "Vessel Hotel Campana Okinawa",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705914",
+   "item": "Q111406731",
+   "state": "shows",
+   "before": {
+    "ko": "하코네 팍스 요시노",
+    "ja": "パークス吉野",
+    "en": "Hakone Pax Yoshino"
+   },
+   "ko": null,
+   "en": "Hakone Pax Yoshino",
+   "labelEn": "Hakone Pax Yoshino",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-705986",
+   "item": "Q23005637",
+   "state": "shows",
+   "before": {
+    "ko": "하코다테 단사쿠 클럽 호텔 앤드 리조트",
+    "ja": "HAKODATE 男爵倶楽部 HOTEL & RESORTS",
+    "en": "Hakodate Danshaku Club Hotel & Resorts"
+   },
+   "ko": null,
+   "en": "Hakodate Danshaku Club Hotel & Resorts",
+   "labelEn": "Hakodate Danshaku Club Hotel & Resorts",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-706118",
+   "item": "Q112008953",
+   "state": "shows",
+   "before": {
+    "ko": "시운소",
+    "ja": "箱根湯本塔ノ沢温泉　紫雲荘",
+    "en": "Shiunso"
+   },
+   "ko": null,
+   "en": "Shiunso",
+   "labelEn": "Shiunso",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-706360",
+   "item": "Q111865896",
+   "state": "shows",
+   "before": {
+    "ko": "후지 온센지 유메도노",
+    "ja": "河口湖温泉寺夢殿",
+    "en": "Fuji Onsenji Yumedono"
+   },
+   "ko": null,
+   "en": "Fuji Onsenji Yumedono",
+   "labelEn": "Fuji Onsenji Yumedono",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-706417",
+   "item": "Q111406792",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 앤티룸 교토",
+    "ja": "ホテルアンテルーム京都",
+    "en": "Hotel Anteroom Kyoto"
+   },
+   "ko": null,
+   "en": "Hotel Anteroom Kyoto",
+   "labelEn": "Hotel Anteroom Kyoto",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-736817",
+   "item": "Q111406831",
+   "state": "shows",
+   "before": {
+    "ko": "뉴 오사카 호텔 신사이바시",
+    "ja": "ニュー オーサカ ホテル心斎橋",
+    "en": "New Osaka Hotel Shinsaibashi"
+   },
+   "ko": null,
+   "en": "New Osaka Hotel Shinsaibashi",
+   "labelEn": "New Osaka Hotel Shinsaibashi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-736871",
+   "item": "Q11337957",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 한큐 인터내셔널",
+    "ja": "ホテル阪急インターナショナル",
+    "en": "Hotel Hankyu International"
+   },
+   "ko": "호텔 한큐 인터내셔널",
+   "en": "Hotel Hankyu International",
+   "labelEn": "Hotel Hankyu International",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-737038",
+   "item": "Q111406619",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 JAL 시티 나하",
+    "ja": "ホテル JAL シティ那覇",
+    "en": "Hotel JAL City Naha"
+   },
+   "ko": null,
+   "en": "Hotel JAL City Naha",
+   "labelEn": "Hotel JAL City Naha",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-737141",
+   "item": "Q111406760",
+   "state": "shows",
+   "before": {
+    "ko": "교토 브라이튼 호텔",
+    "ja": "京都ブライトン ホテル",
+    "en": "Kyoto Brighton Hotel"
+   },
+   "ko": "교토 브라이튼 호텔",
+   "en": "Kyoto Brighton Hotel",
+   "labelEn": "Kyoto Brighton Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-7420938",
+   "item": "Q111865772",
+   "state": "shows",
+   "before": {
+    "ko": "JR 규슈 호텔 블라섬 나하",
+    "ja": "JR九州ホテル ブラッサム那覇",
+    "en": "JR Kyushu Hotel Blossom Naha"
+   },
+   "ko": null,
+   "en": "JR Kyushu Hotel Blossom Naha",
+   "labelEn": "JR Kyushu Hotel Blossom Naha",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-7420957",
+   "item": "Q111866521",
+   "state": "shows",
+   "before": {
+    "ko": "베셀 인 신사이바시",
+    "ja": "ベッセルイン心斎橋",
+    "en": "Vessel Inn Shinsaibashi"
+   },
+   "ko": null,
+   "en": "Vessel Inn Shinsaibashi",
+   "labelEn": "Vessel Inn Shinsaibashi",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-759846",
+   "item": "Q111406614",
+   "state": "shows",
+   "before": {
+    "ko": "더 나하 테라스",
+    "ja": "ザ・ナハテラス（The Naha Terrace）",
+    "en": "The Naha Terrace"
+   },
+   "ko": "더 나하 테라스",
+   "en": "The Naha Terrace",
+   "labelEn": "The Naha Terrace",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-759848",
+   "item": "Q111406629",
+   "state": "shows",
+   "before": {
+    "ko": "로와지르 호텔 나하",
+    "ja": "ロワジールホテル那覇",
+    "en": "Loisir Hotel Naha"
+   },
+   "ko": null,
+   "en": "Loisir Hotel Naha",
+   "labelEn": "Loisir Hotel Naha",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-8155616",
+   "item": "Q111866508",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 코르디아 오사카",
+    "ja": "ホテルコルディア大阪（HOTEL CORDIA OSAKA）",
+    "en": "Hotel Cordia Osaka"
+   },
+   "ko": null,
+   "en": "Hotel Cordia Osaka",
+   "labelEn": "Hotel Cordia Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-856906",
+   "item": "Q11337885",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 뉴 오타니 오사카",
+    "ja": "ホテルニューオータニ大阪",
+    "en": "Hotel New Otani Osaka"
+   },
+   "ko": null,
+   "en": "Hotel New Otani Osaka",
+   "labelEn": "Hotel New Otani Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-926345",
+   "item": "Q11414848",
+   "state": "shows",
+   "before": {
+    "ko": "나고야 메리어트 아소시아 호텔",
+    "ja": "名古屋マリオットアソシアホテル",
+    "en": "Nagoya Marriott Associa Hotel"
+   },
+   "ko": null,
+   "en": "Nagoya Marriott Associa Hotel",
+   "labelEn": "Nagoya Marriott Associa Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-976800",
+   "item": "Q3506669",
+   "state": "shows",
+   "before": {
+    "ko": "스위소텔 난카이 오사카",
+    "ja": "スイスホテル南海大阪",
+    "en": "Swissotel Nankai Osaka"
+   },
+   "ko": "스위소텔 난카이 오사카",
+   "en": null,
+   "labelEn": "Swissôtel Nankai Osaka",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-987975",
+   "item": "Q111406754",
+   "state": "shows",
+   "before": {
+    "ko": "인터내셔널 가든 호텔 나리타",
+    "ja": "インターナショナルガーデンホテル成田",
+    "en": "International Garden Hotel Narita"
+   },
+   "ko": null,
+   "en": "International Garden Hotel Narita",
+   "labelEn": "International Garden Hotel Narita",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993279",
+   "item": "Q17229251",
+   "state": "shows",
+   "before": {
+    "ko": "미야코 시티 오사카 텐노지",
+    "ja": "都シティ 大阪天王寺",
+    "en": "Miyako City Osaka Tennoji"
+   },
+   "ko": null,
+   "en": "Miyako City Osaka Tennoji",
+   "labelEn": "Miyako City Osaka Tennoji",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993317",
+   "item": "Q11337929",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 케이한 유니버설 타워",
+    "ja": "ホテル京阪 ユニバーサル・タワー",
+    "en": "Hotel Keihan Universal Tower"
+   },
+   "ko": "호텔 케이한 유니버설 타워",
+   "en": "Hotel Keihan Universal Tower",
+   "labelEn": "Hotel Keihan Universal Tower",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993365",
+   "item": "Q11374610",
+   "state": "shows",
+   "before": {
+    "ko": "게이오 플라자 호텔 삿포로",
+    "ja": "京王プラザホテル札幌",
+    "en": "Keio Plaza Hotel Sapporo"
+   },
+   "ko": "게이오 플라자 호텔 삿포로",
+   "en": "Keio Plaza Hotel Sapporo",
+   "labelEn": "Keio Plaza Hotel Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993375",
+   "item": "Q7421094",
+   "state": "shows",
+   "before": {
+    "ko": "삿포로 그랜드 호텔",
+    "ja": "札幌グランドホテル",
+    "en": "Sapporo Grand Hotel"
+   },
+   "ko": "삿포로 그랜드 호텔",
+   "en": "Sapporo Grand Hotel",
+   "labelEn": "Sapporo Grand Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993399",
+   "item": "Q111406897",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 그레이서리 삿포로",
+    "ja": "ホテルグレイスリー札幌",
+    "en": "Hotel Gracery Sapporo"
+   },
+   "ko": null,
+   "en": "Hotel Gracery Sapporo",
+   "labelEn": "Hotel Gracery Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993403",
+   "item": "Q111866800",
+   "state": "shows",
+   "before": {
+    "ko": "조잔케이 만세이카쿠 호텔 밀리오네",
+    "ja": "定山渓万世閣ホテルミリオーネ",
+    "en": "Jozankei Manseikaku Hotel Milione"
+   },
+   "ko": null,
+   "en": "Jozankei Manseikaku Hotel Milione",
+   "labelEn": "Jozankei Manseikaku Hotel Milione",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993405",
+   "item": "Q111406898",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 게이한 삿포로",
+    "ja": "ホテル京阪 札幌",
+    "en": "Hotel Keihan Sapporo"
+   },
+   "ko": null,
+   "en": "Hotel Keihan Sapporo",
+   "labelEn": "Hotel Keihan Sapporo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false
+  },
+  {
+   "id": "trip-993535",
+   "item": "Q111406555",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 닛코 후쿠오카",
+    "ja": "ホテル日航福岡",
+    "en": "Hotel Nikko Fukuoka"
+   },
+   "ko": null,
+   "en": "Hotel Nikko Fukuoka",
+   "labelEn": "Hotel Nikko Fukuoka",
+   "grade": 1,
+   "distance": 11,
+   "named": true,
+   "suspicious": false
+  }
+ ],
+ "coincident": [
+  {
+   "id": "trip-993398",
+   "item": "Q28137584",
+   "ko": "삿포로 엑셀 호텔 도큐",
+   "en": null,
+   "labelEn": "Sappro Excel Hotel Tokyu",
+   "distance": null,
+   "named": false,
+   "suspicious": true
   }
  ],
  "suspicious": [],
@@ -750,6 +3080,951 @@
    },
    {
     "id": "trip-994914",
+    "label": "The GrandWest Arashiyama",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-10546798",
+    "label": "Hotel Keihan Kyobashi Grande",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1060942",
+    "label": "Ibis Budget Osaka Umeda",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-10933133",
+    "label": "Saka Hotel Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-11152564",
+    "label": "Smile Hotel Premium Sapporo Susukino",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-12591944",
+    "label": "Sotetsu Fresa Inn Tokyo Kanda",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-12663342",
+    "label": "Tokyu Stay Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-12829051",
+    "label": "Hotel Mystays Premier Narita",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-12870233",
+    "label": "Sengokuhara Shinanoki Ichinoyu",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1331005",
+    "label": "Hotel Hakata Nakasu Inn",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-13873050",
+    "label": "Mitsui Garden Hotel Kyoto Shijo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1437724",
+    "label": "Shogetsu Grand Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1458350",
+    "label": "Kobe Meriken Park Oriental Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1465318",
+    "label": "Hotel Resol Sapporo Nakajima Koen",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1483139",
+    "label": "Hotel Marinoa Resort Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1483550",
+    "label": "Negiya Ryofukaku",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1489160",
+    "label": "Hotel Resol Kyoto Kawaramachi Sanjo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-15790719",
+    "label": "Bande Hotel Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-15839702",
+    "label": "Kuretake Inn Nagoya Hisayaodori",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-15907875",
+    "label": "Hotel Green Plaza Hakone",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1635497",
+    "label": "Yoshiike Ryokan",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1635606",
+    "label": "Ryuguden",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1646544",
+    "label": "KKR Hotel Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1678519",
+    "label": "Premier Hotel -Tsubaki- Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1679115",
+    "label": "Kyoto Garden Palace",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1679165",
+    "label": "InterContinental Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-1836788",
+    "label": "Hilton Tokyo Narita Airport",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2107894",
+    "label": "Ibis Styles Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2113114",
+    "label": "Tokyu Stay Sapporo Odori",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-21133708",
+    "label": "Sotetsu Fresa Inn Osaka-Shinsaibashi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-21369036",
+    "label": "Shuhokaku Kogetsu",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2196109",
+    "label": "ANA Crowne Plaza Grand Court Nagoya",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2196828",
+    "label": "Super Hotel Hakodate",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2199655",
+    "label": "Yushintei",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2200346",
+    "label": "Kobe Luminous Hotel Sannomiya",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-22421912",
+    "label": "Odakyu Hotel de Yama",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2495183",
+    "label": "Oriental Hotel Fukuoka Hakata Station",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-25098057",
+    "label": "Best Western Plus Hotel Fino Osaka Kitahama",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-25098077",
+    "label": "Daiwa Roynet Hotel Numazu",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2511953",
+    "label": "Hotel JAL City Nagoya Nishiki",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-25195212",
+    "label": "Hyatt Regency Naha Okinawa",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2612287",
+    "label": "Hotel Roco Inn Okinawa",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2652964",
+    "label": "The Park Front Hotel at Universal Studios Japan",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2803775",
+    "label": "Seaside Hotel Maiko Villa Kobe",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-2804070",
+    "label": "Mogana",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-28828458",
+    "label": "Ryokan Ichinomatsu",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-3139473",
+    "label": "Hotel Collective",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-35953012",
+    "label": "Loisir Spa Tower Naha",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-3645542",
+    "label": "Comfort Hotel Nagoya Shinkansenguchi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-42344626",
+    "label": "Noku Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-4396882",
+    "label": "Tokyu Stay Okinawa Naha",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-45987505",
+    "label": "The Wall Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-4601938",
+    "label": "The Basics Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-47758200",
+    "label": "Hotel Granvia Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-480887",
+    "label": "Portom International Hokkaido",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-48684259",
+    "label": "Sakura Garden Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-4971052",
+    "label": "La Vista Fujikawaguchiko",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-4977280",
+    "label": "Umekoji Potel Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-52845134",
+    "label": "Hotel Monterey Kobe",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-55210543",
+    "label": "Hyatt House Kanazawa",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-57039795",
+    "label": "Nikko Style Nagoya",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-57048188",
+    "label": "Ace Hotel Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-58071089",
+    "label": "The Bridge Hotel Shinsaibashi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-5816633",
+    "label": "Hotel Metropolitan Sendai East",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-6345931",
+    "label": "Shinsaibashi Grand Hotel Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-6391237",
+    "label": "Izumisano Center Hotel Kansai International Airport",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-6509780",
+    "label": "Osaka Ryokan Kuramoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-686460",
+    "label": "Daiwa Roynet Hotel Osaka-Uehonmachi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-686519",
+    "label": "Hotel JAL City Fukuoka Tenjin",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-68686982",
+    "label": "The Westin Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688138",
+    "label": "Kansai Airport Washington Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688186",
+    "label": "Hotel Plaza Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688203",
+    "label": "Cross Hotel Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688204",
+    "label": "Hotel Monterey Grasmere Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688216",
+    "label": "Star Gate Hotel Kansai Airport",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688227",
+    "label": "Kansai Airport Spa Hotel Garden Palace",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688228",
+    "label": "Hotel Universal Port",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-688230",
+    "label": "Hakodate Kokusai Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703352",
+    "label": "Hotel Resol Hakodate",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703354",
+    "label": "New Otani Inn Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703404",
+    "label": "Grand Mercure Sapporo Odori Park",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703493",
+    "label": "Kanazawa Kokusai Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703599",
+    "label": "Almont Hotel Naha Omoromachi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703671",
+    "label": "Nagoya Tokyu Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703777",
+    "label": "Hotel New Otani Makuhari",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703878",
+    "label": "Richmond Hotel Narita",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-703883",
+    "label": "Hakone Yunohana Prince Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704014",
+    "label": "The Prince Hakone Lake Ashinoko",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704269",
+    "label": "Yumoto Fujiya Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704279",
+    "label": "Fuji Lake Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704371",
+    "label": "Kobe Bay Sheraton Hotel & Towers",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704525",
+    "label": "Hotel The Celestine Kyoto Gion",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-7045649",
+    "label": "Yamagisi Ryokan",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704687",
+    "label": "Heian No Mori Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704886",
+    "label": "The Royal Park Hotel Kyoto Sanjo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704891",
+    "label": "Hotel Okura Kobe",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-704990",
+    "label": "Miyako Hotel Hakata",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705197",
+    "label": "Nishitetsu Grand Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705211",
+    "label": "Hotel Resol Trinity Hakata",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705213",
+    "label": "Toyoko Inn Hokkaido Hakodate Ekimae Asaichi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705217",
+    "label": "Plaza Hotel Premier",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705242",
+    "label": "Solaria Nishitetsu Hotel Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705248",
+    "label": "Hotel New Otani Hakata",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705253",
+    "label": "Hakodate Hotel Banso",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705337",
+    "label": "Hotel Fukuoka Garden Palace",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705362",
+    "label": "Yaoji Hakata Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705508",
+    "label": "Hotel Okura Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705526",
+    "label": "Nishitetsu Inn Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705545",
+    "label": "Vessel Hotel Campana Okinawa",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705561",
+    "label": "Hakone Pax Yoshino",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705914",
+    "label": "Hakodate Danshaku Club Hotel & Resorts",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-705986",
+    "label": "Shiunso",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-706118",
+    "label": "Fuji Onsenji Yumedono",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-706360",
+    "label": "Hotel Anteroom Kyoto",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-706417",
+    "label": "New Osaka Hotel Shinsaibashi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-736817",
+    "label": "Hotel Hankyu International",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-736871",
+    "label": "Hotel JAL City Naha",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-737038",
+    "label": "Kyoto Brighton Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-737141",
+    "label": "JR Kyushu Hotel Blossom Naha",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-7420938",
+    "label": "Vessel Inn Shinsaibashi",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-7420957",
+    "label": "The Naha Terrace",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-759846",
+    "label": "Loisir Hotel Naha",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-759848",
+    "label": "Hotel Cordia Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-8155616",
+    "label": "Hotel New Otani Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-856906",
+    "label": "Nagoya Marriott Associa Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-926345",
+    "label": "Swissôtel Nankai Osaka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-976800",
+    "label": "International Garden Hotel Narita",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-987975",
+    "label": "Miyako City Osaka Tennoji",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993279",
+    "label": "Hotel Keihan Universal Tower",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993317",
+    "label": "Keio Plaza Hotel Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993365",
+    "label": "Sapporo Grand Hotel",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993375",
+    "label": "Hotel Gracery Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993399",
+    "label": "Jozankei Manseikaku Hotel Milione",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993403",
+    "label": "Hotel Keihan Sapporo",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993405",
+    "label": "Hotel Nikko Fukuoka",
+    "distance": null,
+    "named": false,
+    "suspicious": true
+   },
+   {
+    "id": "trip-993535",
     "label": "The Prince Sakura Tower Tokyo",
     "distance": null,
     "named": false,

@@ -100,13 +100,27 @@ async function auditPublic(){
   const h=withWikidataNames({...card,aliases:[],sources:[]});after.push(h);
   if(h.names===card.names)return;
   const trip=card.id.slice(5),label=labels.get(trip),j=judge(card,i,label,points.get(trip));
-  added.push({id:card.id,item:label.item,before:card.names,ko:h.names.ko!==card.names.ko?h.names.ko:null,en:h.names.en!==card.names.en?h.names.en:null,labelEn:label.en,grade:geo?.grade[i]??null,...j});
+  added.push({id:card.id,item:label.item,state:'adds',before:card.names,ko:h.names.ko!==card.names.ko?h.names.ko:null,en:h.names.en!==card.names.en?h.names.en:null,labelEn:label.en,grade:geo?.grade[i]??null,...j});
+ });
+ // A snapshot built with the rule already shows the names (Codex P2 on PR #145): a Trip.com card
+ // showing its item's Korean label, or its English label beside another original, is audited too.
+ // One whose names disagree with the item cannot have got them from the rule (its guard refuses
+ // that item), so it holds the hotel's own name that happens to match, and is only noted.
+ const coincident=[];
+ cards.forEach((card,i)=>{
+  const trip=/^trip-\d+$/.test(card.id)?card.id.slice(5):null,label=trip&&labels.get(trip);
+  if(!label||added.some(a=>a.id===card.id))return;
+  const ko=label.ko&&card.names.ko===label.ko?label.ko:null,en=label.en&&card.names.en===label.en&&card.names.en!==card.names.ja?label.en:null;
+  if(!ko&&!en)return;
+  const j=judge(card,i,label,points.get(trip));
+  if(j.named===false){coincident.push({id:card.id,item:label.item,ko,en,labelEn:label.en,...j});return}
+  added.push({id:card.id,item:label.item,state:'shows',before:card.names,ko,en,labelEn:label.en,grade:geo?.grade[i]??null,...j});
  });
  // Controls: each hotel judged against another hotel's item must be flagged. By point: two
  // Trip.com hotels with both points over 1 km apart. By name: the hotels above, each against
  // the next one's label.
  const [pi,qi]=core.ids.flatMap((id,i)=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))&&points.has(id.slice(5))&&core.lat[i]!==null?[i]:[]).filter((i,n,all)=>n===0||judge(cards[all[0]],all[0],labels.get(core.ids[i].slice(5)),points.get(core.ids[i].slice(5))).distance>1000);
- assert(pi!==undefined&&qi!==undefined,'two hotels over 1 km apart to swap');assert(added.length>=2,'two hotels to swap labels');
+ assert(pi!==undefined&&qi!==undefined,'two hotels over 1 km apart to swap');assert(added.length>=2,'two named hotels to swap labels');
  const swap=(i,j)=>judge(cards[i],i,labels.get(core.ids[j].slice(5)),points.get(core.ids[j].slice(5)));
  const byPoint=[swap(pi,qi),swap(qi,pi)],at=added.map(a=>core.ids.indexOf(a.id));
  const byName=at.map((i,n)=>({id:core.ids[i],label:labels.get(core.ids[at[(n+1)%at.length]].slice(5)).en,...judge(cards[i],i,labels.get(core.ids[at[(n+1)%at.length]].slice(5)),null)}));
@@ -115,13 +129,14 @@ async function auditPublic(){
  // Every Trip.com hotel the extract reaches, named or not: how often its item looks like another hotel.
  const matched=core.ids.flatMap((id,i)=>/^trip-\d+$/.test(id)&&labels.has(id.slice(5))?[{id,...judge(cards[i],i,labels.get(id.slice(5)),points.get(id.slice(5)))}]:[]);
  const odd=matched.filter(m=>m.suspicious);
- const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,suspicious:suspicious.map(a=>a.id),matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,suspicious:odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint},byName}};
+ const report={snapshot:manifest.id,generatedAt:manifest.generatedAt,hotels:cards.length,checkedAt:new Date().toISOString(),koreanTitles:{before:before.ko,after:now.ko},englishNames:{before:before.en,after:now.en},added,coincident,suspicious:suspicious.map(a=>a.id),matched:{count:matched.length,withPoints:matched.filter(m=>m.distance!==null).length,suspicious:odd},control:{byPoint:{pair:[core.ids[pi],core.ids[qi]],judged:byPoint},byName}};
  if(arg('--json'))writeFileSync(arg('--json'),JSON.stringify(report,null,1)+'\n');
- for(const a of added)console.log(`  ${a.suspicious?'SUSPICIOUS ':''}${a.id} ${a.item}: ${a.ko??'-'} / ${a.en??'-'} (was ${a.before.ko}; Wikidata en ${a.labelEn}; ${a.distance===null?'no point to compare':a.distance+' m'}; names agree ${a.named})`);
+ for(const a of added)console.log(`  ${a.suspicious?'SUSPICIOUS ':''}${a.state} ${a.id} ${a.item}: ${a.ko??'-'} / ${a.en??'-'} (was ${a.before.ko}; Wikidata en ${a.labelEn}; ${a.distance===null?'no point to compare':a.distance+' m'}; names agree ${a.named})`);
  for(const c of missed)console.log(`  CONTROL MISSED ${c.id} against ${c.label}`);
+ for(const c of coincident)console.log(`  note: ${c.id} shows ${c.ko??c.en}, the label of ${c.item}, but its names disagree with the item (${c.labelEn}): its own name, not the rule's`);
  for(const m of odd)console.log(`  note: ${m.id} reached by the extract but not named here looks like another item (${m.distance===null?'no point':m.distance+' m'}; names agree ${m.named})`);
  const pass=control&&suspicious.length===0;
- console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.length} hotels get names (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); ${suspicious.length} suspicious (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, swapped labels ${byName.length-missed.length}/${byName.length} flagged -> ${pass?'PASS':'FAIL'}`);
+ console.log(`Wikidata names audit on snapshot ${manifest.id} (${cards.length} hotels): ${added.filter(a=>a.state==='adds').length} hotels get names and ${added.filter(a=>a.state==='shows').length} already show them (Korean titles ${before.ko} -> ${now.ko}, English names ${before.en} -> ${now.en}); ${suspicious.length} suspicious (of all ${matched.length} Trip.com hotels the extract reaches, ${odd.length} look odd); controls: swapped points ${byPoint.filter(s=>s.suspicious).length}/2, swapped labels ${byName.length-missed.length}/${byName.length} flagged -> ${pass?'PASS':'FAIL'}`);
  if(!pass)process.exitCode=1;
  return` Public audit: ${added.length} hotels, ${suspicious.length} suspicious, ${pass?'PASS':'FAIL'}.`;
 }
