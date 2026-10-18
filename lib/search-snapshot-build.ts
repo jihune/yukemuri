@@ -19,14 +19,14 @@ import {withJalanLocaleNames,type LocaleNameRow} from './jalan-locale-names';
 import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
-// enrichHotel, then the linked source rows, then the lifecycle. Both lookups
-// run only for hotels that have such rows: a hotel without a source group is
-// composed alone (what attachSourceGroups does for it), one without a
-// lifecycle row is left as it is (attachLifecycle), and per-id lookups of every
-// hotel would read about 100,000 index rows at production size.
+// enrichHotel, then the linked source rows, then the lifecycle. The source
+// lookup runs only for hotels in a source group: one without is composed alone
+// (what attachSourceGroups does for it), and per-id lookups of every hotel
+// would read about 100,000 index rows at production size. Lifecycle rows are
+// read once per page by its id range (P04; per-id lookups read about three
+// rows a hotel) and attached as attachLifecycle attaches them (withLifecycle);
+// a hotel without one is left as it is.
 const PAGE=500;
-// The lifecycle rows of a page come from one id-range read (P04): per-id lookups
-// read about three rows a hotel.
 async function attach(hotels:Hotel[],members:Set<string>,lifecycles:Map<unknown,Record<string,unknown>>){
  const merge=async(list:Hotel[],has:Set<string>,run:(h:Hotel[])=>Promise<Hotel[]>,otherwise:(h:Hotel)=>Hotel)=>{const done=await run(list.filter(h=>has.has(h.id)));let i=0;return list.map(h=>has.has(h.id)?done[i++]:otherwise(h))};
  return(await merge(hotels,members,attachSourceGroups,h=>composePreferredHotel(h,[]))).map(h=>withLifecycle(h,lifecycles.get(h.id)));

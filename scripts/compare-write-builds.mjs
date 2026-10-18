@@ -100,8 +100,9 @@ try{
  const dirs={old:join(temp,'db-old'),current:join(temp,'db-current')};
  cpSync(base,dirs.old,{recursive:true});cpSync(base,dirs.current,{recursive:true});
  runtime=start('current',dirs.current);await migrate(await runtime.getD1Database('DB'),oldSchema,'9999');await runtime.dispose();
- // The steps: every collector page kind (claim, then save with the lease
- // token), failures, the run's end, public reads and keyed reads.
+ // The steps: the run's start, every collector page kind (claim, then save
+ // with the lease token), failures, a claim in every lane, the run's end,
+ // public reads and keyed reads.
  const first=parsed(START+60e3),again=parsed(START+3600e3),fresh=freshList(first.jalanList),freshAgain=freshList(again.jalanList);
  const steps=[];let at=START+120e3;
  const tick=()=>(at+=7e3);
@@ -111,6 +112,7 @@ try{
   steps.push({name:name+' (claim)',at:tick(),path:'/api/crawl',init:{method:'POST',body:JSON.stringify({provider,phase,lane,url:body.url,token})}});
   steps.push({name:name+' (save)',at:tick(),path:'/api/crawl',init:{method:'PUT',body:JSON.stringify({...body,claimToken:token})}});
  };
+ steps.push({name:'run start (prepare)',at:tick(),path:'/api/crawl-prepare',init:{method:'POST'}});
  page('jalan list, new properties',fresh,'jalan','list');
  // Some of its detail jobs wait at a worse priority and without a prefecture,
  // so the save must still lower and fill them (the guarded upsert updates).
@@ -127,7 +129,7 @@ try{
  steps.push({name:'stale own priority',sql:['UPDATE crawl_jobs SET priority=99 WHERE url=?',again.jalanDetail.url]});
  page('jalan detail refreshed',again.jalanDetail,'jalan','detail');
  page('trip detail refreshed',again.tripDetail,'trip','detail');
- for(const [provider,phase] of [['jalan','detail'],['jalan','baths'],['trip','detail'],['jalan','refresh'],['trip','refresh'],['jalan','list'],['trip','list'],['trip','names']])for(const lane of ['priority','national'])steps.push({name:`claim ${provider} ${phase} ${lane}`,release:true,at:tick(),path:'/api/crawl',init:{method:'POST',body:JSON.stringify({provider,phase,lane,token:`00000000-0000-4000-9000-${String(steps.length).padStart(12,'0')}`})}});
+ for(const [provider,phase] of [['jalan','detail'],['jalan','baths'],['trip','detail'],['jalan','refresh'],['trip','refresh'],['jalan','list'],['trip','list'],['trip','names'],['jalan','localnames']])for(const lane of ['priority','national'])steps.push({name:`claim ${provider} ${phase} ${lane}`,release:true,at:tick(),path:'/api/crawl',init:{method:'POST',body:JSON.stringify({provider,phase,lane,token:`00000000-0000-4000-9000-${String(steps.length).padStart(12,'0')}`})}});
  for(const [name,path] of [['run end (queue GET, full count)','/api/crawl?provider=jalan&kind=list&limit=1'],['queue GET trip detail','/api/crawl?provider=trip&kind=detail&limit=10'],['queue GET names','/api/crawl?provider=trip&kind=detail&limit=10&names=1'],['queue GET baths','/api/crawl?provider=jalan&kind=detail&limit=10&baths=1'],['health report','/api/crawl?report=1'],['collection status','/api/collection-status'],['detail','/api/hotels/jalan-307416'],['detail, new property','/api/hotels/jalan-9000000'],['comparison','/api/hotel-comparison?ids=jalan-307416,trip-704264,jalan-9000003'],['photo credits','/api/photo-credits'],['lifecycle review','/api/hotel-lifecycle'],['catalog export manifest','/api/catalog-export'],...['hotels','hotel_names','crawl_jobs','hotel_lifecycle','catalog_meta'].map(t=>['catalog export '+t,'/api/catalog-export?table='+t+'&limit=250'])])steps.push({name,at:tick(),path});
  const results={};
  for(const name of ['old','current']){

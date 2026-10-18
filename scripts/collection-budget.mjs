@@ -1,8 +1,9 @@
 // How many pages one gentle collection may take within the free D1 limits
 // (C03, user 2026-10-13: collect as much as the free plan allows). Reads the
 // account's usage for today (UTC, the day the limits reset on) through
-// cloudflare-usage.mjs and leaves room for the snapshot deploy at the end of
-// the run and, through `share`, for backups, deploys and visitors. Prints
+// cloudflare-usage.mjs and leaves room for the run's own reads, the snapshot
+// deploy at the end of the run and, through `share`, for backups, deploys and
+// visitors. Prints
 // pages=<n> and reason=<text> for GITHUB_OUTPUT. Never fails: when usage cannot
 // be read the run falls back to the runner's original 16 pages.
 import {appendFileSync,readFileSync} from 'node:fs';
@@ -13,12 +14,20 @@ export const BUDGET=Object.freeze({
  maxPages:120,         // one run; the runner dispatches hourly (C05), so later runs of a day often get 0
  fallbackPages:16,     // usage unreadable: the run size before C03
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
- writesPerPage:151,    // 2026-10-17: up to 150.4 a page between runs (day average 129.7; 77 on 10-13).
+ writesPerPage:185,    // 2026-10-18, after C04: runs wrote at most 56.0 a page, but a round of
+                       // update-site.py --gentle can hold only a Jalan detail page (11 rows) and a Jalan
+                       // list page of 30 new properties (348): 179.5 a page (measure-d1-writes.mjs --check),
+                       // and the run's last queue read writes 3 rows.
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
- readsPerPage:3000,    // 2026-10-17: 2,713-2,981 a page between runs, snapshot taken out
- snapshotReads:330000  // 2026-10-17: the last snapshot build read 257,099 rows (23,032 hotels), up
-                       // 33,760 that day as hotels grew; this leaves two more days of that growth
+ readsPerPage:4600,    // 2026-10-18, a production-size D1 (compare-write-builds.mjs): a round's claims read
+                       // up to 3,481 rows, plus 525 for the done D07 names jobs (PR #154 review), and a
+                       // page's save up to 582; a round may hold a single page
+ snapshotReads:168000, // 2026-10-18: the last snapshot build read 122,302 rows (23,784 hotels, after
+                       // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
+                       // growth (5.73 rows a hotel, 3,051 hotels on 10-17)
+ runReads:105000       // 2026-10-18, the same D1: a run's own preparation, readback and last queue read
+                       // (84,961 rows), plus two days of growth (3 rows a hotel, 520 names jobs twice)
 });
 
 // usage: {rowsRead, rowsWritten} of the account today; null counts mean no
@@ -29,7 +38,7 @@ export function pagesFor(usage,budget=BUDGET){
  if(!Number.isFinite(written)||!Number.isFinite(read)||written<0||read<0)
   return {pages:budget.fallbackPages,reason:'usage unreadable: fallback to '+budget.fallbackPages+' pages'};
  const byWrites=Math.floor((budget.share*LIMITS.rowsWritten-written)/budget.writesPerPage);
- const byReads=Math.floor((budget.share*LIMITS.rowsRead-read-budget.snapshotReads)/budget.readsPerPage);
+ const byReads=Math.floor((budget.share*LIMITS.rowsRead-read-budget.snapshotReads-budget.runReads)/budget.readsPerPage);
  const pages=Math.max(0,Math.min(budget.maxPages,byWrites,byReads));
  return {pages,reason:`today ${written} rows written, ${read} read; writes allow ${byWrites} pages, reads ${byReads}, cap ${budget.maxPages}`};
 }

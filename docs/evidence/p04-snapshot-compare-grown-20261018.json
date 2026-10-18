@@ -1,18 +1,39 @@
 {
- "measuredAt": "2026-10-18T03:22:07.706Z",
- "base": "HEAD",
- "current": "183771d",
+ "measuredAt": "2026-10-18T04:24:32.510Z",
+ "base": {
+  "commit": "4caa224",
+  "lib": "b78b720352bbcd3c"
+ },
+ "current": {
+  "head": "6bbbd0e",
+  "libChangedFromHead": false,
+  "lib": "5bd3ca0d91ace43f"
+ },
  "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1.",
  "builds": {
-  "base": {
-   "id": "6ebfe6ca64d27b1c",
+  "numbers:base": {
+   "id": "05a282185293ef3d",
    "hotels": 23032,
    "queries": 120,
    "rowsRead": 304186,
    "files": 7
   },
-  "current": {
-   "id": "6ebfe6ca64d27b1c",
+  "numbers:current": {
+   "id": "05a282185293ef3d",
+   "hotels": 23032,
+   "queries": 115,
+   "rowsRead": 134489,
+   "files": 7
+  },
+  "strings:base": {
+   "id": "05a282185293ef3d",
+   "hotels": 23032,
+   "queries": 120,
+   "rowsRead": 304186,
+   "files": 7
+  },
+  "strings:current": {
+   "id": "05a282185293ef3d",
    "hotels": 23032,
    "queries": 115,
    "rowsRead": 134489,
