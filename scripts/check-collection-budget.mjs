@@ -24,7 +24,7 @@ for(let written=0;written<=85_000;written++){
  const {pages}=pagesFor({rowsRead:0,rowsWritten:written});
  assert.ok(written+pages*150.4<=85_000,'writes '+written);
 }
-for(let read=0;read<=4_250_000;read+=100){
+for(let read=0;read<=4_250_000;read++){
  const {pages}=pagesFor({rowsRead:read,rowsWritten:0});
  assert.ok(pages===0||read+pages*2981+257_099+2*33_760<=4_250_000,'reads '+read);
 }

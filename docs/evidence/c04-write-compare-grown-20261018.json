@@ -1,0 +1,525 @@
+{
+ "measuredAt": "2026-10-18T03:12:08.333Z",
+ "oldBuild": "/tmp/claude-0/-home-user-yukemuri/608e1985-7d4e-52b8-a968-1aba616e1ce0/scratchpad/dist-old",
+ "oldSchema": "0013",
+ "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1.",
+ "steps": [
+  {
+   "step": "jalan list, new properties (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1091,
+   "readCurrent": 1091
+  },
+  {
+   "step": "jalan list, new properties (save)",
+   "status": 200,
+   "writtenOld": 589,
+   "writtenCurrent": 339,
+   "readOld": 466,
+   "readCurrent": 466
+  },
+  {
+   "step": "jalan list, known properties (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1469,
+   "readCurrent": 1469
+  },
+  {
+   "step": "jalan list, known properties (save)",
+   "status": 200,
+   "writtenOld": 284,
+   "writtenCurrent": 77,
+   "readOld": 582,
+   "readCurrent": 582
+  },
+  {
+   "step": "jalan detail, listed before (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 9327,
+   "readCurrent": 9327
+  },
+  {
+   "step": "jalan detail, listed before (save)",
+   "status": 200,
+   "writtenOld": 20,
+   "writtenCurrent": 10,
+   "readOld": 26,
+   "readCurrent": 26
+  },
+  {
+   "step": "trip detail, new property (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 124,
+   "readCurrent": 124
+  },
+  {
+   "step": "trip detail, new property (save)",
+   "status": 200,
+   "writtenOld": 34,
+   "writtenCurrent": 23,
+   "readOld": 26,
+   "readCurrent": 26
+  },
+  {
+   "step": "jalan detail of a property listed just now (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 9300,
+   "readCurrent": 9300
+  },
+  {
+   "step": "jalan detail of a property listed just now (save)",
+   "status": 200,
+   "writtenOld": 23,
+   "writtenCurrent": 12,
+   "readOld": 26,
+   "readCurrent": 26
+  },
+  {
+   "step": "trip detail, retry (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 28,
+   "readCurrent": 28
+  },
+  {
+   "step": "trip detail, retry (save)",
+   "status": 200,
+   "writtenOld": 10,
+   "writtenCurrent": 8,
+   "readOld": 8,
+   "readCurrent": 8
+  },
+  {
+   "step": "jalan detail, 404 (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 9298,
+   "readCurrent": 9298
+  },
+  {
+   "step": "jalan detail, 404 (save)",
+   "status": 200,
+   "writtenOld": 15,
+   "writtenCurrent": 12,
+   "readOld": 11,
+   "readCurrent": 11
+  },
+  {
+   "step": "jalan list seen again (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1469,
+   "readCurrent": 1469
+  },
+  {
+   "step": "jalan list seen again (save)",
+   "status": 200,
+   "writtenOld": 284,
+   "writtenCurrent": 67,
+   "readOld": 582,
+   "readCurrent": 582
+  },
+  {
+   "step": "jalan list of new properties seen again (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1469,
+   "readCurrent": 1469
+  },
+  {
+   "step": "jalan list of new properties seen again (save)",
+   "status": 200,
+   "writtenOld": 284,
+   "writtenCurrent": 67,
+   "readOld": 578,
+   "readCurrent": 578
+  },
+  {
+   "step": "jalan detail refreshed (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 24779,
+   "readCurrent": 24779
+  },
+  {
+   "step": "jalan detail refreshed (save)",
+   "status": 200,
+   "writtenOld": 20,
+   "writtenCurrent": 12,
+   "readOld": 26,
+   "readCurrent": 26
+  },
+  {
+   "step": "trip detail refreshed (claim)",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 28,
+   "readCurrent": 28
+  },
+  {
+   "step": "trip detail refreshed (save)",
+   "status": 200,
+   "writtenOld": 20,
+   "writtenCurrent": 10,
+   "readOld": 29,
+   "readCurrent": 29
+  },
+  {
+   "step": "claim jalan detail priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 47,
+   "readCurrent": 47
+  },
+  {
+   "step": "claim jalan detail national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 8,
+   "readCurrent": 8
+  },
+  {
+   "step": "claim jalan baths priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 43,
+   "readCurrent": 43
+  },
+  {
+   "step": "claim jalan baths national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 43,
+   "readCurrent": 43
+  },
+  {
+   "step": "claim trip detail priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1069,
+   "readCurrent": 1069
+  },
+  {
+   "step": "claim trip detail national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 6,
+   "readCurrent": 6
+  },
+  {
+   "step": "claim jalan refresh priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 32,
+   "readCurrent": 32
+  },
+  {
+   "step": "claim jalan refresh national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 142,
+   "readCurrent": 142
+  },
+  {
+   "step": "claim trip refresh priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1087,
+   "readCurrent": 1087
+  },
+  {
+   "step": "claim trip refresh national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 47,
+   "readCurrent": 47
+  },
+  {
+   "step": "claim jalan list priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 6,
+   "readCurrent": 6
+  },
+  {
+   "step": "claim jalan list national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 6,
+   "readCurrent": 6
+  },
+  {
+   "step": "claim trip list priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 6,
+   "readCurrent": 6
+  },
+  {
+   "step": "claim trip list national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 6,
+   "readCurrent": 6
+  },
+  {
+   "step": "claim trip names priority",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 1075,
+   "readCurrent": 1075
+  },
+  {
+   "step": "claim trip names national",
+   "status": 200,
+   "writtenOld": 2,
+   "writtenCurrent": 2,
+   "readOld": 66,
+   "readCurrent": 66
+  },
+  {
+   "step": "run end (queue GET, full count)",
+   "status": 200,
+   "writtenOld": 3,
+   "writtenCurrent": 3,
+   "readOld": 82458,
+   "readCurrent": 82457
+  },
+  {
+   "step": "queue GET trip detail",
+   "status": 200,
+   "writtenOld": 3,
+   "writtenCurrent": 3,
+   "readOld": 77164,
+   "readCurrent": 77163
+  },
+  {
+   "step": "queue GET names",
+   "status": 200,
+   "writtenOld": 3,
+   "writtenCurrent": 3,
+   "readOld": 77043,
+   "readCurrent": 77043
+  },
+  {
+   "step": "queue GET baths",
+   "status": 200,
+   "writtenOld": 3,
+   "writtenCurrent": 3,
+   "readOld": 132259,
+   "readCurrent": 132259
+  },
+  {
+   "step": "health report",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 160522,
+   "readCurrent": 235476
+  },
+  {
+   "step": "collection status",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 83018,
+   "readCurrent": 83018
+  },
+  {
+   "step": "detail",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 12,
+   "readCurrent": 12
+  },
+  {
+   "step": "detail, new property",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 12,
+   "readCurrent": 12
+  },
+  {
+   "step": "comparison",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 36,
+   "readCurrent": 36
+  },
+  {
+   "step": "photo credits",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 42,
+   "readCurrent": 42
+  },
+  {
+   "step": "lifecycle review",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 69664,
+   "readCurrent": 92727
+  },
+  {
+   "step": "catalog export manifest",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 102171,
+   "readCurrent": 102171
+  },
+  {
+   "step": "catalog export hotels",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 251,
+   "readCurrent": 251
+  },
+  {
+   "step": "catalog export hotel_names",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 251,
+   "readCurrent": 251
+  },
+  {
+   "step": "catalog export crawl_jobs",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 251,
+   "readCurrent": 251
+  },
+  {
+   "step": "catalog export hotel_lifecycle",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 251,
+   "readCurrent": 251
+  },
+  {
+   "step": "catalog export catalog_meta",
+   "status": 200,
+   "writtenOld": 0,
+   "writtenCurrent": 0,
+   "readOld": 12,
+   "readCurrent": 12
+  }
+ ],
+ "tables": {
+  "catalog_meta": {
+   "start": 8,
+   "end": 12
+  },
+  "crawl_jobs": {
+   "start": 29942,
+   "end": 29973
+  },
+  "favorites": {
+   "start": 0,
+   "end": 0
+  },
+  "hotel_description_requests": {
+   "start": 0,
+   "end": 0
+  },
+  "hotel_description_translations": {
+   "start": 0,
+   "end": 0
+  },
+  "hotel_lifecycle": {
+   "start": 23032,
+   "end": 23063
+  },
+  "hotel_lifecycle_events": {
+   "start": 0,
+   "end": 1
+  },
+  "hotel_name_localizations": {
+   "start": 9,
+   "end": 9
+  },
+  "hotel_names": {
+   "start": 25994,
+   "end": 26029
+  },
+  "hotel_result_sessions": {
+   "start": 0,
+   "end": 0
+  },
+  "hotel_source_groups": {
+   "start": 21,
+   "end": 21
+  },
+  "hotel_source_observations": {
+   "start": 0,
+   "end": 0
+  },
+  "hotels": {
+   "start": 23032,
+   "end": 23063
+  },
+  "price_quotes": {
+   "start": 0,
+   "end": 0
+  },
+  "visitor_favorites": {
+   "start": 0,
+   "end": 0
+  }
+ },
+ "snapshot": {
+  "id": "a42256678e31bbf1",
+  "hotels": 23063,
+  "rowsReadOld": 307840,
+  "rowsReadCurrent": 307840
+ },
+ "written": {
+  "old": 1649,
+  "current": 703
+ },
+ "read": {
+  "old": 849848,
+  "current": 947863
+ },
+ "failures": []
+}
