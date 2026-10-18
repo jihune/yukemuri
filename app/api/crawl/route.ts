@@ -1,6 +1,7 @@
 import {collectionPriority} from '@/lib/collection-priorities';
 import {observeHotelPresence,observeMissingSource} from '@/lib/hotel-lifecycle';
-import { crawlUpdate,providerCooldown } from '@/lib/crawl-contract';
+import { crawlUpdate,providerCooldown,LOCALE_LIST } from '@/lib/crawl-contract';
+import {LOCALE_PRIORITY,saveLocaleNames} from '@/lib/jalan-locale-names';
 import { favoritesDb } from '@/lib/favorites-db';
 import { hotelRepository, readCoverage, readCachedCoverage, writeHotels } from '@/lib/hotel-repository';
 import { curatedCatalogHotels } from '@/lib/catalog-core';
@@ -51,6 +52,7 @@ export async function PUT(request:Request){
   const job=await db.prepare('SELECT provider,kind,attempts,status,lease_token,lease_until,last_token FROM crawl_jobs WHERE url=?').bind(update.url).first<{provider:string;kind:string;attempts:number;status:string;lease_token:string|null;lease_until:number;last_token:string|null}>();
   if(!job)return Response.json({error:'Unknown crawl job'},{status:404});
   if(update.claimToken&&job.last_token===update.claimToken)return Response.json({accepted:0,replayed:true,coverage:await readCachedCoverage(true)});
+  const locale=LOCALE_LIST.exec(update.url);if((job.kind==='names')!==!!locale)return Response.json({error:'Locale names belong to a Jalan locale list job'},{status:400});
   if(job.kind==='detail'&&update.observations.some(h=>h.id!==jobIdentity(update.url)))return Response.json({error:'Detail observation identity does not match requested property'},{status:400});
   if(update.observations.some(h=>!h.id.startsWith(job.provider+'-')||h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&s.nameLocaleUrl.replace('https://kr.trip.com/','https://www.trip.com/')!==update.url))||job.kind==='detail'&&update.status==='done'&&!update.observations.length)return Response.json({error:'Observation does not match crawl job'},{status:400});
   const claimToken=update.claimToken??crypto.randomUUID(),now=Date.now()/1000;
@@ -61,11 +63,13 @@ export async function PUT(request:Request){
   const observations=update.observations.filter(h=>!curatedIds.has(h.id));
   const linked=await writeLinkedSourceObservations(update.observations.filter(h=>curatedIds.has(h.id)) as Hotel[]);
   const normalAccepted=await writeHotels((observations as Hotel[]).map(h=>({...h,regionId:sourceRegion(h)})));
-  const accepted=linked.accepted+normalAccepted;
+  // D07: a locale list page's names, for stays already stored (lib/jalan-locale-names.ts).
+  const named=locale&&update.status==='done'?await saveLocaleNames(locale[1]==='ko_KR'?'ko':'en',update.localeNames,new Date(now*1000).toISOString()):0;
+  const accepted=linked.accepted+normalAccepted+named;
   await observeHotelPresence(observations as Hotel[],job.kind==='detail'&&update.status==='done');
   if(job.kind==='detail'&&['http_404','http_410'].includes(update.error??'')){const id=jobIdentity(update.url);if(id)await observeMissingSource(id,claimToken)}
   const observedByUrl=new Map(update.observations.map(h=>[h.links[0].url,h]));
-  const jobs=update.links.map(l=>({url:l.url,provider:l.url.includes('jalan.net')?'jalan':'trip',kind:l.kind,prefecture:l.prefecture,priority:collectionPriority(l.prefecture,l.url,observedByUrl.get(l.url))}));
+  const jobs=update.links.map(l=>({url:l.url,provider:l.url.includes('jalan.net')?'jalan':'trip',kind:l.kind,prefecture:l.prefecture,priority:l.kind==='names'?LOCALE_PRIORITY:collectionPriority(l.prefecture,l.url,observedByUrl.get(l.url))}));
   // A row that would keep its values is not updated: an update writes its row
   // and the priority index entry even when nothing changes (C04).
   const own=observedByUrl.get(update.url);if(own){const priority=collectionPriority(own.prefecture,update.url,own);await db.prepare('UPDATE crawl_jobs SET priority=?,prefecture=COALESCE(?,prefecture) WHERE url=? AND (priority IS NOT ? OR prefecture IS NOT COALESCE(?,prefecture))').bind(priority,own.prefecture,update.url,priority,own.prefecture).run()}

@@ -15,6 +15,7 @@ import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
 import {validComparisonIds} from './hotel-comparison';
 import {withWikidataNames} from './wikidata-names';
+import {localeNamesFor,prepareLocaleLists,withJalanLocaleNames} from './jalan-locale-names';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
 async function indexNames(hotels:Hotel[]){
@@ -53,7 +54,7 @@ export async function writeHotels(observations:Hotel[]){
 export type CoverageCounts={records:number;prefectures:number};
 export type CoverageJobs={provider:'trip'|'jalan';discovered:number;completed:number;details:number;pending:number;failed:number;updated:string|null};
 function coverageStatements(db:D1Database){
- return [db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels'),db.prepare("SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS details,SUM(CASE WHEN status IN ('pending','retry','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,MAX(fetched_at) AS updated FROM crawl_jobs WHERE status!='skipped' GROUP BY provider")];
+ return [db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels'),db.prepare("SELECT provider,SUM(CASE WHEN kind='detail' THEN 1 ELSE 0 END) AS discovered,SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS completed,SUM(CASE WHEN status='done' AND kind='detail' THEN 1 ELSE 0 END) AS details,SUM(CASE WHEN status IN ('pending','retry','running') THEN 1 ELSE 0 END) AS pending,SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,MAX(fetched_at) AS updated FROM crawl_jobs WHERE status!='skipped' AND kind<>'names' GROUP BY provider")];
 }
 // The collection summary from the counts and the queue rows (the snapshot
 // builder derives both from its own reads, P04).
@@ -224,7 +225,8 @@ export async function prepareOnsenCatalog(){
  const search=await preparePlaceSearch();
  const priorities=await prepareCollectionPriorities();
  const bathScope=await prepareExternalBathFacts();
- return {done:search.done&&priorities.done&&bathScope.done,search,priorities,bathScope};
+ const localeLists=await prepareLocaleLists();
+ return {done:search.done&&priorities.done&&bathScope.done,search,priorities,bathScope,localeLists};
 }
 async function backfillBathFacts(){
  // The scan for unset masks reads every hotel; run it until it finds none once.
@@ -266,8 +268,9 @@ export const hotelRepository={
    if(row.text_ko&&row.translated_at)hotel.descriptionTranslation={text:row.text_ko,translatedAt:row.translated_at};
    return[row.id,hotel];
   }));
-  // Wikidata names as the search snapshot shows them (D07).
-  return(await attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})))).map(withWikidataNames);
+  // Wikidata and Jalan locale names as the search snapshot shows them (D07).
+  const locale=await localeNamesFor(ids);
+  return(await attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})))).map(h=>withJalanLocaleNames(withWikidataNames(h),locale.get(h.id)));
  },
  async ready(){await ensureCatalog()},
 };

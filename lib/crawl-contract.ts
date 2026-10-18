@@ -8,6 +8,15 @@ export const publicUrl=z.string().url().max(600).refine(value=>{
  url.hostname==='www.trip.com'&&/^\/hotels\/(?:country\/japan\.html|[a-z0-9-]+-hotels-list-\d+\/(?:location\d+\/|zone\d+\/)?|[a-z0-9-]+-hotel-detail-\d+\/[^/]+\/?)$/.test(url.pathname));
 },'Unsupported public catalogue URL');
 const stamp=z.string().datetime({offset:true});
+// D07: one page of Jalan's Korean or English stay list for a prefecture, the first page and the
+// pages it lists, in this parameter order only. The stay date is Jalan's default (about a month
+// ahead), so a later visit lists another day's vacancies.
+export const LOCALE_LIST=/^https:\/\/www\.jalan\.net\/ui\/uip1400\/uiw1402\.do\?langCd=(ko_KR|en_US)&kenCd=(0[1-9]|[1-3]\d|4[0-7])0000&stayCount=1&roomCount=1&distCd=01&crcyCd=(KRW|USD)&activeSort=1&screenId=UIW1402&idx=([1-9]\d{0,2})&pageNum=\4$/;
+export const localeListUrl=z.string().max(600).refine(s=>{const m=LOCALE_LIST.exec(s);return!!m&&(m[1]==='ko_KR')===(m[3]==='KRW')},'Unsupported Jalan locale list page');
+export const crawlJobUrl=z.union([publicUrl,localeListUrl]);
+// A stay on that list: its Jalan number, its name there and its page on the same site (the
+// collector percent-encodes the page's name path).
+const localeName=z.object({id:z.string().regex(/^jalan-\d{1,9}$/),name:z.string().trim().min(1).max(400),url:z.string().max(600).regex(/^https:\/\/www\.jalan\.net\/(?:kr|en)\/japan_hotels_ryokan\/(?:[A-Za-z0-9_-]+\/){3,5}[A-Za-z0-9_.~%-]+\/$/)}).strict();
 const source=z.object({sourceId:z.string().max(100),sourceType:z.literal('web'),label:z.string().max(100),retrievedAt:stamp,verifiedAt:z.string().nullable(),url:publicUrl,isMock:z.literal(false),bathDataVersion:z.enum(['v1','v2','v3']).optional(),nameLocaleUrl:z.string().url().max(600).refine(s=>{const u=new URL(s);return u.origin==='https://kr.trip.com'&&!u.search&&!u.hash&&/^\/hotels\/[a-z0-9-]+-hotel-detail-\d+\/[^/]+\/?$/.test(u.pathname)}).optional()});
 const fact=z.object({value:z.boolean().nullable(),sourceId:z.string().max(100),verifiedAt:z.string().nullable(),scope:z.enum(['property','someRooms','allRooms']).optional(),note:z.string().max(3000).optional()});
 const roomCount=z.number().int().min(0).max(5000);
@@ -30,7 +39,12 @@ export const observedHotel=z.object({
  if(!property||!publicUrl.safeParse(property.url).success||!(provider==='jalan'?property.url.includes('/yad'+id+'/'):property.url.includes('hotel-detail-'+id+'/')))ctx.addIssue({code:'custom',message:'Source ID does not match property URL'});
  if(h.sources.some(s=>s.sourceId!==h.id)||h.ratings.some(r=>r.provider!==provider||r.sourceId!==h.id||r.scale!==(provider==='trip'?10:5)||r.score>r.scale)||Object.values(h.features).some(f=>f && (f.sourceId!==h.id||(f.value===null)!==(f.verifiedAt===null)))||h.rooms&&h.rooms.sourceId!==h.id||h.roomTypes?.some(s=>s.sourceId!==h.id)||h.facilityYears&&h.facilityYears.sourceId!==h.id)ctx.addIssue({code:'custom',message:'Inconsistent source, facility or rating scale'});
 });
-export const crawlUpdate=z.object({url:publicUrl,claimToken:z.string().uuid().optional(),providerCooldownSeconds:z.number().int().min(60).max(604800).optional(),providerWaitReason:z.literal('retry_after').optional(),status:z.enum(['done','retry','failed','skipped']),observations:z.array(observedHotel).max(80).default([]),links:z.array(z.object({url:publicUrl,kind:z.enum(['list','detail']),prefecture:pref.nullable()})).max(600).default([]),error:z.string().max(300).nullable().optional(),retryAfterSeconds:z.number().int().min(60).max(604800).optional(),excludedCity:z.string().regex(/^[a-z0-9-]{1,100}$/).optional()}).superRefine((u,ctx)=>{if(u.status==='skipped'&&(u.observations.length||u.links.length||u.error!=='Explicit non-Japanese source country'||!u.url.includes('www.trip.com/'))||u.excludedCity&&(u.status!=='skipped'||!new URL(u.url).pathname.startsWith('/hotels/'+u.excludedCity+'-hotels-list-')))ctx.addIssue({code:'custom',message:'Unsupported skipped source'})});
+export const crawlUpdate=z.object({url:crawlJobUrl,claimToken:z.string().uuid().optional(),providerCooldownSeconds:z.number().int().min(60).max(604800).optional(),providerWaitReason:z.literal('retry_after').optional(),status:z.enum(['done','retry','failed','skipped']),observations:z.array(observedHotel).max(80).default([]),links:z.array(z.object({url:crawlJobUrl,kind:z.enum(['list','detail','names']),prefecture:pref.nullable()})).max(600).default([]),localeNames:z.array(localeName).max(30).default([]),error:z.string().max(300).nullable().optional(),retryAfterSeconds:z.number().int().min(60).max(604800).optional(),excludedCity:z.string().regex(/^[a-z0-9-]{1,100}$/).optional()}).superRefine((u,ctx)=>{if(u.status==='skipped'&&(u.observations.length||u.links.length||u.error!=='Explicit non-Japanese source country'||!u.url.includes('www.trip.com/'))||u.excludedCity&&(u.status!=='skipped'||!new URL(u.url).pathname.startsWith('/hotels/'+u.excludedCity+'-hotels-list-')))ctx.addIssue({code:'custom',message:'Unsupported skipped source'});
+ // A locale list page reports names and its own pages only; every other page neither.
+ const page=LOCALE_LIST.exec(u.url);
+ if(page?u.observations.length||u.links.some(l=>l.kind!=='names'||LOCALE_LIST.exec(l.url)?.slice(1,4).join()!==page.slice(1,4).join())||u.localeNames.some(n=>!n.url.startsWith('https://www.jalan.net/'+(page[1]==='ko_KR'?'kr':'en')+'/'))||new Set(u.localeNames.map(n=>n.id)).size!==u.localeNames.length
+  :u.localeNames.length||u.links.some(l=>l.kind==='names'||LOCALE_LIST.test(l.url)))ctx.addIssue({code:'custom',message:'Locale names belong to a Jalan locale list page'});
+});
 
 // Page retries cannot pause the provider without an access response, a clear
 // bot challenge, or an explicit source Retry-After reported by the updater.

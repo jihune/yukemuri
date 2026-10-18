@@ -22,7 +22,7 @@ export async function collectionStatusSideRows(db=favoritesDb()){
    WHEN error IN ('ValueError','source_data_requires_review') THEN 'source_format'
    WHEN error IN ('source_redirect_requires_review','source_redirect_page_review','robots_redirect_requires_review','robots_response_requires_review','robots_response_too_large','robots_crawl_delay_requires_review','invalid_robots_crawl_delay','invalid_robots_request_rate','unsupported_source') THEN 'source_review'
    ELSE 'other' END AS reason,COUNT(*) AS count
-   FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status!='skipped' AND error IS NOT NULL
+   FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status!='skipped' AND kind<>'names' AND error IS NOT NULL
    GROUP BY provider,reason`).all<IssueRow>(),
  ]);
  return{cooldowns:cooldowns.results,issues:issues.results};
@@ -39,7 +39,7 @@ export async function readCollectionStatus(at=Date.now()):Promise<CollectionStat
    SUM(CASE WHEN status='retry' THEN 1 ELSE 0 END) AS retry,
    SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed,
    SUM(CASE WHEN lease_until>? THEN 1 ELSE 0 END) AS active
-   FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status!='skipped' GROUP BY provider`).bind(now).all<ProviderRow>(),
+   FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status!='skipped' AND kind<>'names' GROUP BY provider`).bind(now).all<ProviderRow>(),
   collectionStatusSideRows(db),
   db.prepare(`SELECT COUNT(*) AS records,
    COALESCE(SUM(CASE WHEN json_extract(payload,'$.sources[0].label') LIKE '%상세%' THEN 1 ELSE 0 END),0) AS detailRecords,
