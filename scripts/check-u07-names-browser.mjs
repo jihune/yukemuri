@@ -9,7 +9,10 @@
 //   and so is the marker's title after ‘이 지역에서 검색’ (the area search's points);
 // - the comparison: its name is the English one with the original under it, and so are its
 //   remove button's label and, on a phone, an evidence row (a wide screen has none: the cells
-//   show everything);
+//   show everything); each name carries the lang of its own language, as on the cards (a second
+//   stay is served with an English original under its Korean name, as Trip.com records have);
+// - the search box's suggestion shows the English name, though the name search still holds the
+//   stored Korean one (snapshot text, not rewritten): a suggestion follows the card, not the index;
 // - the page's agent tool read_visible_stays gives the English name.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
@@ -26,8 +29,8 @@ const [base='http://127.0.0.1:8787',evidence]=process.argv.slice(2);
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-u07-names-'));
-let displayNames;
-try{({displayNames}=createRequire(import.meta.url)(compileLib(temp,'lib/hotel-names.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
+let displayNames,nameLang;
+try{({displayNames,nameLang}=createRequire(import.meta.url)(compileLib(temp,'lib/hotel-names.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
 const search=await siteSearch(base);
 // The stay: the first of the default list with a point on the map and a Korean name to search by,
 // and a second one for the comparison.
@@ -35,7 +38,10 @@ const [stay,other]=search.list('').hotels.filter(h=>h.location.latitude!==null&&
 const korean=stay.names.ko,original=stay.names.ja,english='Kawabata Riverside Onsen Inn';
 const names={ko:original,ja:original,en:english},want=displayNames(names);
 if(want.title!==english||want.ja!==null&&want.ja!==original)throw new Error('The rule no longer gives the English name: '+JSON.stringify(want));
-const rename=h=>{if(h?.id===stay.id)h.names=names;return h};
+const otherOriginal='Riverside Test Airport Hotel by Example',otherNames={ko:other.names.ko,ja:otherOriginal,en:''};
+if(displayNames(otherNames).ja!==otherOriginal||nameLang(otherOriginal)!=='en'||nameLang(original)!=='ja'||nameLang(english)!=='en')throw new Error('The rule no longer shows the English original');
+const renames=new Map([[stay.id,names],[other.id,otherNames]]);
+const rename=h=>{const n=renames.get(h?.id);if(n)h.names=n;return h};
 const browser=await chromium.launch();
 for(const [w,mobile] of [[390,true],[1280,false]]){
  width=w;
@@ -68,19 +74,24 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
  const searched=await page.locator('.map-area-search').textContent().catch(()=>null);
  const areaTitle=await page.locator(`.leaflet-marker-icon[data-stay-ids~="${stay.id}"]`).first().getAttribute('title',{timeout:8000}).catch(()=>null);
  check(`지도를 옮겨 ‘이 지역에서 검색’을 누른 뒤에도 표지 제목이 ‘${english}’`,/다시 검색/.test(searched??'')&&!!areaTitle?.startsWith(english),{searched,areaTitle});
- // The comparison of the stay and another one.
+ // The search box's suggestions for the stay's Korean name.
  await page.goto(base+'/',{waitUntil:'networkidle'});
+ await page.getByRole('combobox',{name:'지역 또는 숙소 이름 검색'}).fill(korean);await page.waitForTimeout(800);
+ const suggested=await page.locator('.hotel-suggestion b').allTextContents();
+ check(`검색창 자동완성: 숙소 이름이 ‘${english}’`,suggested.includes(english)&&!suggested.includes(korean),{suggested});
+ // The comparison of the stay and another one.
  await page.evaluate(ids=>localStorage.setItem('yukemuri-comparison-v1',JSON.stringify(ids)),[stay.id,other.id]);
  await page.reload({waitUntil:'networkidle'});await page.waitForTimeout(500);
  await press(page.getByRole('button',{name:/^숙소 비교 열기/})).catch(()=>{});
  const sheet=page.locator('.hotel-comparison');
  await sheet.locator('.comparison-table tbody tr').first().waitFor({timeout:15000}).catch(()=>{});await page.waitForTimeout(500);
- const head=await sheet.locator('.comparison-table thead th').evaluateAll((ths,id)=>ths.map(th=>({name:th.querySelector('.comparison-hotel-name')?.textContent.trim()??null,original:th.querySelector('.comparison-hotel-name+span[lang=ja]')?.textContent.trim()??null,remove:th.querySelector('.comparison-remove')?.getAttribute('aria-label')??null})).filter(h=>h.name),stay.id);
+ const head=await sheet.locator('.comparison-table thead th').evaluateAll((ths,id)=>ths.map(th=>({name:th.querySelector('.comparison-hotel-name')?.textContent.trim()??null,nameLang:th.querySelector('.comparison-hotel-name')?.getAttribute('lang')??null,original:th.querySelector('.comparison-hotel-name+span')?.textContent.trim()??null,originalLang:th.querySelector('.comparison-hotel-name+span')?.getAttribute('lang')??null,remove:th.querySelector('.comparison-remove')?.getAttribute('aria-label')??null})).filter(h=>h.name),stay.id);
  const expand=sheet.locator('.comparison-expand:visible').first();
  if(await expand.count()){await press(expand);await page.waitForTimeout(300)}
  const evidence=await sheet.locator('.comparison-evidence li b:visible').allTextContents();
- const mine=head.find(h=>h.name===english);
+ const mine=head.find(h=>h.name===english),theirs=head.find(h=>h.name===other.names.ko);
  check(`비교 표: 이름이 ‘${english}’이고 그 아래 원어, 빼기 단추 이름${mobile?'과 근거 줄':''}도 같은 이름`,!!mine&&mine.original===original&&mine.remove===english+' 비교에서 빼기'&&(!mobile||evidence.includes(english))&&!head.some(h=>h.name===original),{head,evidence});
+ check('비교 표: 이름과 원어 줄의 lang이 그 이름의 언어(영어 이름 en, 일본어 원어 ja, 한국어 이름 없음, 영어 원어 en)',mine?.nameLang==='en'&&mine.originalLang==='ja'&&!!theirs&&theirs.nameLang===null&&theirs.original===otherOriginal&&theirs.originalLang==='en',{head});
  check('페이지 오류 없음',errors.length===0,{errors});
  await context.close();
 }

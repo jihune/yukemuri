@@ -60,6 +60,16 @@ try{
  assert.equal(suggest('Sozankoy',{minRating:10,minReviews:100000}).length,0);
  assert.equal(localHotelSuggestions(index,'소잔쿄',DEFAULT_FILTERS,new Set()).length,0);
  assert.equal(localHotelSuggestions(index,'소잔쿄',DEFAULT_FILTERS,new Set(['jalan-327522']))[0].id,'jalan-327522');
+ // A suggestion names the stay by its card title, and shows a stored name beside it only when the
+ // query matched that name, not when it matched the place (U07 task 8).
+ const titled=prepareSearchIndex([{id:'titled',names:['料亭テスト','Test Inn Beppu'],title:'테스트 료칸',location:'벳푸 · 오이타',context:'벳푸 오이타 Beppu',region:'pref-oita',prefecture:'pref-oita',kind:'ryokan',features:0,tripScore:null,tripReviews:null,jalanScore:null,jalanReviews:null}]);
+ const hit=q=>{const s=localHotelSuggestions(titled,q,DEFAULT_FILTERS)[0];return s&&[s.name,s.matchedName]};
+ assert.deepEqual(hit('料亭テスト'),['테스트 료칸','料亭テスト'],'a name query shows the matched name');
+ assert.deepEqual(hit('벳푸'),['테스트 료칸','테스트 료칸'],'a place query shows no other name');
+ // The title is trimmed (displayNames) and 145 stored first names of the 2026-10-18 public snapshot
+ // carry spaces around them: the name matched is the title, not a second name.
+ const spaced=prepareSearchIndex([{...titled[0].hotel,names:[' 테스트 료칸 ','料亭テスト']}]);
+ assert.deepEqual((({name,matchedName})=>[name,matchedName])(localHotelSuggestions(spaced,'테스트 료칸',DEFAULT_FILTERS)[0]),['테스트 료칸','테스트 료칸'],'a stored name with spaces is not shown twice');
  const large=prepareSearchIndex(Array.from({length:4},(_,batch)=>entries.map(h=>({...h,id:batch+'-'+h.id}))).flat());
  const samples=[];
  for(const q of ['소','소잔코','Sozankoy','Lake Suite','아소 소잔쿄']){

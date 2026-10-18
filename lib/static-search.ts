@@ -48,7 +48,7 @@ export function openSnapshot(manifest:SnapshotManifest,core:SnapshotCore,cards:H
 // every hotel that is not closed, in id order as the former index was.
 export function addSnapshotText(s:SearchSnapshot,text:SnapshotText){
  const hotels:SearchIndexHotel[]=[],c=s.core;
- for(let i=0;i<s.size;i++){const names=text.names[i];if(names)hotels.push({id:c.ids[i],names,location:text.location[i]!,context:text.context[i]!,region:c.region[i],prefecture:c.prefecture[i],kind:c.kind[i],features:c.features[i]??0,knownFeatures:c.known[i]??0,tripScore:c.tripScore[i],tripReviews:c.tripReviews[i],jalanScore:c.jalanScore[i],jalanReviews:c.jalanReviews[i]})}
+ for(let i=0;i<s.size;i++){const names=text.names[i];if(names)hotels.push({id:c.ids[i],names,title:displayNames(s.cards[i].names).title,location:text.location[i]!,context:text.context[i]!,region:c.region[i],prefecture:c.prefecture[i],kind:c.kind[i],features:c.features[i]??0,knownFeatures:c.known[i]??0,tripScore:c.tripScore[i],tripReviews:c.tripReviews[i],jalanScore:c.jalanScore[i],jalanReviews:c.jalanReviews[i]})}
  const keys=new Map<string,number[]>();
  text.nameKeys.forEach((list,i)=>{for(const key of list){const rows=keys.get(key);if(rows)rows.push(i);else keys.set(key,[i])}});
  s.text=text;s.index={prepared:prepareSearchIndex(hotels),keys};
