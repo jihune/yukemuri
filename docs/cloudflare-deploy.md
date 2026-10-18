@@ -193,13 +193,14 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
   - 그날 계정 전체 Worker 요청·D1 읽기·D1 쓰기 가운데 하나라도 무료 한도의 85% 이상. 한도와 계정 합계는 위 ‘사용량 측정’과 같다(`cloudflare-usage.mjs`의 `queryDay`·`LIMITS`).
   - 이 Worker의 `exceededResources`(1102·1027)가 1 이상.
   - 사용량을 읽지 못함(권한·네트워크·API 오류). 권한이 있는 조회에서 계정 값이 ‘기록 없음’이어도 판단할 수 없어 실패로 본다.
-  - 그날(UTC, 실행을 만든 시각) 만든 gentle 수집(`collect.yml`) 가운데 0쪽 실행, collect job이 26분 이상(job `timeout-minutes`), 성공하지 않은 실행(실패·취소·시간 초과), 끝난 실행의 로그에 `pages=` 줄이 없음. 진행 중인 실행은 표에만 쓴다. 그날 실행이 0회면 표에 0회로 쓰고 실패로 보지 않는다(수집이 멈추면 `collect-watch.yml`의 12시간 감시가 알린다).
+  - 그날(UTC, 실행을 만든 시각) 만든 gentle 수집(`collect.yml`) 가운데 0쪽 실행, collect job이 26분 이상(job `timeout-minutes`), 성공하지 않은 실행(실패·취소·시간 초과), 끝난 실행의 로그에 `pages=` 줄이 없음, 점검 때 아직 끝나지 않은 실행. 다음 날 점검은 다른 날을 보므로 끝나지 않은 실행은 나중에 다시 판정되지 않는다(PR #131 Codex 검토). 그래서 점검은 전날 마지막 수집과 스냅숏 배포가 끝난 뒤(01:00Z 이후)에 돌린다. 그날 실행이 0회면 표에 0회로 쓰고 실패로 보지 않는다(수집이 멈추면 `collect-watch.yml`의 12시간 감시가 알린다).
   - GitHub API로 실행·job·로그를 읽지 못함.
+- 시간 제한: Cloudflare·GitHub 요청마다 30초다. 한쪽이 응답 없이 멈춰도 다른 쪽 표와 판정은 남는다(PR #131 Codex 검토).
 - 결과: run 요약(`GITHUB_STEP_SUMMARY`) 첫 줄에 통과나 실패 건수, 이어서 실패 항목, ‘사용량 측정’과 같은 사용량 표, gentle 실행 표를 쓴다. gentle 표는 실행마다 만든 시각, 결과, ‘Size the run’의 `pages=`·`reason=`, 수집 단계 시간, collect job 시간, 처리 쪽수, 쪽 상태(done·retry·failed 수), 끝난 뒤 대기·상세 완료다. H01 7단계 매일 기록과 같은 항목이다. 로그에서 숫자만 뽑고 원출처 주소와 비밀값은 쓰지 않는다. 실패 항목마다 `::error::`도 남긴다.
 - 백업: 실행기 백업은 private 실행기 레포의 실행이라 이 레포 토큰으로 읽을 수 없다. 전날 백업 실패는 실행기 레포의 매일 점검 job이 자기 토큰으로 보고 실패로 끝난다.
 - 대조 입력 `control`(점검이 실패하는지 실제 실행으로 보이는 용도): `over-85`는 계정 D1 쓰기를 한도의 85%로, `exceeded`는 `exceededResources`를 1로, `zero-pages`는 그날 첫 gentle 실행의 쪽수를 0으로 바꾼다. 실제 값을 읽은 뒤 하나만 바꾼다. `no-permission`은 Cloudflare 조회에 일부러 틀린 토큰을 보내 실제 API의 거절이 0으로 읽히지 않는지 본다. 요약 첫 줄에 대조 입력이라고 쓴다. 대조 run도 실패 메일을 보낸다.
 - Actions 사용 시간: 이 레포는 public이라 한도가 없다. 실행기 레포의 부르기 job은 하루 약 1분이다.
-- 검사: `scripts/check-daily-check.mjs`(`cloud-check.py` 기본 목록). `usage.yml` 설정, 이 점검이 읽는 `collect.yml`의 job·단계와 수집기 출력 형식, 85% 경계(한 단위 아래 통과, 85% 실패, 세 값 각각), `exceededResources`, 기록 없는 날, 권한·네트워크·토큰 없음, 로컬 GitHub API 대역(로그 주소 302 이동 포함)으로 0쪽·26분·실패·취소·`pages=` 없음·진행 중·다른 날과 check-access 제외, GitHub 오류, 대조 입력 네 가지가 정상인 날을 실패시키는지 본다.
+- 검사: `scripts/check-daily-check.mjs`(`cloud-check.py` 기본 목록). `usage.yml` 설정, 이 점검이 읽는 `collect.yml`의 job·단계와 수집기 출력 형식, 85% 경계(한 단위 아래 통과, 85% 실패, 세 값 각각), `exceededResources`, 기록 없는 날, 권한·네트워크·토큰 없음, 로컬 GitHub API 대역(로그 주소 302 이동 포함)으로 0쪽·26분·실패·취소·`pages=` 없음·끝나지 않은 실행·다른 날과 check-access 제외, GitHub 오류, 응답 없는 요청의 시간 제한, 대조 입력 네 가지가 정상인 날을 실패시키는지 본다.
 
 ## 롤백
 

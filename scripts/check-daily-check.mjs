@@ -10,7 +10,7 @@ import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {ENDPOINT,LIMITS} from './cloudflare-usage.mjs';
 import {GENTLE_TITLE} from './check-collection-freshness.mjs';
-import {FAIL,JOB_MINUTES,COLLECT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,checkDate,usageFailures,parseLog,runFailures,dailyCheck,CheckError} from './daily-check.mjs';
+import {FAIL,JOB_MINUTES,COLLECT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,TIMEOUT_MS,checkDate,usageFailures,parseLog,runFailures,dailyCheck,CheckError} from './daily-check.mjs';
 
 // usage.yml: the check is a second step behind the boolean input, with the workflow token for Actions reads.
 const usage=readFileSync('.github/workflows/usage.yml','utf8');
@@ -71,7 +71,8 @@ assert.deepEqual(parseLog(logText(0)),{pages:0,reason:'today 120 rows written, 3
 assert.equal(parseLog('').pages,null);assert.equal(parseLog(stamp('pages=120')).pages,null,'pages= outside the budget step does not count');
 assert.equal(parseLog(logText(120).replace(/\n/g,'\r\n')).pages,120,'CRLF logs');
 
-// Runs: 0 pages, 26 minutes, not success, pages unreadable fail; in progress is not judged.
+// Runs: 0 pages, 26 minutes, not success, pages unreadable fail; so does a run not finished yet,
+// because the next day's check looks at another day (PR #131 Codex review).
 const done={status:'completed',conclusion:'success',jobSeconds:20*60,pages:120};
 assert.deepEqual(runFailures(done),[]);
 assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60-1}),[]);
@@ -79,7 +80,8 @@ assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60,conclusion:'canc
 assert.deepEqual(runFailures({...done,pages:0}),['0쪽 실행']);
 assert.deepEqual(runFailures({...done,pages:null}),['로그에서 pages= 줄을 읽지 못함']);
 assert.deepEqual(runFailures({...done,conclusion:'failure',jobSeconds:null,pages:null}),['결과 failure','로그에서 pages= 줄을 읽지 못함']);
-assert.deepEqual(runFailures({...done,status:'in_progress',conclusion:null,pages:null}),[]);
+for(const status of ['in_progress','queued'])
+ assert.deepEqual(runFailures({...done,status,conclusion:null,pages:null}),[`끝나지 않음(${status}): 다음 점검은 이 실행을 다시 보지 않는다`]);
 
 // The whole check: fake GraphQL behind the fetch it is given, GitHub through a local server.
 const CF_TOKEN='daily-cf-token',GH_TOKEN='daily-gh-token',ACCOUNT='0123456789abcdef0123456789abcdef',DB='128a3c5b-8e5f-470a-a901-d899d396cae1';
@@ -95,7 +97,7 @@ let runs=[],jobs={},logs={},ghCalls=[],ghFail=null;
 const server=createServer((req,res)=>{
  ghCalls.push({url:req.url,auth:req.headers.authorization});
  const path=req.url.split('?')[0];
- if(ghFail&&path.includes(ghFail.path)){res.statusCode=ghFail.status;res.end('{}');return}
+ if(ghFail&&path.includes(ghFail.path)){if(ghFail.status==='hang')return;res.statusCode=ghFail.status;res.end('{}');return}
  let m;
  if(/\/actions\/workflows\/collect\.yml\/runs$/.test(path)){res.setHeader('content-type','application/json');res.end(JSON.stringify({total_count:runs.length,workflow_runs:runs}));return}
  if((m=/\/actions\/runs\/(\d+)\/jobs$/.exec(path))){res.setHeader('content-type','application/json');res.end(JSON.stringify({jobs:jobs[m[1]]??[]}));return}
@@ -178,8 +180,8 @@ try{
  jobs[failed]=[]; // failed before the collect job had a log
  const running=addRun(120,{created:'2026-10-17T23:58:00Z',status:'in_progress',conclusion:null,log:false});
  result=await check();
- assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${zero}: 0쪽 실행`]);
- assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| 진행 중\\(판정 안 함\\) \\|$`,'m'));
+ assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${zero}: 0쪽 실행`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
+ assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| \\*\\*실패\\*\\* \\|$`,'m'));
  runs=runs.filter(r=>![zero,slow,failed,running].includes(r.id));
  // GitHub errors and missing settings fail; the usage table stays.
  for(const [fail,pattern] of [[{path:'/workflows/',status:403},/GitHub API 403 \(\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\)/],[{path:'/logs',status:410},/GitHub API 410/],[{path:'/blob/',status:404},/GitHub API 404/]]){
@@ -188,6 +190,18 @@ try{
   assert.match(result.lines.join('\n'),/## Cloudflare 사용량\(UTC 날짜별\)/);
  }
  assert.match((await check({GH_TOKEN:''})).failures[0],/GITHUB_REPOSITORY and GH_TOKEN are required/);
+ // A request that never answers is cut off, and the other half still reports (PR #131 Codex review).
+ assert.equal(TIMEOUT_MS,30_000);
+ // within(): without the cut-off the check would wait forever; fail in 5 s instead of hanging CI.
+ const within=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' was not cut off')),5000).unref())]);
+ const hang=async(url,init)=>url===ENDPOINT?new Promise((_,reject)=>init.signal?.addEventListener('abort',()=>reject(init.signal.reason))):fetch(url,init);
+ result=await within(dailyCheck({env,fetch:hang,now,config,timeout:300}),'Cloudflare hang');
+ assert.deepEqual(result.failures,['Cloudflare 사용량을 읽지 못함(0으로 보지 않는다): Usage query failed (DOMException)']);
+ assert.match(result.lines.join('\n'),/\| 2 \| 05:05Z \| success \|/,'gentle runs still reported');
+ ghFail={path:'/logs',status:'hang'};
+ result=await within(dailyCheck({env,fetch,now,config,timeout:300}),'GitHub hang');ghFail=null;
+ assert.deepEqual(result.failures,['gentle 수집을 읽지 못함: GitHub query failed (DOMException)']);
+ assert.match(result.lines.join('\n'),/## Cloudflare 사용량\(UTC 날짜별\)/,'usage still reported');
  // No gentle run that day: listed as 0 runs, not a failure here (collect-watch.yml alerts); zero-pages cannot apply.
  const saved=runs;runs=[];
  result=await check();assert.deepEqual(result.failures,[]);assert.match(result.lines.join('\n'),/gentle 실행 0회/);
@@ -204,5 +218,5 @@ try{
  ran=await exec({CHECK_CONTROL:'nope'});
  assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-85, exceeded, zero-pages, no-permission/);
  assert(!ran.out.includes(GH_TOKEN),'token never printed');
-}finally{server.close();rmSync(folder,{recursive:true,force:true})}
-console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 85% of each free limit (just under passes), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages, ${JOB_MINUTES} minutes, not success, no pages= line, in progress not judged, other days and check-access left out), GitHub errors, and the four controls each failing a normal day.`);
+}finally{server.closeAllConnections();server.close();rmSync(folder,{recursive:true,force:true})}
+console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 85% of each free limit (just under passes), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);

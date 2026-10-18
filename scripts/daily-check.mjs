@@ -2,8 +2,9 @@
 // day (default yesterday) it fails when the account used 85% or more of a free
 // daily limit (Worker requests, D1 rows read, D1 rows written), when this Worker
 // answered with exceededResources (errors 1102/1027), or when a gentle collection
-// of that day took 0 pages, ran its collect job 26 minutes or more, or did not
-// succeed. Usage or runs that cannot be read fail; they never read as zero. The
+// of that day took 0 pages, ran its collect job 26 minutes or more, did not
+// succeed or has not finished. Usage or runs that cannot be read fail; they never
+// read as zero. Each request stops after 30 s, so one half never blocks the other. The
 // tables go to GITHUB_STEP_SUMMARY. usage.yml runs it with check: true; the runner
 // repository dispatches that once a day and checks its own backups (its runs are
 // private). control replaces one real value after reading, to show that the check
@@ -19,6 +20,7 @@ export const COLLECT_JOB='collect';
 export const BUDGET_STEP='##[group]Run node scripts/collection-budget.mjs';
 export const COLLECTOR_STEP='Run the Python collector against the Worker';
 export const CONTROLS=['none','over-85','exceeded','zero-pages','no-permission'];
+export const TIMEOUT_MS=30_000; // each Cloudflare and GitHub request; a hang must not stop the other half
 // no-permission sends this instead of the real token, so the real API refuses it.
 export const CONTROL_TOKEN='o03-control-invalid-token';
 export class CheckError extends Error {}
@@ -69,7 +71,8 @@ export function parseLog(text){
 }
 
 export function runFailures(run){
- if(run.status!=='completed')return [];
+ // The next day's check looks at another day, so a run still open now is never judged later (PR #131 Codex review).
+ if(run.status!=='completed')return [`끝나지 않음(${run.status}): 다음 점검은 이 실행을 다시 보지 않는다`];
  const out=[];
  if(run.conclusion!=='success')out.push(`결과 ${run.conclusion}`);
  if(run.jobSeconds!==null&&run.jobSeconds>=JOB_MINUTES*60)out.push(`collect job ${Math.floor(run.jobSeconds/60)}분(${JOB_MINUTES}분 이상)`);
@@ -80,15 +83,15 @@ export function runFailures(run){
 
 const seconds=(start,end)=>{const s=Date.parse(start),e=Date.parse(end);return Number.isFinite(s)&&Number.isFinite(e)?Math.round((e-s)/1000):null};
 
-async function gh({fetch,token,api},path,text=false){
- const response=await fetch(api+path,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28'},signal:AbortSignal.timeout(30000)});
+async function gh({fetch,token,api,timeout},path,text=false){
+ const response=await fetch(api+path,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28'},signal:AbortSignal.timeout(timeout)});
  if(!response.ok)throw new CheckError(`GitHub API ${response.status} (${path.split('?')[0]})`);
  return text?response.text():response.json();
 }
 
 // Gentle runs of collect.yml created on date (UTC), oldest first, each with its job times and log values.
-export async function gentleRuns({fetch=globalThis.fetch,token,api='https://api.github.com',repo,date}){
- const ctx={fetch,token,api};
+export async function gentleRuns({fetch=globalThis.fetch,token,api='https://api.github.com',repo,date,timeout=TIMEOUT_MS}){
+ const ctx={fetch,token,api,timeout};
  const list=await gh(ctx,`/repos/${repo}/actions/workflows/${WORKFLOW}/runs?created=${encodeURIComponent(`${date}T00:00:00Z..${date}T23:59:59Z`)}&per_page=100`);
  const all=list.workflow_runs??[];
  if((list.total_count??0)>all.length)throw new CheckError(`collect.yml runs on ${date}: ${list.total_count}, more than one page`);
@@ -114,13 +117,13 @@ export function runTable(runs){
   const states=Object.entries(r.counts).map(([s,n])=>`${s} ${n}`).join(', ')||'-';
   const failures=runFailures(r);
   lines.push(`| ${r.id} | ${clock(r.createdAt)} | ${r.status==='completed'?r.conclusion:r.status} | ${r.pages??'-'} | ${(r.reason??'-').replace(/\|/g,'/')} | ${span(r.stepSeconds)} | ${span(r.jobSeconds)} `
-   +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${r.status!=='completed'?'진행 중(판정 안 함)':failures.length?'**실패**':'통과'} |`);
+   +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':'통과'} |`);
  }
- lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: 0쪽, collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝난 실행에서 \`pages=\` 줄 없음. 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
+ lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: 0쪽, collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음. 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
  return lines;
 }
 
-export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new Date(),config='cloudflare-deploy.json'}={}){
+export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new Date(),config='cloudflare-deploy.json',timeout=TIMEOUT_MS}={}){
  const control=(env.CHECK_CONTROL||'none').trim();
  if(!CONTROLS.includes(control))throw new CheckError('control must be one of '+CONTROLS.join(', '));
  const date=checkDate(env.CHECK_DATE,now);
@@ -132,7 +135,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
   if(!token)throw new UsageError('CLOUDFLARE_API_TOKEN is missing');
   if(!ACCOUNT.test(accountId))throw new UsageError('CLOUDFLARE_ACCOUNT_ID must be a 32-character account id');
   if(!UUID.test(deploy.databaseId??''))throw new UsageError('cloudflare-deploy.json has no databaseId');
-  const day=await queryDay({fetch,token,accountId,scriptName:deploy.workerName,databaseId:deploy.databaseId,date});
+  const day=await queryDay({fetch:(url,init)=>fetch(url,{...init,signal:AbortSignal.timeout(timeout)}),token,accountId,scriptName:deploy.workerName,databaseId:deploy.databaseId,date});
   if(control==='over-85')day.account.rowsWritten=Math.max(day.account.rowsWritten??0,FAIL*LIMITS.rowsWritten);
   if(control==='exceeded')day.exceeded=Math.max(day.exceeded,1);
   details.push(...report([day]).lines,'');
@@ -146,7 +149,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
  try{
   const repo=env.GITHUB_REPOSITORY??'',token=env.GH_TOKEN??'';
   if(!/^[\w.-]+\/[\w.-]+$/.test(repo)||!token)throw new CheckError('GITHUB_REPOSITORY and GH_TOKEN are required');
-  const runs=await gentleRuns({fetch,token,api:env.GITHUB_API_URL||'https://api.github.com',repo,date});
+  const runs=await gentleRuns({fetch,token,api:env.GITHUB_API_URL||'https://api.github.com',repo,date,timeout});
   if(control==='zero-pages'){
    if(runs.length)runs[0]={...runs[0],pages:0};
    else failures.push('대조 입력 zero-pages를 적용하지 못함: 그날 gentle 실행이 없다');
