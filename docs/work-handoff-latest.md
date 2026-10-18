@@ -54,7 +54,7 @@
 |---|---|---|
 | main | 이 기록 PR이 들어간다. 그 앞은 `95fdb23`(PR #155, 다섯 번째 상위 세션의 인계 기록), `17d66a6`(PR #145, D07 PR 1), `c30195b`(PR #153), `e7eedc8`(PR #152), `cdd039a`(PR #150, 코드 없는 PR 검토 상한) | `git log --oneline -5 origin/main` |
 | 열린 PR | yukemuri #151(U07 PR 나, Codex 3회째 결과 09:08Z `394b271`, 지적 있음), #154(D07 PR 2, 09:10Z 열림, head `feb3d7f`, `checks` 성공 09:14Z, 마이그레이션 0015). 실행기 저장소는 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
-| 운영 배포 | 마지막 코드 배포는 PR #145(`17d66a6`, run 39113387040, 10-18T08:56:33Z–09:07:30Z, Worker `ef25d892`, 스냅숏 `328a9a3b27cf2b8e`, 23,429곳, 생성 읽기 119,706행, 마이그레이션 없음). 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
+| 운영 배포 | 마지막 코드 배포는 PR #154(`c53137f`, run 39123791246, 10-18T11:34:33Z–11:45:36Z, Worker `6257d01d`, 마이그레이션 0015 적용, 수집기 release `b697bd50…`, 스냅숏 `f2d0fb7b8af5ce82`, 23,429곳, 생성 읽기 119,707행). 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03) | `collection-budget.mjs`는 `writesPerPage` 151, `snapshotReads` 330,000(PR #130). C04 PR #137·P04 PR #138 뒤 쪽당 쓰기와 스냅숏 읽기가 줄었고(스냅숏 257,099 → 약 12만 행), C04가 실측으로 두 값을 내리는 예산 PR을 준비한다. 앱 `collect.yml`의 마지막 실행은 10-18T05:13Z(실행기 예약 run 39099792423)이고, 09:10Z까지 다음 실행이 없었다(아래 4-4) | `H01-20261011.md` 「7단계 기록(매일)」, 실행기 'Yukemuri catalog updates'와 앱 `collect.yml` 실행 목록 |
 | 하위 세션 | 일함: O03, U07, C04, D07(아래 6). 쉼: U05, U06, L01, D05 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 여섯 번째 상위 세션에 묶인 예약 세 개(위 1-5). 하위 세션 예약: C04 수집 실측(12:25Z), O03 첫 예약 실행 확인(10-19T02:45Z), 그 밖에 U07·D07이 자기 PR 확인용으로 잡는 것. 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
@@ -104,7 +104,6 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
-| `session_0198gznZcCmyo385sXAu9HpC` | PR #151 이어 가는 Claude 검토 2회째(5번째 검토, 커밋 `d3ee9d9`) | 검토 중. 결과를 적은 뒤 보관한다 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -145,7 +144,12 @@
 - 10-18T10:59Z U07이 PR #151의 4번째 검토 지적 3건을 `42672e0`에서 고쳤다(자동완성이 스냅숏 색인의 카드 제목 `displayNames(card.names).title`을 보임, 사진 출처 API가 `displayNames(withWikidataNames(h).names).title`, 비교 표의 `lang={nameLang(...)}`). 고치기 전 빌드에서 `check-u07-names-browser` 14개 중 4개, `check-public-reads-worker`의 사진 출처 대조가 실패했다고 한다. 상위 세션이 head `d3ee9d9`의 `checks`·GitGuardian 성공(10:55:46Z), main과 합친 트리 충돌 없음, #154 head `a211968`과도 글자 충돌 없음을 확인하고, 5번째 검토(이어 가는 Claude 검토 2회째, 묻지 않고 받는 마지막 검토) 세션 `session_0198gznZcCmyo385sXAu9HpC`를 열었다(10:59:04Z). 두 PR이 모두 병합되면 사진 출처 API가 #154의 Jalan 이름을 거치지 않을 수 있어 검토 세션에 판정을 맡겼다.
 - 10-18T11:12Z D07이 알렸다: 상위 세션의 10:54Z 메시지가 11:12Z에야 닿아, 그 사이 10:15Z 지시대로 P3-2 코드 수정을 `65af84b`로 push했다(11:09:50Z). 그 세 파일을 `a211968`과 같게 되돌려 `a211968` 뒤의 차이를 기록 파일만 남기고, P3-2 수정은 다음 일에서 `65af84b`를 가져다 쓴다.
 - 10-18T11:16Z 안전망 확인 3회째: 사용량 5시간 0.06(10:40Z 재설정 뒤), 7일 0.37. 실행기 저장소 열린 PR 없음. 앱 `collect.yml` 마지막 실행은 그대로 05:13Z(공백 6시간 3분)이고 실행기 예약도 05:13Z가 마지막이며 실패 기록은 없다(위 4-4). 다음 안전망 확인은 15:15Z(`trig_01DCMUsNfw5gK7xeEhs5XQGJ`).
-- 10-18T11:2xZ 사용자가 공백을 알리기만 한 보고를 바로잡았다(위 2의 마지막 줄). 11:27Z에 원인을 분석했다(위 4-4, 근거 `docs/evidence/h01-schedule-gap-20261018/`, `slot_gaps.py`는 ruff 통과, 같은 입력으로 다시 돌려 출력이 같음을 `cmp`로 확인). 대응 선택지(그대로 둠, 실행기 cron을 매시간으로, 실행당 쪽수 상한 올림)를 사용자에게 물었고, 사용자가 ‘매시간 예약(권장)’을 골랐다(roadmap 결정 기록). 상위 세션이 맞물리는 곳을 찾았다: `collection-budget.mjs`는 실행마다 그날 사용량을 다시 읽고 자기 스냅숏 몫을 남기므로 85% 상한은 지켜지지만, `daily-check.mjs`는 그날 0쪽 실행이 하나라도 있으면 실패라 매시간이면 날마다 거짓 실패가 난다. 그래서 앱 PR(0쪽 판정)을 먼저, 실행기 PR(cron)을 그 뒤에 두는 C05를 만들어 O03 세션에 맡겼다(brief `C05-20261018.md`).
+- 10-18T11:2xZ 사용자가 공백을 알리기만 한 보고를 바로잡았다(위 2의 마지막 줄). 11:27Z에 원인을 분석했다(위 4-4, 근거 `docs/evidence/h01-schedule-gap-20261018/`, `slot_gaps.py`는 ruff 통과, 같은 입력으로 다시 돌려 출력이 같음을 `cmp`로 확인). 대응 선택지(그대로 둠, 실행기 cron을 매시간으로, 실행당 쪽수 상한 올림)를 사용자에게 물었고, 사용자가 ‘매시간 예약(권장)’을 골랐다(roadmap 결정 기록). 상위 세션이 맞물리는 곳을 찾았다: `collection-budget.mjs`는 실행마다 그날 사용량을 다시 읽고 자기 스냅숏 몫을 남기므로 85% 상한은 지켜지지만, `daily-check.mjs`는 그날 0쪽 실행이 하나라도 있으면 실패라 매시간이면 날마다 거짓 실패가 난다. 그래서 앱 PR(0쪽 판정)을 먼저, 실행기 PR(cron)을 그 뒤에 두는 C05를 만들어 O03 세션에 맡겼다(brief `C05-20261018.md`). 기록 PR #157로 병합했다(`20156a7`).
+- 10-18T11:36Z PR #154(D07 PR 2)를 병합했다(`c53137f`). 병합 조건: 마지막 검토 커밋 `a211968`과 head `dd70818`을 각각 지금 main과 합친 트리(`git merge-tree --write-tree`)의 차이가 `docs/D07-20261019.md`와 이 문서의 D07 절뿐, `dd70818`의 `checks`(11:29:03Z)·GitGuardian 성공, mergeable clean, 리뷰 스레드 8개 모두 해결. 검토는 Codex 2회, Codex 한도로 대신한 Claude 검토 1회, 이어 가는 Claude 검토 1회로 모두 4번이었다. main 배포 run 39123791246이 성공했다(11:34:33Z–11:45:36Z, 마이그레이션 0015 적용, Worker `6257d01d`, smoke 통과, `deployments.md`). 로그 추출은 하위 모델 서브에이전트가 했고, 마이그레이션·Worker·스냅숏·smoke 줄은 상위 세션이 저장된 로그에서 다시 grep했다. 그 직후 11:46:54Z에 새 수집 실행(run 39124615841)이 시작됐다(아침 공백 6시간 34분, 분석의 예상 시각 안).
+- 10-18T11:37Z PR #151의 5번째 검토(이어 가는 Claude 검토 2회째, `session_0198gznZcCmyo385sXAu9HpC`, 커밋 `d3ee9d9`, review 5562761961)는 P0~P2 없음, P3 1건이다. 4번째 지적 3건은 해결됐다. `cloud-check --full` 46개 rc 0, 로컬 사이트에서 `check-u07-names-browser` 14개·`check-u07-map-browser` 9개·`check-u02-map-browser` 55개 통과, 공개 스냅숏 질의 424개에서 검색 결과와 추천 순서가 고치기 전과 같았다. 세션은 결과를 적은 뒤 보관했다.
+  - P3(두 PR 병합 뒤 할 일): 사진 출처 API(`app/api/photo-credits/route.ts`)가 #154의 Jalan 이름을 거치지 않는다. `check-public-reads-worker`는 시드에 `hotel_locale_names` 행이 없어 이 차이를 잡지 못한다(두 PR을 합친 트리에서 재현). D07의 다음 PR(파서 P3-2)에서 함께 고치게 한다.
+  - 참고(지적 아님): 사진 alt가 수집 원래 이름이라 D07 숙소에서 카드 제목과 다르다(이 PR 전부터). `check-local-search` 주석의 ‘145곳’은 지금 공개 스냅숏에서 150곳이다.
+  - #151의 CI가 돈 뒤 코드 PR #154가 main에 들어가, U07에 최신 main을 합쳐 빠른 검사를 돌리고 push하게 했다(코드는 바꾸지 않음). 새 head의 CI가 통과하면 병합한다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
