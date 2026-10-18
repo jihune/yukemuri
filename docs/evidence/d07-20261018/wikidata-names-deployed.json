@@ -1,0 +1,702 @@
+{
+ "snapshot": "328a9a3b27cf2b8e",
+ "generatedAt": "2026-10-18T09:04:04.963Z",
+ "hotels": 23429,
+ "checkedAt": "2026-10-18T09:09:03.966Z",
+ "koreanTitles": {
+  "before": 1565,
+  "after": 1565
+ },
+ "englishNames": {
+  "before": 1278,
+  "after": 1278
+ },
+ "added": [
+  {
+   "id": "trip-1426722",
+   "item": "Q111406723",
+   "state": "shows",
+   "before": {
+    "ko": "The Prince Sakura Tower Tokyo, Autograph Collection",
+    "ja": "The Prince Sakura Tower Tokyo, Autograph Collection",
+    "en": "The Prince Sakura Tower Tokyo, Autograph Collection"
+   },
+   "ko": "프린스 사쿠라 타워 도쿄",
+   "en": null,
+   "labelEn": "The Prince Sakura Tower Tokyo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-1454519",
+   "item": "Q111406745",
+   "state": "shows",
+   "before": {
+    "ko": "Daiwa Roynet Hotel Yokohama-Koen",
+    "ja": "Daiwa Roynet Hotel Yokohama-Koen",
+    "en": "Daiwa Roynet Hotel Yokohama-Koen"
+   },
+   "ko": "다이와 로이넷 호텔 요코하마코엔",
+   "en": null,
+   "labelEn": "Daiwa Roynet Hotel Yokohama-Koen",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-1489108",
+   "item": "Q11337901",
+   "state": "shows",
+   "before": {
+    "ko": "Hotel Metropolitan Tokyo Ikebukuro",
+    "ja": "Hotel Metropolitan Tokyo Ikebukuro",
+    "en": "Hotel Metropolitan Tokyo Ikebukuro"
+   },
+   "ko": "호텔 메트로폴리탄 도쿄 이케부쿠로",
+   "en": null,
+   "labelEn": "Hotel Metropolitan Tokyo Ikebukuro",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-22678179",
+   "item": "Q112009337",
+   "state": "shows",
+   "before": {
+    "ko": "호텔 블로에멘 노스 하나조노(Hotel Bloemen North Hanazono)",
+    "ja": "호텔 블로에멘 노스 하나조노(Hotel Bloemen North Hanazono)",
+    "en": "호텔 블로에멘 노스 하나조노(Hotel Bloemen North Hanazono)"
+   },
+   "ko": null,
+   "en": "Hotel Bloemen North-Hanazono",
+   "labelEn": "Hotel Bloemen North-Hanazono",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-50999069",
+   "item": "Q112008946",
+   "state": "shows",
+   "before": {
+    "ko": "Mesm Tokyo, Autograph Collection",
+    "ja": "Mesm Tokyo, Autograph Collection",
+    "en": "Mesm Tokyo, Autograph Collection"
+   },
+   "ko": "mesm 도쿄, 오토그래프 컬렉션",
+   "en": null,
+   "labelEn": "mesm Tokyo, Autograph Collection",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-52320512",
+   "item": "Q112008954",
+   "state": "shows",
+   "before": {
+    "ko": "Mitsui Garden Hotel Toyosu Premier / Tokyo",
+    "ja": "Mitsui Garden Hotel Toyosu Premier / Tokyo",
+    "en": "Mitsui Garden Hotel Toyosu Premier / Tokyo"
+   },
+   "ko": "미츠이 가든 호텔 토요스 프리미어",
+   "en": null,
+   "labelEn": "Mitsui Garden Hotel Toyosu Premier",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-686316",
+   "item": "Q11524193",
+   "state": "shows",
+   "before": {
+    "ko": "The Tokyo Station Hotel",
+    "ja": "The Tokyo Station Hotel",
+    "en": "The Tokyo Station Hotel"
+   },
+   "ko": "도쿄 스테이션 호텔",
+   "en": null,
+   "labelEn": "Tokyo Station Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-686539",
+   "item": "Q111406698",
+   "state": "shows",
+   "before": {
+    "ko": "THE GATE HOTEL KAMINARIMON by HULIC",
+    "ja": "THE GATE HOTEL KAMINARIMON by HULIC",
+    "en": "THE GATE HOTEL KAMINARIMON by HULIC"
+   },
+   "ko": "더 게이트 호텔 카미나리몬 by HULIC",
+   "en": null,
+   "labelEn": "The Gate Hotel Kaminarimon by Hulic",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-688249",
+   "item": "Q11314630",
+   "state": "shows",
+   "before": {
+    "ko": "Hotel the Celestine Tokyo Shiba",
+    "ja": "Hotel the Celestine Tokyo Shiba",
+    "en": "Hotel the Celestine Tokyo Shiba"
+   },
+   "ko": "호텔 더 셀레스틴 도쿄 시바",
+   "en": null,
+   "labelEn": "Hotel The Celestine Tokyo Shiba",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-688271",
+   "item": "Q11524379",
+   "state": "shows",
+   "before": {
+    "ko": "Tokyo Prince Hotel",
+    "ja": "Tokyo Prince Hotel",
+    "en": "Tokyo Prince Hotel"
+   },
+   "ko": "도쿄 프린스호텔",
+   "en": null,
+   "labelEn": "Tokyo Prince Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-688422",
+   "item": "Q11337903",
+   "state": "shows",
+   "before": {
+    "ko": "Hotel Metropolitan Edmont Tokyo",
+    "ja": "Hotel Metropolitan Edmont Tokyo",
+    "en": "Hotel Metropolitan Edmont Tokyo"
+   },
+   "ko": "호텔 메트로폴리탄 에드몬트 도쿄",
+   "en": null,
+   "labelEn": "Hotel Metropolitan Edmont Tokyo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-688621",
+   "item": "Q58161897",
+   "state": "shows",
+   "before": {
+    "ko": "The Prince Park Tower Tokyo - Preferred Hotels & Resorts, LVX Collection",
+    "ja": "The Prince Park Tower Tokyo - Preferred Hotels & Resorts, LVX Collection",
+    "en": "The Prince Park Tower Tokyo - Preferred Hotels & Resorts, LVX Collection"
+   },
+   "ko": "프린스 파크 타워 도쿄 호텔",
+   "en": null,
+   "labelEn": "The Prince Park Tower Tokyo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-704012",
+   "item": "Q111406738",
+   "state": "shows",
+   "before": {
+    "ko": "The Yokohama Bay Hotel Tokyu",
+    "ja": "The Yokohama Bay Hotel Tokyu",
+    "en": "The Yokohama Bay Hotel Tokyu"
+   },
+   "ko": "요코하마 베이 호텔 도큐",
+   "en": null,
+   "labelEn": "The Yokohama Bay Hotel Tokyu",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-704030",
+   "item": "Q3530524",
+   "state": "shows",
+   "before": {
+    "ko": "Tokyo Dome Hotel",
+    "ja": "Tokyo Dome Hotel",
+    "en": "Tokyo Dome Hotel"
+   },
+   "ko": "도쿄돔 호텔",
+   "en": null,
+   "labelEn": "Tokyo Dome Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-759807",
+   "item": "Q3224503",
+   "state": "shows",
+   "before": {
+    "ko": "Grand Nikko Tokyo Daiba",
+    "ja": "Grand Nikko Tokyo Daiba",
+    "en": "Grand Nikko Tokyo Daiba"
+   },
+   "ko": "그랜드 닛코 도쿄 다이바",
+   "en": null,
+   "labelEn": "Grand Nikko Tokyo Daiba",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-926340",
+   "item": "Q11330335",
+   "state": "shows",
+   "before": {
+    "ko": "Hilton Tokyo Bay",
+    "ja": "Hilton Tokyo Bay",
+    "en": "Hilton Tokyo Bay"
+   },
+   "ko": "힐튼 도쿄 베이",
+   "en": null,
+   "labelEn": "Hilton Tokyo Bay",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-993483",
+   "item": "Q11502616",
+   "state": "shows",
+   "before": {
+    "ko": "Shin Yokohama Prince Hotel",
+    "ja": "Shin Yokohama Prince Hotel",
+    "en": "Shin Yokohama Prince Hotel"
+   },
+   "ko": "신요코하마 프린스호텔",
+   "en": null,
+   "labelEn": "Shin Yokohama Prince Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-993510",
+   "item": "Q712476",
+   "state": "shows",
+   "before": {
+    "ko": "Imperial Hotel, Tokyo",
+    "ja": "Imperial Hotel, Tokyo",
+    "en": "Imperial Hotel, Tokyo"
+   },
+   "ko": "데이코쿠 호텔",
+   "en": null,
+   "labelEn": "Imperial Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-994533",
+   "item": "Q11337870",
+   "state": "shows",
+   "before": {
+    "ko": "Sotetsu Grand Fresa Tokyo-Bay Ariake",
+    "ja": "Sotetsu Grand Fresa Tokyo-Bay Ariake",
+    "en": "Sotetsu Grand Fresa Tokyo-Bay Ariake"
+   },
+   "ko": "소테츠 그랜드 프레사 도쿄베이 아리아케",
+   "en": null,
+   "labelEn": "Sotetsu Grand Frésa Tokyo-Bay Ariake",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-994617",
+   "item": "Q3143638",
+   "state": "shows",
+   "before": {
+    "ko": "Hyatt Regency Tokyo",
+    "ja": "Hyatt Regency Tokyo",
+    "en": "Hyatt Regency Tokyo"
+   },
+   "ko": "하얏트 리젠시 도쿄",
+   "en": null,
+   "labelEn": "Hyatt Regency Tokyo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-994639",
+   "item": "Q6383787",
+   "state": "shows",
+   "before": {
+    "ko": "Keio Plaza Hotel Tokyo",
+    "ja": "Keio Plaza Hotel Tokyo",
+    "en": "Keio Plaza Hotel Tokyo"
+   },
+   "ko": "게이오 플라자 호텔",
+   "en": null,
+   "labelEn": "Keio Plaza Hotel Tokyo",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-994895",
+   "item": "Q3482163",
+   "state": "shows",
+   "before": {
+    "ko": "Shinagawa Prince Hotel",
+    "ja": "Shinagawa Prince Hotel",
+    "en": "Shinagawa Prince Hotel"
+   },
+   "ko": "시나가와 프린스호텔",
+   "en": null,
+   "labelEn": "Shinagawa Prince Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  },
+  {
+   "id": "trip-994914",
+   "item": "Q3482258",
+   "state": "shows",
+   "before": {
+    "ko": "Shinjuku Washington Hotel",
+    "ja": "Shinjuku Washington Hotel",
+    "en": "Shinjuku Washington Hotel"
+   },
+   "ko": "신주쿠 워싱턴 호텔",
+   "en": null,
+   "labelEn": "Shinjuku Washington Hotel",
+   "grade": 6,
+   "distance": null,
+   "named": true,
+   "suspicious": false,
+   "unverified": true
+  }
+ ],
+ "dropped": [],
+ "suspicious": [],
+ "unverified": [
+  "trip-1426722",
+  "trip-1454519",
+  "trip-1489108",
+  "trip-22678179",
+  "trip-50999069",
+  "trip-52320512",
+  "trip-686316",
+  "trip-686539",
+  "trip-688249",
+  "trip-688271",
+  "trip-688422",
+  "trip-688621",
+  "trip-704012",
+  "trip-704030",
+  "trip-759807",
+  "trip-926340",
+  "trip-993483",
+  "trip-993510",
+  "trip-994533",
+  "trip-994617",
+  "trip-994639",
+  "trip-994895",
+  "trip-994914"
+ ],
+ "matched": {
+  "count": 296,
+  "withPoints": 52,
+  "odd": [
+   {
+    "id": "trip-13783418",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-1454486",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-1483531",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-1500207",
+    "distance": 18,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-17084562",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-1715016",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-18090690",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-19889617",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-22257228",
+    "distance": 63,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-23152370",
+    "distance": 41,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-25721170",
+    "distance": 5,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-25797449",
+    "distance": 1,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-37913163",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-42519346",
+    "distance": 83,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-46153791",
+    "distance": 24,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-5174981",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-5611441",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-6395323",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-6596757",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-688209",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-704593",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-705328",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-705902",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-706094",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-706185",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-706395",
+    "distance": 0,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-706401",
+    "distance": 7,
+    "named": false,
+    "suspicious": false,
+    "unverified": false
+   },
+   {
+    "id": "trip-711296",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-8657775",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-9062347",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   },
+   {
+    "id": "trip-993398",
+    "distance": null,
+    "named": false,
+    "suspicious": false,
+    "unverified": true
+   }
+  ]
+ },
+ "control": {
+  "byPoint": {
+   "pair": [
+    "trip-1005520",
+    "trip-10546798"
+   ],
+   "judged": [
+    {
+     "distance": 194650,
+     "named": false,
+     "suspicious": true,
+     "unverified": false
+    },
+    {
+     "distance": 194684,
+     "named": false,
+     "suspicious": true,
+     "unverified": false
+    }
+   ]
+  }
+ }
+}

@@ -81,8 +81,9 @@ try{
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  for(let i=0;;i++){const r=await call('/api/crawl-prepare',{method:'POST'});if(r.body.done)break;assert(i<60,'crawl-prepare did not finish')}
  const page=async(name,body,provider,phase)=>{
+  const kind=phase==='localnames'?'names':phase;
   // The job as the queue holds it before the run: pending, never leased.
-  await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,?,?,?,'pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',next_at=0,lease_token=NULL,lease_until=0,last_token=NULL").bind(body.url,provider,phase,body.observations[0].prefecture??null).run();
+  await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,?,?,?,'pending',0,0) ON CONFLICT(url) DO UPDATE SET status='pending',next_at=0,lease_token=NULL,lease_until=0,last_token=NULL").bind(body.url,provider,kind,body.observations[0]?.prefecture??body.links[0]?.prefecture??null).run();
   await db.prepare("UPDATE catalog_meta SET value='0' WHERE key=?").bind('crawl-provider-ready:'+provider).run();
   const token=crypto.randomUUID(),claim=await call('/api/crawl',{method:'POST',body:JSON.stringify({provider,phase,url:body.url,token})});
   assert.equal(claim.body.jobs[0]?.url,body.url,name+': claimed another job');
@@ -90,7 +91,7 @@ try{
   const steps=[...claim.statements.map(s=>({request:'claim',...s})),...save.statements.map(s=>({request:'save',...s}))];
   const byStatement=new Map();
   for(const s of steps){const k=s.request+' '+shape(s.sql),t=byStatement.get(k)??{statement:k,calls:0,rowsWritten:0,rowsRead:0};t.calls++;t.rowsWritten+=s.rowsWritten;t.rowsRead+=s.rowsRead;byStatement.set(k,t)}
-  const row={page:name,url:body.url,observations:body.observations.length,links:body.links.length,accepted:save.body.accepted,rowsWritten:steps.reduce((n,s)=>n+s.rowsWritten,0),rowsRead:steps.reduce((n,s)=>n+s.rowsRead,0),statements:[...byStatement.values()].filter(s=>s.rowsWritten).sort((a,b)=>b.rowsWritten-a.rowsWritten)};
+  const row={page:name,url:body.url,observations:body.observations.length,...(body.localeNames?{names:body.localeNames.length}:{}),links:body.links.length,accepted:save.body.accepted,rowsWritten:steps.reduce((n,s)=>n+s.rowsWritten,0),rowsRead:steps.reduce((n,s)=>n+s.rowsRead,0),statements:[...byStatement.values()].filter(s=>s.rowsWritten).sort((a,b)=>b.rowsWritten-a.rowsWritten)};
   report.pages.push(row);
   console.log(`${name}: ${row.rowsWritten} rows written, ${row.rowsRead} read (${row.observations} observations, ${row.links} links, ${row.accepted} accepted)`);
   for(const s of row.statements)console.log(`  ${String(s.rowsWritten).padStart(5)} ${String(s.calls).padStart(3)}x ${s.statement}`);
@@ -113,13 +114,26 @@ try{
  await page('jalan list (seen again)',again.jalanList,'jalan','list');
  await page('jalan detail (refresh)',again.jalanDetail,'jalan','detail');
  await page('trip detail (refresh)',again.tripDetail,'trip','detail');
+ // D07: a page of Jalan's Korean list names 30 stored stays (lib/jalan-locale-names.ts); the
+ // same names again; then the English page for the same stays.
+ const stored=(await db.prepare("SELECT id FROM hotels WHERE id GLOB 'jalan-[0-9]*' ORDER BY id LIMIT 30").all()).results.map(r=>r.id);
+ assert.equal(stored.length,30,'30 stored Jalan stays');
+ const localePage=(lang,n)=>`https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=${lang==='ko'?'ko_KR':'en_US'}&kenCd=130000&stayCount=1&roomCount=1&distCd=01&crcyCd=${lang==='ko'?'KRW':'USD'}&activeSort=1&screenId=UIW1402&idx=${n}&pageNum=${n}`;
+ const names=lang=>({url:localePage(lang,1),status:'done',error:null,observations:[],links:[2,3].map(n=>({url:localePage(lang,n),kind:'names',prefecture:'pref-tokyo'})),localeNames:stored.map((id,i)=>({id,name:(lang==='ko'?'측정 숙소 ':'Measure Stay ')+i,url:`https://www.jalan.net/${lang==='ko'?'kr':'en'}/japan_hotels_ryokan/Hotels/Tokyo_Hotels/Tokyo_Hotels/Tokyo_Hotels/measure_${i}/`}))});
+ await page('jalan locale names (new)',names('ko'),'jalan','localnames');
+ await page('jalan locale names (seen again)',names('ko'),'jalan','localnames');
+ await page('jalan locale names (other language)',names('en'),'jalan','localnames');
  if(check){
   // C04 (2026-10-18): a new property costs its hotel row, name rows, lifecycle
   // row and detail job with their remaining indexes (11 rows); a property seen
   // again its row updates; a detail page about 11 rows. Before C04 these pages
   // wrote 598, 315, 21, 36, 285, 21 and 21 rows.
   const caps={'jalan list (new properties)':12,'jalan list (known properties)':4,'jalan list (seen again)':3};
-  const failures=report.pages.flatMap(p=>{const max=caps[p.page]?caps[p.page]*p.observations:p.page.startsWith('trip detail (new')?30:12;return p.rowsWritten>max?[`${p.page}: ${p.rowsWritten} rows written > ${max}`]:[]});
+  // D07 (2026-10-18): a locale names page writes 2 rows a new name (row and key), 1 a name
+  // in the other language, and its job rows (up to 10 for two new page links); none for a name
+  // seen again.
+  const locale={'jalan locale names (new)':[2,20],'jalan locale names (other language)':[1,20],'jalan locale names (seen again)':[0,10]};
+  const failures=report.pages.flatMap(p=>{const max=locale[p.page]?locale[p.page][0]*p.names+locale[p.page][1]:caps[p.page]?caps[p.page]*p.observations:p.page.startsWith('trip detail (new')?30:12;return p.rowsWritten>max?[`${p.page}: ${p.rowsWritten} rows written > ${max}`]:[]});
   console.log(failures.length?'D1 write bounds FAIL '+failures.length+': '+failures.join('; '):`D1 write bounds PASS (${report.pages.length} pages)`);
   if(failures.length)process.exitCode=1;
  }
