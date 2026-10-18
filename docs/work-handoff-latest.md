@@ -53,7 +53,7 @@
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
 | main | 이 기록 PR이 들어간다. 그 앞은 `2453e2d`(PR #163, C04 예산), `c3b4012`(PR #167, 기록), `2e6fe5f`(PR #165, D07 PR 3), `4f21185`(PR #164, 기록), `7541ebe`(PR #151, U07 PR 나) | `git log --oneline -6 origin/main` |
-| 열린 PR | yukemuri #166(U07 PR 다, 설명 번역, Codex 검토 중). 실행기 저장소는 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
+| 열린 PR | 없음(10-18T16:5xZ). 실행기 저장소도 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
 | 운영 배포 | 마지막 코드 배포는 PR #163(`2453e2d`, run 39137061412, 10-18T14:40:37Z–14:50:15Z, Worker `93073f52`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `52cd7de80aac09f7`, 23,784곳, 생성 읽기 122,302행)이다. 그 앞은 PR #165(`2e6fe5f`, Worker `e98b544d`, 수집기 release를 `a2b4ab75…`로 바꿈)와 PR #151(`7541ebe`, Worker `f6aa0643`)이다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 10-18T12:31Z부터 매시간 37분(`37 * * * *`, 실행기 PR #14)이다. `collection-budget.mjs`는 PR #163(10-18T14:4xZ 병합)으로 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000이다. 0쪽 실행은 수집기와 스냅숏을 건너뛰어 D1을 읽지 않는다. 매시간 예약의 첫 실행은 16:06:57Z에 왔다(실행기 run 39143537085, 12:37Z 뒤 3시간 반 동안 실행 없음, GitHub `schedule` 지연). 그 실행이 부른 앱 `collect.yml` run 39143547354(16:07:05Z–16:34:59Z, 성공)가 #163 값으로 120쪽을 잡았다(‘writes allow 384 pages, reads 294, cap 120’) | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, 실행기 `yukemuri-catalog.yml`도 같은 방법 |
 | 하위 세션 | 일함: O03, U07, C04, D07(아래 6). 쉼: U05, U06, L01, D05 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
@@ -99,7 +99,7 @@
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01PuNgLiSyMdn35DxmRigJmK`, `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 세 번째, 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화와 C05 수집 예약 매시간(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함. C05 첫 매시간 실행 확인(12:58Z), 첫 매일 점검 확인(10-19T02:45Z), C05 이틀 측정(10-21T02:10Z) |
-| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함. PR 다(설명 번역) |
+| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함. #166 병합, P3 다섯 건의 후속 PR |
 | `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기와 P04(브랜치 `claude/c04-writes`) | 쉼. #163·#169 병합, 다음 작업 후보는 C05 이틀 측정 뒤 제안 |
 | `session_01P9cAoY1mYPco2JKPBhvgqv` | D07 한국어·영어 숙소 이름 넓히기(브랜치 `claude/d07-names`) | 쉼. PR 3(#165) 병합, 다음 일 없음 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
@@ -107,7 +107,6 @@
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼, D04 다음 단계 시작 알림 대기 |
 | `session_01M7TTyzzQPadBMiWAGFWCR4` | 하네스 관리 세션(`jihune/agent-harness`) | 다른 저장소 |
-| `session_011ftGMKE9wzyRMiBQjXiP2B` | #166 4번째 검토(이어 가는 Claude 검토 1회째, 커밋 `07636a6`) | 일함. 결과를 기록한 뒤 보관 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
 ### 7. 인계 결과(다음 상위 세션이 적는다)
@@ -137,6 +136,7 @@
 - 10-18T15:35Z U07이 알렸다: #166 Codex 2회째 P2는 상위 세션 결정대로 고쳤고(검토 커밋 `34f99a8`), Codex 3회째(마지막 Codex 회차) P2 1건(키보드로 번역 단추를 누르면 번역이 끝날 때 단추가 다른 요소로 바뀌어 포커스가 빠지고, 스크린리더에 완료를 알리지 않음)을 `b6637df`에서 고치는 중이다(단추와 `role=status` 상태 줄을 모든 상태에서 같은 요소로, 번역 중에는 `aria-disabled`, 완료 문구, 키보드 포커스 검사). 고치기 전 빌드에서 14개 중 2개 실패. 검사가 통과하면 push하고, CI 뒤 상위 세션에 이어 가는 Claude 검토 1회째(4번째 검토)를 요청한다.
 - 10-18T16:15Z U07의 요청으로 #166의 4번째 검토(이어 가는 Claude 검토 1회째) 세션 `session_011ftGMKE9wzyRMiBQjXiP2B`를 열었다(검토 커밋 `07636a6`). 열기 전 확인: `07636a6`의 `checks`(16:12:16Z)·GitGuardian 성공, 지금 main과 merge-tree 충돌 없음. U07의 확인: 3회째 P2는 `b6637df`에서 고침(고치기 전 빌드에서 14개 중 2개 실패), `cloud-check --full` 47개(15:45:09Z), 브라우저 검사 20개 중 19개 통과(`check-u02-map`이 geo.json을 5초 안에 못 받아 1개 실패, 다시 돌려 55개 통과, 지도 코드는 이 PR이 바꾸지 않음), hydration 오류 0건(대조 2건).
 - 10-18T16:42Z 매시간 예약의 첫 실행이 16:06:57Z에 왔다(실행기 run 39143537085, 12:37Z 뒤 3시간 반). 앱 `collect.yml` run 39143547354(16:07:05Z–16:34:59Z) 성공. C04가 기록 PR #169(C04 문서만)를 열어 병합했다(`14ec90d`, GitGuardian 성공, 충돌 없음). C04의 실측: ‘Size the run’ 줄 `today 13861 rows written, 2622386 read; writes allow 384 pages, reads 294, cap 120`(쪽수는 상한 120이 정함). 11:46Z 실행의 쓰기 7,133행(쪽당 많아야 59.4행, `writesPerPage` 185 안), 읽기 862,413행(스냅숏 다섯 번과 실행 고정 84,961행을 빼면 쪽당 1,382.8행). 16:07Z 실행 뒤 스냅숏은 24,208곳·125,002행이라 `snapshotReads` 168,000까지 42,998행 남음(10-17 증가 속도로 이틀 남짓, C05 측정 뒤 다시 봄).
+- 10-18T16:5xZ #166의 4번째 검토(`session_011ftGMKE9wzyRMiBQjXiP2B`, 커밋 `07636a6`, review 5563927456)는 P0~P2 없음, P3 5건이었다. Codex 지적 세 건의 해결을 재현으로 확인했다(hydration은 `renderToString`과 jsdom `hydrateRoot`로 `07636a6` 오류 0건, 대조 `800a60e` 1건; 포커스는 `disabled`를 심은 사본에서 검사 실패). `cloud-check --full` 47개 rc 0, 로컬 사이트에서 브라우저 검사 20개 모두 통과. 미확인: 실제 Chrome·Edge 정식판과 실제 모델 번역, 휴대폰·Safari·Firefox, 스크린리더. P3: 모델을 받는 중 언마운트되면 번역기가 destroy되지 않음, 검사의 ‘줄마다’ 판정이 실제로 판정하지 못함(체크인 설명에 줄바꿈 0개), 데스크톱인데 unavailable일 때 안내 문구와 모델 크기, U07 문서의 Edge 지원 표 출처, 번역 없는 원문 단락의 `lang`(이 PR 전부터). 상위 세션이 P3 네 스레드에 ‘다음 일로 넘김’을 답하고 해결한 뒤 #166을 병합했다(`1e03978`). 병합 조건: head가 마지막 검토 커밋과 같고 지금 main과 합친 트리도 같음, `checks`(16:12:16Z)·GitGuardian 성공, 스레드 7개 모두 해결, mergeable clean. CI는 #163 병합(14:4xZ) 뒤에 돌았고 그 뒤 main에 들어온 것은 기록 PR뿐이다. U07에 P3 다섯 건의 작은 후속 PR을 최신 main에서 열게 했다. 검토 세션은 이 기록 뒤 보관한다.
 - 10-18T14:28Z C04가 #163 병합 준비를 알렸다. Codex 3회(1회째 P2 2건, 2회째 P2 1건, 모두 고침; 3회째 `1ec0b43` ‘큰 문제 없음’), head가 마지막 검토 커밋과 같음, `checks`(run 39131681118)·GitGuardian 성공. 최종 값은 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000(새 값)이다. 그 CI 뒤 코드 PR #165가 main에 들어가(두 PR이 함께 고친 파일 없음, merge-tree 충돌 없음), 상위 세션이 C04에 최신 main을 merge로 합쳐 빠른 검사 뒤 push하게 했다. 새 head의 CI가 통과하면 병합한다. 병합 뒤 11:46Z 실행의 쓰기 실측은 C04가 C04 문서만 고친 기록 PR로 올린다. 다음 작업 후보 두 가지(실행 안에서 쓴 행·읽은 행을 재며 멈춤, 몇 쪽짜리 마지막 실행 건너뛰기)는 C05 이틀 측정 뒤 상위 세션이 사용자에게 함께 제안한다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
