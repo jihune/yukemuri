@@ -1,0 +1,195 @@
+{
+ "checkedAt": "2026-10-18T06:55:57.582Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 360,
+   "name": "주소 ?region=pref-okinawa로 열면 지역·검색어가 그대로이고 제목이 ‘오키나와 34곳’, 지역 선택 상자가 ‘오키나와’",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "주소 ?region=pref-hokkaido로 열면 지역·검색어가 그대로이고 제목이 ‘홋카이도 77곳’, 지역 선택 상자가 ‘홋카이도’",
+   "pass": true,
+   "detail": {
+    "h2": "홋카이도 77곳",
+    "place": "홋카이도",
+    "search": "?region=pref-hokkaido&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "홋카이도 77곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "주소 ?region=sapporo로 열면 지역·검색어가 그대로이고 제목이 ‘삿포로 61곳’, 지역 선택 상자가 ‘삿포로’",
+   "pass": true,
+   "detail": {
+    "h2": "삿포로 61곳",
+    "place": "삿포로",
+    "search": "?region=sapporo&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "삿포로 61곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "주소 ?region=pref-ooita&q=別府로 열면 지역·검색어가 그대로이고 제목이 ‘오이타 · 유후인 1곳’, 지역 선택 상자가 ‘벳푸’",
+   "pass": true,
+   "detail": {
+    "h2": "오이타 · 유후인 1곳",
+    "place": "벳푸",
+    "search": "?region=pref-ooita&q=%E5%88%A5%E5%BA%9C&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오이타 · 유후인 1곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "지역 선택 상자로 ‘오키나와’를 고르면 주소·제목·상자가 그 지역으로 바뀜(제목 ‘오키나와 34곳’)",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "주소 ?region=pref-okinawa로 열면 지역·검색어가 그대로이고 제목이 ‘오키나와 34곳’, 지역 선택 상자가 ‘오키나와’",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "주소 ?region=pref-hokkaido로 열면 지역·검색어가 그대로이고 제목이 ‘홋카이도 77곳’, 지역 선택 상자가 ‘홋카이도’",
+   "pass": true,
+   "detail": {
+    "h2": "홋카이도 77곳",
+    "place": "홋카이도",
+    "search": "?region=pref-hokkaido&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "홋카이도 77곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "주소 ?region=sapporo로 열면 지역·검색어가 그대로이고 제목이 ‘삿포로 61곳’, 지역 선택 상자가 ‘삿포로’",
+   "pass": true,
+   "detail": {
+    "h2": "삿포로 61곳",
+    "place": "삿포로",
+    "search": "?region=sapporo&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "삿포로 61곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "주소 ?region=pref-ooita&q=別府로 열면 지역·검색어가 그대로이고 제목이 ‘오이타 · 유후인 1곳’, 지역 선택 상자가 ‘벳푸’",
+   "pass": true,
+   "detail": {
+    "h2": "오이타 · 유후인 1곳",
+    "place": "벳푸",
+    "search": "?region=pref-ooita&q=%E5%88%A5%E5%BA%9C&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오이타 · 유후인 1곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "지역 선택 상자로 ‘오키나와’를 고르면 주소·제목·상자가 그 지역으로 바뀜(제목 ‘오키나와 34곳’)",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "주소 ?region=pref-okinawa로 열면 지역·검색어가 그대로이고 제목이 ‘오키나와 34곳’, 지역 선택 상자가 ‘오키나와’",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "주소 ?region=pref-hokkaido로 열면 지역·검색어가 그대로이고 제목이 ‘홋카이도 77곳’, 지역 선택 상자가 ‘홋카이도’",
+   "pass": true,
+   "detail": {
+    "h2": "홋카이도 77곳",
+    "place": "홋카이도",
+    "search": "?region=pref-hokkaido&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "홋카이도 77곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "주소 ?region=sapporo로 열면 지역·검색어가 그대로이고 제목이 ‘삿포로 61곳’, 지역 선택 상자가 ‘삿포로’",
+   "pass": true,
+   "detail": {
+    "h2": "삿포로 61곳",
+    "place": "삿포로",
+    "search": "?region=sapporo&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "삿포로 61곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "주소 ?region=pref-ooita&q=別府로 열면 지역·검색어가 그대로이고 제목이 ‘오이타 · 유후인 1곳’, 지역 선택 상자가 ‘벳푸’",
+   "pass": true,
+   "detail": {
+    "h2": "오이타 · 유후인 1곳",
+    "place": "벳푸",
+    "search": "?region=pref-ooita&q=%E5%88%A5%E5%BA%9C&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오이타 · 유후인 1곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지역 선택 상자로 ‘오키나와’를 고르면 주소·제목·상자가 그 지역으로 바뀜(제목 ‘오키나와 34곳’)",
+   "pass": true,
+   "detail": {
+    "h2": "오키나와 34곳",
+    "place": "오키나와",
+    "search": "?region=pref-okinawa&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split",
+    "want": "오키나와 34곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

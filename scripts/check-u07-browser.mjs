@@ -1,5 +1,6 @@
 // U07 in real Chromium, docs/U07-20261019.md: 360·390px touch and 720px mouse (the filter in the
-// bottom sheet), 1280px mouse and 1366px touch (the filter panel beside the list, two columns):
+// bottom sheet), 901px touch (the narrowest panel beside the list), 1280px mouse and 1366px touch
+// (the panel at its widest, two columns):
 // - the filter's bath buttons keep every letter in place when pressed: the label's text box, the
 //   count's line and the button's height are the same before and after, the check mark has its
 //   own place from the start, and no button cuts its text or puts it under its ‘?’, even with a
@@ -9,7 +10,7 @@
 //   keyboard focus, and Escape hides it; a touch screen, and any pointer in the bottom sheet
 //   (no room beside it), has a 44px ‘?’ in the option that opens the same text under the option,
 //   inside the screen, clear of the option's name, and a press elsewhere closes it; a press on an
-//   option opens no tooltip;
+//   option opens no tooltip, nor does a mouse resting on one in the sheet;
 // - names: Korean, else English, else the original name (lib/hotel-names.ts displayNames, user
 //   decision 2026-10-17), the original beside it; the detail shows Korean, English, original in
 //   that order; each English or original name has a 44px copy button that puts the name on the
@@ -38,7 +39,7 @@ const QUICK=['내 기준','천연온천','노천탕','전세탕','객실 온천'
 // A stay with Korean, English and original names, for the detail's order.
 const first=search.list('').hotels,full=first.find(h=>{const n=displayNames(h.names);return n.titleLang==='ko'&&n.en&&n.ja});
 const browser=await chromium.launch();
-for(const [w,mobile] of [[360,true],[390,true],[720,false],[1280,false],[1366,true]]){
+for(const [w,mobile] of [[360,true],[390,true],[720,false],[901,true],[1280,false],[1366,true]]){
  width=w;
  // The filter is in the bottom sheet up to 900px, beside the list from 901px.
  const sheet=w<=900;
@@ -155,10 +156,14 @@ for(const [w,mobile] of [[360,true],[390,true],[720,false],[1280,false],[1366,tr
    await press(title);await page.waitForTimeout(300);
    groupClosed=await inGroup.getAttribute('aria-expanded');
   }
+  // A mouse in the sheet rests on an option in each column: no tooltip. (Pressing alone proves
+  // nothing for a mouse: Radix drops a tooltip on pointerdown.)
+  const hovered=[];
+  if(!mobile)for(const i of [1,2]){await page.mouse.move(2,2,{steps:5});await quick.nth(i).hover();await page.waitForTimeout(900);hovered.push(await page.locator('[data-slot=tooltip-content]').evaluateAll(list=>list.filter(t=>t.checkVisibility()&&t.dataset.state!=='closed').length))}
   await press(quick.nth(2));await page.waitForTimeout(600);
   const tooltips=await page.locator('[data-slot=tooltip-content]').count();
   const fits=o=>o.expanded==='true'&&o.top>=0&&o.top<=8&&o.left===0&&o.right===0&&o.inScreen;
-  check(`${mobile?'터치':'마우스'}·${sheet?'아래 시트':'옆 패널'}: 옵션 15개(빠른 조건 7개, 묶음 안 8개)마다 44px ‘?’가 이름과 겹치지 않게 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며(빠른 조건과 묶음 안 옵션 하나씩), 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음`,buttons.length===15&&new Set(buttons.map(b=>b.label)).size===15&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label)&&!b.overName)&&fits(open)&&/원천을 흘려보내는/.test(open.text)&&closed==='false'&&!!groupOpen&&fits(groupOpen)&&/료칸/.test(groupOpen.text)&&groupClosed==='false'&&tooltips===0,{buttons,open,closed,groupOpen,groupClosed,tooltips});
+  check(`${mobile?'터치':'마우스'}·${sheet?'아래 시트':'옆 패널'}: 옵션 15개(빠른 조건 7개, 묶음 안 8개)마다 44px ‘?’가 이름과 겹치지 않게 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며(빠른 조건과 묶음 안 옵션 하나씩), 다른 곳을 누르면 닫힘. 옵션을 누르거나${mobile?'':' 마우스를 올려도'} 툴팁은 뜨지 않음`,buttons.length===15&&new Set(buttons.map(b=>b.label)).size===15&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label)&&!b.overName)&&fits(open)&&/원천을 흘려보내는/.test(open.text)&&closed==='false'&&!!groupOpen&&fits(groupOpen)&&/료칸/.test(groupOpen.text)&&groupClosed==='false'&&tooltips===0&&hovered.every(n=>n===0),{buttons,open,closed,groupOpen,groupClosed,tooltips,hovered});
   }
  }else{
   // A mouse: no ‘?’ in the options; hovering shows the tooltip past the panel's right edge.
