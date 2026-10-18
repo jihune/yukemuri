@@ -39,17 +39,17 @@ const OPTION_HELP:Record<HelpKey,string>={
 type Tip={open:string|null;setOpen:(key:string|null)=>void};
 function Option({tip,name,label,children}:{tip:Tip;name:HelpKey;label:string;children:(describedBy:string)=>ReactNode}){
  const id=useId(),box=useRef<HTMLDivElement>(null),open=tip.open===name,{setOpen}=tip,[offset,setOffset]=useState(10);
+ // Past the panel's outer right edge (its scrollbar included), so the tooltip never covers the
+ // option beside this one. Measured as the pointer comes in or the focus arrives, before the
+ // tooltip opens (Radix places it once with the offset it opens with).
+ const measure=()=>{const panel=box.current?.closest('.desktop-filters,.filter-content')?.getBoundingClientRect(),own=box.current?.getBoundingClientRect();if(panel&&own)setOffset(Math.max(10,Math.round(panel.right-own.right+12)))};
  useEffect(()=>{
   if(!open)return;
   const away=(e:PointerEvent)=>{if(!box.current?.contains(e.target as Node))setOpen(null)};
   document.addEventListener('pointerdown',away);return()=>document.removeEventListener('pointerdown',away);
  },[open,setOpen]);
  return <div ref={box} className={'filter-option'+(open?' is-open':'')}>
-  <div className="filter-option-row"><Tooltip onOpenChange={on=>{
-   // Past the panel's right edge, so the tooltip never covers the option beside this one.
-   const panel=box.current?.closest('.filter-content')?.getBoundingClientRect(),own=box.current?.getBoundingClientRect();
-   if(on&&panel&&own)setOffset(Math.max(10,panel.right-own.right+10));
-  }}><TooltipTrigger asChild>{children(id)}</TooltipTrigger><TooltipContent side="right" align="start" sideOffset={offset} collisionPadding={8} className="option-tip-float">{OPTION_HELP[name]}</TooltipContent></Tooltip>
+  <div className="filter-option-row"><Tooltip><TooltipTrigger asChild onPointerEnter={measure} onFocus={measure}>{children(id)}</TooltipTrigger><TooltipContent side="right" align="start" sideOffset={offset} collisionPadding={8} className="option-tip-float">{OPTION_HELP[name]}</TooltipContent></Tooltip>
    <button type="button" className="option-help" aria-label={label+' 도움말'} aria-expanded={open} aria-controls={id} onClick={()=>setOpen(open?null:name)}>?</button></div>
   <p className="option-tip" id={id} hidden={!open}>{OPTION_HELP[name]}</p>
  </div>;

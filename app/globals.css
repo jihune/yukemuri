@@ -1134,6 +1134,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .option-tip{position:absolute;left:0;right:0;z-index:5;margin:4px 0 0;padding:8px 10px;border-radius:var(--yk-radius-sm);background:var(--yk-text);color:#fff;font-size:var(--yk-fs-xs);font-weight:500;line-height:1.6;box-shadow:0 4px 14px #0d2a3040}
 .option-tip[hidden]{display:none}
 .option-tip-float{max-width:min(280px,calc(100vw - 16px));font-size:var(--yk-fs-xs)!important;line-height:1.6;font-weight:500}
+/* It fades in where it stays; sliding in from the left would cross the panel's edge. */
+.option-tip-float[data-side]{--tw-enter-translate-x:0;--tw-enter-translate-y:0;--tw-exit-translate-x:0;--tw-exit-translate-y:0}
 @media (hover:none){
   .option-help{display:inline-grid;place-items:center;position:absolute;top:0;right:0;bottom:0;width:var(--yk-tap);min-height:var(--yk-tap);border-radius:var(--yk-radius-sm);color:var(--yk-primary);font-weight:800;font-size:var(--yk-fs-sm)}
   .filter-option-row:has([aria-pressed=true]) .option-help{color:var(--yk-on-primary)}

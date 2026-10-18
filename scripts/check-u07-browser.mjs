@@ -124,45 +124,65 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  await toggleAll(false);await page.waitForTimeout(300);
  const helps=await panel.evaluate(p=>[...p.querySelectorAll('.filter-chip,[role=switch]')].map(b=>{const id=b.getAttribute('aria-describedby'),d=id&&document.getElementById(id);return{name:(b.querySelector('span:not(:empty)')??b).textContent.trim(),text:d?.textContent.trim()??''}}));
  check(`필터 옵션 ${helps.length}개마다 도움말이 있고 옵션과 함께 읽힘(aria-describedby), 문구가 서로 다름`,helps.length>=15&&helps.every(h=>h.text.length>=10)&&new Set(helps.map(h=>h.text)).size===helps.length&&/대욕탕만 확인된 숙소/.test(helps.find(h=>h.name==='천연온천')?.text??''),{helps});
+ // A help opened from inside a group lies under its option across the group's list.
+ const underOption=b=>{const t=document.getElementById(b.getAttribute('aria-controls')),r=t.getBoundingClientRect(),own=b.closest('.filter-option').getBoundingClientRect(),list=b.closest('.filter-quick,.filter-group-items').getBoundingClientRect();return{expanded:b.getAttribute('aria-expanded'),text:t.checkVisibility()?t.textContent:'',top:Math.round(r.top-own.bottom),left:Math.round(r.left-list.left),right:Math.round(list.right-r.right),inScreen:r.left>=0&&r.right<=innerWidth}};
  if(mobile){
-  await toggleAll(true);
-  await page.waitForTimeout(300);
-  // A touch screen: a 44px ‘?’ in each option; it opens the help under the option.
-  const buttons=await panel.locator('.filter-quick .option-help').evaluateAll(list=>list.map(b=>{const r=b.getBoundingClientRect();return{visible:b.checkVisibility(),w:Math.round(r.width),h:Math.round(r.height),label:b.getAttribute('aria-label')}}));
+  // A touch screen: a 44px ‘?’ in every option, the 7 quick ones and the 8 inside the groups
+  // (all open here); each opens its help under the option.
+  const buttons=await panel.locator('.option-help').evaluateAll(list=>list.map(b=>{const r=b.getBoundingClientRect();return{visible:b.checkVisibility(),w:Math.round(r.width),h:Math.round(r.height),label:b.getAttribute('aria-label')}}));
   const help=panel.locator('.filter-quick .option-help',{hasText:'?'}).nth(5);
   if(!await help.count()){check('휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',false,{buttons})}else{
   await press(help);await page.waitForTimeout(300);
-  const open=await help.evaluate(b=>{const t=document.getElementById(b.getAttribute('aria-controls')),r=t.getBoundingClientRect(),own=b.closest('.filter-option').getBoundingClientRect(),list=b.closest('.filter-quick').getBoundingClientRect();return{expanded:b.getAttribute('aria-expanded'),text:t.checkVisibility()?t.textContent:'',top:Math.round(r.top-own.bottom),left:Math.round(r.left-list.left),right:Math.round(list.right-r.right),inScreen:r.left>=0&&r.right<=innerWidth}});
+  const open=await help.evaluate(underOption);
   await shot(panel,'filter-help');
-  await press(page.locator('.filter-drawer .mobile-sheet-title h2,.filter-drawer [data-slot=drawer-title]').first());await page.waitForTimeout(300);
+  const title=page.locator('.filter-drawer .mobile-sheet-title h2,.filter-drawer [data-slot=drawer-title]').first();
+  await press(title);await page.waitForTimeout(300);
   const closed=await help.getAttribute('aria-expanded');
+  // One inside a group: ‘료칸만 보기’.
+  const inGroup=panel.locator('.filter-group-items .option-help[aria-label="료칸만 보기 도움말"]');
+  let groupOpen=null,groupClosed=null;
+  if(await inGroup.isVisible()){
+   await inGroup.scrollIntoViewIfNeeded();await press(inGroup);await page.waitForTimeout(300);
+   groupOpen=await inGroup.evaluate(underOption);
+   await press(title);await page.waitForTimeout(300);
+   groupClosed=await inGroup.getAttribute('aria-expanded');
+  }
   await press(quick.nth(2));await page.waitForTimeout(600);
   const tooltips=await page.locator('[data-slot=tooltip-content]').count();
-  check('휴대폰: 옵션마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며, 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',buttons.length===7&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label))&&open.expanded==='true'&&/원천을 흘려보내는/.test(open.text)&&open.top>=0&&open.top<=8&&open.left===0&&open.right===0&&open.inScreen&&closed==='false'&&tooltips===0,{buttons,open,closed,tooltips});
+  const fits=o=>o.expanded==='true'&&o.top>=0&&o.top<=8&&o.left===0&&o.right===0&&o.inScreen;
+  check('휴대폰: 옵션 15개(빠른 조건 7개, 묶음 안 8개)마다 44px ‘?’가 있고, 누르면 그 옵션 바로 아래에 목록 폭으로 도움말이 화면 안에 열리며(빠른 조건과 묶음 안 옵션 하나씩), 다른 곳을 누르면 닫힘. 옵션을 눌러도 툴팁은 뜨지 않음',buttons.length===15&&new Set(buttons.map(b=>b.label)).size===15&&buttons.every(b=>b.visible&&b.w>=44&&b.h>=44&&/도움말$/.test(b.label))&&fits(open)&&/원천을 흘려보내는/.test(open.text)&&closed==='false'&&!!groupOpen&&fits(groupOpen)&&/료칸/.test(groupOpen.text)&&groupClosed==='false'&&tooltips===0,{buttons,open,closed,groupOpen,groupClosed,tooltips});
   }
  }else{
-  await toggleAll(true);
-  await page.waitForTimeout(300);
   // A mouse: no ‘?’ in the options; hovering shows the tooltip past the panel's right edge.
   const visibleHelp=await panel.locator('.option-help').evaluateAll(list=>list.filter(b=>b.checkVisibility()).length);
-  await page.mouse.move(5,5);await page.waitForTimeout(200);
-  const chip=quick.nth(5);await chip.hover();await page.waitForTimeout(800);
   const tip=()=>page.evaluate(()=>{const t=[...document.querySelectorAll('[data-slot=tooltip-content]')].find(e=>e.checkVisibility()&&e.dataset.state!=='closed');if(!t)return null;const r=t.getBoundingClientRect(),p=document.querySelector('.desktop-filters').getBoundingClientRect();return{text:t.textContent,left:Math.round(r.left),panelRight:Math.round(p.right),right:Math.round(r.right),vw:innerWidth}});
   // The tooltip opens after 0.3s and fades out when it closes: poll up to 2s for each state.
-  const until=async want=>{for(let t=0;t<20;t++){const r=await tip();if(!!r===want)return r;await page.waitForTimeout(100)}return tip()};
+  // An open tooltip is read once two reads agree, so it is where it stays.
+  const until=async want=>{let last=null;for(let t=0;t<20;t++){const r=await tip();if(!!r===want&&(!want||JSON.stringify(r)===JSON.stringify(last)))return r;last=r;await page.waitForTimeout(100)}return tip()};
+  // First a switch inside an open group (‘료칸만 보기’), then the groups close and a quick button.
+  await page.mouse.move(5,5);await page.waitForTimeout(200);
+  await panel.locator('[role=switch]',{hasText:'료칸만 보기'}).hover();
+  const groupHovered=await until(true);
+  await page.mouse.move(5,5,{steps:10});await until(false);
+  await toggleAll(true);await page.waitForTimeout(300);
+  const chip=quick.nth(5);await chip.hover();
   const hovered=await until(true);
   if(shots)await page.screenshot({path:join(shots,`filter-hover-${w}.png`),clip:{x:0,y:0,width:720,height:640}});
   // A real mouse moves in many small steps; Radix keeps the tooltip while the pointer may be on
   // its way to it and closes it on the next move outside that path.
   await page.mouse.move(5,5,{steps:10});
   const gone=await until(false);
-  check('마우스: 옵션에 ‘?’ 단추 없이, 올리면 도움말 툴팁이 패널 오른쪽 바깥(다른 옵션을 가리지 않음)에 화면 안으로 뜨고, 벗어나면 사라짐',visibleHelp===0&&hovered&&/원천을 흘려보내는/.test(hovered.text)&&hovered.left>=hovered.panelRight&&hovered.right<=hovered.vw&&!gone,{visibleHelp,hovered,gone});
+  const outside=t=>!!t&&t.left>=t.panelRight&&t.right<=t.vw;
+  check('마우스: 옵션에 ‘?’ 단추 없이, 빠른 조건과 묶음 안 옵션에 올리면 도움말 툴팁이 패널 오른쪽 바깥(다른 옵션을 가리지 않음)에 화면 안으로 뜨고, 벗어나면 사라짐',visibleHelp===0&&outside(groupHovered)&&/료칸/.test(groupHovered.text)&&outside(hovered)&&/원천을 흘려보내는/.test(hovered.text)&&!gone,{visibleHelp,groupHovered,hovered,gone});
   // A keyboard: focus shows it, Escape hides it and the focus stays.
+  // After the mouse's tooltip has faded out.
+  await page.waitForTimeout(500);
   await quick.nth(4).focus();await page.keyboard.press('Tab');
   const focused=await until(true),onChip=await quick.nth(5).evaluate(b=>b===document.activeElement);
+  const states=await page.evaluate(()=>[...document.querySelectorAll('[data-slot=tooltip-content]')].map(t=>t.dataset.state+' '+t.textContent.slice(0,10)));
   await page.keyboard.press('Escape');
   const escaped=await until(false),still=await quick.nth(5).evaluate(b=>b===document.activeElement);
-  check('키보드: Tab으로 옵션에 가면 같은 툴팁이 뜨고, Escape로 닫히며 초점은 옵션에 남음',onChip&&focused&&/원천을 흘려보내는/.test(focused.text)&&!escaped&&still,{onChip,focused,escaped,still});
+  check('키보드: Tab으로 옵션에 가면 같은 툴팁이 뜨고, Escape로 닫히며 초점은 옵션에 남음',onChip&&focused&&/원천을 흘려보내는/.test(focused.text)&&!escaped&&still,{onChip,focused,escaped,still,states});
  }
  check('가로 넘침 없음',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  check('페이지 오류 없음',errors.length===0,{errors});
