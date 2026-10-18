@@ -4,9 +4,9 @@
 // what is checked, not Chrome's model:
 // - a browser that is not Chrome or Edge, or says the pair is unavailable, shows a note and no
 //   button, and is never asked to translate (a Chromium build without the service ended the page);
-// - Chrome or Edge with the pair available shows a 44px button; pressing it shows the download
-//   progress, then the translation under the original, marked as the browser's, in Korean, line
-//   by line; the original stays; ‘번역 닫기’ hides it;
+// - Chrome (checked at 390px) or Edge (at 1280px) with the pair available shows a 44px button;
+//   pressing it shows the download progress, then the translation under the original, marked as
+//   the browser's, in Korean, line by line; the original stays; ‘번역 닫기’ hides it;
 // - a failed translation says so and offers ‘다시 시도’, which works;
 // - a stay whose description is already Korean shows neither button nor note.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -75,17 +75,19 @@ for(const [w,mobile] of [[390,true],[1280,false]]){
   check('브라우저가 언어 쌍을 못 한다고 하면(unavailable) 단추 없이 같은 안내',/쓸 수 없습니다/.test(r.note??'')&&r.buttons===0&&r.log.availability===1&&r.log.pair==='ja>ko',r);
   await c.close();
  }
- // 3. Chrome, downloadable: the button, the progress, the translation under the original.
+ // 3. Chrome on the phone width, Edge on the wide one (each brand opens the button), downloadable:
+ // the button, the progress, the translation under the original.
  {
-  const c=await context({brand:'Google Chrome',availability:'downloadable',fail:1}),page=await c.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  const brand=mobile?'Google Chrome':'Microsoft Edge';
+  const c=await context({brand,availability:'downloadable',fail:1}),page=await c.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
   const d=await open(page,foreign.id),button=d.locator('.translate-button');
   // A page without the button (a build from before U07) fails here and goes on, as a control.
-  if(!await button.count()){check('번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음',false,{buttons:0});await c.close();continue}
+  if(!await button.count()){check(`${brand}: 번역 단추(44px)가 원문 아래에 있고 누르면 번역이 원문 아래에 붙음`,false,{buttons:0});await c.close();continue}
   const box=await button.boundingBox(),label=await button.textContent();
   // The first press fails (the stand-in's network error), the second works.
   await (mobile?button.tap():button.click());await page.waitForTimeout(400);
   const failed={note:await d.locator('.translate-note[role=status]').textContent().catch(()=>null),label:await button.textContent()};
-  check('번역 단추(44px)가 원문 아래에 있고, 실패하면 ‘번역하지 못했습니다’와 ‘다시 시도’',/이 자리에서 한국어로 번역/.test(label)&&box.height>=44&&/번역하지 못했습니다/.test(failed.note??'')&&/다시 시도/.test(failed.label),{label,box,failed});
+  check(`${brand}: 번역 단추(44px)가 원문 아래에 있고, 실패하면 ‘번역하지 못했습니다’와 ‘다시 시도’`,/이 자리에서 한국어로 번역/.test(label)&&box.height>=44&&/번역하지 못했습니다/.test(failed.note??'')&&/다시 시도/.test(failed.label),{label,box,failed});
   await (mobile?button.tap():button.click());
   // The stand-in reports 0% at once and 50% after 0.4s, then finishes 0.4s later.
   let progress=null;for(let t=0;t<12&&!/50%/.test(progress??'');t++){await page.waitForTimeout(50);progress=await d.locator('.translate-note[role=status]').textContent().catch(()=>null)}
