@@ -1,0 +1,7 @@
+# node docs/evidence/u07-20261019/tools/hydration-probe.mjs http://127.0.0.1:8787 jalan-300001 [corrupt], local site built from e9b6099 (code ede9c60), 2026-10-18T22:39:03Z
+## plain
+{"390":{"button":1,"note":1,"hydration":0,"errors":41,"sample":["Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED"]},"1280":{"button":1,"note":1,"hydration":0,"errors":47,"sample":["Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED"]}}
+mode=plain hydrationErrors=0
+## corrupt (control)
+{"390":{"button":1,"note":1,"hydration":1,"errors":52,"sample":["Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED"]},"1280":{"button":1,"note":1,"hydration":1,"errors":60,"sample":["Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED","Failed to load resource: net::ERR_FAILED"]}}
+mode=corrupt hydrationErrors=2
