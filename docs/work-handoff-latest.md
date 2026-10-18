@@ -151,8 +151,9 @@
 
 ## O03 — 사용량 점검 자동화
 
-하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`, 브랜치 `claude/o03-usage-check`(두 저장소 모두, main `0885eab`에서 시작). 상세는 `O03-20261019.md`.
+하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`, 브랜치 `claude/o03-usage-check`(두 저장소 모두). 상세와 run 번호는 `O03-20261019.md`.
 
-- 앱 PR #131: `usage.yml`에 매일 점검(`check: true`, 대조 입력 `control`)과 `scripts/daily-check.mjs`·`scripts/check-daily-check.mjs`를 더한다. 방법은 `cloudflare-deploy.md` ‘매일 점검(O03)’. Codex 1회차 P2 두 건(Cloudflare 조회 시간 제한, 끝나지 않은 실행)을 `80d85a3`에서 고쳤고, 2회차(`80d85a3`)는 지적 없음. 병합 준비를 상위 세션에 알린다.
-- 실행기 PR jihune/yukemuri-script-runner#11: 매일 01:41Z cron이 앱 점검을 부르고 전날 백업 실패를 본다. 사용자가 10-18T02:1xZ 이 세션의 `add_repo`를 승인했다. 앱 PR #131을 먼저 병합한 뒤 병합한다.
-- 끝나는 조건(병합 뒤 상위 세션과 확인): 정상인 날 성공하는 run, 대조 입력 네 가지(`over-85`·`exceeded`·`zero-pages`·`no-permission`)가 실패하는 run.
+- 앱 PR #131(main `48cc071`): `usage.yml`의 매일 점검(`check: true`, 대조 입력 `control`)과 `scripts/daily-check.mjs`. Codex 2회(1회차 P2 두 건 수정, 2회차 지적 없음). 방법은 `cloudflare-deploy.md` ‘매일 점검(O03)’.
+- 실행기 PR jihune/yukemuri-script-runner#11(실행기 main `31daed7`): `yukemuri-daily-check.yml`이 매일 01:41Z에 앱 점검을 부르고 전날 백업의 `backup` job 결과를 본다. Codex 3회(1·2회차 P2 각 한 건 수정, 3회차 지적 없음). 사용자가 10-18T02:1xZ 이 세션의 실행기 저장소 연결을 승인했다.
+- 끝나는 조건(10-18T02:5xZ 확인): 앱 수동 실행으로 정상인 날(10-16) 성공, 대조 네 가지 각각 실패. 실행기 수동 실행(run 39091575130)이 앱 점검(run 39091583102)을 부르고 백업 판정이 통과했다. 앱 점검은 10-17을 보고 D1 쓰기 88.1%로 실패했다(실제 신호).
+- 남은 것: 첫 예약 실행(10-19T01:41Z) 확인. 이 세션이 10-19T02:45Z에 확인 예약을 두었다. 상위 세션은 7일차(10-20) 뒤 Claude 매일 점검을 끝내고, 실패 메일이 온 날만 run 요약을 본다.
