@@ -60,7 +60,7 @@
 | 하위 세션 | O03·U07이 10-18T01:01Z, C04가 02:34Z, D07이 05:54Z에 일을 시작했다. U05·U06·L01·D05는 쉰다(아래 6). D05 브랜치의 `d2f7d53`은 문구만 고쳐 main `f2a3cc3`에 있다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 상위 세션에 묶인 예약: H01 6일차 `trig_016nnsiwLz8WjSaHjmz16GPg`(10-19T01:20Z), 7일차 `trig_015ChLhywzoX2vwBFcopWLFq`(10-20T01:20Z). 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
 | 사용량 | 10-18T03:27Z에 5시간 창 0.43, 7일 창 0.11(`isUsingOverage` false) | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_011ayTaQQUY8VUJQqLdxTrSz`(10-18T02:24Z부터, 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 25 `9178992`(10-18T07:01Z 알림), 이 세션은 `0366863` | 위 1-1 |
+| 하네스 | 하네스 관리 세션은 `session_011ayTaQQUY8VUJQqLdxTrSz`(10-18T02:24Z부터, 앞 세션 `session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않음). 알려진 마지막 판 setup 26 `9fdbbdc`(10-18T08:04Z 알림, 하네스 main에서 확인), 이 세션은 `0366863` | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
