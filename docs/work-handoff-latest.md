@@ -18,7 +18,7 @@
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`는 `add_repo`(access push)로 붙인다. 하네스 문장을 직접 읽으려면 `jihune/agent-harness`를 `add_repo`(access read)로 붙이고 GitHub 도구로 파일을 읽는다.
-5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T15:16Z 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 6회째(10-18T23:15Z, `send_later`, 5회째는 19:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
+5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-18T15:16Z 기준으로 H01 6일차 `trig_01SLC7SRYDscnpeoA5wPGE8s`(10-19T01:20Z), 7일차 `trig_0125o8RtWneff6wxN7YfJEah`(10-20T01:20Z), 안전망 확인 6회째 `trig_01Cb42R3JdZyD1BNvn9mig5p`(10-18T23:15Z, 5회째는 19:15Z에 돌았음)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
 6. 모든 하위 세션(아래 6의 일하는 네 곳과 쉬는 네 곳)에 새 상위 세션 id를 `send_message`(priority later)로 알린다. 하위 세션의 `@parent`는 자기를 연 옛 상위 세션을 가리키므로, 앞으로는 새 상위 세션 id로 보내라고 적는다. 옛 상위 세션에도 알리고, 그 세션은 보관하지 않는다.
 7. 결과(돌린 명령과 실제 출력)를 이 문서 아래 7에 적어 기록 PR로 넣고, 사용자에게 한국어로 짧게 보고한다.
 
