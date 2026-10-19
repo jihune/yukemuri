@@ -1,0 +1,21 @@
+our_id	verdict	reason
+jalan-368112	official_live	제목에 숙소 이름과 공식 표기
+jalan-331129	official_live	제목에 숙소 이름과 공식 사이트 표기
+jalan-388565	hijacked	숙소와 무관한 해외 스포츠 중계 사이트로 넘어감(도메인 만료 뒤 남이 씀)
+jalan-310206	dead	프로바이더 개인 페이지가 사라져 프로바이더 첫 화면으로 넘어감
+jalan-318875	official_live	제목에 숙소 이름과 공식 표기
+jalan-350474	unverified	HTTPS 연결이 프록시에서 502로 끊김, HTTP는 이 환경에서 읽을 수 없음
+jalan-360672	official_live	제목에 숙소 이름과 공식 표기
+jalan-327648	official_live	제목에 숙소 이름과 공식 표기
+jalan-325094	official_live	제목에 숙소 이름
+jalan-387564	official_live	제목에 숙소 이름과 공식 사이트 표기
+jalan-304322	official_live	제목에 숙소 이름과 공식 표기
+jalan-334022	dead	무료 홈페이지 서비스 주소가 404
+jalan-311805	unverified	HTTPS 인증서 이름이 맞지 않아 읽지 못함(지역 포털의 페이지로 보임)
+jalan-300624	official_live	제목에 숙소 이름과 공식 사이트 표기
+jalan-388813	dead	체인 공식 도메인이나 그 숙소 페이지 경로가 404
+jalan-361597	dead	체인 공식 도메인이나 그 숙소 페이지 경로가 404
+jalan-327794	official_live	제목에 숙소 이름과 공식 표기
+jalan-346269	official_live	제목에 숙소 이름
+jalan-376536	unverified	HTTPS 연결이 끊김, HTTP는 이 환경에서 읽을 수 없음
+jalan-325424	unverified	HTTPS 연결이 끊김, HTTP는 이 환경에서 읽을 수 없음

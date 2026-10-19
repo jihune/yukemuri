@@ -1,0 +1,23 @@
+Foursquare OS Places Notice (NOTICE.txt)
+Copied on 2026-10-19 from https://opensource.foursquare.com/places-notice-txt/, linked as NOTICE.txt from https://docs.overturemaps.org/attribution/ (Places).
+
+© 2026 Foursquare Labs, Inc. All rights reserved.
+
+The Foursquare OS Places dataset (the “Data”) is licensed under the Apache License, Version 2.0 (the “License”). You may not use, modify, or distribute the Data except in compliance with the License.
+
+As set forth more fully in the License, if you use, modify, or distribute the Data, you must:
+– provide recipients with a copy of the License.
+– if applicable, include prominent notices to the extent you’ve changed the Data.
+– preserve attribution to Foursquare, including preserving the full content of this NOTICE.txt file.
+
+To ensure appropriate attribution to Foursquare, we recommend the following:
+– if using/distributing the Data in flat file form as-is or after making changes/modifications: include this NOTICE.txt file, which may be modified to include an additional notice of your changes/modifications, if any.
+– if using/distributing the Data in API form as-is or after making changes/modifications: include a copy of the content from this NOTICE.txt file prominently in your developer documentation for such API, which may be modified to include an additional notice of your changes/modifications, if any.
+
+You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, the Data distributed under the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+See the License for the specific language governing permissions and limitations under the License.
+
+We also encourage you to join our Placemaker community where you can contribute and provide suggestions to improve the accuracy of the Data for future releases for yourself and others.
+
+Notice of changes (Yukemuri, 2026-10-19): Yukemuri uses the Data as included in Overture Maps Places release 2026-09-23.1, where Foursquare data was transformed to the Overture schema (Changed: 2026-03-18). From the records matched to its lodging list, Yukemuri keeps only each place's position (the centre of its bounding box) to correct approximate map positions, in data/overture-geo.json and the published search snapshot.

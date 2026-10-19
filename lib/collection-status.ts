@@ -53,7 +53,7 @@ export const FILL_ROWS:{key:FillRowKey;group:string;label:string;states:[string,
  {key:'descKo',group:'한국어',label:'한국어 설명',states:['한국어 원문이거나 지금 원문의 번역이 있음','출처 설명이 없음','번역 전(원문이 바뀐 옛 번역 포함)'],note:'설명 번역은 지금 정기적으로 추가하지 않습니다.'},
 ];
 export const GEO_GROUPS=[
- {label:'건물 위치',grades:[1,6],desc:'출처 좌표나 Wikidata'},
+ {label:'건물 위치',grades:[1,6,7],desc:'출처 좌표, Wikidata, Overture'},
  {label:'번지 블록',grades:[2],desc:'주소의 번지 묶음'},
  {label:'동네',grades:[3],desc:'주소의 오아자 중심'},
  {label:'넓은 범위',grades:[4,5],desc:'시정촌·도도부현 중심'},
