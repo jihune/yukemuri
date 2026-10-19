@@ -142,6 +142,7 @@
 - 10-19T20:03Z #211(D08 PR 3) Codex 3회차가 P2 한 건(같은 호스트의 http 리디렉션 허용)을 남겨 L01이 `decc5e4`에서 고쳤고, #209와 #212를 merge로 합쳤다(head `1968ed3`). Codex 세 번을 다 써서 이어 가는 Claude 검토 1회째 세션 `session_0193zsr7iC3GjtthEgvZx2zc`를 열었다(대상 `1968ed3`, 개인정보 규칙이 데이터·근거 파일·검사에서 지켜지는지도 직접 세게 함).
 - 10-19T20:07Z D08 Overture 세션의 확인 기록 PR #213(문서 1개와 공개 GET만 쓰는 근거 스크립트·출력, 코드 없음)을 기록 PR로 병합했다(`bc9a388`). 공개 스냅숏 `82752b0b46fa3ed2`는 25,231곳이고 `mergedInto` 47쌍이 검토한 47쌍과 같으며 Trip.com ID 47개는 목록에 없다(`PASS`). 그 세션 `session_01KThJhPmvWG2sAnNZJ3dnFH`의 brief(D08 PR 4·5·6)가 끝났고 묶인 예약이 없음을 `list_triggers`로 보고 보관했다.
 - 10-19T20:28Z #211 Claude 검토 세션 `session_0193zsr7iC3GjtthEgvZx2zc`가 `1968ed3`에 리뷰를 남겼다(리뷰 5577329649). P2 1건(`update-oita-permits.py`가 CSV 주소의 호스트만 비교해 같은 호스트 http 주소를 평문으로 받음, 상위 세션이 코드로 확인), P3 3건(리디렉션 검사가 실제 get()을 판정하지 않음, `list-only.json` note의 옛 기준일, PR 본문). 개인정보는 직접 셌고 문제없었다(990행, 이어지지 않은 간이숙소·하숙 행은 PR 커밋 8개 모두 0, 전화 모양 값 0). `cloud-check.py --full` 52개 통과, 브라우저 31/31과 대조 13 실패, 관광청 연결은 main과 head가 바이트까지 같음(1,260곳). 결과를 적고 그 세션을 보관했다. L01이 네 건을 고친 head로 마지막 검토(이어 가는 Claude 검토 2회째)를 연다.
+- 10-19T20:33Z L01이 네 건을 `789a505`에서 고치고 #213을 합쳤다(head `ce82493`, 데이터 파일은 retrievedAt 한 줄만 바뀜). 마지막 검토(이어 가는 Claude 검토 2회째) 세션 `session_017QQpMw6bP2GHZBfRyRo4oS`를 열었다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
