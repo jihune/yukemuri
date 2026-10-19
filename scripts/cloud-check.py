@@ -44,6 +44,7 @@ commands = [
     ['node', 'scripts/check-source-policy.mjs'],
     ['node', 'scripts/check-snapshot-geo.mjs'],
     ['node', 'scripts/check-wikidata-names.mjs'],
+    ['node', 'scripts/check-jta-registration.mjs'],
     ['node', 'scripts/check-commons-photos.mjs'],
     ['node', 'scripts/check-description-ui.cjs'],
 ]

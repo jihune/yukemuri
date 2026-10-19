@@ -444,13 +444,14 @@ legend{font-size:var(--yk-fs-sm);font-weight:700;margin-bottom:12px}
 }
 .card-location{align-items:flex-start;flex-wrap:wrap}
 .card-location>svg{margin-top:3px}
-.card-location .location-label{min-width:0;flex:1;overflow-wrap:anywhere;line-height:1.6}
+/* A tag beside the place (자란 하이클래스, 관광청 등록) wraps to the next line before the place narrows. */
+.card-location .location-label{min-width:min(10em,100%);flex:1;overflow-wrap:anywhere;line-height:1.6}
 .card-location .similar-name-tag{flex-shrink:0}
 .filter-content fieldset .filter-hint{font-size:var(--yk-fs-sm);line-height:1.7;margin:10px 0;color:var(--yk-text-3)}
 .bath-guide{font-size:var(--yk-fs-sm);line-height:1.8;color:var(--yk-text-3);margin:0 0 18px}
 .bath-detail-group{margin-top:20px}
 .bath-detail-group>h3{font-size:var(--yk-fs-base);margin:0 0 12px}
-.highclass-tag{display:inline-flex;width:fit-content;padding:3px 9px;margin:7px 0 4px;border-radius:5px;background:var(--yk-surface);border:1px solid #d6dcf2;color:#394677;font-size:var(--yk-fs-sm);font-weight:650;line-height:1.5}
+.highclass-tag,.jta-tag{display:inline-flex;width:fit-content;padding:3px 9px;margin:7px 0 4px;border-radius:5px;background:var(--yk-surface);border:1px solid #d6dcf2;color:#394677;font-size:var(--yk-fs-sm);font-weight:650;line-height:1.5}
 .catalog-loading,.catalog-load-more{text-align:center;padding:24px 10px;color:var(--yk-text-3);font-size:var(--yk-fs-md)}
 .catalog-load-more button{padding:11px 22px;background:var(--yk-bg);border:1px solid #b7d5dc;border-radius:8px;color:var(--yk-primary);font-size:var(--yk-fs-md)}
 .catalog-load-more p{margin-bottom:12px;color:#a23d34}
@@ -467,7 +468,7 @@ legend{font-size:var(--yk-fs-sm);font-weight:700;margin-bottom:12px}
 .view-map .catalog-load-more,.view-map .catalog-sentinel{display:none}
 @media(max-width:550px){
   .alternative-heading>h3{font-size:var(--yk-fs-lg)}
-  .highclass-tag{font-size:var(--yk-fs-sm)}
+  .highclass-tag,.jta-tag{font-size:var(--yk-fs-sm)}
   .bath-detail-group>h3{font-size:var(--yk-fs-md)}
 }
 /* At the page end the sticky panel stops at the workspace bottom. It fits above the footer there:its 20px top, the workspace's 40px bottom padding and the footer (64px, 125px above the dock). */
@@ -755,7 +756,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .card-location{flex-wrap:wrap;gap:4px 8px;margin-bottom:2px;color:var(--yk-text-3)}
 .card-kind{color:var(--yk-text-2)}
 .card-kind::before{content:'· ';color:var(--yk-text-3)}
-.card-location .highclass-tag{border:1px solid var(--yk-line);border-radius:4px;padding:0 5px;color:var(--yk-text-2)}
+.card-location .highclass-tag,.card-location .jta-tag{border:1px solid var(--yk-line);border-radius:4px;padding:0 5px;color:var(--yk-text-2)}
 .card-title{width:100%}
 .card-title h3{font-size:var(--yk-fs-lg);line-height:1.4}
 .name-ja{margin-top:0;color:var(--yk-text-3)}
@@ -846,7 +847,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .photo-nav button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
 .detail-summary{padding:20px 32px 0}
 .detail-eyebrow{color:var(--yk-text-3);font-size:var(--yk-fs-sm)!important;margin:0 0 6px}
-.detail-eyebrow .highclass-tag{margin:0 0 0 8px;padding:0 5px;border:1px solid var(--yk-line);border-radius:4px;background:none;color:var(--yk-text-2);font-size:var(--yk-fs-xs);white-space:nowrap}
+.detail-eyebrow .highclass-tag,.detail-eyebrow .jta-tag{margin:0 0 0 8px;padding:0 5px;border:1px solid var(--yk-line);border-radius:4px;background:none;color:var(--yk-text-2);font-size:var(--yk-fs-xs);white-space:nowrap}
 .detail-name{display:block}
 .detail-name [data-slot=sheet-title]{font-size:var(--yk-fs-2xl);line-height:1.35;font-weight:750}
 .detail-name [data-slot=sheet-title]:focus{outline:none}
