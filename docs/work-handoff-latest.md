@@ -6,7 +6,7 @@
 
 ## 상위 세션 인계
 
-일곱 번째 상위 세션 `session_01KGKwywGmDoBP9sLbFaUVCU`(10-18T23:16Z 시작, 사용자가 웹에서 열었음, 계보 깊이 0, 하네스 `2a287a0`, 기록 브랜치 `claude/keen-mayer-057fmr`)가 이 절을 10-19T02:4xZ에 다시 썼고 10-19T09:5xZ에 고쳤다. 하네스 setup 30(`f109a03`)이 새 세션에 닿았고 이 세션의 문맥이 약 70만 토큰이라, 하네스 `cloud-session-ops` §8 「When to hand off」(1)에 따라 일의 경계(열린 PR 없음, 일하는 하위 세션은 O03 하나)에서 여덟 번째 상위 세션에 넘긴다. 계보 깊이가 0이라 일곱 번째가 `create_session`으로 연다. 이 절의 사실은 적은 시각에 맞았다. 이어받는 세션은 아래 3의 확인 명령으로 다시 본다.
+일곱 번째 상위 세션 `session_01KGKwywGmDoBP9sLbFaUVCU`(10-18T23:16Z 시작, 사용자가 웹에서 열었음, 계보 깊이 0, 하네스 `2a287a0`, 기록 브랜치 `claude/keen-mayer-057fmr`)가 이 절을 10-19T02:4xZ에 다시 썼고 10-19T09:5xZ에 고쳤다. 하네스 setup 30(`f109a03`)이 새 세션에 닿았고 이 세션의 문맥이 약 70만 토큰이라, 하네스 `cloud-session-ops` §8 「When to hand off」(1)에 따라 일의 경계(열린 PR 없음, 일하는 하위 세션은 O03 하나)에서 여덟 번째 상위 세션에 넘긴다. 계보 깊이가 0이라 일곱 번째가 `create_session`으로 연다. 이 절의 사실은 적은 시각에 맞았다. 이어받는 세션은 아래 3의 확인 명령으로 다시 본다. 여덟 번째 상위 세션 `session_01WLm1fDq57bsuP7dANpKmPD`(10-19T09:59Z 시작, 계보 깊이 1, 하네스 `f109a03`, 기록 브랜치 `claude/yukemuri-parent-8`)가 10-19T10:0xZ에 이어받았고, 그 결과는 아래 7에 있다.
 
 ### 1. 다음 상위 세션이 이어받을 때 할 일
 
@@ -18,7 +18,7 @@
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`는 `add_repo`(access push)로 붙인다. 하네스 문장을 직접 읽으려면 `jihune/agent-harness`를 `add_repo`(access read)로 붙이고 GitHub 도구로 파일을 읽는다.
-5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-19T09:5xZ 기준으로 일곱 번째 상위 세션에 묶인 것은 H01 7일차 `trig_0156o3DTFGgqtwKpRe6jBbvo`(10-20T01:20Z)와 안전망 확인 9회째 `trig_01NYoNaqoVrbVCyU3wBXV3NG`(10-19T11:15Z)이고, 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
+5. 지금 상위 세션에 묶인 예약을 같은 시각·prompt로 자기 세션에 다시 만들고(`create_trigger` 또는 `send_later`), 옛 것을 `delete_trigger`로 지운다. 10-19T10:02Z 기준으로 여덟 번째 상위 세션에 묶인 것은 H01 7일차 `trig_01U6vLaQDDfYSNSwTyrSmw7y`(10-20T01:20Z)와 안전망 확인 9회째 `trig_01VKpV8C4mTH7YWgrRsoXbMH`(10-19T11:15Z)이고(일곱 번째의 `trig_0156o3DTFGgqtwKpRe6jBbvo`·`trig_01NYoNaqoVrbVCyU3wBXV3NG`를 옮김), 그 뒤 바뀌면 `list_triggers`가 기준이다. prompt는 `get_trigger`로 읽는다. 시각이 지났으면 그 일을 바로 한다. 사용자의 keep-alive 루틴('5시간 세션 초기화'로 시작)과 하위 세션의 예약은 건드리지 않는다.
 6. 모든 하위 세션(아래 6의 일하는 한 곳과 쉬는 일곱 곳)에 새 상위 세션 id를 `send_message`(priority later)로 알린다. 하위 세션의 `@parent`는 자기를 연 옛 상위 세션을 가리키므로, 앞으로는 새 상위 세션 id로 보내라고 적는다. 옛 상위 세션에도 알리고, 그 세션은 보관하지 않는다.
 7. 결과(돌린 명령과 실제 출력)를 이 문서 아래 7에 적어 기록 PR로 넣고, 사용자에게 한국어로 짧게 보고한다.
 
@@ -27,7 +27,7 @@
 지시가 나온 경위와 원문 전체는 `docs/history/work-handoff-20261018.md`·`docs/history/work-handoff-20261017.md`의 「상위 세션 인계」 2와 `roadmap.md` 결정 기록에 있다.
 
 - 기존 기록 체계를 유지한다. 새 기록 체계(`agents_work/`, `STATE.md`)를 만들지 않는다.
-- 상위 세션의 기록 브랜치는 그 세션에 붙은 개발 브랜치를 쓴다(웹에서 열면 `claude/<자동 이름>`, `create_session`으로 열면 `outcome_branch`로 정할 수 있음). 바꿀지는 상위 세션이 정한다(사용자 10-18T23:5xZ: ‘claude code 웹 클라우드 환경에서 새 세션 시작하면 브랜치가 자동으로 부여되는 것 같은데 그게 "claude/keen-mayer-057fmr" 이다. 너가 판단해서 다른 브랜치로 변경 필요하면 알아서 해라.’). 일곱 번째는 `claude/keen-mayer-057fmr`를 그대로 쓴다.
+- 상위 세션의 기록 브랜치는 그 세션에 붙은 개발 브랜치를 쓴다(웹에서 열면 `claude/<자동 이름>`, `create_session`으로 열면 `outcome_branch`로 정할 수 있음). 바꿀지는 상위 세션이 정한다(사용자 10-18T23:5xZ: ‘claude code 웹 클라우드 환경에서 새 세션 시작하면 브랜치가 자동으로 부여되는 것 같은데 그게 "claude/keen-mayer-057fmr" 이다. 너가 판단해서 다른 브랜치로 변경 필요하면 알아서 해라.’). 일곱 번째는 `claude/keen-mayer-057fmr`를 그대로 썼다. 여덟 번째는 `create_session`으로 열려 붙은 개발 브랜치가 없어(`get_session`의 `current_branches`가 main) `claude/yukemuri-parent-8`을 만들어 쓴다. 옛 상위 세션들이 쓰던 `claude/yukemuri-parent`와 겹치지 않게 새 이름을 골랐다.
 - pnpm 11.25.0과 잠금 파일을 유지한다. 개발 검사는 임시 DB와 fixture로 한다. 운영 DB를 개발 환경에 직접 연결하지 않는다. GitHub 병합과 실제 운영 배포를 나눠 적는다.
 - 운영 확인은 공개 GET만 한다. 유지관리 키와 즐겨찾기를 쓰지 않는다. 무료 요금제만 쓴다.
 - 비밀값은 채팅, PR, 로그에 쓰지 않는다. 사용자는 설정을 마치면 '완료'만 알린다. 공개 저장소라 비밀, 개인정보, 대화 원문, DB 백업을 커밋하지 않는다. 하네스 확인 문구의 실제 값은 어떤 문서·커밋·기록에도 복사하지 않는다.
@@ -98,7 +98,8 @@
 
 | 세션 | 맡은 일 | 상태 |
 |---|---|---|
-| `session_01KGKwywGmDoBP9sLbFaUVCU` | 일곱 번째 상위 세션(10-18T23:16Z 시작, 하네스 `2a287a0`, 기록 브랜치 `claude/keen-mayer-057fmr`) | 10-19T09:5xZ에 인계함. 보관하지 않음. 받은 메시지를 새 상위 세션에 넘긴다 |
+| `session_01WLm1fDq57bsuP7dANpKmPD` | 여덟 번째 상위 세션(10-19T09:59Z 시작, 일곱 번째가 `create_session`으로 엶, 계보 깊이 1, 하네스 `f109a03`, 기록 브랜치 `claude/yukemuri-parent-8`) | 일함 |
+| `session_01KGKwywGmDoBP9sLbFaUVCU` | 일곱 번째 상위 세션(10-18T23:16Z 시작, 하네스 `2a287a0`, 기록 브랜치 `claude/keen-mayer-057fmr`) | 10-19T09:5xZ에 인계함. 보관하지 않음. 받은 메시지를 여덟 번째에 넘긴다 |
 | `session_01T2rEzYyaSi8qtavjsZawQB` | 여섯 번째 상위 세션(10-18T09:15Z 시작, 하네스 `8e9695c`) | 10-18T23:16Z에 넘김. 보관하지 않음. 받은 메시지를 일곱 번째에 넘긴다 |
 | `session_01XUUTkd9FhQQbmKkqVnsnCj` | 다섯 번째 상위 세션 | 10-18T09:15Z에 인계함. 보관하지 않음 |
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음 |
@@ -116,7 +117,15 @@
 
 ### 7. 인계 결과(다음 상위 세션이 적는다)
 
-여섯 번째 → 일곱 번째의 결과는 옮긴 파일 「상위 세션 인계」 7에 있다. 일곱 번째 → 여덟 번째: 받는 세션이 위 1의 결과를 여기에 적는다.
+여섯 번째 → 일곱 번째의 결과는 옮긴 파일 「상위 세션 인계」 7에 있다. 일곱 번째 → 여덟 번째의 결과는 아래와 같다(여덟 번째 상위 세션이 10-19T10:0xZ에 적음).
+
+1. 하네스: `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"` → `f109a03 2026-10-19`(setup 30).
+2. 사용량: `get_session`(인자 없음) → 자기 id `session_01WLm1fDq57bsuP7dANpKmPD`, 계보 깊이 1(한도 8). `list_events(kinds=["rate_limit_event"])`의 마지막 이벤트(09:59:16Z): 5시간 창 0.20(재설정 11:40Z), 7일 창 0.83(75% 경고, 재설정 12:00Z), `isUsingOverage` false. 기준(0.9, 0.95) 아래다.
+3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽었다.
+4. 표 확인(10:00Z–10:04Z): main은 `da03744`(PR #182)다. 열린 PR은 yukemuri `[]`, 실행기 `[]`다(실행기는 `add_repo` access push 뒤 clone, `3c4a7e1`). 마지막 코드 배포는 그대로 run 39189908721(#176)이다. 하위 세션 여덟 곳은 모두 idle이다. 처음 클론이 얕아(`git rev-parse --is-shallow-repository` true) `git fetch --depth=1000`으로 받은 뒤 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 봤다. main에 없는 커밋은 `claude/d05-rooms`의 `d2f7d53`(10-15, 내용이 이미 main에 있음, `docs/history/work-handoff-20261018.md`의 표와 같음)과 `claude/p02-search-snapshot` 11개(보류한 draft #38)뿐이라 가져올 기록 커밋은 없다. 수집은 실행기 catalog 예약이 05:15:34Z 뒤로 비어 수동으로 한 번 불렀다(아래 8의 10:04Z).
+5. 예약: 안전망 9회째(11:15Z)와 H01 7일차(10-20T01:20Z)를 `send_later`로 이 세션에 다시 만들고(`trig_01VKpV8C4mTH7YWgrRsoXbMH`, `trig_01U6vLaQDDfYSNSwTyrSmw7y`), 옛 두 개를 `delete_trigger`로 지웠다. 안전망 prompt는 세션 이름과 기록 브랜치만 바꿨다. 사용자 keep-alive 루틴 두 개와 O03의 예약 두 개, 다른 프로젝트 예약 하나는 건드리지 않았다.
+6. 알림(10:02Z–10:03Z): O03·U07·C04·D07·U05·U06·L01·D05와 일곱 번째에 `send_message`(priority later)로 새 id를 알렸고 모두 `delivered`였다. O03에는 자기 예약 두 개의 prompt에 적힌 알릴 곳을 새 id로 바꾸고, catalog 예약의 빈 구간을 C05 측정에 넣으라고 적었다. D05에는 `d2f7d53`을 따로 가져오지 않는다고 적었다. O03은 10:03Z에 두 예약의 알릴 곳을 바꾸고 빈 구간을 C05 측정에 넣었다고 답했다.
+7. 누락 점검: 일곱 번째의 `list_events(kinds=["user"], limit=100)`을 `before_id`로 끝까지 거슬러 읽었다(하위 에이전트, 16쪽, 10-18T23:16:27Z 첫 이벤트까지). 사람이 쓴 글은 두 개뿐이다. 하나는 시작 한 줄(23:16:27Z)이고, 다른 하나는 23:54:00Z의 브랜치 말(화면 캡처 한 장과 함께)이다. 뒤의 것은 원문 끝에 ‘claude 웹에서 이런 변동이 쉽게 가능한지는 잘 모르겠음’이 더 있고, 위 2의 기록 브랜치 줄에 들어 있다. 원문은 여덟 번째가 저장된 이벤트 파일에서 직접 확인했다. 나머지는 도구 결과, 세션 사이 메시지, 예약 prompt, stop hook, 하위 에이전트 보고다. 위 2·4에 빠진 사용자 지시는 없다.
 
 ### 8. 기록
 
@@ -130,6 +139,7 @@
 - 10-19T07:16Z 안전망 8회째: 매일 점검 예약이 5시간 늦은 06:49:30Z에 돌았고(실행기 run 39212155858 성공), 그것이 부른 앱 점검 run 39212168660은 예상대로 실패했다(읽기 85%, O03이 실패 줄을 대조함). 실행기 catalog 예약은 05:15Z 뒤로 아직 없다. 사용량 5시간 0.03, 7일 0.78(75% 경고, 재설정 12:00Z). 열린 PR은 없다.
 - 10-19T07:4xZ O03 기록 PR #181(첫 예약 매일 점검 결과, `docs/O03-20261019.md` 하나)을 기록 파일만 바뀐 것과 충돌 없음을 보고 병합했다(`567c3dc`). O03은 시간별 확인을 멈추고 10-20T03:00Z에 한 번 본다.
 - 10-19T09:5xZ 하네스 setup 30이 새 세션에 닿고 이 세션의 문맥이 약 70만 토큰이라 여덟 번째 상위 세션에 넘기기로 했다(위 머리 문단). 계보 깊이 0이라 일곱 번째가 `create_session`으로 연다.
+- 10-19T10:04Z 실행기 catalog 예약이 05:15:34Z 뒤로 4시간 49분 오지 않아(06:37Z–09:37Z 네 번이 빔, githubstatus의 Actions는 operational) 여덟 번째 상위 세션이 수동(action dispatch)으로 한 번 불렀다(실행기 run 39234803628 성공, 앱 collect run 39234821810). 원인은 GitHub `schedule`의 지연·누락으로 본다. 매시간 cron으로 바꾼 뒤 예약 22번 가운데 5번만 왔고(간격 2시간 38분–4시간 49분), 그 가운데 두 번(10-18T16:06Z, 10-19T05:13–05:15Z)은 다른 저장소의 다른 cron(앱 `collect-watch.yml`, `41 */6 * * *`)과 2분 안에 함께 왔다. 저장소마다가 아니라 계정 단위로 몰아서 처리하는 모양이라 cron을 더 촘촘히 해도 실행 수가 늘지 않는다. 셈은 `gh api …/yukemuri-catalog.yml/runs`와 공개 API의 `collect-watch.yml/runs`로 했다. C05 측정(10-21) 뒤 ‘GitHub `schedule` 밖에서 부르는 방안’ 제안의 근거로 쓴다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
