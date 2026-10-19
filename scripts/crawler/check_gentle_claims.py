@@ -24,8 +24,10 @@ def pages(provider,count,first=900000):
  return [f'https://www.jalan.net/yad{first+i}/' if provider=='jalan' else f'https://www.trip.com/hotels/tokyo-hotel-detail-{first+i}/qa-hotel/' for i in range(count)]
 
 class GentleClaimChecks(unittest.TestCase):
- def run_collector(self,queue,argv,later=None):
+ def run_collector(self,queue,argv,later=None,busy=None,says=True):
   """queue: (provider, phase) -> page URLs. later: (provider, phase) -> (claims sent before it is due, URL).
+  busy: provider -> claims sent before it is free (an active claim or a wait: empty, not exhausted).
+  says: the Worker tells whether an empty claim was exhausted (False: a Worker from before C07).
   Returns the claims sent ((provider, phase, lane, url or None)), the saved URLs and the printed lines."""
   queue={group:list(urls) for group,urls in queue.items()};claims=[];saved=[]
   class Site:
@@ -35,9 +37,12 @@ class GentleClaimChecks(unittest.TestCase):
     if path=='/api/crawl' and request.method=='POST':
      claim=json.loads(request.data);group=(claim['provider'],claim['phase'])
      for due in [g for g,(after,_) in (later or {}).items() if len(claims)>=after]:queue.setdefault(due,[]).append(later.pop(due)[1])
-     url=queue[group].pop(0) if queue.get(group) else None
+     waiting=len(claims)<(busy or {}).get(claim['provider'],0)
+     url=queue[group].pop(0) if queue.get(group) and not waiting else None
      claims.append((*group,claim['lane'],url))
-     return Response({'jobs':[{'url':url,'kind':'detail' if claim['phase'] in ['detail','baths','names','refresh'] else 'list','prefecture':'pref-tokyo','attempts':0,'lease_token':claim['token']}] if url else [],'leaseSeconds':180})
+     answer={'jobs':[{'url':url,'kind':'detail' if claim['phase'] in ['detail','baths','names','refresh'] else 'list','prefecture':'pref-tokyo','attempts':0,'lease_token':claim['token']}] if url else [],'leaseSeconds':180}
+     if says and not url:answer['exhausted']=not waiting
+     return Response(answer)
     if path=='/api/crawl' and request.method=='PUT':
      saved.append(json.loads(request.data)['url']);return Response({'accepted':0,'coverage':{'records':1}})
     return Response({'coverage':{'records':1,'pending':0}})
@@ -85,6 +90,22 @@ class GentleClaimChecks(unittest.TestCase):
   self.assertEqual([c for c in claims if c[:2]==('trip','refresh')],[('trip','refresh','priority',None)])
   self.assertEqual(queue[('trip','refresh')],[due],'the page stays queued for the next run')
   self.assertIn({'emptyGroup':'trip/refresh','round':1},lines)
+
+ def test_busy_provider_keeps_its_groups(self):
+  # Jalan holds an active claim or waits through round 1 (Codex review of a511969):
+  # its empty claims there are not exhausted, so its groups are asked again.
+  jd,td=pages('jalan',3),pages('trip',3)
+  claims,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','6'],busy={'jalan':9})
+  self.assertEqual(saved,[td[0],jd[0],td[1],jd[1],td[2],jd[2]])
+  self.assertEqual([line for line in lines if 'emptyGroup' in line],[{'emptyGroup':'trip/'+q,'round':1} for q in ['refresh','list','names']]+[{'emptyGroup':'jalan/'+q,'round':2} for q in ['baths','refresh','list','localnames']])
+  self.assertEqual(len([c for c in claims if c[:2]==('jalan','baths')]),2)
+
+ def test_worker_that_does_not_say_keeps_every_group(self):
+  jd=pages('jalan',2)
+  claims,saved,lines,_=self.run_collector({('jalan','detail'):jd},['--gentle','--max-pages','5'],says=False)
+  self.assertEqual(saved,jd)
+  self.assertEqual([c[:2] for c in claims],GENTLE*3)
+  self.assertFalse([line for line in lines if 'emptyGroup' in line])
 
  def test_other_modes_still_ask_every_group_in_every_round(self):
   jd=pages('jalan',2)

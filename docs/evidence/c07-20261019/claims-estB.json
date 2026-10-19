@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-19T13:04:48.517Z",
+ "measuredAt": "2026-10-19T13:39:43.438Z",
  "oldRef": "origin/main",
  "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
  "target": {
@@ -98,7 +98,7 @@
   "pages": 120,
   "claims": 200,
   "rounds": null,
-  "claimRead": 513732,
+  "claimRead": 513892,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -109,7 +109,7 @@
    },
    "POST /api/crawl": {
     "requests": 200,
-    "read": 513732,
+    "read": 513892,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -154,29 +154,29 @@
     "claims": 22,
     "pages": 3,
     "emptyClaims": 19,
-    "read": 128205,
-    "emptyRead": 115173
+    "read": 128243,
+    "emptyRead": 115211
    },
    "trip/refresh": {
     "claims": 22,
     "pages": 5,
     "emptyClaims": 17,
-    "read": 129011,
-    "emptyRead": 110653
+    "read": 129045,
+    "emptyRead": 110687
    },
    "jalan/list": {
     "claims": 22,
     "pages": 0,
     "emptyClaims": 22,
-    "read": 88,
-    "emptyRead": 88
+    "read": 132,
+    "emptyRead": 132
    },
    "trip/list": {
     "claims": 22,
     "pages": 0,
     "emptyClaims": 22,
-    "read": 88,
-    "emptyRead": 88
+    "read": 132,
+    "emptyRead": 132
    },
    "trip/names": {
     "claims": 22,
@@ -199,7 +199,7 @@
   "pages": 120,
   "claims": 124,
   "rounds": 23,
-  "claimRead": 300252,
+  "claimRead": 300260,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -210,7 +210,7 @@
    },
    "POST /api/crawl": {
     "requests": 124,
-    "read": 300252,
+    "read": 300260,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -255,29 +255,29 @@
     "claims": 4,
     "pages": 3,
     "emptyClaims": 1,
-    "read": 19053,
-    "emptyRead": 6021
+    "read": 19055,
+    "emptyRead": 6023
    },
    "trip/refresh": {
     "claims": 6,
     "pages": 5,
     "emptyClaims": 1,
-    "read": 24851,
-    "emptyRead": 6493
+    "read": 24853,
+    "emptyRead": 6495
    },
    "jalan/list": {
     "claims": 1,
     "pages": 0,
     "emptyClaims": 1,
-    "read": 4,
-    "emptyRead": 4
+    "read": 6,
+    "emptyRead": 6
    },
    "trip/list": {
     "claims": 1,
     "pages": 0,
     "emptyClaims": 1,
-    "read": 4,
-    "emptyRead": 4
+    "read": 6,
+    "emptyRead": 6
    },
    "trip/names": {
     "claims": 22,
@@ -376,6 +376,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/list priority empty": [
@@ -390,6 +394,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/names priority page": [
@@ -454,6 +462,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/list national empty": [
@@ -468,6 +480,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/names national page": [
@@ -492,6 +508,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "jalan/refresh priority empty": [
@@ -506,6 +526,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "jalan/baths national page": [
@@ -530,11 +554,15 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ]
  },
  "saved": {
-  "claimRead": 213480,
+  "claimRead": 213632,
   "claims": 76
  },
  "failures": []

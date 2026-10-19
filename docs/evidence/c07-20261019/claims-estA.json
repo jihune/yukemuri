@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-19T13:05:31.067Z",
+ "measuredAt": "2026-10-19T13:40:27.046Z",
  "oldRef": "origin/main",
  "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
  "target": {
@@ -98,7 +98,7 @@
   "pages": 120,
   "claims": 154,
   "rounds": null,
-  "claimRead": 285572,
+  "claimRead": 285640,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -109,7 +109,7 @@
    },
    "POST /api/crawl": {
     "requests": 154,
-    "read": 285572,
+    "read": 285640,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -168,15 +168,15 @@
     "claims": 17,
     "pages": 0,
     "emptyClaims": 17,
-    "read": 68,
-    "emptyRead": 68
+    "read": 102,
+    "emptyRead": 102
    },
    "trip/list": {
     "claims": 17,
     "pages": 0,
     "emptyClaims": 17,
-    "read": 68,
-    "emptyRead": 68
+    "read": 102,
+    "emptyRead": 102
    },
    "trip/names": {
     "claims": 17,
@@ -199,7 +199,7 @@
   "pages": 120,
   "claims": 122,
   "rounds": 18,
-  "claimRead": 285444,
+  "claimRead": 285448,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -210,7 +210,7 @@
    },
    "POST /api/crawl": {
     "requests": 122,
-    "read": 285444,
+    "read": 285448,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -269,15 +269,15 @@
     "claims": 1,
     "pages": 0,
     "emptyClaims": 1,
-    "read": 4,
-    "emptyRead": 4
+    "read": 6,
+    "emptyRead": 6
    },
    "trip/list": {
     "claims": 1,
     "pages": 0,
     "emptyClaims": 1,
-    "read": 4,
-    "emptyRead": 4
+    "read": 6,
+    "emptyRead": 6
    },
    "trip/names": {
     "claims": 17,
@@ -368,6 +368,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/list priority empty": [
@@ -382,6 +386,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/names priority page": [
@@ -446,6 +454,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/list national empty": [
@@ -460,6 +472,10 @@
    [
     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
     1
+   ],
+   [
+    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
+    2
    ]
   ],
   "trip/names national page": [
@@ -504,7 +520,7 @@
   ]
  },
  "saved": {
-  "claimRead": 128,
+  "claimRead": 192,
   "claims": 32
  },
  "failures": []

@@ -113,10 +113,12 @@ else:
 if args.prepare_only:sys.exit(0)
 
 completed=0;next_request={};next_claim={};first_written=None;blocked_hosts=set();redirect_counts={};first_detail_claims=set()
-# C07: in a gentle run a group whose claim returned no page is not asked again;
-# an empty claim writes nothing, so the other groups' claims stay the same.
-# Pages that become due during the run (a retry or refresh, or a detail page a
-# list page found) wait for the next run.
+# C07: in a gentle run a group whose claim found no due page while its provider
+# was free (the Worker says exhausted) is not asked again; an empty claim writes
+# nothing, so the other groups' claims stay the same. Pages that become due in
+# such a group during the run (a retry or refresh, or a detail page a list page
+# found) wait for the next run. A claim that is empty because the provider waits
+# or holds another claim, or a Worker that does not say, keeps the group.
 empty_groups=set();rounds=0;claims=0
 guard=SourceGuard(args.interval,args.jitter)
 # Each round gives both providers list discovery and detail enrichment.
@@ -137,8 +139,8 @@ while completed<args.max_pages:
   claim=dict(provider=provider,phase=phase,token=str(uuid.uuid4()),lane='national' if first_detail or completed%5==4 else 'priority')
   if args.refresh_only and args.kind:claim['kind']=args.kind
   if args.url:claim['url']=args.url
-  batch=api('/api/crawl',claim,method='POST')['jobs'];claims+=1
-  if args.gentle and not batch:
+  answer=api('/api/crawl',claim,method='POST');batch=answer['jobs'];claims+=1
+  if args.gentle and not batch and answer.get('exhausted') is True:
    empty_groups.add((provider,phase))
    print(json.dumps(dict(emptyGroup=provider+'/'+phase,round=rounds)),flush=True)
   for job in batch:

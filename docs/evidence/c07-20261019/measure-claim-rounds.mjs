@@ -10,6 +10,8 @@
 //   [--old-ref origin/main] [--pages 120] [--lists 4100,1300] [--due 3,5] [--out report.json] [--control]
 //  --lists    Jalan and Trip.com list jobs (done); 499,49 keeps only the checked-in ones
 //  --due      Jalan and Trip.com detail pages due for refresh at the start of the run
+//  --stale-lease  a Jalan page still leased for 95 s when the run starts (a run that stopped
+//             before this one): Jalan's claims are empty but not exhausted until it ends
 //  --control  this branch's collector also skips the group it asks when 7 pages are done
 //             (a group that just gave a page): the comparison must fail
 import {createRequire} from 'node:module';
@@ -23,7 +25,7 @@ import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const argv=process.argv.slice(2),arg=(k,d)=>argv.includes(k)?argv[argv.indexOf(k)+1]:d;
-const oldRef=arg('--old-ref','origin/main'),PAGES=arg('--pages','120'),out=arg('--out',null),control=argv.includes('--control');
+const oldRef=arg('--old-ref','origin/main'),PAGES=arg('--pages','120'),out=arg('--out',null),control=argv.includes('--control'),staleLease=argv.includes('--stale-lease');
 const [listsJalan,listsTrip]=arg('--lists','4100,1300').split(',').map(Number),[dueJalan,dueTrip]=arg('--due','3,5').split(',').map(Number);
 const here=dirname(fileURLToPath(import.meta.url));
 const KEY='c07-measure-only-key',START=Date.parse('2026-10-19T12:00:00Z'),DAY=86400e3;
@@ -83,7 +85,7 @@ try{
  const crawlers={old:join(temp,'old/scripts/crawler'),new:join(temp,'new/scripts/crawler')};
  for(const [name,dir] of Object.entries(crawlers)){cpSync('scripts/crawler',dir,{recursive:true});cpSync('data',join(dir,'../../data'),{recursive:true})}
  writeFileSync(join(crawlers.old,'update-site.py'),execFileSync('git',['show',`${oldRef}:scripts/crawler/update-site.py`],{encoding:'utf8'}));
- if(control){const p=join(crawlers.new,'update-site.py'),s=readFileSync(p,'utf8'),line='  if args.gentle and not batch:\n';assert.equal(s.split(line).length,2,'control line');writeFileSync(p,s.replace(line,'  if args.gentle and (not batch or completed==7):\n'))}
+ if(control){const p=join(crawlers.new,'update-site.py'),s=readFileSync(p,'utf8'),line="  if args.gentle and not batch and answer.get('exhausted') is True:\n";assert.equal(s.split(line).length,2,'control line');writeFileSync(p,s.replace(line,"  if args.gentle and (not batch and answer.get('exhausted') is True or completed==7):\n"))}
  report.collectors={old:oldRef,new:control?'this branch, with the control change':'this branch'};
  // The base D1: migrations, the checked-in catalogue and queue, then production's shape.
  const base=join(temp,'base');let mf=start(base);const db=await mf.getD1Database('DB');
@@ -111,6 +113,8 @@ try{
   await db.prepare(`${numbers(n)} INSERT OR IGNORE INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.jalan.net/ui/uip1400/uiw1402.do?langCd='||l||'&kenCd='||printf('%02d',1+i%47)||'0000&stayCount=1&roomCount=1&distCd=01&crcyCd='||c||'&activeSort=1&screenId=UIW1402&idx='||(${offset}+1+i/94)||'&pageNum='||(${offset}+1+i/94),'jalan','names',NULL,95,?,?,0,? FROM n,(SELECT 'en_US' AS l,'USD' AS c UNION ALL SELECT 'ko_KR','KRW') WHERE (i/47)%2=(CASE l WHEN 'en_US' THEN 0 ELSE 1 END)`).bind(status,status==='done'?1:0,status==='done'?recent:null).run();
  }
  await db.prepare("INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,missing_count,missing_at) SELECT id,'2026-10-01T00:00:00Z','2026-10-01T00:00:00Z',0,NULL FROM hotels WHERE 1 ON CONFLICT DO NOTHING").run();
+ if(staleLease)await db.prepare("UPDATE crawl_jobs SET lease_token='00000000-0000-4000-8000-000000000000',lease_until=? WHERE url=(SELECT MAX(url) FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending')").bind((START+95e3)/1000).run();
+ report.staleLease=staleLease;
  report.shaped={jobs:await counts(db),hotels:(await db.prepare("SELECT substr(id,1,instr(id,'-')-1) AS p,COUNT(*) AS n FROM hotels GROUP BY 1").all()).results};
  const tables=(await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND name NOT LIKE 'd1_%' ORDER BY name").all()).results.map(r=>r.name);
  await mf.dispose();

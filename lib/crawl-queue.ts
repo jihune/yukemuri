@@ -96,6 +96,15 @@ export async function claimCrawlJob(claim:CrawlClaim){
  return(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
 }
 
+// C07: why a claim found nothing. While the provider waits (pacing, a cooldown) or
+// another claim of it is active, a due page may still be there; otherwise the
+// phase had none at the clock of the claim. Two indexed lookups.
+export async function providerWaiting(provider:CrawlClaim['provider']){
+ const now=Date.now()/1000;
+ const row=await favoritesDb().prepare("SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CAST(value AS REAL)>?) OR EXISTS (SELECT 1 FROM crawl_jobs WHERE provider=? AND lease_until>?) AS waiting").bind('crawl-provider-ready:'+provider,now,provider,now).first<{waiting:number}>();
+ return row?.waiting===1;
+}
+
 export async function crawlHealth(){
  const db=favoritesDb();
  const phases=await db.prepare(`SELECT provider,kind,status,COUNT(*) AS count,SUM(CASE WHEN lease_until>? THEN 1 ELSE 0 END) AS active,strftime('%Y-%m-%dT%H:%M:%SZ',MAX(unixepoch(fetched_at)),'unixepoch') AS last_success FROM crawl_jobs GROUP BY provider,kind,status`).bind(Date.now()/1000).all();
