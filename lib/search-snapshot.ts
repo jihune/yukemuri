@@ -27,8 +27,8 @@ export type HotelSummary={
  // a snapshot without it shows no registration, so it did not change SNAPSHOT_FORMAT.
  jta?:string;
  // D08: the Oita Prefecture lodging business permit lib/oita-permits.ts linked: the kind of
- // business as the list names it, the permit date ('' when the list has none) and the list's
- // date. Like jta, it did not change SNAPSHOT_FORMAT.
+ // business as the list names it, the permit date ('' when the list has none) and the month the
+ // list is as of (YYYY-MM). Like jta, it did not change SNAPSHOT_FORMAT.
  oita?:OitaPermit;
 };
 export function hotelSummary(h:Hotel):HotelSummary{

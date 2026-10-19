@@ -1,9 +1,10 @@
 {
  "source":"https://data.bodik.jp/dataset/440001_ryokan_business",
  "csv":"https://data.bodik.jp/dataset/a7da203c-8c3f-46d6-9e7a-46196d0161d2/resource/01098c01-3271-4424-8563-672df1e358e9/download/440001_ryokan_business_all.csv",
- "retrievedAt":"2026-10-19T19:01:45Z",
- "asOf":"2026-03-27",
+ "retrievedAt":"2026-10-19T19:21:45Z",
+ "asOf":"2026-03",
  "asOfNote":"令和8年3月時点",
+ "uploadedAt":"2026-03-27",
  "license":"CC BY 4.0",
  "licenseUrl":"https://creativecommons.org/licenses/by/4.0/deed.ja",
  "credit":"「旅館業営業許可施設一覧」（大分県）（https://data.bodik.jp/dataset/440001_ryokan_business）を加工して作成",

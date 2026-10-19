@@ -88,7 +88,13 @@ try{
  // The committed list.
  const data=JSON.parse(readFileSync('data/oita-ryokan-permits.json','utf8'));
  const attribution=require(compileLib(mkdtempSync(join(temp,'a-')),'lib/oita-attribution.ts'));
- assert.equal(data.license,'CC BY 4.0');assert(!Number.isNaN(Date.parse(data.retrievedAt)));assert.match(data.asOf,/^\d{4}-\d{2}-\d{2}$/);
+ assert.equal(data.license,'CC BY 4.0');assert(!Number.isNaN(Date.parse(data.retrievedAt)));assert.match(data.uploadedAt,/^\d{4}-\d{2}-\d{2}$/);
+ // The month the list is as of comes from the catalog's description, not the CSV's upload date
+ // (Codex review on PR #211).
+ const month=python([load('scripts/update-oita-permits.py'),'print(json.dumps([m.as_of(n) for n in json.load(sys.stdin)]))'],JSON.stringify([data.asOfNote,'令和１０年１２月時点']));
+ assert.equal(month.status,0,month.stderr);assert.deepEqual(month.out,[data.asOf,'2028-12']);assert.match(data.asOf,/^\d{4}-\d{2}$/);
+ assert.notEqual(python([load('scripts/update-oita-permits.py'),'m.as_of(sys.stdin.read())'],'2026年3月27日更新').status,0,'no as-of month: stop');
+ assert.equal(attribution.oitaAsOf('2026-03'),'2026년 3월 시점 목록');
  assert.deepEqual(attribution.OITA_LINKS.map(l=>l.url),[data.source,data.licenseUrl],'the page credits the dataset and the license the data names');
  assert.equal(data.credit,attribution.OITA_ATTRIBUTION.replace('を加工して作成','（'+data.source+'）を加工して作成'));
  assert.equal(data.count,data.rows.length);assert(data.rows.filter(r=>r[2]==='旅館・ホテル').length>800,'about 900 hotels and ryokan');

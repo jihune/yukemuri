@@ -6,7 +6,7 @@
 // - the permitted stay's card says nothing about the permit (design A, D08 16); the page does not
 //   scroll sideways;
 // - its detail sheet's ‘정보 출처’ holds one entry: that it is on the list, the kind of business as
-//   the list names it, the permit date and the list's date, what a stay missing from the list does
+//   the list names it, the permit date and the month the list is as of, what a stay missing from the list does
 //   not mean, and the CC BY 4.0 credit linking the dataset and the license; the other stay's sheet
 //   holds none;
 // - while the detail API fails the sheet shows the card and a retry, and the retry brings the entry;
@@ -29,8 +29,8 @@ const control=process.argv.includes('--control'),[base='http://127.0.0.1:8787',e
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-d08-oita-'));
-let OITA_LABEL,OITA_LIMIT,OITA_LINKS,OITA_ATTRIBUTION,displayNames;
-try{({OITA_LABEL,OITA_LIMIT,OITA_LINKS,OITA_ATTRIBUTION}=createRequire(import.meta.url)(compileLib(temp,'lib/oita-attribution.ts')));({displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'n-')),'lib/hotel-names.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
+let OITA_LABEL,OITA_LIMIT,OITA_LINKS,OITA_ATTRIBUTION,oitaAsOf,displayNames;
+try{({OITA_LABEL,OITA_LIMIT,OITA_LINKS,OITA_ATTRIBUTION,oitaAsOf}=createRequire(import.meta.url)(compileLib(temp,'lib/oita-attribution.ts')));({displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'n-')),'lib/hotel-names.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
 const {snapshot}=await siteSearch(base);
 const open=i=>!['closed','temporarily_closed'].includes(snapshot.core.state[i]);
 const japanese=c=>/[\u3040-\u30ff\u4e00-\u9fff]/.test(c.names.ja);
@@ -62,7 +62,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  const entry=sheet.locator(ENTRY);
  const title=await entry.locator('b').textContent().catch(()=>null),body=await entry.textContent().catch(()=>''),listKind=await entry.locator('span[lang="ja"]').first().textContent().catch(()=>null);
  const links=await entry.locator('a').evaluateAll(as=>as.map(a=>({href:a.href,text:a.textContent,target:a.target,rel:a.rel}))).catch(()=>[]);
- check(`상세: 정보 출처에 ‘${OITA_LABEL}’와 ${kind} 영업 · 허가 ${permitted}(${asOf} 목록 기준)`,title===OITA_LABEL&&listKind===kind&&body.includes(`${kind} 영업 · 허가 ${permitted}(${asOf} 목록 기준)`),{title,listKind,body});
+ check(`상세: 정보 출처에 ‘${OITA_LABEL}’와 ${kind} 영업 · 허가 ${permitted}(${oitaAsOf(asOf)})`,title===OITA_LABEL&&listKind===kind&&body.includes(`${kind} 영업 · 허가 ${permitted}(${oitaAsOf(asOf)})`),{title,listKind,body});
  check('상세: 목록에 없다는 것의 뜻, 가공 출처와 데이터셋·CC BY 4.0 링크',body.includes(OITA_LIMIT)&&body.includes(OITA_ATTRIBUTION)&&JSON.stringify(links.map(l=>l.href))===JSON.stringify(OITA_LINKS.map(l=>l.url))&&links.every(l=>l.target==='_blank'&&l.rel.includes('noopener')),{links});
  // The sheet slides in from the right: measured once its right edge is the window's.
  await page.waitForFunction(()=>{const e=document.querySelector('.hotel-detail');return!!e&&e.getAnimations().every(a=>a.playState!=='running')&&Math.abs(e.getBoundingClientRect().right-window.innerWidth)<0.5},null,{timeout:5000}).catch(()=>{});

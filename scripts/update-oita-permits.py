@@ -139,6 +139,15 @@ def linked_rows(found, oita):
     return set(json.loads(run.stdout))
 
 
+def as_of(note):
+    """The month the list is as of, from the catalog's description: 令和8年3月時点 is 2026-03. The
+    CSV's upload date is not it (Codex review on PR #211)."""
+    found = re.search(r'令和(\d+)年(\d+)月時点', unicodedata.normalize('NFKC', note))
+    if not found:
+        raise SystemExit(f'No as-of month in the description {note!r}')
+    return f'{2018 + int(found[1]):04d}-{int(found[2]):02d}'
+
+
 def keep(found, linked):
     """The rows written: every 旅館・ホテル row, the others only where a stay links them."""
     return [r for r in found if r[2] == '旅館・ホテル' or r[0] in linked]
@@ -166,7 +175,7 @@ def main(argv=None):
     written = keep(found, linked)
     data = {
         'source': DATASET, 'csv': resource['url'], 'retrievedAt': retrieved,
-        'asOf': resource['last_modified'][:10], 'asOfNote': resource.get('description') or '',
+        'asOf': as_of(resource.get('description') or ''), 'asOfNote': resource.get('description') or '', 'uploadedAt': resource['last_modified'][:10],
         'license': 'CC BY 4.0', 'licenseUrl': package['license_url'],
         'credit': '「' + package['title'] + '」（' + package['organization']['title'] + '）（' + DATASET + '）を加工して作成',
         'note': 'Columns: list ID, facility name, kind of business, address, permit number, permit date (NFKC). The operator and the phone are dropped as the CSV is read. Every 旅館・ホテル row; 簡易宿所 and 下宿 rows only where a stay of the snapshot named in linked links them. lib/oita-permits.ts links a stay only when the name and the address agree.',
