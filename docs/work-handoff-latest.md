@@ -14,7 +14,7 @@
 
 이어받는 세션은 하네스 규칙(인계를 받은 세션의 누락 점검)대로 이 인계에 빠진 것이 없는지 스스로 점검한다. 옛 상위 세션의 사용자 메시지(`list_events(session_id=<옛 상위 세션>, kinds=["user"], limit=100)`을 `before_id`로 거슬러 읽음)를 아래 2·4와 대조한다. 결과가 커서 파일로 저장되면 스크립트로 글 블록만 뽑는다. 사용자의 작업이나 결정이 필요하면 사용자에게 묻는다(사용자 10-17T17:0xZ: ‘인계시 새 세션에서 작업한다면 인계한거 빠진거 없는지는 규칙에 따라 자동으로 검토하면 될거다. 사용자 작업이나 결정 필요사항 있다면 새 세션에서 역질문 하던가 답변해주면 된다.’). 여덟 번째 상위 세션이 받은 사용자 지시는 아래 2의 마지막 세 줄(10-19T11:3xZ–11:42Z, 안전망 확인·C06·바로 할 일 네 가지)이다. 일곱 번째의 것(시작 한 줄과 10-18T23:54Z 기록 브랜치 말)은 옮긴 파일 「상위 세션 인계」 7의 7번에 있다.
 
-1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 여덟 번째 상위 세션은 setup 30 `f109a03 2026-10-19`였다. 다음 세션은 그 판이거나 더 새 판이어야 한다. 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
+1. 하네스를 확인한다. `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"`의 판을 아래 7에 적는다. 여덟 번째 상위 세션은 setup 30 `f109a03 2026-10-19`였다. 다음 세션은 setup 31 `e796490 2026-10-19`이거나 그보다 새 판이어야 한다. 하네스 확인 문구의 실제 값은 어디에도 적지 않는다.
 2. 사용량을 읽는다. `get_session`(인자 없음)으로 자기 id를 얻고, `list_events(kinds=["rate_limit_event"], limit=100)`의 마지막 이벤트에서 `five_hour`·`seven_day` utilization과 `isUsingOverage`를 본다. 기준은 아래 2의 사용량 항목이다.
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽는다.
 4. 아래 3의 표를 한 줄씩 확인 명령으로 다시 보고, 하위 세션 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 본다. main에 없는 기록 커밋은 다음 기록 PR에 가져온다. 실행기 저장소 `jihune/yukemuri-script-runner`는 `add_repo`(access push)로 붙인다. 하네스 문장을 직접 읽으려면 `jihune/agent-harness`를 `add_repo`(access read)로 붙이고 GitHub 도구로 파일을 읽는다.
@@ -67,7 +67,7 @@
 | 하위 세션 | 일함: O03(C05 측정), C04(C06 PR #190, 쪽당 읽기 원인 측정), L01(D08 PR 1·3), D08 Commons(`session_01Uxvb7CAJHMJ55KWstKVNpt`, D08 PR 2), C07(`session_011eZxw3sdBJd4VfNtNaaaki`, 읽기 줄이기). 쉼: D05, U07, D07, U05, U06(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 여덟 번째 상위 세션에 묶인 것은 H01 7일차 `trig_01U6vLaQDDfYSNSwTyrSmw7y`(10-20T01:20Z)와 D04 재측정 알림 `trig_01FvnhQBAB7Zo6ijLNTRbZDx`(11-29T03:05Z)다. 하위 세션 예약: O03의 10-20 매일 점검 확인 `trig_019xRCsefHCVg4otWF2ZhcYG`(10-20T03:00Z)와 C05 이틀 측정 `trig_0146LNrucE9sLnkudEpaEgX9`(10-21T02:10Z). 그 밖에 사용자 keep-alive 루틴 두 개와 다른 프로젝트 예약 하나가 있다(건드리지 않음) | `list_triggers`(enabled true) |
 | 사용량 | 10-19T11:18:07Z 5시간 창 0.32, 7일 창 0.86(75% 경고, 재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
-| 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여덟 번째 상위 세션에 설치된 판은 setup 30 `f109a03 2026-10-19` | 위 1-1 |
+| 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여덟 번째 상위 세션에 설치된 판은 setup 30 `f109a03 2026-10-19`, 새 세션은 setup 31 `e796490 2026-10-19` | 위 1-1 |
 
 ### 4. 열린 흐름과 다음 일(우선순위 순)
 
@@ -121,6 +121,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`), D08 PR 1 관광청 등록 표시와 PR 3 오이타현 여관업(10-19T12:3xZ 맡김) | 일함 |
 | `session_01Uxvb7CAJHMJ55KWstKVNpt` | D08 PR 2 Commons 사진(브랜치 `claude/d08-commons-photos`, brief `D08-20261019.md` 10절, 10-19T12:29Z 엶) | 일함 |
+| `session_01KThJhPmvWG2sAnNZJ3dnFH` | D08 PR 4 Overture 대략 위치 보정과 PR 5 Jalan·Trip.com 중복 47쌍 묶기(브랜치 `claude/d08-overture`, brief `D08-20261019.md` 12절, 10-19T13:14Z 엶) | 일함 |
 | `session_011eZxw3sdBJd4VfNtNaaaki` | C07 수집과 배포의 D1 읽기 줄이기(브랜치 `claude/c04-reads`, brief `C07-20261019.md`, 10-19T12:35Z 엶) | 일함. 방안 1→2→3, 병합 10-21T00:00Z 뒤 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
@@ -142,6 +143,7 @@
 - 10-19T12:15Z O03의 매일 점검 실패선 90% PR #188을 병합했다(`c10c991`, Codex 1회 큰 문제 없음, CI `checks` 통과, 그 뒤 main에 들어간 #189는 문서뿐). 이 병합으로 코드 배포 run 39250698141이 돌았다(결과는 `deployments.md`). C06 PR #190(C04 세션)이 열렸고 병합은 10-21T00:00Z 뒤다. 병합 뒤 수집을 바로 멈추려면 실행기 `YUKEMURI_ENABLED`만으로는 부족하고 Actions의 ‘Yukemuri collection chain’ workflow를 끄고(Disable) 기다리는 run을 취소해야 한다. `YUKEMURI_ENABLED`만 끄면 돌고 있는 고리는 그날 몫을 다 쓸 때까지 이어지고(늦어도 다음 UTC 날 첫 실행 전에 멈춤), `autoDeploy` false는 둘 다 멈춘다(C04 세션 설명, PR #190이 `cloudflare-deploy.md` 되돌림 절에 넣음).
 - 10-19T12:2xZ D08 조사 결과를 `docs/D08-20261019.md`로 옮겼다. 판단을 가르는 Overture Places 라이선스(CDLA Permissive 2.0)와 관광청 PDL1.0을 원문으로 다시 읽었고, Overture 추출본을 나라 칸으로 다시 세어 일본 64,616곳을 확인했다(범위 상자에 걸린 한국 16,222곳 등은 조사 때 이미 걸러짐). 남의 원문 페이지·PDF와 개인 이름이 든 지자체 CSV는 저장소에 넣지 않았다.
 - 10-19T12:3xZ 쪽당 읽기 정정: C04 세션이 12:18Z에 알려 온 대로, 10-19의 깨끗한 구간 셋(앱 collect run 39201258415 → 39203618035 → 39234821810 → 39242973283의 ‘Size the run’ 줄 596,068 → 1,088,305 → 1,606,568 → 2,056,042행, 차이 492,237·518,263·449,474행)을 상위 세션이 다시 셌다. 스냅숏 약 13.2만 행과 실행 고정 약 8.9만 행을 빼면 쪽당 약 1,900–2,500행이다. 10-18 18:53Z 구간의 쪽당 약 4,500행은 그 안에 실행기 매일 백업(run 39168336233, 21:33Z, `/api/catalog-export` 전체 내보내기, 약 35만 행 어림)이 들어 튄 값이다. 그래서 C06은 push 배포가 적은 날 하루 약 3번(약 360쪽)을 더한다. C04 세션은 쪽당 읽기가 는 원인(바퀴 수 증가, Trip 받기 묶음의 읽기 증가, 빈 묶음도 바퀴마다 물음)과 줄일 방안 여섯 가지를 PR #190의 C04 문서에 설계로만 넣었다(커밋 588c30e). 사용자에게 다시 고친 숫자를 알리고 방안 1–3을 묻는다.
+- 10-19T13:16Z 사용자 지시 ‘하네스 관리 세션에 넘겨라’: 이 세션의 교정 한 쌍(Overture를 설명하지 않고 물음)과 교훈(구간 차이에 다른 소비자가 섞임 등)을 `docs/history/lessons-parent8-20261019.md`에 적어 하네스 관리 세션 `session_01WusoPNSswrf4gH76sh9bF2`에 경로를 보냈다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
