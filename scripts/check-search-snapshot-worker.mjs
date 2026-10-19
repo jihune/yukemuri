@@ -205,7 +205,7 @@ try{
    EXISTS(SELECT 1 FROM hotel_name_localizations n WHERE n.hotel_id=h.id AND n.payload IS NULL) AS looked,
    (SELECT t.source_text=json_extract(h.payload,'$.description') FROM hotel_description_translations t WHERE t.hotel_id=h.id) AS translation FROM hotels h ORDER BY h.id`).all()).results;
   const ROWS=['detail','bath','rooms','years','rating','photo','nameKo','descKo'];
-  const scope=()=>({records:0,rows:Object.fromEntries(ROWS.map(k=>[k,{filled:0,none:0,empty:0}])),geo:[0,0,0,0,0,0,0],staleTranslations:0});
+  const scope=()=>({records:0,rows:Object.fromEntries(ROWS.map(k=>[k,{filled:0,none:0,empty:0}])),geo:[0,0,0,0,0,0,0,0],staleTranslations:0});
   const want={scopes:{all:scope(),jalan:scope(),trip:scope()}};
   places.forEach((p,i)=>{
    const h=workerHotels.get(p.id),provider=p.id.startsWith('jalan-')?'jalan':p.id.startsWith('trip-')?'trip':null;

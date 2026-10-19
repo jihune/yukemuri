@@ -33,7 +33,7 @@ if(!fill)throw new Error('The served status.json has no fill: rebuild with node 
 const n=v=>v.toLocaleString('ko-KR');
 const share=(part,whole)=>{if(!whole)return '0%';const p=part/whole*100;return p>0&&p<0.1?'0.1% 미만':p.toFixed(1)+'%'};
 const ROWS=['detail','bath','rooms','years','rating','photo','nameKo','descKo'];
-const GEO=[[1,6],[2],[3],[4,5]],GEO_LABELS=['건물 위치','번지 블록','동네','넓은 범위'];
+const GEO=[[1,6,7],[2],[3],[4,5]],GEO_LABELS=['건물 위치','번지 블록','동네','넓은 범위'];
 const SCOPES={all:'전체',jalan:'자란넷',trip:'Trip.com'};
 // Trend rows (one with no run the day before it) and the gridline rule of the chart.
 const TREND=[['2026-10-09',1000,700,15000],['2026-10-10',1100,720,15100],['2026-10-12',1250,760,15300],['2026-10-13',1300,790,15400],['2026-10-15',1420,800,15600]].map(([date,jalan,trip,records])=>({date,records,pages:{jalan:{done:jalan,total:14000},trip:{done:trip,total:2100}}}));

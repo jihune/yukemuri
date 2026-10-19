@@ -8,6 +8,7 @@ import { hasCoordinates } from '@/lib/hotel-location';
 import { LocateFixed, MapPin, Plus, Minus, Search } from 'lucide-react';
 import type { MapBounds, MapCell, MapPoint } from '@/lib/static-search';
 import { viewGroups, spotGroups, type ResultPositions, type ViewGroups } from '@/lib/map-groups';
+import { OVERTURE_MAP_CREDIT } from '@/lib/geo-attribution';
 type Props={hotels:HotelSummary[];activeId:string|null;onSelect:(id:string,keyboard?:boolean)=>void;compact?:boolean;focusId?:string|null;
  // Map-bounds search: when points or cells are given they replace the loaded hotels on the map.
  points?:MapPoint[]|null;cells?:MapCell[];onSearchArea?:(bounds:MapBounds)=>void;areaBusy?:boolean;areaFailed?:boolean;
@@ -43,6 +44,7 @@ export default function StayMap({hotels,activeId,onSelect,compact=false,focusId=
    const map=L.map(container.current,{zoomControl:false,scrollWheelZoom:true,attributionControl:true}).setView([36.5,137.5],5);
    mapRef.current=map;layer.current=L.layerGroup().addTo(map);
    const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'}).addTo(map);
+   map.attributionControl.addAttribution(OVERTURE_MAP_CREDIT);
    tiles.on('tileerror',()=>setTileError(true));
    // Markers keep autoPanOnFocus off: panning to a focused off-screen marker fires moveend,
    // the redraw removes that marker, focus falls to the page and Tab never leaves the map.
