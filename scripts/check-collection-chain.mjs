@@ -61,7 +61,7 @@ const base={after,runs:[run(90,120),after],budget,now};
 const CASES={
  'not-gentle-main':[{after:{...after,head_branch:'feature'}},{after:{...after,display_title:'Yukemuri collection (check-access)'}},{after:{...after,path:'.github/workflows/deploy.yml'}}],
  'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(99,70,{status:'queued',conclusion:null})]}],
- 'day-limit':[{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i))]}],
+ 'day-limit':[{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i))]},{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i,{head_branch:'feature'}))]}],
  'usage-unreadable':[{budget:pagesFor(null)},{budget:pagesFor({rowsRead:'x',rowsWritten:0})}],
  'small-budget':[{budget:pagesFor({rowsRead:3_960_000,rowsWritten:0})},{budget:pagesFor({rowsRead:5_000_000,rowsWritten:0})}]
 };
@@ -69,6 +69,8 @@ const check=(decide,label)=>{
  assert.deepEqual(decide(base),{dispatch:true,rule:'dispatch',reason:'the next run gets 120 pages ('+budget.reason+')'},label+': a gentle run on main, nothing newer, budget left');
  assert.equal(decide({...base,budget:{...budget,pages:16}}).dispatch,true,label+': exactly minPages');
  assert.equal(decide({...base,after:{...after,path:'.github/workflows/collect.yml@main'}}).dispatch,true,label+': a path with a ref (#190 Codex review P1)');
+ for(const status of ['completed','in_progress'])
+  assert.equal(decide({...base,runs:[after,run(101,30,{head_branch:'feature',status})]}).dispatch,true,label+': a newer '+status+' gentle run off main cannot carry the chain (#190 Codex review 2 P2)');
  assert.equal(decide({...base,runs:[after,...Array.from({length:22},(_,i)=>run(200+i,63+i))]}).dispatch,true,label+': the 24th run of the day');
  assert.equal(decide({...base,runs:[after,run(99,70,{display_title:'Yukemuri collection (check-access)',status:'in_progress'})]}).dispatch,true,label+': a check-access run does not stop the chain');
  assert.equal(decide({...base,runs:[run(102,24*60+30),after]}).dispatch,true,label+': yesterday\'s runs do not count');
