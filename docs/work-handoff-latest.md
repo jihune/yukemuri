@@ -55,11 +55,11 @@
 
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
-| main | 이 기록 PR이 들어간다. 그 앞은 `1ca9088`(PR #171, U07 후속), `07e2f4e`(PR #173, 기록), `0a61e46`(PR #172, 기록), `1e03978`(PR #166, U07 PR 다), `2453e2d`(PR #163, C04 예산) | `git log --oneline -6 origin/main` |
-| 열린 PR | yukemuri #176(U07 두 번째 후속, #171 마지막 검토 P3 2건과 검사 정리, 10-19T01:03Z 열림, head `d065c6a`, main `8b143f0`에서 시작). CI 뒤 Codex 1회째. 실행기 저장소는 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
-| 운영 배포 | 마지막 코드 배포는 PR #171(`1ca9088`, run 39177623003, 10-18T23:42:14Z–23:49:38Z, Worker `8bf8f461`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `88f1f324f8aee27d`, 24,694곳, 생성 읽기 128,157행)이다. 10-18의 코드 배포 여덟 번은 `deployments.md`에 있다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
+| main | 이 기록 PR이 들어간다. 그 앞은 `1e84c3d`(PR #176, U07 두 번째 후속), `00e85c0`(PR #177, H01 6일차), `4d2438f`(PR #175, 기록), `8b143f0`(PR #174, 기록), `1ca9088`(PR #171, U07 후속) | `git log --oneline -6 origin/main` |
+| 열린 PR | 없음(yukemuri, yukemuri-script-runner, 10-19T02:4xZ) | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
+| 운영 배포 | 마지막 코드 배포는 PR #176(`1e84c3d`, run 39189908721, 10-19T02:25:43Z–02:36:57Z, Worker `419b4a3b`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `93374caa22178a16`, 25,126곳, 생성 읽기 130,889행)이다. 코드 배포마다 스냅숏을 다시 만들어 그날 D1 읽기에 약 13만 행이 든다(H01 6일차). 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분(`37 * * * *`, 실행기 PR #14, 10-18T12:31Z)이다. GitHub `schedule`이 늦게 와서 첫 실행은 16:06:57Z였다(실행기 run 39143537085). `collection-budget.mjs`(PR #163)는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000이다. 0쪽 실행은 수집기와 스냅숏을 건너뛰어 D1을 읽지 않는다. 실행기 schedule 실행은 16:06:57Z·18:53:15Z·21:48:59Z로 약 3시간 간격이다. 마지막 앱 `collect.yml` 실행은 run 39169498982(21:49:06Z–21:59:43Z, 성공) | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, 실행기 `yukemuri-catalog.yml`도 같은 방법 |
-| 하위 세션 | 일함: O03(C05 측정), U07(#171 P3 후속 PR). 쉼: C04, D07, U05, U06, L01, D05(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
+| 하위 세션 | 일함: O03(C05 측정). 쉼: U07, C04, D07, U05, U06, L01, D05(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 일곱 번째 상위 세션에 묶인 예약 세 개(위 1-5). 하위 세션 예약: O03의 첫 매일 점검 확인(10-19T02:45Z)과 C05 이틀 측정(10-21T02:10Z), U07이 자기 PR 확인용으로 잡는 것. 사용자 keep-alive 루틴 두 개 | `list_triggers`(enabled true) |
 | 사용량 | 10-18T23:16:42Z 5시간 창 0.14(재설정 10-19T01:40Z), 7일 창 0.61(재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
 | 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 일곱 번째 상위 세션에 설치된 판은 `2a287a0 2026-10-19`(하네스 main과 같음) | 위 1-1 |
@@ -68,7 +68,7 @@
 
 1. H01 7단계: 6일차(10-18 하루)는 10-19T01:2xZ에 봤다(`H01-20261011.md`). 1102 0, 쓰기 29.5%, 읽기 85.0%(85% 선보다 114행 많음)다. 읽기가 85%에 닿은 까닭은 코드 배포 14번의 스냅숏 생성 읽기 2,109,922행(그날 읽기의 49.6%)이고, 마지막 수집 실행 뒤의 #171 배포가 예산의 남은 여유를 넘겼다. 그래서 O03의 10-18 매일 점검은 실패 메일을 보낸다(예상한 실패). 7일차(10-20T01:20Z)는 예약대로 보고, 그 뒤 아래 ‘C1’ 항목을 닫고 7단계를 정리한다.
 2. O03 사용량 점검 자동화(이후 아이디어 10, 하위 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`): 앱 PR #131과 실행기 PR #11이 병합됐다. 실행기 예약이 매일 01:41Z에 앱 점검을 부르고, 85% 이상·1102·0쪽 수집(그날 실행이 모두 0쪽일 때만)·26분 초과·백업 실패면 실패 메일이 간다. 첫 예약 실행(10-19T01:41Z)은 O03이 10-19T02:45Z에 확인한다. 7일차(10-20) 뒤 상위 세션의 Claude 매일 점검을 끝내고, 실패 메일이 온 날만 run 요약을 본다.
-3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR 가(#133), 할 것 7(#148), PR 나(#151), PR 다(#166, 설명을 데스크톱 Chrome·Edge의 브라우저 내장 번역으로 그 자리에서 번역)가 모두 병합·배포됐다. #166 4번째 검토가 남긴 P3 다섯 건의 후속 PR #171도 10-18T23:4xZ에 병합·배포됐다(`1ca9088`, Worker `8bf8f461`, 검토 Codex 3회와 이어 가는 Claude 검토 2회). 4번째 검토의 P2(장음 부호 ō 때문에 운영 숙소 trip-687323의 번역 단추가 사라짐)는 단추 표시·원문 언어(main 규칙, `translationSource`)와 원문 `lang`(엄격한 규칙, `descriptionLang`)을 나눠 고쳤다. 다음은 U07의 작은 후속 PR이다. `U07-20261019.md` ‘후속 PR’ 4의 다음 일 네 건(마지막 검토 P3 2건: 번역 검사 6번 판정 이름, 원문 언어를 모르는 설명의 안내 / 검사 정리 2건: 아래 스크립트, U06 애니메이션 기다림 상한과 U02 networkidle)을 묶는다. U07이 적은 PR 밖 후속 일: `scripts/check-description-ui.cjs`가 main에서도 `Cannot find module './description-translate'`로 실패한다(#166부터, 어떤 실행기도 부르지 않음).
+3. U07 화면 보강(하위 세션 `session_017hnYhfmsAP8ERYLmQJfE4h`, 상세 `U07-20261019.md`): PR 가(#133), 할 것 7(#148), PR 나(#151), PR 다(#166, 설명을 데스크톱 Chrome·Edge의 브라우저 내장 번역으로 그 자리에서 번역)가 모두 병합·배포됐다. #166 4번째 검토가 남긴 P3 다섯 건의 후속 PR #171도 10-18T23:4xZ에 병합·배포됐다(`1ca9088`, Worker `8bf8f461`, 검토 Codex 3회와 이어 가는 Claude 검토 2회). 4번째 검토의 P2(장음 부호 ō 때문에 운영 숙소 trip-687323의 번역 단추가 사라짐)는 단추 표시·원문 언어(main 규칙, `translationSource`)와 원문 `lang`(엄격한 규칙, `descriptionLang`)을 나눠 고쳤다. 그 마지막 검토 P3 2건과 검사 정리 2건(검사 스크립트 `check-description-ui.cjs` 고침, U06·U02 기다림 상한과 시간 초과 실패 판정)은 두 번째 후속 PR #176으로 10-19T02:2xZ에 병합·배포됐다(`1e84c3d`, Worker `419b4a3b`, Codex 2회). 할 일 1~8과 후속이 모두 끝나 U07은 쉰다.
 4. C04 쪽당 D1 쓰기 줄이기(하위 세션 `session_01BFCCsaQ7tWzZRYedC5aTVL`, 상세 `C04-20261019.md`와 아래 「C04」): 예산 PR #163과 첫 실측 기록 PR #169가 병합됐다. C04는 쉰다. 다음 작업 후보 두 가지(실행 안에서 쓴 행·읽은 행을 재며 멈춤, 몇 쪽짜리 마지막 실행 건너뛰기)는 아래 6의 C05 측정 뒤 상위 세션이 사용자에게 함께 제안한다.
 5. D07 한국어·영어 이름 넓히기(하위 세션 `session_01P9cAoY1mYPco2JKPBhvgqv`, 상세 `D07-20261019.md`): PR 1(#145, Wikidata), PR 2(#154, Jalan 한국어·영어 목록 이름), PR 3(#165, 사진 출처 이름·파서 계약 한도·로컬 사이트 마이그레이션)이 모두 병합·배포됐다. 정해진 다음 일은 없다. Jalan 이름 수집은 수집 실행마다 낮은 우선순위로 이어진다.
 6. C05 수집 예약을 매시간으로(사용자 10-18T11:3xZ, O03 세션, brief `C05-20261018.md`): 앱 PR #160과 실행기 PR #14가 병합됐다. 첫 매시간 실행은 cron 변경 뒤 3시간 반 만에 왔다. 이 저장소들의 GitHub `schedule` 실행은 늘 몇 시간씩 늦다(앱 `collect-watch.yml` 4–5시간, 실행기 백업 2–3시간; 근거는 옮긴 파일 8의 14:06Z·15:15Z 기록과 `docs/evidence/h01-schedule-gap-20261018/`). O03이 10-19·10-20 이틀(실행 수, 처리 쪽수, D1 비율, 실행기 Actions 분)을 재어 10-21T02:10Z에 알린다. 그 뒤 상위 세션이 사용자에게 제안할 것: 실행마다 드는 고정 읽기(실행 끝 대기열 읽기 약 8.5만 행, 스냅숏 약 12.5만 행)를 줄이는 방안, 코드 배포 때 스냅숏을 다시 만들지 않고 마지막 수집 스냅숏을 쓰는 방안(10-18은 배포 14번이 읽기 한도의 42.2%를 씀, H01 6일차), C04의 두 후보, 그리고 예약이 계속 늦거나 빠지면 GitHub `schedule` 밖에서 부르는 방안. C04의 모의로는 지금 값에서 하루 약 930–1,190쪽(10-17은 679쪽)이고 읽기가 쪽수를 묶는다. `snapshotReads` 168,000은 스냅숏 증가 속도로 이틀 남짓 버티므로 측정 때 다시 본다.
@@ -106,7 +106,7 @@
 | `session_012tbsAbaHuG1Xhs94L4LatJ` | 네 번째 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01PuNgLiSyMdn35DxmRigJmK`, `session_01KfLU3P8YrmZdyxehAEp9rp`, `session_01BSbr1zrttr8mSibf5bfz2R` | 세 번째, 두 번째, 첫 상위 세션 | 쉼, 보관하지 않음 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화와 C05 수집 예약 매시간(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함. 첫 매일 점검 확인(10-19T02:45Z), C05 이틀 측정(10-21T02:10Z) |
-| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 일함. #171 마지막 검토 P3 2건과 검사 정리의 후속 PR |
+| `session_017hnYhfmsAP8ERYLmQJfE4h` | U07 화면 보강(브랜치 `claude/u07-ui`) | 쉼. 할 일 1~8과 후속 PR #171·#176이 모두 병합·배포됨 |
 | `session_01BFCCsaQ7tWzZRYedC5aTVL` | C04 쪽당 D1 쓰기 줄이기와 P04(브랜치 `claude/c04-writes`) | 쉼. C05 측정 뒤 제안 대기 |
 | `session_01P9cAoY1mYPco2JKPBhvgqv` | D07 한국어·영어 숙소 이름 넓히기(브랜치 `claude/d07-names`) | 쉼. PR 1~3 병합, 정해진 다음 일 없음 |
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
@@ -147,6 +147,7 @@
 - 10-18T23:4xZ U07의 병합 준비 알림(head `a796853`, 검토 뒤 바뀐 것은 U07 문서와 인계 U07 절뿐)을 받아 #171을 병합했다(`1ca9088`). 확인: 검토 커밋과 head를 각각 main과 합친 트리의 차이가 기록 파일 두 개뿐, `checks`(run 39176898956)·GitGuardian 통과, mergeable clean, 스레드 6개 해결. 배포 run 39177623003 성공(Worker `8bf8f461`, 스냅숏 `88f1f324f8aee27d`, 24,694곳, `deployments.md`).
 - 10-19T01:03Z U07이 두 번째 후속 PR #176을 열었다(네 건과 함께 U02 검사의 route 거부를 흘리는 한 줄 `51b70f1`, 상위 세션이 그대로 두게 함). U07의 확인: 결함을 심은 main 빌드에서 옛 U02·U06 검사는 시간 초과, 새 검사는 통과, 고친 트리에서 `cloud-check --full` 48개와 브라우저 검사 20개 통과.
 - 10-19T02:0xZ #176 Codex 1회째(검토 커밋 `d065c6a`) P2 2건: 새로 둔 기다림 상한이 끝없는 애니메이션·요청 결함을 조용히 통과시킨다는 지적이다. U07이 상한은 두되 시간 초과를 이유를 적은 실패 판정으로 남기게 고쳤다(head `2f9fc35`, 결함 빌드에서 새 판정만 실패). 그래서 10-18에 한 번씩 났던 시간 초과가 다시 나면 검사 실행이 빨간색이 된다. CI 뒤 Codex 2회째.
+- 10-19T02:2xZ U07의 병합 준비 알림(head `db4cacd`)을 받아 #176을 병합했다(`1e84c3d`). 확인: Codex 2회째(검토 커밋 `2f9fc35`) ‘큰 문제 없음’ 이슈 댓글, 검토 커밋과 head를 각각 main과 합친 트리의 차이가 U07 문서 하나, `checks`·GitGuardian 통과, 스레드 2개 해결. 배포 run 39189908721 성공(Worker `419b4a3b`, 스냅숏 `93374caa22178a16`, 25,126곳, `deployments.md`).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
