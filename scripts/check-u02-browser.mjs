@@ -200,9 +200,15 @@ async function run(page){
   const button=coverage.getByRole('button',{name:/위치 미확인/}),b=await box(button);
   check(name,inView(b)&&await fullyReachable(button),{button:b});
  };
- // Network quiet is waited for at most 10s here: once at 360px it never came within the 30s limit
- // and stopped the width (U07, 2026-10-18); firstView waits for the map's line itself.
- await page.goto(base+'/?view=map');await page.waitForLoadState('networkidle',{timeout:10000}).catch(()=>{});
+ // Network quiet within page.goto's former 30s: once at 360px it did not come and the goto stopped the
+ // width (U07, 2026-10-18). A timeout now fails this check with the requests seen and still open, and
+ // firstView goes on; it waits for the map's line itself (#176).
+ const seen=[],open=new Set(),opened=r=>{seen.push(new URL(r.url()).pathname);open.add(r)},closed=r=>open.delete(r);
+ page.on('request',opened);page.on('requestfinished',closed);page.on('requestfailed',closed);
+ await page.goto(base+'/?view=map');
+ const quiet=await page.waitForLoadState('networkidle',{timeout:30000}).then(()=>true,()=>false);
+ page.off('request',opened);page.off('requestfinished',closed);page.off('requestfailed',closed);
+ check('주소의 view=map으로 연 지도에서 30초 안에 네트워크가 조용해짐',quiet,{requests:seen.length,last:seen.slice(-5),open:[...open].map(r=>new URL(r.url()).pathname)});
  await firstView('주소의 view=map으로 연 처음 위치에서 위치 미확인 목록 버튼이 화면 안에 있고 다섯 점 모두 가려지지 않음');
  await page.goto(base+'/',{waitUntil:'networkidle'});
  // A card below the first screen: the page is already scrolled when the map opens.

@@ -57,9 +57,11 @@ for(const w of [360,390,1280]){
  const opener=page.locator('.data-status-link');
  let before=requests.length;
  await press(opener);await sheet.locator('.u06-row').first().waitFor();
- // The sheet's opening animations, waited for at most 3s: once this wait never ended and the whole
- // run stood here until the 900s limit (U07, 2026-10-18; the cause was not found).
- await sheet.evaluate(e=>Promise.race([Promise.all(e.getAnimations().map(a=>a.finished)),new Promise(r=>setTimeout(r,3000))]));
+ // The sheet's opening animations (500ms), waited for at most 3s: once this wait never ended and the
+ // whole run stood here until the 900s limit (U07, 2026-10-18; the cause was not found). One still
+ // running after 3s fails the check with its state, and the rest goes on (#176).
+ let left=await sheet.evaluate(e=>Promise.race([Promise.all(e.getAnimations().map(a=>a.finished)).then(()=>null),new Promise(r=>setTimeout(()=>r(e.getAnimations().map(a=>({name:a.animationName??a.transitionProperty??a.id,state:a.playState,iterations:a.effect?.getTiming().iterations,time:a.currentTime}))),3000))]));
+ check('화면을 열 때 애니메이션이 3초 안에 끝남',!left,{animations:left});
  const place=await sheet.evaluate(e=>{const r=e.getBoundingClientRect();return{left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),vw:innerWidth}});
  check(`화면이 ${mobile?'휴대폰 폭 전체':'오른쪽 960px'}를 차지하고 화면 밖으로 나가지 않음`,place.right===place.vw&&place.left>=0&&(mobile?place.width===place.vw:place.width===960),place);
  check('목록 위 ‘자료 현황’ 버튼으로 화면이 열리고 주소가 #status, 초점은 닫기 버튼',await page.evaluate(()=>location.hash)==='#status'&&await focused()==='자료 현황 닫기',{hash:await page.evaluate(()=>location.hash),focus:await focused()});
@@ -182,7 +184,8 @@ for(const w of [360,390,1280]){
  const inject=extra=>page.route('**/snapshot/v/*/status.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...status,fill:{...fill,...extra}})}));
  await inject({trend:TREND,usage});
  await press(opener);await sheet.locator('.u06-plot').waitFor();
- await sheet.evaluate(e=>Promise.race([Promise.all(e.getAnimations().map(a=>a.finished)),new Promise(r=>setTimeout(r,3000))]));
+ left=await sheet.evaluate(e=>Promise.race([Promise.all(e.getAnimations().map(a=>a.finished)).then(()=>null),new Promise(r=>setTimeout(()=>r(e.getAnimations().map(a=>({name:a.animationName??a.transitionProperty??a.id,state:a.playState,iterations:a.effect?.getTiming().iterations,time:a.currentTime}))),3000))]));
+ check('추세가 있는 화면을 다시 열 때 애니메이션이 3초 안에 끝남',!left,{animations:left});
  const trendSection=sheet.locator('.u06-o7'),first=TREND[0],last=TREND[TREND.length-1],spanMs=dayOf(last.date)-dayOf(first.date),span=Math.round(spanMs/86400000);
  const legend=(await trendSection.locator('.u06-chart-legend li').allInnerTexts()).map(t=>t.replace(/\s+/g,' ')),lead=await trendSection.locator('.u06-lead').innerText();
  const rate=`${dateLabel(first.date)}부터 ${dateLabel(last.date)}까지 ${span}일 동안 상세 페이지를 하루 평균 자란넷 ${n(Math.round((last.pages.jalan.done-first.pages.jalan.done)/span))}쪽, Trip.com ${n(Math.round((last.pages.trip.done-first.pages.trip.done)/span))}쪽 받았습니다.`;
