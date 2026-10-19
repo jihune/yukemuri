@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-19T13:15:05.296Z",
+ "checkedAt": "2026-10-19T13:42:32.681Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "results": [
@@ -242,7 +242,7 @@
   },
   {
    "width": 360,
-   "name": "가장 긴 작가 이름(68자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
    "pass": true,
    "detail": {
     "credit": {
@@ -262,6 +262,31 @@
      "bottom": 256,
      "left": 1,
      "right": 360
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 68,
+      "bottom": 96,
+      "left": 17,
+      "right": 287
+     }
     }
    }
   },
@@ -522,12 +547,12 @@
   },
   {
    "width": 390,
-   "name": "가장 긴 작가 이름(68자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
    "pass": true,
    "detail": {
     "credit": {
      "top": 68,
-     "bottom": 115,
+     "bottom": 135,
      "left": 17,
      "right": 366
     },
@@ -542,6 +567,31 @@
      "bottom": 256,
      "left": 1,
      "right": 390
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 68,
+      "bottom": 96,
+      "left": 17,
+      "right": 287
+     }
     }
    }
   },
@@ -819,7 +869,7 @@
   },
   {
    "width": 1280,
-   "name": "가장 긴 작가 이름(68자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
    "pass": true,
    "detail": {
     "credit": {
@@ -839,6 +889,31 @@
      "bottom": 260,
      "left": 561,
      "right": 861
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 72,
+      "bottom": 119,
+      "left": 585,
+      "right": 845
+     }
     }
    }
   },

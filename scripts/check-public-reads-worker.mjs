@@ -64,7 +64,8 @@ try{
  assert.deepEqual((await request('/api/photo-credits?page=1')).body,credits);
  // The Commons photo (D08) of a seed hotel the extract and the D07 link reach: the detail and the
  // photo sources carry it with its credit, read without a D1 write.
- const extract=new Map(JSON.parse(readFileSync('data/commons-trip-photos.json','utf8')).hotels.map(([trip,,url,page,author,licence,licenceUrl])=>['trip-'+trip,{url,page,author,licence,licenceUrl}]));
+ // Public domain is shown in Korean (lib/commons-photos.ts).
+ const extract=new Map(JSON.parse(readFileSync('data/commons-trip-photos.json','utf8')).hotels.map(([trip,,url,page,author,licence,licenceUrl])=>['trip-'+trip,{url,page,author,licence:licence==='Public domain'?'퍼블릭 도메인':licence,licenceUrl}]));
  const photo=extract.get('trip-688230'),detail=(await request('/api/hotels/trip-688230')).body;
  assert.deepEqual(detail.commonsPhoto,photo,'the detail carries the Commons photo');
  assert.equal(detail.sources.find(s=>s.sourceId==='commons-photo:trip-688230')?.url,photo.page,'and its file page among the sources');

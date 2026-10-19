@@ -5,6 +5,7 @@
 //   the previous/next buttons; keyboard reaches the credit's links;
 // - when the collected photo fails to load, the Commons photo shows with its credit;
 // - ‘정보 출처’ lists the Commons photo with its author and licence, linked to the file page;
+// - a public domain photo shows its author and ‘퍼블릭 도메인’ with no deed link;
 // - the list card shows the collected photo only, never the Commons one (no room for a credit);
 // - no horizontal overflow, no page error.
 // The seed stay trip-688230 is one the extract and the D07 link reach. Images get a blank
@@ -24,6 +25,9 @@ const ID='trip-688230';
 const row=JSON.parse(readFileSync(new URL('../data/commons-trip-photos.json',import.meta.url),'utf8')).hotels.find(r=>'trip-'+r[0]===ID);
 if(!row)throw new Error('The extract has no photo for '+ID);
 const [,,url,page,author,licence,licenceUrl]=row;
+// A seed stay whose photo is public domain (no deed).
+const PD_ID='trip-994895',pd=JSON.parse(readFileSync(new URL('../data/commons-trip-photos.json',import.meta.url),'utf8')).hotels.find(r=>'trip-'+r[0]===PD_ID);
+if(pd?.[5]!=='Public domain')throw new Error('The extract has no public domain photo for '+PD_ID);
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGNgYGD4z8DAwMDAwMDAAAAMBAEBjgkz0wAAAABJRU5ErkJggg==','base64');
 const browser=await chromium.launch();
 for(const w of [360,390,1280]){
@@ -88,7 +92,13 @@ for(const w of [360,390,1280]){
  await tab.waitForTimeout(400);s=await read();await shot('long-author');await tab.unroute(/\/api\/hotels\/trip-688230$/);
  check(`가장 긴 작가 이름(${LONG.length}자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음`,s.credit?.text.includes(LONG)&&inside(s.credit.box,s.image)&&apart(s.credit.box,s.nav)&&s.overflow.every(v=>v<=0),{credit:s.credit?.box,nav:s.nav,image:s.image});
 
- // 4. The collected photo fails: the Commons photo shows with its credit.
+ // 4. A public domain photo (D08, parent session 13:34Z): its author and ‘퍼블릭 도메인’, no deed link.
+ await tab.goto(base+'/#stay/'+PD_ID,{waitUntil:'networkidle'});await detail.locator('.detail-body').waitFor({timeout:20000});await tab.waitForTimeout(500);
+ if(mobile)await next.tap();else{await next.focus();await tab.keyboard.press('Enter')}
+ await tab.waitForTimeout(400);s=await read();await shot('public-domain');
+ check('퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나',s.src===pd[2]&&s.credit?.text===`Wikimedia Commons · ${pd[4]} · 퍼블릭 도메인`&&s.credit.links.length===1&&s.credit.links[0].href===pd[3]&&inside(s.credit.box,s.image)&&apart(s.credit.box,s.nav),{src:s.src,credit:s.credit});
+
+ // 5. The collected photo fails: the Commons photo shows with its credit.
  failCollected=true;await open();await tab.waitForTimeout(800);s=await read();await shot('fallback');
  check('수집한 사진을 못 받으면 Commons 사진이 표기와 함께 보임',s.src===url&&s.credit?.text===`Wikimedia Commons · ${author} · ${licence}`&&s.counter==='2/2',{src:s.src,credit:s.credit?.text,counter:s.counter});
  check('페이지 오류 없음',errors.length===0,{errors});

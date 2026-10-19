@@ -20,9 +20,11 @@ const AGENT='YukemuriCommonsPhotoBot/1.0 (https://github.com/jihune/yukemuri)';
 // 960 is one of the standard thumbnail widths; a hotlink of any other width is refused.
 export const WIDTH=960;
 // Licences whose terms a credit beside the photo meets: the author, the licence name
-// linked to its deed and the file page. GFDL-only files (the licence text must go
-// along) and anything else are left out.
+// linked to its deed and the file page. Public domain files are kept too, on Commons's
+// own fields only (PUBLIC_DOMAIN); GFDL-only files (the licence text must go along),
+// files without licence information and anything else are left out.
 export const LICENCE=/^(CC BY(-SA)? \d\.\d( [A-Za-z-]+)?|CC0)$/;
+export const PUBLIC_DOMAIN='Public domain';
 const IMAGE_HOST=/^(upload|thumb)\.wikimedia\.org$/;
 
 // HTML of an extmetadata value -> plain text.
@@ -63,14 +65,21 @@ export function infos(responses){
    const author=plain(meta.Artist?.value).replace(/\s*\(\s*talk\s*\)/gi,''),licence=plain(meta.LicenseShortName?.value),licenceUrl=plain(meta.LicenseUrl?.value).replace(/^(https?:)?\/\//,'https://');
    let url=null;try{const u=new URL(info.thumburl??info.url);for(const key of [...u.searchParams.keys()])if(key.startsWith('utm_'))u.searchParams.delete(key);url=u.protocol==='https:'&&IMAGE_HOST.test(u.hostname)?u.href:null}catch{}
    // ‘Own work’ in the author field names no one (Credit says it, not Artist).
-   const reason=!author||/^(unknown( author)?|own work)$/i.test(author)?'no author':!LICENCE.test(licence)?'licence '+(licence||'missing'):!/^https:\/\/creativecommons\.org\//.test(licenceUrl)?'no licence link':!url?'no image address':!/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(info.descriptionurl??'')?'no file page':null;
-   byFile.set(file,reason?{reason}:{url,page:info.descriptionurl,author,licence,licenceUrl});
+   const named=!!author&&!/^(unknown( author)?|own work)$/i.test(author),restrictions=plain(meta.Restrictions?.value);
+   // Public domain as Commons states it: the licence name, its code and not copyrighted. It
+   // has no deed to link, and its author is shown when the file names one (parent session
+   // decision, 2026-10-19T13:34Z). A use restriction (trademark, personality rights) on a
+   // public domain or CC0 file leaves it out.
+   const pd=licence===PUBLIC_DOMAIN&&plain(meta.License?.value)==='pd'&&plain(meta.Copyrighted?.value)==='False';
+   const reason=!pd&&!named?'no author':!pd&&!LICENCE.test(licence)?'licence '+(licence||'missing'):(pd||licence==='CC0')&&restrictions?'restricted '+restrictions:!pd&&!/^https:\/\/creativecommons\.org\//.test(licenceUrl)?'no licence link':!url?'no image address':!/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(info.descriptionurl??'')?'no file page':null;
+   byFile.set(file,reason?{reason}:{url,page:info.descriptionurl,author:named?author:null,licence,licenceUrl:pd?null:licenceUrl});
   }
  }
  return byFile;
 }
 
 // Both steps -> sorted rows [tripId, item, image url, file page, author, licence, licence url]
+// (author null for a public domain file that names none, licence url null for public domain)
 // and the Trip ids left out with the reason.
 export function extract(bindings,responses){
  const {rows,dropped}=files(bindings),byFile=infos(responses),out=[];
@@ -102,7 +111,7 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const names=[...new Set(files(sparql.results.bindings).rows.map(r=>r.file))];
   for(let i=0;i<names.length;i+=50){
    if(i)await new Promise(r=>setTimeout(r,5000));
-   const params=new URLSearchParams({action:'query',format:'json',formatversion:'2',redirects:'1',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:String(WIDTH),iiextmetadatafilter:'Artist|LicenseShortName|LicenseUrl',iiextmetadatalanguage:'en',titles:names.slice(i,i+50).map(n=>'File:'+n).join('|')});
+   const params=new URLSearchParams({action:'query',format:'json',formatversion:'2',redirects:'1',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:String(WIDTH),iiextmetadatafilter:'Artist|LicenseShortName|LicenseUrl|License|Restrictions|Copyrighted',iiextmetadatalanguage:'en',titles:names.slice(i,i+50).map(n=>'File:'+n).join('|')});
    responses.push(await get('https://commons.wikimedia.org/w/api.php?'+params,'application/json'));
   }
   retrievedAt=new Date().toISOString();
@@ -111,7 +120,7 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
  const {rows,dropped}=extract(sparql.results.bindings,responses);
  const data={source:'https://query.wikidata.org/sparql + https://commons.wikimedia.org/w/api.php (imageinfo)',query:QUERY,retrievedAt,
   license:'Wikidata CC0-1.0; each photo under the licence in its row',
-  note:'Trip.com hotel ID (P10425) of an item in Japan -> its image (P18) on Wikimedia Commons. Columns: tripId, item, image url (960 px thumbnail), file page, author, licence, licence url. lib/commons-photos.ts shows a photo only beside its credit, on a record whose names the item agrees with. Left out: Trip ids on two items or images, files without author, licence deed or image address, licences other than CC BY, CC BY-SA and CC0.',
+  note:'Trip.com hotel ID (P10425) of an item in Japan -> its image (P18) on Wikimedia Commons. Columns: tripId, item, image url (960 px thumbnail), file page, author (null: a public domain file names none), licence, licence url (null: public domain). lib/commons-photos.ts shows a photo only beside its credit, on a record whose names the item agrees with. Left out: Trip ids on two items or images, files without image address or licence information, licences other than CC BY, CC BY-SA, CC0 and public domain (as Commons states it: name, code pd, not copyrighted), CC files without author or deed, public domain and CC0 files with a use restriction.',
   dropped,hotels:rows};
  writeFileSync(OUT,'{\n'+Object.entries(data).map(([k,v])=>' '+JSON.stringify(k)+':'+(k==='hotels'||k==='dropped'?'[\n'+v.map(r=>'  '+JSON.stringify(r)).join(',\n')+'\n ]':JSON.stringify(v))).join(',\n')+'\n}\n');
  const reasons=Object.entries(dropped.reduce((a,[,r])=>({...a,[r]:(a[r]??0)+1}),{})).map(([r,n])=>n+' '+r).join(', ');
