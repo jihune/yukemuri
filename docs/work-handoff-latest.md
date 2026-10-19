@@ -123,6 +123,7 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`), D08 PR 1 관광청 등록 표시와 PR 3 오이타현 여관업(10-19T12:3xZ 맡김) | 일함 |
 | `session_01KThJhPmvWG2sAnNZJ3dnFH` | D08 PR 4 Overture 대략 위치 보정과 PR 5 Jalan·Trip.com 중복 47쌍 묶기(브랜치 `claude/d08-overture`, brief `D08-20261019.md` 12절, 10-19T13:14Z 엶), PR 6 묶인 쌍 한 번만 보이기(10-19T15:41Z 맡김) | 일함. PR 4 #201·PR 5 #204 병합, PR 6 준비 |
+| `session_012MML49pSR7t8CrwPDqwGmv` | C06 PR #190 이어 가는 Claude 검토 1회째(10-19T18:03Z, 아홉 번째가 엶, 대상 `13d3485`) | 일함. 결과를 기록한 뒤 보관한다 |
 | `session_011eZxw3sdBJd4VfNtNaaaki` | C07 수집과 배포의 D1 읽기 줄이기(브랜치 `claude/c04-reads`, brief `C07-20261019.md`, 10-19T12:35Z 엶) | 일함. 방안 1→2→3, 병합 10-21T00:00Z 뒤 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
@@ -149,6 +150,7 @@
 - 10-19T17:19Z D08 PR 1 #199에 이어 가는 Claude 검토 1회째(다섯 번 가운데 네 번째)를 맡길 검토 세션 `session_012ku7LUVij2mmvETNkp5KLQ`를 열었다(대상 head `12e84d4`, Codex 3회차 P2를 고친 `96eed52` 뒤 검토가 없었음).
 - 10-19T17:34Z D08 PR 5 #204(47쌍 묶기)를 head `ee44799`로 병합했다(`5e0ba55`, Codex 3회 가운데 1·2회째 P2 한 건씩 고침, 3회째 큰 문제 없음, 스레드 2개 해결, `checks`·GitGuardian 통과를 상위 세션이 직접 봄). 47쌍 가져오기는 다음 수집 실행의 준비 단계에서 돈다. C07 세션에 #197로 main을 합치라고 알렸다.
 - 10-19T17:48Z #199 Claude 검토 세션 `session_012ku7LUVij2mmvETNkp5KLQ`가 head `12e84d4`에 리뷰 하나를 남겼다(리뷰 5575490120, P0–P2 없음, P3 3건: 스냅숏 없이 첫 페이지 밖 등록 숙소를 주소로 열면 등록 표시가 빠지는 알려진 한계, PR 설명 미갱신, `update-jta-registered.py`의 robots 확인 없음). `cloud-check.py --full` 통과, 브라우저 검사 40/40과 대조 22 실패, 공개 스냅숏으로 연결 1,263곳·1,187행 재현. 결과를 적고 그 세션을 보관했다. #199 CI 뒤 코드 PR #204가 main에 들어가 L01 세션에 main을 합쳐 CI를 다시 돌리게 했다. P3 1·3은 D08 다음 일(PR 3 앞 작은 후속 PR이나 PR 3에 함께), P3 2는 PR 본문만 고친다.
+- 10-19T18:03Z C06 #190: Codex 3회차(17:55Z) P2 한 건(함께 대기한 두 실행이 만든 순서와 반대로 끝나면 고리가 끊김)을 C04 세션이 `13d3485`에서 고쳤다(기다림 묶음을 앞 실행마다 따로, `newer-run`은 앞 실행보다 나중에 만든 main 실행만). Codex 세 번을 다 써서 이어 가는 Claude 검토 1회째 세션 `session_012MML49pSR7t8CrwPDqwGmv`를 열었다. 실행기 예약과의 겹침 P2는 C04 세션 어림(하루 0.38–0.85번, 그날 쪽수는 줄지 않는다고 봄, 추론)과 함께 roadmap ‘사용자 결정 대기’에 있다. D08 PR 6이 #209로 열렸다(18:0xZ).
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
