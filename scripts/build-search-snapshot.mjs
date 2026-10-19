@@ -5,8 +5,9 @@
 //   node scripts/build-search-snapshot.mjs --remote [--out dist/client] [--report file]
 //   [--geocoder-db <installed jageocoder dictionary> | --geocoder-skip <reason>]
 // Map positions (geo.json, D06): payload coordinates, then Wikidata, then the
-// geocoder (scripts/snapshot-geo.mjs). Without the geocoder the snapshot is
-// still built, without those points; the reason is printed.
+// geocoder, then Overture for approximate points (scripts/snapshot-geo.mjs).
+// Without the geocoder the snapshot is still built, without those points; the
+// reason is printed.
 // --remote reads the D1 named in cloudflare-deploy.json through the Cloudflare
 // API (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID). Every source is read-only:
 // a statement that does not start with SELECT/WITH, or holds a write word
@@ -23,7 +24,7 @@ import {createHash} from 'node:crypto';
 import {gzipSync,brotliCompressSync,constants} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 import {renderStaticPage} from './build-static-page.mjs';
-import {addGeo,loadWikidata,dictionaryGeocoder,geoSummary} from './snapshot-geo.mjs';
+import {addGeo,loadWikidata,loadOverture,dictionaryGeocoder,geoSummary} from './snapshot-geo.mjs';
 import {usageToday} from './cloudflare-usage.mjs';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -118,8 +119,9 @@ export function compileLib(temp,entry='lib/search-snapshot-build.ts',more=[]){
 // once without compiling again (tests); compiled here when absent.
 // geocode: inputs => [lat,lng,grade]|null per input (dictionaryGeocoder), or
 // null with skipReason. wikidata: Trip id -> point (loadWikidata by default).
+// overture: hotel id -> point (loadOverture by default).
 // usage: today's Cloudflare usage for the data status screen (usageToday), when given.
-export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata,usage}){
+export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata,overture,usage}){
  const temp=mkdtempSync(join(tmpdir(),'yukemuri-snapshot-'));
  try{
   const guarded=readOnly(db);
@@ -130,7 +132,9 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
   const data=await buildSearchSnapshot(now);
   let points=wikidata,wikidataError=null;
   if(!points)try{points=loadWikidata()}catch(error){points=new Map();wikidataError=String(error.message).slice(0,200)}
-  const geo={...await addGeo({ids:data.core.ids,geo:data.geo,inputs:data.geocodeInputs,wikidata:points,geocode,skipReason}),wikidataError};
+  let places=overture,overtureError=null;
+  if(!places)try{places=loadOverture()}catch(error){places=new Map();overtureError=String(error.message).slice(0,200)}
+  const geo={...await addGeo({ids:data.core.ids,geo:data.geo,inputs:data.geocodeInputs,wikidata:points,geocode,skipReason,overture:places}),wikidataError,overtureError};
   // The data status counts map precision as published, after geocoding (U06).
   addFillGeo(data.status.fill,data.core.ids,data.geo.grade);
   if(usage)data.status.fill.usage=usage;
@@ -178,7 +182,7 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
   console.log(`  Cloudflare usage today: ${usage.account?'read':'not read (the screen says so)'}`);
-  console.log(geoSummary(result.geo)+(result.geo.wikidataError?'\n  Wikidata points not used: '+result.geo.wikidataError:''));
+  console.log(geoSummary(result.geo)+(result.geo.wikidataError?'\n  Wikidata points not used: '+result.geo.wikidataError:'')+(result.geo.overtureError?'\n  Overture points not used: '+result.geo.overtureError:''));
   console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
   // Refuse before writing the report: a report is what deploy.yml reads the
   // snapshot id from, and an unprepared snapshot must not get one.

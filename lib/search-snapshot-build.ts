@@ -46,7 +46,7 @@ const latest=<T extends string|number>(values:(T|null)[])=>values.reduce<T|null>
 const WAITING=['pending','retry','running'],OPEN=['pending','running'];
 // U06 data status (docs/U06-20261015.md 4절): each place in its scopes, one state per row.
 // geo stays zero here; the builder fills it after geocoding (addFillGeo).
-const emptyScope=():FillScope=>({records:0,rows:Object.fromEntries(FILL_ROWS.map(r=>[r.key,{filled:0,none:0,empty:0}])) as FillScope['rows'],geo:[0,0,0,0,0,0,0],staleTranslations:0});
+const emptyScope=():FillScope=>({records:0,rows:Object.fromEntries(FILL_ROWS.map(r=>[r.key,{filled:0,none:0,empty:0}])) as FillScope['rows'],geo:Object.values(GEO_GRADE).map(()=>0),staleTranslations:0});
 const scopeOf=(id:string):Exclude<FillScopeKey,'all'>|null=>id.startsWith('jalan-')?'jalan':id.startsWith('trip-')?'trip':null;
 const HANGUL=/[가-힣]/;
 export function addFillGeo(fill:CollectionFill,ids:string[],grades:number[]){
