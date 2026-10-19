@@ -68,6 +68,7 @@ const CASES={
 const check=(decide,label)=>{
  assert.deepEqual(decide(base),{dispatch:true,rule:'dispatch',reason:'the next run gets 120 pages ('+budget.reason+')'},label+': a gentle run on main, nothing newer, budget left');
  assert.equal(decide({...base,budget:{...budget,pages:16}}).dispatch,true,label+': exactly minPages');
+ assert.equal(decide({...base,after:{...after,path:'.github/workflows/collect.yml@main'}}).dispatch,true,label+': a path with a ref (#190 Codex review P1)');
  assert.equal(decide({...base,runs:[after,...Array.from({length:22},(_,i)=>run(200+i,63+i))]}).dispatch,true,label+': the 24th run of the day');
  assert.equal(decide({...base,runs:[after,run(99,70,{display_title:'Yukemuri collection (check-access)',status:'in_progress'})]}).dispatch,true,label+': a check-access run does not stop the chain');
  assert.equal(decide({...base,runs:[run(102,24*60+30),after]}).dispatch,true,label+': yesterday\'s runs do not count');
