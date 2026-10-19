@@ -8,6 +8,8 @@
 //   the PDL1.0 credit linking the list page and the license; the other stay's sheet shows neither;
 // - while the detail API fails the sheet shows the card with the tag and a retry, and the retry
 //   brings the section; while it loads, the loading notice shows;
+// - with the snapshot files failing, a registered card of the static first page opens a detail
+//   with the tag and the section (Codex review on PR #199);
 // - the section's links are reached by Tab (1280px);
 // - the footer and the data status sheet credit the agency.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
@@ -29,12 +31,14 @@ const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail}
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-d08-jta-'));
 let JTA_LABEL,JTA_LINKS,JTA_MEANING,jtaKind,displayNames;
 try{({JTA_LABEL,JTA_LINKS,JTA_MEANING,jtaKind}=createRequire(import.meta.url)(compileLib(temp,'lib/jta-attribution.ts')));({displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'n-')),'lib/hotel-names.ts')))}finally{rmSync(temp,{recursive:true,force:true})}
-const {snapshot}=await siteSearch(base);
+const search=await siteSearch(base),{snapshot}=search;
+// A registered stay on the default first page, which the static page carries.
+const first=search.list('').hotels.find(h=>h.jta);
 // A registered stay and an unregistered one, both open, with a Japanese name to search by.
 const open=i=>!['closed','temporarily_closed'].includes(snapshot.core.state[i]);
 const pick=registered=>snapshot.cards.find((c,i)=>!!c.jta===registered&&open(i)&&/[\u3040-\u30ff\u4e00-\u9fff]/.test(c.names.ja));
 const stay=pick(true),plain=pick(false);
-if(!stay||!plain)throw new Error('The local snapshot has no registered stay to check');
+if(!stay||!plain||!first)throw new Error('The local snapshot has no registered stay to check (or none on the first page)');
 const label=JTA_LABEL[jtaKind(stay.jta)];
 const browser=await chromium.launch();
 for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
@@ -101,6 +105,18 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  check('불러오는 중: 안내가 뜨고 받은 뒤 등록 절이 나옴',loading&&await page.locator('section[aria-labelledby="detail-jta-title"]').count()===1,{loading});
  await page.unroute(new RegExp('/api/hotels/'+stay.id+'$'));
  await page.keyboard.press('Escape');await page.waitForTimeout(400);
+ // The snapshot files failing: the static first page's card still opens a detail with the registration.
+ await page.route(/[/]snapshot[/]v[/][^/]+[/](core|cards)[.]json$/,route=>route.abort());
+ await page.goto(base+'/',{waitUntil:'domcontentloaded'});
+ const firstCard=page.locator(`[id="card-${first.id}"]`);
+ await firstCard.waitFor({timeout:15000}).catch(()=>{});
+ await press(firstCard.locator('.card-title'));
+ const firstSheet=page.locator('.hotel-detail');
+ await firstSheet.locator('section[aria-labelledby="detail-jta-title"]').waitFor({timeout:15000}).catch(()=>{});
+ const firstLabel=JTA_LABEL[jtaKind(first.jta)];
+ check(`스냅숏 파일 실패: 첫 페이지 카드(${first.id})의 상세에 등록 표시와 절이 있음`,await firstCard.locator('.jta-tag').textContent().catch(()=>null)===firstLabel&&await firstSheet.locator('.detail-eyebrow .jta-tag').textContent().catch(()=>null)===firstLabel&&await firstSheet.locator('section[aria-labelledby="detail-jta-title"] h2').textContent().catch(()=>null)===firstLabel,{id:first.id,jta:first.jta});
+ await page.unroute(/[/]snapshot[/]v[/][^/]+[/](core|cards)[.]json$/);
+ await page.keyboard.press('Escape');await page.waitForTimeout(400);
  // The credits: the footer and the data status sheet.
  await page.goto(base+'/',{waitUntil:'networkidle'});
  const footer=await page.locator('footer.site-footer [data-jta-credit]').evaluate(p=>({text:p.textContent,links:[...p.querySelectorAll('a')].map(a=>a.href)})).catch(()=>null);
@@ -113,6 +129,6 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
 }
 await browser.close();
 const failed=results.filter(r=>!r.pass);
-if(evidence)writeFileSync(evidence,JSON.stringify({checkedAt:new Date().toISOString(),base,control,stay:{id:stay.id,jta:stay.jta,title:displayNames(stay.names).title},plain:plain.id,results},null,1)+'\n');
+if(evidence)writeFileSync(evidence,JSON.stringify({checkedAt:new Date().toISOString(),base,control,stay:{id:stay.id,jta:stay.jta,title:displayNames(stay.names).title},plain:plain.id,first:{id:first.id,jta:first.jta},results},null,1)+'\n');
 console.log(`checks=${results.length} failed=${failed.length} ${failed.length?'FAIL':'PASS'}`);
 process.exit(failed.length?1:0);

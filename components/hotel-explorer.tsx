@@ -187,8 +187,10 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   try{await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:id,saved:next})});setFavorites(f=>next?[...new Set([...f,id])]:f.filter(k=>k!==id));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
  }
  const shownFallback=detailFallback&&detailFallback.id===detailId?detailFallback:null,detailShown=detail??shownFallback;
- // The detail API does not carry the registration (D08): the stay's card in the snapshot does.
- const detailAt=detailId?snap.snapshot?.position.get(detailId):undefined,detailJta=(detailAt===undefined?shownFallback:snap.snapshot!.cards[detailAt])?.jta;
+ // The detail API does not carry the registration (D08): the stay's card does, in the snapshot or,
+ // while the snapshot files have not loaded, among the cards shown (the static first page included).
+ const detailAt=detailId?snap.snapshot?.position.get(detailId):undefined;
+ const detailJta=detailId?(detailAt!==undefined?snap.snapshot!.cards[detailAt]:displayHotels.find(h=>h.id===detailId)??(areaHotel?.id===detailId?areaHotel:undefined)??shownFallback)?.jta:undefined;
  function openDetail(id:string){if(!detailId)listingPosition.current={x:window.scrollX,y:window.scrollY,opener:document.activeElement instanceof HTMLElement?document.activeElement:null};openStayHistory(id,!!detailId);setDetailId(id)}
  function closeDetail(){setDetailId(null);closeStayHistory()}
  function restoreDetailFocus(){restoreListingPosition(listingPosition.current)}
