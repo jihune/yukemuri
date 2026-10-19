@@ -96,7 +96,7 @@ try{
  geo=fresh();s=await addGeo({ids,geo,inputs,wikidata,geocode:dictionaryGeocoder({dbDir:empty})});
  assert.equal(s.status,'failed');assert.match(s.reason,/no installed dictionary/);
  writeFileSync(join(empty,'README.md'),'fixture');
- const fake=join(temp,'fake-python');writeFileSync(fake,'#!/bin/sh\necho "jageocoder missing" >&2\nexit 3\n');chmodSync(fake,0o755);
+ const fake=join(temp,'fake-python');writeFileSync(fake,'#!/bin/sh\ncat >/dev/null\necho "jageocoder missing" >&2\nexit 3\n');chmodSync(fake,0o755);
  geo=fresh();s=await addGeo({ids,geo,inputs,wikidata,geocode:dictionaryGeocoder({dbDir:empty,python:fake})});
  assert.equal(s.status,'failed');assert.match(s.reason,/exit 3: jageocoder missing/);
  const garbage=join(temp,'garbage-python');writeFileSync(garbage,'#!/bin/sh\ncat >/dev/null\necho "not json"\n');chmodSync(garbage,0o755);
