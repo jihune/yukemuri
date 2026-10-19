@@ -1,0 +1,81 @@
+group	rule	our_id	conf	verdict	reason
+b	b	jalan-388890	0.982	same	번지 1996-1 같음, 4 m
+b	b	jalan-306069	0.996	same	이름이 고유하고 115 m, 정명은 같고 Overture 주소에 번지 없음
+b	b	jalan-301545	1.0	same	번지 23 같음, 9 m
+b	b	jalan-303490	0.993	same	번지 1796-10 같음, 8 m
+b	b	jalan-343433	0.77	same	번지 290-14 같음, 2 m
+b	b	jalan-365862	0.77	same	번지 10-6 같음, 22 m
+b	b	jalan-304848	0.966	same	같은 주소의 로마자 표기(조, 정목), 125 m
+b	b	jalan-304448	0.995	same	번지 3-5 같음, 5 m
+b	b	jalan-300292	0.993	same	번지 2-7-7 같음, 10 m
+b	b	jalan-312916	0.9	same	번지 5-24-15 같음, 1 m
+b	b	jalan-301958	0.97	same	19 m, 정명 표기가 다르고 번지가 다르나 이름과 위치가 맞음
+b	b	hinanoza	0.998	same	우리 주소는 영문이라 비교 못 함, 9 m
+b	b	jalan-366545	0.998	same	번지 164 같음, 6 m
+b	b	jalan-304864	0.974	same	번지 1-25 같음, 12 m
+b	b	jalan-331774	0.996	same	번지 74 같음(정명 이체자), 4 m
+b	b	trip-42519346	0.994	same	영어 이름 같음, 29 m, 우리 주소 영문
+b	b	jalan-304520	0.996	same	번지 10445 같음, 7 m
+b	b	jalan-369452	0.77	same	번지 183-1 같음, 10 m
+b	b	jalan-305545	0.998	same	번지 1-9-8 같음, 5 m
+b	b	jalan-300923	0.996	same	번지 52선 30-3 같음, 109 m
+c	c	jalan-365318	1.0	same	번지 35-2 같음, 41 m
+c	c	jalan-333881	0.998	same	번지 1-150 같음, 95 m
+c	c	jalan-382844	0.77	same	번지 252-1 같음, 우리 대략 위치(등급 3)라 4,585 m
+c	c	jalan-315107	0.996	same	지할 6-24-4 같음, 우리 등급 3이라 4,478 m
+c	c	jalan-323275	0.993	same	번지 6-1099 같음, 12 m
+c	c	jalan-350852	0.741	same	번지 3500 같음, 우리 등급 3이라 4,121 m
+c	c	jalan-359227	0.874	same	번지 6650 같음, 67 m
+c	c	jalan-331020	0.735	same	번지 1588-130 같음, 283 m
+c	c	jalan-328385	0.995	same	번지 381 같음, 32 m
+c	c	jalan-381836	0.77	same	번지 41 같음, 33 m
+c	c	jalan-306636	0.974	same	번지 284-1 같음, 58 m
+c	c	jalan-336915	0.998	same	번지 47-1 같음, 7 m
+c	c	jalan-316355	0.997	same	번지 5-37 같음, 38 m
+c	c	jalan-302532	0.995	same	번지 6337-41 같음, 우리 등급 3이라 3,818 m
+c	c	jalan-383077	1.0	same	번지 2-2-12 같음, 16 m
+c	c	jalan-360021	0.969	same	번지 650-4 같음, 102 m
+c	c	jalan-331225	0.982	same	번지 2-17-5 같음(로마자 표기), 22 m
+c	c	jalan-347054	0.77	same	번지 230 같음, 62 m
+c	c	jalan-372202	0.914	same	번지 5484-1 같음, 우리 등급 3이라 455 m
+c	c	jalan-328798	0.966	same	번지 1-20-1 같음, 3 m
+disagree	c	jalan-384506	0.955	same	이름이 고유하고 13 m, 번지 표기만 다름
+disagree	c	jalan-338250	1.0	same	같은 주소의 로마자 표기(북1조 서11정목), 15 m
+disagree	c	jalan-309641	0.969	unsure	체인 지점, 정명이 다르고 692 m, 다른 지점을 같은 이름으로 적었을 수 있음
+disagree	c	jalan-321104	0.939	different	정명과 번지가 다르고 1,891 m, 다른 곳(이전 전 위치 등)을 가리킴
+disagree	c	jalan-363940	0.984	same	같은 대자의 이웃 번지(1517-1과 1515), 우리 등급 3
+disagree	c	jalan-375569	0.987	same	같은 번지의 지번만 다름(5650-1과 5650-2)
+disagree	c	jalan-333573	0.89	same	같은 주소의 로마자 표기, 15 m
+disagree	c	jalan-331015	0.974	same	이름이 고유한 야영장, 같은 대자, 번지만 다름, 우리 등급 4
+disagree	b	jalan-304848	0.966	same	같은 주소의 로마자 표기, 125 m
+disagree	c	jalan-341556	0.931	unsure	정명이 다르고 628 m, 이웃한 두 지구라 판단 못 함
+disagree	c	jalan-311646	0.951	same	같은 주소의 로마자 표기, 54 m
+disagree	b	jalan-301000	0.996	same	같은 정명의 이웃 번지, 42 m
+disagree	c	jalan-376973	0.998	same	같은 주소의 로마자 표기, 45 m
+disagree	c	jalan-333592	0.994	same	같은 주소의 로마자 표기, 84 m
+disagree	c	jalan-357783	0.77	same	번지 순서만 바뀜, 6 m
+disagree	c	jalan-391476	0.96	same	이름이 고유하고 80 m, 이웃 번지
+disagree	c	jalan-331458	0.989	unsure	긴 고유 이름은 같으나 정명이 다름, 우리 등급 4라 거리로 판단 못 함
+disagree	c	jalan-378327	0.931	same	이웃 번지(62와 63-7), 24 m
+disagree	c	jalan-336612	0.989	same	같은 주소의 로마자 표기
+disagree	c	jalan-305243	0.997	same	한자 숫자와 아라비아 숫자 차이(일정목 13번 9호), 15 m
+lowconf	c	jalan-387374	0.651	same	번지 2031-15 같음, 우리 등급 3
+lowconf	c	jalan-343683	0.206	same	번지 2215-3 같음(로마자 표기), 우리 등급 3
+lowconf	c	jalan-314699	0.658	same	번지 13-6 같음
+lowconf	c	jalan-326980	0.651	same	번지 3010 같음
+lowconf	c	jalan-367060	0.751	same	번지 64-1 같음
+lowconf	c	jalan-379152	0.739	same	번지 1-5-6 같음, 28 m
+lowconf	c	jalan-337503	0.732	same	번지 4950-1 같음, 우리 등급 3
+lowconf	c	jalan-334834	0.617	same	번지 287 같음
+lowconf	b	jalan-304468	0.722	same	번지 7-30 같음, 10 m
+lowconf	c	jalan-347123	0.738	same	번지 40 같음(로마자 표기)
+lowconf	c	jalan-317357	0.609	same	우리 주소에 번지 없음, 이름에 든 지명이 Overture 주소와 같고 15 m
+lowconf	b	jalan-300996	0.704	same	번지 1-31 같음, 1 m
+lowconf	c	jalan-379693	0.583	same	우리 영어 이름으로 이어짐, 번지 2872 같음
+lowconf	c	jalan-337589	0.333	same	번지 1322-2 같음, 174 m
+lowconf	c	jalan-362638	0.626	same	번지 4003-1 같음, 70 m
+lowconf	c	jalan-335384	0.628	same	우리 영어 이름으로 이어짐, 번지 45 같음, 20 m
+lowconf	c	jalan-380849	0.622	unsure	우리 영어 이름(옛 이름으로 보임)으로만 이어짐, 번지가 다르고 345 m
+lowconf	c	jalan-342513	0.29	same	번지 292-1 같음(로마자 표기)
+lowconf	c	jalan-306866	0.493	same	조 번호 6 같음, 186 m
+lowconf	c	jalan-307088	0.759	same	번지 871 같음

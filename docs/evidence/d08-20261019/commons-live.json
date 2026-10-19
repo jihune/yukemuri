@@ -1,0 +1,81 @@
+{
+ "checkedAt": "2026-10-19T16:21:08.229Z",
+ "base": "https://yukemuri.jihune.workers.dev",
+ "browser": "Chromium 141.0.7390.37",
+ "results": [
+  {
+   "id": "trip-14094895",
+   "pass": true,
+   "want": "Wikimedia Commons · Syced · CC0",
+   "counter": "사진 2/2",
+   "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Mitsui_Garden_Hotel_Gotanda.jpg/960px-Mitsui_Garden_Hotel_Gotanda.jpg",
+   "loaded": 960,
+   "credit": "Wikimedia Commons · Syced · CC0",
+   "links": [
+    "https://commons.wikimedia.org/wiki/File:Mitsui_Garden_Hotel_Gotanda.jpg",
+    "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+   ],
+   "sources": [
+    {
+     "text": "Trip.com 숙소 상세 ↗",
+     "href": "https://www.trip.com/hotels/tokyo-hotel-detail-14094895/mitsui-garden-hotel-gotanda/"
+    },
+    {
+     "text": "Wikimedia Commons 사진(Syced, CC0) ↗",
+     "href": "https://commons.wikimedia.org/wiki/File:Mitsui_Garden_Hotel_Gotanda.jpg"
+    }
+   ],
+   "listed": "Wikimedia Commons 사진(Syced, CC0) ↗",
+   "errors": []
+  },
+  {
+   "id": "trip-856906",
+   "pass": true,
+   "want": "Wikimedia Commons · 퍼블릭 도메인",
+   "counter": "사진 2/2",
+   "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/OBP_Hotel_New_Otani_Osaka.jpg/960px-OBP_Hotel_New_Otani_Osaka.jpg",
+   "loaded": 960,
+   "credit": "Wikimedia Commons · 퍼블릭 도메인",
+   "links": [
+    "https://commons.wikimedia.org/wiki/File:OBP_Hotel_New_Otani_Osaka.jpg"
+   ],
+   "sources": [
+    {
+     "text": "Trip.com 숙소 상세 ↗",
+     "href": "https://www.trip.com/hotels/osaka-hotel-detail-856906/hotel-new-otani-osaka/"
+    },
+    {
+     "text": "Wikimedia Commons 사진(퍼블릭 도메인) ↗",
+     "href": "https://commons.wikimedia.org/wiki/File:OBP_Hotel_New_Otani_Osaka.jpg"
+    }
+   ],
+   "listed": "Wikimedia Commons 사진(퍼블릭 도메인) ↗",
+   "errors": []
+  },
+  {
+   "id": "trip-1330921",
+   "pass": true,
+   "want": "Wikimedia Commons · 稲妻ノ歯鯨 · CC BY-SA 4.0",
+   "counter": "사진 2/2",
+   "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Sapia_Tower.jpg/960px-Sapia_Tower.jpg",
+   "loaded": 960,
+   "credit": "Wikimedia Commons · 稲妻ノ歯鯨 · CC BY-SA 4.0",
+   "links": [
+    "https://commons.wikimedia.org/wiki/File:Sapia_Tower.jpg",
+    "https://creativecommons.org/licenses/by-sa/4.0"
+   ],
+   "sources": [
+    {
+     "text": "Trip.com 숙소 상세 ↗",
+     "href": "https://www.trip.com/hotels/tokyo-hotel-detail-1330921/hotel-metropolitan-tokyo-marunouchi/"
+    },
+    {
+     "text": "Wikimedia Commons 사진(稲妻ノ歯鯨, CC BY-SA 4.0) ↗",
+     "href": "https://commons.wikimedia.org/wiki/File:Sapia_Tower.jpg"
+    }
+   ],
+   "listed": "Wikimedia Commons 사진(稲妻ノ歯鯨, CC BY-SA 4.0) ↗",
+   "errors": []
+  }
+ ]
+}

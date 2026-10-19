@@ -4,6 +4,7 @@ import type { Hotel } from '@/lib/hotel-types';
 import { displayNames } from '@/lib/hotel-names';
 import { type LocaleNameRow, withJalanLocaleNames } from '@/lib/jalan-locale-names';
 import { withWikidataNames } from '@/lib/wikidata-names';
+import { withCommonsPhoto } from '@/lib/commons-photos';
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 // Photo sources, 40 hotels at a time in id order. A page is read by the primary
 // key after the cursor and the total is the collector's record counter, so any
@@ -21,7 +22,8 @@ export async function GET(request:Request){
    // null until the collector's first full count sets the counter.
    total:count===undefined?null:Number(count),
    next:found.length>40?'/api/photo-credits?after='+encodeURIComponent(page.at(-1)!.id):null,
-   items:page.map(r=>{const h=JSON.parse(r.payload) as Hotel,s=h.sources.find(s=>s.sourceId===h.image.sourceId);return{hotelId:h.id,name:displayNames(withJalanLocaleNames(withWikidataNames(h),r.hotel_id?r:undefined).names).title,imageUrl:h.image.url,sourceUrl:s?.url??null,credit:s?.label??null,retrievedAt:s?.retrievedAt??null,rights:'사진 저작권은 원출처에 있습니다.'}}),
+   // commons: the Wikimedia Commons photo the detail adds (D08), with its author and licence.
+   items:page.map(r=>{const h=JSON.parse(r.payload) as Hotel,s=h.sources.find(s=>s.sourceId===h.image.sourceId),c=withCommonsPhoto(h).commonsPhoto;return{hotelId:h.id,name:displayNames(withJalanLocaleNames(withWikidataNames(h),r.hotel_id?r:undefined).names).title,imageUrl:h.image.url,sourceUrl:s?.url??null,credit:s?.label??null,retrievedAt:s?.retrievedAt??null,rights:'사진 저작권은 원출처에 있습니다.',commons:c?{imageUrl:c.url,filePage:c.page,author:c.author,license:c.licence,licenseUrl:c.licenceUrl}:null}}),
   },{headers});
  }catch(error){console.error('Photo credits failed',error);return Response.json({error:'Photo sources unavailable'},{status:503,headers})}
 }
