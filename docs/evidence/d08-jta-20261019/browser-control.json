@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-19T16:47:32.916Z",
+ "checkedAt": "2026-10-19T17:15:56.282Z",
  "base": "http://127.0.0.1:8787",
  "control": true,
  "stay": {
@@ -8,6 +8,10 @@
   "title": "아칸 유쿠노사토 쓰루가"
  },
  "plain": "bourou-hakodate",
+ "first": {
+  "id": "hinanoza",
+  "jta": "R2692"
+ },
  "results": [
   {
    "width": 360,
@@ -92,6 +96,15 @@
    "pass": false,
    "detail": {
     "loading": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
    }
   },
   {
@@ -220,6 +233,15 @@
    "pass": false,
    "detail": {
     "loading": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
    }
   },
   {
@@ -354,6 +376,15 @@
    "pass": false,
    "detail": {
     "loading": true
+   }
+  },
+  {
+   "width": 1280,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
    }
   },
   {
