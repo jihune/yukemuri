@@ -1,0 +1,46 @@
+pairs b: same 20/20, 95% interval (83.9, 100.0)%
+pairs c: same 20/20, 95% interval (83.9, 100.0)%
+pairs disagree: same 16/20, 95% interval (58.4, 91.9)%
+pairs lowconf: same 19/20, 95% interval (76.4, 99.1)%
+pairs b+c: same 40/40, 95% interval (91.2, 100.0)%
+websites: official and live 11/20 (34.2, 74.2)%, dead or hijacked 5/20 (11.2, 46.9)%; of the 16 that could be read: live (44.4, 85.8)%, dead or hijacked (14.2, 55.6)%
+estimate of doubtful links: 356 disagree pairs x 4/20 = 71 (0.9% of 7655); with the interval 8.1-41.6%: 29-148 (0.4%-1.9%)
+joined pairs: 7655; with a non-empty Overture website: 6640 (86.7%); more than one website on any joined place: 0
+by class: {'likely_official': '6469 (97.4%)', 'booking': '87 (1.3%)', 'directory_or_map': '46 (0.7%)', 'sns_or_link': '38 (0.6%)'}
+  booking domains counted: {'jalan.net': 39, 'rakuten.co.jp': 21, 'mytrip.net': 13, 'airbnb.jp': 5, 'booking.com': 4, 'airbnb.com': 2, 'tripadvisor.jp': 1, 'ikyu.com': 1, 'travel.yahoo.co.jp': 1}
+  directory_or_map domains counted: {'itp.ne.jp': 36, 'g.page': 3, 'jyh.or.jp': 2, 'google.com': 2, 'goo.gl': 1, 'yahoo.co.jp': 1, 'google.co.jp': 1}
+  sns_or_link domains counted: {'instagram.com': 12, 'lit.link': 8, 'linktr.ee': 4, 'youtube.com': 3, 'x.com': 3, 'lin.ee': 2, 'facebook.com': 2, 'twitter.com': 2, 'threads.net': 1, 'ameblo.jp': 1}
+likely official: 6469 pairs on 4817 hosts; hosts used by 2+ joined hotels (chains): 361 hosts covering 2013 pairs
+by Overture confidence bucket (with website / likely official / joined):
+  <0.5: 34 / 31 / 65
+  0.5-0.77: 101 / 93 / 259
+  0.77-0.9: 942 / 922 / 1183
+  >=0.9: 5563 / 5423 / 6148
+by rule (with website / likely official / joined): {'b': (590, 574, 679), 'c': (6050, 5895, 6976)}
+sampled likely-official sites (fetched 2026-10-19T12:48:11Z):
+  jalan-368112 | 参宮の宿　宿屋五十鈴 | conf 0.74 | https://isuzu-guesthouse.com -> 200 https://isuzu-guesthouse.com/ | 宿屋五十鈴【公式】内宮＆外宮参拝案内の宿・内宮まで徒歩７分 
+  jalan-331129 | プロスタイル旅館　東京浅草 | conf 0.99 | https://www.prostyleryokan.com/tokyo-asakusa/ -> 200  | PROSTYLE RYOKAN東京浅草【公式サイト】 
+  jalan-388565 | MY ECO LODGE（マイエコロッジ） | conf 0.99 | https://my-ecolodge.com -> 200 https://buzzardbuzzardbuzzard.com/ | Xoilac TV | Trực Tiếp Bóng đá HD - Xem Xôi Lạc Miễn Phí 2025 
+  jalan-310206 | 八戸ニューシティホテル | conf 1.00 | https://www.hi-net.ne.jp/newcityh -> 200 https://isp.hi-net.ne.jp/ | ハイネット | 青森県八戸市のインターネットプロバイダ・HP（ホームページ）製作 
+  jalan-318875 | 軽井沢ホテルパイプのけむり | conf 1.00 | https://www.paipunokemuri.com/karuizawa/ -> 200 https://paipunokemuri.com/karuizawa/ | 【公式ベストレート保証】軽井沢ホテルパイプのけむり｜軽井沢のバイキングスタイルホテル お子様連れファミリーにおすすめ 
+  jalan-350474 | 農園民宿かかし | conf 0.96 | https://m-kakasi.com -> 000 https://m-kakasi.com/ | None curl: (56) CONNECT tunnel failed, response 502
+  jalan-360672 | スカイハートホテル下関 | conf 1.00 | https://www.sky-hotel.jp/shimonoseki/ -> 200  | スカイハートホテル 下関〔公式〕｜山口県下関市の中心地に出張・レジャーにも便利なビジネスホテル 
+  jalan-327648 | プラザイン水沢 | conf 1.00 | https://www.plazainn.jp/ -> 200  | プラザイン水沢【公式HP】 
+  jalan-325094 | ホテルアクシス | conf 0.99 | https://www.axis-yonago.jp/ -> 200  | 米子のホテルならホテルアクシス ｜鳥取県米子市 
+  jalan-387564 | ホテルサンフラトン | conf 0.99 | https://sunfuraton.com -> 200 https://sunfuraton.com/ | 富良野 ホテル │【公式サイト】ホテルサンフラトン | ビジネスに観光に 心を癒やすくつろぎの空間 
+  jalan-304322 | 松島温泉　松島一の坊 | conf 0.97 | https://www.ichinobo.com/matsushima -> 200 https://ichinobo.com/matsushima/ | 【公式/ベストレート】 松島一の坊 | 宮城・絶景温泉リゾート 
+  jalan-334022 | 魚松旅館 | conf 1.00 | https://uomatsu.jimdofree.com -> 404 https://uomatsu.jimdofree.com/ | None 
+  jalan-311805 | 久留米ワシントンホテルプラザ | conf 1.00 | https://dennou.joho-fukuoka.or.jp/kwh -> 000  | None curl: (60) SSL: no alternative certificate subject name matches target host name 'dennou.joho-fukuoka.or.jp'
+More detail
+  jalan-300624 | 天空の城三宜亭本館 | conf 1.00 | https://www.sangitei.com -> 200 https://sangitei.com/ | 信州 伊那谷 飯田城温泉 天空の城 三宜亭本館【公式サイト】 
+  jalan-388813 | ファミリーロッジ旅籠屋・神栖店 | conf 0.99 | https://www.hatagoya.co.jp/058_Kamisu/index.shtml -> 404 https://hatagoya.co.jp/058_Kamisu/index.shtml | None 
+  jalan-361597 | ホテルリブマックス名古屋桜通口 | conf 0.99 | https://www.hotel-livemax.com/sp/aichi/sakuradori -> 404 https://www.hotel-livemax.com/sp/aichi/sakuradori/ | None 
+  jalan-327794 | リーガロイヤルホテル新居浜 | conf 1.00 | https://breezbay-group.com/rihga-niihama -> 200 https://breezbay-group.com/rihga-niihama/ | 【公式】リーガロイヤルホテル新居浜｜新居浜市 
+  jalan-346269 | エコホテル　アシスト | conf 0.99 | https://www.maassist.jp -> 200 https://www.maassist.jp/ | エコホテルアシスト ｜天草の心地よいホテル体験 
+  jalan-376536 | ビジネスホテル井田屋 | conf 0.93 | https://po3.nsknet.or.jp/~idaya -> 000  | None curl: (35) Recv failure: Connection reset by peer
+  jalan-325424 | リゾートイン・ミワ | conf 0.77 | https://www.resortinn-miwa.com -> 000 https://www.resortinn-miwa.com/ | None curl: (35) Recv failure: Connection reset by peer
+hand-check of the 20 likely-official sites: {'official_live': 11, 'hijacked': 1, 'dead': 4, 'unverified': 4}
+  by confidence bucket: {'0.5-0.77': {'official_live': 1}, '0.77-0.9': {'unverified': 1}, '>=0.9': {'official_live': 10, 'hijacked': 1, 'dead': 4, 'unverified': 3}}
+website classifier control: 14/14 fixtures classified as expected -> PASS
+estimate of live official links: 6469 likely-official x 11/20 = 3558 (46.5% of joined, 14.1% of all 25225 hotels); interval 2212-4800
+interval control: Wilson 0/10 upper bound 27.8% (expected 27.8) -> PASS
