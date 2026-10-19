@@ -11,6 +11,7 @@ cases = [
     ('lib/hotel-source-groups.ts', " if(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())return;\n const counts", ' const counts', True, 'imported every time'),
     ('lib/hotel-source-groups.ts', "p.success?await saveSourceGroup(p.data):'invalid'", "p.success?'saved':'invalid'", True, 'counted without saving'),
     ('lib/hotel-repository.ts', '.then(()=>importReviewedSourceGroups())', '', True, 'not chained into crawl-prepare'),
+    ('lib/hotel-source-groups.ts', " if(!counts.unknown)await db.prepare('INSERT INTO catalog_meta", " await db.prepare('INSERT INTO catalog_meta", True, 'marked done with unknown pairs'),
 ]
 # The Worker check reads dist/ at load: build the unbroken copy first.
 assert subprocess.run(['node', 'scripts/run-framework.mjs', 'build'], check=False, cwd=C, capture_output=True).returncode == 0

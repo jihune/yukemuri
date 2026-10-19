@@ -41,6 +41,10 @@ try{
  let rt=start(),db=await rt.getD1Database('DB');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())for(const s of readFileSync(join('drizzle',f),'utf8').replace(/--> statement-breakpoint/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(s).run();
  console.log('settle',JSON.stringify(await prep(rt)));
+ // Codex P2 on PR #204: with pairs still unknown nothing marks the content done, so each later
+ // crawl-prepare tries the file again. One such run in a new isolate:
+ await rt.dispose();rt=start();db=await rt.getD1Database('DB');
+ console.log('retry',JSON.stringify(await prep(rt)),(await db.prepare("SELECT COUNT(*) AS n FROM catalog_meta WHERE key LIKE 'reviewed-source-groups:%'").first()).n,'keys');
  const patches=JSON.parse(readFileSync('data/source-groups-reviewed.json','utf8')).patches;
  const template=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),cols=Object.keys(template),base=JSON.parse(template.payload);
  let added=0;

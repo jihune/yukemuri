@@ -88,14 +88,16 @@ export async function saveSourceGroup(p:SourceGroupPatch){
  return'saved';
 }
 // D08 PR 5: Jalan and Trip.com records of one property, reviewed in the repository
-// (data/source-groups-reviewed.json, docs/D08-20261019.md 13). Run by crawl-prepare once
-// per file content: every pair goes through saveSourceGroup's checks, and only the count
-// of each outcome is kept, in the catalog_meta row that marks the content done.
+// (data/source-groups-reviewed.json, docs/D08-20261019.md 13). Run by crawl-prepare until
+// every pair of the file's content is settled: each goes through saveSourceGroup's checks,
+// and once none is unknown (its Jalan record not stored yet, so it is tried again on the
+// next run), the count of each outcome is kept in the catalog_meta row that marks the
+// content done.
 export async function importReviewedSourceGroups(patches:unknown[]=reviewedGroups.patches){
  const db=favoritesDb(),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(patches))));
  const key='reviewed-source-groups:'+[...digest.slice(0,8)].map(b=>b.toString(16).padStart(2,'0')).join('');
  if(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())return;
  const counts:Record<string,number>={};
  for(const raw of patches){const p=sourceGroupPatch.safeParse(raw);const result=p.success?await saveSourceGroup(p.data):'invalid';counts[result]=(counts[result]??0)+1}
- await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,JSON.stringify(counts)).run();
+ if(!counts.unknown)await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,JSON.stringify(counts)).run();
 }

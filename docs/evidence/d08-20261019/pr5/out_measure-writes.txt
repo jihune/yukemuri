@@ -1,2 +1,3 @@
-settle {"calls":8,"rowsRead":1079693,"rowsWritten":30950}
+settle {"calls":8,"rowsRead":1079693,"rowsWritten":30948}
+retry {"calls":1,"rowsRead":29,"rowsWritten":0} 0 keys
 {"addedRows":82,"counts":{"saved":47},"withImport":{"calls":1,"rowsRead":3440,"rowsWritten":331},"without":{"calls":1,"rowsRead":10,"rowsWritten":0},"importRowsWritten":331,"importRowsRead":3430}

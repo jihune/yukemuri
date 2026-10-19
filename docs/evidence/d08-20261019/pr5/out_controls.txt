@@ -1,6 +1,10 @@
+2026-10-19T16:38:04Z
 evidence without the scope sentence: caught (rc 1) AssertionError [ERR_ASSERTION]: the evidence says how the sales scope was judged
 imported every time: caught (rc 1) AssertionError [ERR_ASSERTION]: the content is imported once: the freed Trip.com id is not retried
-counted without saving: caught (rc 1) AssertionError [ERR_ASSERTION]: a pair without its Jalan record is unknown
-not chained into crawl-prepare: caught (rc 1) AssertionError [ERR_ASSERTION]: one key for the file content
+counted without saving: caught (rc 1) AssertionError [ERR_ASSERTION]: not marked done while a pair is unknown
+not chained into crawl-prepare: caught (rc 1) AssertionError [ERR_ASSERTION]: every pair whose Jalan record is stored is saved
+marked done with unknown pairs: caught (rc 1) AssertionError [ERR_ASSERTION]: not marked done while a pair is unknown
 unbroken copy: build rc 0, check rc 0
-controls: 4/4 caught, unbroken passes: True -> PASS
+controls: 5/5 caught, unbroken passes: True -> PASS
+exit=0
+2026-10-19T16:51:26Z
