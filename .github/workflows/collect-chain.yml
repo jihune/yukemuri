@@ -5,8 +5,10 @@ name: Yukemuri collection chain
 # collection-chain.mjs waits until an hour after that run was created (C05:
 # hourly) and dispatches the next gentle run with the workflow token (a
 # workflow_dispatch made with it still starts a run) unless a newer run, the
-# day's run limit or a small or unreadable budget says not to. A newer wait
-# cancels this one; the newest run carries the chain. No cron here, as in
+# day's run limit or a small or unreadable budget says not to. Each run before
+# has its own group (a re-run of its chain job replaces the wait), and each wait
+# ends on its own rules: an older run's wait finds the newer run and stops, so
+# the newest run carries the chain whichever ended first. No cron here, as in
 # collect.yml.
 run-name: Yukemuri collection chain (after run ${{ inputs.after_run }})
 on:
@@ -19,7 +21,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: yukemuri-collection-chain
+  group: yukemuri-collection-chain-${{ inputs.after_run }}
   cancel-in-progress: true
 # bash runs with -eo pipefail: a failing command piped into tee fails its step.
 defaults:

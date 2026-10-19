@@ -39,10 +39,12 @@ function chainProblems(text){
 assert.deepEqual(chainProblems(collect),[],'collect.yml chain job');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'the rest of the run keeps the read-only token');
 
-// collect-chain.yml: dispatch only, outside the catalogue lock, a newer wait cancels an older one.
+// collect-chain.yml: dispatch only, outside the catalogue lock, one wait for each run before.
 assert.equal(wait.match(/^on:\n((?:[ #].*\n)+)/m)[1],['  workflow_dispatch:','    inputs:','      after_run:','        description: The collect.yml run to follow','        type: string','        required: true',''].join('\n'),'dispatch only, with the run to follow');
 assert.match(wait,/^run-name: Yukemuri collection chain \(after run \$\{\{ inputs\.after_run \}\}\)$/m);
-assert.match(wait,/^permissions:\n  contents: read\nconcurrency:\n  group: yukemuri-collection-chain\n  cancel-in-progress: true\n/m,'its own group: the wait never holds the catalogue lock');
+// A group shared by all waits let an older run's wait cancel a newer run's (#190 Codex review 3 P2).
+const OWN_GROUP=/^permissions:\n  contents: read\nconcurrency:\n  group: yukemuri-collection-chain-\$\{\{ inputs\.after_run \}\}\n  cancel-in-progress: true\n/m;
+assert.match(wait,OWN_GROUP,'a group for each run before: the wait never holds the catalogue lock and cannot cancel another run\'s wait');
 assert(!/yukemuri-catalog-updates|cloudflare-account/.test(wait.replace(/^\s*#.*$/gm,'')),'no catalogue or account lock');
 assert.match(wait,/^    timeout-minutes: (\d+)$/m);
 assert(Number(wait.match(/^    timeout-minutes: (\d+)$/m)[1])>CHAIN.intervalMinutes+5,'the job outlives the wait');
@@ -60,7 +62,7 @@ assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 rea
 const base={after,runs:[run(90,120),after],budget,now};
 const CASES={
  'not-gentle-main':[{after:{...after,head_branch:'feature'}},{after:{...after,display_title:'Yukemuri collection (check-access)'}},{after:{...after,path:'.github/workflows/deploy.yml'}}],
- 'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(99,70,{status:'queued',conclusion:null})]}],
+ 'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(101,5,{status:'queued',conclusion:null})]}],
  'day-limit':[{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i))]},{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i,{head_branch:'feature'}))]}],
  'usage-unreadable':[{budget:pagesFor(null)},{budget:pagesFor({rowsRead:'x',rowsWritten:0})}],
  'small-budget':[{budget:pagesFor({rowsRead:3_960_000,rowsWritten:0})},{budget:pagesFor({rowsRead:5_000_000,rowsWritten:0})}]
@@ -74,6 +76,12 @@ const check=(decide,label)=>{
  assert.equal(decide({...base,runs:[after,...Array.from({length:22},(_,i)=>run(200+i,63+i))]}).dispatch,true,label+': the 24th run of the day');
  assert.equal(decide({...base,runs:[after,run(99,70,{display_title:'Yukemuri collection (check-access)',status:'in_progress'})]}).dispatch,true,label+': a check-access run does not stop the chain');
  assert.equal(decide({...base,runs:[run(102,24*60+30),after]}).dispatch,true,label+': yesterday\'s runs do not count');
+ // Runs that waited together may end in either order (queue: max, cloudflare-deploy.md): only the
+ // newer run's wait dispatches (#190 Codex review 3 P2).
+ const older=run(99,70);
+ for(const status of ['queued','in_progress'])
+  assert.equal(decide({...base,runs:[{...older,status,conclusion:null},after]}).dispatch,true,label+': the newer run ended first and the older is '+status);
+ assert.equal(decide({...base,after:older,runs:[older,after]}).rule,'newer-run',label+': then the older run\'s wait stops on the newer one');
  for(const [rule,cases] of Object.entries(CASES))for(const c of cases){
   const d=decide({...base,...c});
   assert.equal(d.dispatch,false,`${label}: ${rule} ${JSON.stringify(c).slice(0,120)}`);
@@ -158,7 +166,16 @@ try{
   try{check(copy.nextRun,'control '+rule)}catch{failed++;continue}
   assert.fail('control without '+rule+' still passed');
  }
+ // The clause #190 Codex review 3 found: an older run still queued or running stopped the newer run's wait.
+ const clause=source.replace('&&Date.parse(r.created_at)>Date.parse(after.created_at));',"&&(Date.parse(r.created_at)>Date.parse(after.created_at)||r.status!=='completed'));");
+ assert.notEqual(clause,source);
+ const file=join(controls,'older-running.mjs');writeFileSync(file,clause);
+ const copy=await import(pathToFileURL(file).href);
+ assert.throws(()=>check(copy.nextRun,'control older-running'),undefined,'control with an older running run stopping the wait still passed');failed++;
 }finally{rmSync(controls,{recursive:true,force:true})}
+const shared=wait.replace('yukemuri-collection-chain-${{ inputs.after_run }}','yukemuri-collection-chain');
+assert.notEqual(shared,wait);
+assert(!OWN_GROUP.test(shared),'control with one group for all waits still passed');failed++;
 // The chain job's own text only: the snapshot job shares two of the conditions.
 const k=collect.indexOf('\n  chain:\n'),inChain=edit=>collect.slice(0,k)+edit(collect.slice(k));
 for(const c of CONDITIONS){
@@ -170,6 +187,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+2+CONDITIONS.length+4;
 assert.equal(failed,total);
 console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer gentle run exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);

@@ -31,7 +31,9 @@ export function nextRun({after,runs,budget,now},chain=CHAIN){
  // The REST path may carry a ref (`.github/workflows/collect.yml@main` in GitHub's example; 10-19 runs had none).
  if(!gentle(after)||String(after.path).split('@')[0]!=='.github/workflows/'+WORKFLOW||after.head_branch!=='main')return no('not-gentle-main',`run ${after.id} is not a gentle ${WORKFLOW} run on main`);
  // Only a run on main can carry the chain (collect.yml's chain job); any gentle run counts toward the day.
- const newer=runs.find(r=>gentle(r)&&r.head_branch==='main'&&r.id!==after.id&&(Date.parse(r.created_at)>Date.parse(after.created_at)||r.status!=='completed'));
+ // Only a run created later: an older one still queued or running finds this run newer when its own
+ // wait decides, as runs that waited together may end in either order (#190 Codex review 3 P2).
+ const newer=runs.find(r=>gentle(r)&&r.head_branch==='main'&&r.id!==after.id&&Date.parse(r.created_at)>Date.parse(after.created_at));
  if(newer)return no('newer-run',`gentle run ${newer.id} (${newer.status}) came after run ${after.id} and carries the chain`);
  const day=new Date(now).toISOString().slice(0,10),today=runs.filter(r=>gentle(r)&&String(r.created_at).startsWith(day)).length;
  if(today>=chain.maxRunsPerDay)return no('day-limit',`${today} gentle runs on ${day}, the limit is ${chain.maxRunsPerDay}`);
