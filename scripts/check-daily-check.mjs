@@ -1,4 +1,4 @@
-// daily-check.mjs and usage.yml (check: true) without an account: the 85%
+// daily-check.mjs and usage.yml (check: true) without an account: the 90%
 // boundary of each free limit, exceededResources, gentle runs read from a local
 // stand-in for the GitHub API (runs, jobs, a log behind a 302 like the real
 // endpoint), the four control inputs, and failures to read that never pass.
@@ -42,14 +42,16 @@ assert.equal(checkDate(' 2026-10-01 '),'2026-10-01');
 assert.equal(checkDate('',new Date('2026-03-01T00:10:00Z')),'2026-02-28');
 assert.throws(()=>checkDate('2026-02-30'));
 
-// 85% of each free limit fails; just under passes. exceededResources 1 fails.
-assert.equal(FAIL,0.85);
+// 90% of each free limit fails; just under passes, and so does 85% (the
+// collection budget's line, user 10-19). exceededResources 1 fails.
+assert.equal(FAIL,0.9);
 const acc=(o={})=>({account:{requests:1000,rowsRead:1000,rowsWritten:1000,...o},exceeded:0});
 assert.deepEqual(usageFailures(acc()),[]);
 for(const key of ['requests','rowsRead','rowsWritten']){
- assert.deepEqual(usageFailures(acc({[key]:FAIL*LIMITS[key]-1})),[],key+' just under 85%');
- assert.equal(usageFailures(acc({[key]:FAIL*LIMITS[key]})).length,1,key+' at 85%');
- assert.match(usageFailures(acc({[key]:FAIL*LIMITS[key]}))[0],/85\.0%\(85% 이상\)$/);
+ assert.deepEqual(usageFailures(acc({[key]:0.85*LIMITS[key]})),[],key+' at 85% passes');
+ assert.deepEqual(usageFailures(acc({[key]:FAIL*LIMITS[key]-1})),[],key+' just under 90%');
+ assert.equal(usageFailures(acc({[key]:FAIL*LIMITS[key]})).length,1,key+' at 90%');
+ assert.match(usageFailures(acc({[key]:FAIL*LIMITS[key]}))[0],/90\.0%\(90% 이상\)$/);
  assert.match(usageFailures(acc({[key]:null}))[0],/기록 없음/,key+': no record cannot pass');
 }
 assert.deepEqual(usageFailures({...acc(),exceeded:1}),['exceededResources 1건(1102·1027)']);
@@ -155,16 +157,16 @@ try{
  assert(!text.includes(CF_TOKEN)&&!text.includes(GH_TOKEN)&&!text.includes('example.invalid'),'no token and no source address in the report');
 
  // Each control fails the same normal day.
- for(const [control,pattern] of [['over-85',/계정 D1 쓰기 85,000행 = 무료 한도의 85\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
+ for(const [control,pattern] of [['over-90',/계정 D1 쓰기 90,000행 = 무료 한도의 90\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
   result=await check({CHECK_CONTROL:control});
   assert.equal(result.failures.length,1,control+': '+result.failures.join(' / '));assert.match(result.failures[0],pattern,control);
   assert.match(result.lines.join('\n'),new RegExp(`> 대조 입력 \`${control}\``),control+' is labelled');
  }
  assert.equal(cfCalls.at(-1).auth,'Bearer '+CONTROL_TOKEN,'no-permission sends the invalid token');
- await assert.rejects(check({CHECK_CONTROL:'over-90'}),CheckError);
+ await assert.rejects(check({CHECK_CONTROL:'over-85'}),CheckError);
 
  // Real failures on the usage side.
- for(const [data,pattern] of [[{rowsWritten:87_000},/D1 쓰기 87,000행 = 무료 한도의 87\.0%/],[{rowsRead:4_250_000},/D1 읽기 4,250,000행/],[{requests:85_000},/Worker 요청 85,000건/],[{exceeded:2},/exceededResources 2건/]]){
+ for(const [data,pattern] of [[{rowsWritten:92_000},/D1 쓰기 92,000행 = 무료 한도의 92\.0%/],[{rowsRead:4_500_000},/D1 읽기 4,500,000행/],[{requests:90_000},/Worker 요청 90,000건/],[{exceeded:2},/exceededResources 2건/]]){
   cf={status:200,body:{data:{viewer:{accounts:[dayData(data)]}},errors:null}};
   result=await check();
   assert.equal(result.failures.length,1);assert.match(result.failures[0],pattern);
@@ -195,7 +197,7 @@ try{
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${zero} \\| 19:35Z \\| success \\| 0 \\|.*\\| 통과\\(예산 소진\\) \\|$`,'m'),'a 0-page run after the share is used passes');
  runs=runs.filter(r=>![roomy,slow,failed,running].includes(r.id));
  result=await check();assert.deepEqual(result.failures,[]);
- assert.ok(result.lines.includes('**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
+ assert.ok(result.lines.includes('**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
  runs=runs.filter(r=>r.id!==zero);
  // GitHub errors and missing settings fail; the usage table stays.
  for(const [fail,pattern] of [[{path:'/workflows/',status:403},/GitHub API 403 \(\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\)/],[{path:'/logs',status:410},/GitHub API 410/],[{path:'/blob/',status:404},/GitHub API 404/]]){
@@ -233,7 +235,7 @@ try{
  assert.match(readFileSync(summary,'utf8'),/^# 매일 점검\(O03\) — 2026-10-17\(UTC\)\n\n\*\*실패 1건\*\*/);
  assert.match(readFileSync(summary,'utf8'),/\| 통과 \|/,'the gentle table is in the summary');
  ran=await exec({CHECK_CONTROL:'nope'});
- assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-85, exceeded, zero-pages, no-permission/);
+ assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-90, exceeded, zero-pages, no-permission/);
  assert(!ran.out.includes(GH_TOKEN),'token never printed');
 }finally{server.closeAllConnections();server.close();rmSync(folder,{recursive:true,force:true})}
-console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 85% of each free limit (just under passes), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);
+console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 90% of each free limit (just under and 85% pass), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);

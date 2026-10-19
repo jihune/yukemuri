@@ -1,0 +1,7 @@
+SELECT (COUNT(DISTINCT ?item) AS ?all) (COUNT(DISTINCT ?w) AS ?withWebsite) (COUNT(DISTINCT ?en) AS ?withEn) (COUNT(DISTINCT ?inc) AS ?withInception) (COUNT(DISTINCT ?dis) AS ?withDissolved) WHERE {
+  ?item wdt:P31/wdt:P279* wd:Q5056668 ; wdt:P17 wd:Q17 .
+  OPTIONAL { ?item wdt:P856 ?x . BIND(?item AS ?w) }
+  OPTIONAL { ?item rdfs:label ?l . FILTER(LANG(?l)="en") BIND(?item AS ?en) }
+  OPTIONAL { ?item wdt:P571 ?y . BIND(?item AS ?inc) }
+  OPTIONAL { ?item wdt:P576 ?z . BIND(?item AS ?dis) }
+}

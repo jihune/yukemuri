@@ -1,5 +1,5 @@
 // O03 daily check, in place of the H01 step 7 daily read by Claude. For one UTC
-// day (default yesterday) it fails when the account used 85% or more of a free
+// day (default yesterday) it fails when the account used 90% or more of a free
 // daily limit (Worker requests, D1 rows read, D1 rows written), when this Worker
 // answered with exceededResources (errors 1102/1027), or when a gentle collection
 // of that day ran its collect job 26 minutes or more, did not succeed or has not
@@ -16,12 +16,12 @@ import {pathToFileURL} from 'node:url';
 import {LIMITS,queryDay,report,UsageError,utcDays} from './cloudflare-usage.mjs';
 import {GENTLE_TITLE,WORKFLOW} from './check-collection-freshness.mjs';
 
-export const FAIL=0.85;
+export const FAIL=0.9; // user, 10-19: the collection budget stays at 85%, leaving room for deploys
 export const JOB_MINUTES=26; // timeout-minutes of the collect job in collect.yml
 export const COLLECT_JOB='collect';
 export const BUDGET_STEP='##[group]Run node scripts/collection-budget.mjs';
 export const COLLECTOR_STEP='Run the Python collector against the Worker';
-export const CONTROLS=['none','over-85','exceeded','zero-pages','no-permission'];
+export const CONTROLS=['none','over-90','exceeded','zero-pages','no-permission'];
 export const TIMEOUT_MS=30_000; // each Cloudflare and GitHub request; a hang must not stop the other half
 // no-permission sends this instead of the real token, so the real API refuses it.
 export const CONTROL_TOKEN='o03-control-invalid-token';
@@ -43,7 +43,7 @@ export function usageFailures(day){
  for(const [key,label,unit] of [['requests','Worker 요청','건'],['rowsRead','D1 읽기','행'],['rowsWritten','D1 쓰기','행']]){
   const n=day.account[key];
   if(n===null)out.push(`계정 ${label}: 기록 없음(판단할 수 없다)`);
-  else if(n>=FAIL*LIMITS[key])out.push(`계정 ${label} ${num(n)}${unit} = 무료 한도의 ${share(n,LIMITS[key])}(85% 이상)`);
+  else if(n>=FAIL*LIMITS[key])out.push(`계정 ${label} ${num(n)}${unit} = 무료 한도의 ${share(n,LIMITS[key])}(90% 이상)`);
  }
  if(day.exceeded>=1)out.push(`exceededResources ${num(day.exceeded)}건(1102·1027)`);
  return out;
@@ -154,7 +154,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
   if(!ACCOUNT.test(accountId))throw new UsageError('CLOUDFLARE_ACCOUNT_ID must be a 32-character account id');
   if(!UUID.test(deploy.databaseId??''))throw new UsageError('cloudflare-deploy.json has no databaseId');
   const day=await queryDay({fetch:(url,init)=>fetch(url,{...init,signal:AbortSignal.timeout(timeout)}),token,accountId,scriptName:deploy.workerName,databaseId:deploy.databaseId,date});
-  if(control==='over-85')day.account.rowsWritten=Math.max(day.account.rowsWritten??0,FAIL*LIMITS.rowsWritten);
+  if(control==='over-90')day.account.rowsWritten=Math.max(day.account.rowsWritten??0,FAIL*LIMITS.rowsWritten);
   if(control==='exceeded')day.exceeded=Math.max(day.exceeded,1);
   details.push(...report([day]).lines,'');
   failures.push(...usageFailures(day));
@@ -182,7 +182,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
  }
  const lines=[`# 매일 점검(O03) — ${date}(UTC)`,''];
  if(control!=='none')lines.push(`> 대조 입력 \`${control}\`: 실제 값 하나를 일부러 바꿔 점검이 실패하는지 본다. 아래 표의 해당 값은 실제 값이 아니다.`,'');
- lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 85% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.','');
+ lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.','');
  for(const f of failures)lines.push('- 실패: '+f);
  if(failures.length)lines.push('');
  lines.push(...details);
