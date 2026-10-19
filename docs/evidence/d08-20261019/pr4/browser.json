@@ -1,0 +1,306 @@
+{
+ "checkedAt": "2026-10-19T13:38:49.815Z",
+ "base": "http://127.0.0.1:8787",
+ "results": [
+  {
+   "width": 0,
+   "name": "CDLA Permissive 2.0 전문이 글자로 그대로 제공됨",
+   "pass": true,
+   "detail": {
+    "status": 200,
+    "type": "text/plain; charset=utf-8"
+   }
+  },
+  {
+   "width": 360,
+   "name": "바닥글: 안내 문장, Overture 표기(Meta·Microsoft 문구), 링크 둘(Overture Maps, 전문)이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "자료 현황 ‘출처 표기’: 같은 안내·표기·링크 둘이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 2,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "지도 출처 칸: OpenStreetMap과 Overture Maps 링크가 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "Leaflet | © OpenStreetMap, Overture Maps",
+    "links": [
+     {
+      "text": "Leaflet",
+      "href": "https://leafletjs.com/",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "OpenStreetMap",
+      "href": "https://www.openstreetmap.org/copyright",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "바닥글: 안내 문장, Overture 표기(Meta·Microsoft 문구), 링크 둘(Overture Maps, 전문)이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "자료 현황 ‘출처 표기’: 같은 안내·표기·링크 둘이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "지도 출처 칸: OpenStreetMap과 Overture Maps 링크가 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "Leaflet | © OpenStreetMap, Overture Maps",
+    "links": [
+     {
+      "text": "Leaflet",
+      "href": "https://leafletjs.com/",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "OpenStreetMap",
+      "href": "https://www.openstreetmap.org/copyright",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "바닥글: 안내 문장, Overture 표기(Meta·Microsoft 문구), 링크 둘(Overture Maps, 전문)이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "자료 현황 ‘출처 표기’: 같은 안내·표기·링크 둘이 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. (Overture Maps · CDLA Permissive 2.0 전문)",
+    "sources": true,
+    "overture": true,
+    "inside": true,
+    "links": [
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "CDLA Permissive 2.0 전문",
+      "href": "/licenses/CDLA-Permissive-2.0.txt",
+      "target": "_blank",
+      "lines": 1,
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "지도 출처 칸: OpenStreetMap과 Overture Maps 링크가 화면 안에 있고 눌림, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "Leaflet | © OpenStreetMap, Overture Maps",
+    "links": [
+     {
+      "text": "Leaflet",
+      "href": "https://leafletjs.com/",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "OpenStreetMap",
+      "href": "https://www.openstreetmap.org/copyright",
+      "onScreen": true,
+      "hit": true
+     },
+     {
+      "text": "Overture Maps",
+      "href": "https://overturemaps.org/",
+      "onScreen": true,
+      "hit": true
+     }
+    ],
+    "overflow": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

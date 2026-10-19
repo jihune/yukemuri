@@ -1,0 +1,9 @@
+no range check: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+payload points may move: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+grade 2 may move: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+Microsoft not credited: caught (rc 1) AssertionError [ERR_ASSERTION]: every first source is credited: meta, Microsoft
+map credit dropped: caught (rc 1) AssertionError [ERR_ASSERTION]: and the map
+Foursquare kept: caught (rc 1) AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+not one-to-one: caught (rc 1) AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+unbroken copy: rc 0
+controls: 7/7 caught, unbroken passes: True -> PASS
