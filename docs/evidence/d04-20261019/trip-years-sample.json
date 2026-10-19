@@ -1,0 +1,1238 @@
+{
+ "measuredAt": "2026-10-19T11:52:00.481Z",
+ "origin": "https://yukemuri.jihune.workers.dev",
+ "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+ "snapshot": {
+  "id": "19f283fa33073d6a",
+  "generatedAt": "2026-10-19T11:39:30.468Z",
+  "tripRecords": 1788,
+  "fill": {
+   "filled": 851,
+   "none": 0,
+   "empty": 937
+  },
+  "detail": {
+   "filled": 1698,
+   "none": 0,
+   "empty": 90
+  },
+  "pages": {
+   "detail": {
+    "done": 1707,
+    "pending": 456,
+    "retry": 0,
+    "failed": 0
+   },
+   "list": {
+    "done": 99,
+    "pending": 0,
+    "retry": 0,
+    "failed": 1
+   },
+   "detailChecked24h": 338
+  }
+ },
+ "sample": {
+  "size": 100,
+  "seed": 20261019,
+  "d04Release": "2026-10-15T02:14:00Z"
+ },
+ "summary": {
+  "sampled": 100,
+  "missing": 0,
+  "detail": 97,
+  "parsedByD04": 52,
+  "withYears": 45,
+  "opened": 42,
+  "renovated": 11,
+  "yearsBeforeRelease": 0,
+  "yearsFromOtherSource": 0
+ },
+ "requests": [
+  {
+   "at": "2026-10-19T11:50:22.966Z",
+   "status": 200,
+   "ids": [
+    "trip-100916471",
+    "trip-102592177",
+    "trip-104603217",
+    "trip-10522767"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:27.292Z",
+   "status": 200,
+   "ids": [
+    "trip-1060936",
+    "trip-106827878",
+    "trip-106978548",
+    "trip-109056007"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:31.236Z",
+   "status": 200,
+   "ids": [
+    "trip-11025956",
+    "trip-110978560",
+    "trip-111780160",
+    "trip-111882193"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:35.444Z",
+   "status": 200,
+   "ids": [
+    "trip-114046190",
+    "trip-114727270",
+    "trip-115179210",
+    "trip-116623971"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:39.364Z",
+   "status": 200,
+   "ids": [
+    "trip-117153265",
+    "trip-120175830",
+    "trip-120599112",
+    "trip-12162781"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:43.353Z",
+   "status": 200,
+   "ids": [
+    "trip-122204260",
+    "trip-128565521",
+    "trip-131625245",
+    "trip-132173849"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:47.364Z",
+   "status": 200,
+   "ids": [
+    "trip-132800325",
+    "trip-132912318",
+    "trip-133213595",
+    "trip-133843537"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:51.363Z",
+   "status": 200,
+   "ids": [
+    "trip-134498515",
+    "trip-134924375",
+    "trip-135487031",
+    "trip-15790719"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:55.481Z",
+   "status": 200,
+   "ids": [
+    "trip-1740777",
+    "trip-17446872",
+    "trip-17511223",
+    "trip-21145078"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:50:59.476Z",
+   "status": 200,
+   "ids": [
+    "trip-21831219",
+    "trip-2196828",
+    "trip-2199655",
+    "trip-23200756"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:03.501Z",
+   "status": 200,
+   "ids": [
+    "trip-23857210",
+    "trip-24167026",
+    "trip-2510713",
+    "trip-25195213"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:07.479Z",
+   "status": 200,
+   "ids": [
+    "trip-2612104",
+    "trip-26522502",
+    "trip-28528614",
+    "trip-28828458"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:11.434Z",
+   "status": 200,
+   "ids": [
+    "trip-30012752",
+    "trip-31315741",
+    "trip-42572779",
+    "trip-44402748"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:15.401Z",
+   "status": 200,
+   "ids": [
+    "trip-44406266",
+    "trip-4641981",
+    "trip-47438723",
+    "trip-48967307"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:19.337Z",
+   "status": 200,
+   "ids": [
+    "trip-4977705",
+    "trip-50215136",
+    "trip-50216002",
+    "trip-54392693"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:23.321Z",
+   "status": 200,
+   "ids": [
+    "trip-54668131",
+    "trip-54796734",
+    "trip-57686110",
+    "trip-59482256"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:27.500Z",
+   "status": 200,
+   "ids": [
+    "trip-60161497",
+    "trip-60317414",
+    "trip-6147577",
+    "trip-61961748"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:31.500Z",
+   "status": 200,
+   "ids": [
+    "trip-6272221",
+    "trip-6442586",
+    "trip-66777412",
+    "trip-66784819"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:35.482Z",
+   "status": 200,
+   "ids": [
+    "trip-68096090",
+    "trip-686270",
+    "trip-688197",
+    "trip-688203"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:39.436Z",
+   "status": 200,
+   "ids": [
+    "trip-688250",
+    "trip-688630",
+    "trip-69328610",
+    "trip-703876"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:43.462Z",
+   "status": 200,
+   "ids": [
+    "trip-704194",
+    "trip-704264",
+    "trip-704384",
+    "trip-705299"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:47.439Z",
+   "status": 200,
+   "ids": [
+    "trip-706180",
+    "trip-706306",
+    "trip-7066321",
+    "trip-7072695"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:51.410Z",
+   "status": 200,
+   "ids": [
+    "trip-71677949",
+    "trip-71965416",
+    "trip-73423284",
+    "trip-736845"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:55.416Z",
+   "status": 200,
+   "ids": [
+    "trip-77695624",
+    "trip-86017922",
+    "trip-91137429",
+    "trip-91299134"
+   ]
+  },
+  {
+   "at": "2026-10-19T11:51:59.496Z",
+   "status": 200,
+   "ids": [
+    "trip-976800",
+    "trip-98760519",
+    "trip-987919",
+    "trip-994929"
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "id": "trip-100916471",
+   "detail": true,
+   "retrievedAt": "2026-10-17T16:12:11+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-102592177",
+   "detail": true,
+   "retrievedAt": "2026-10-17T16:13:05+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2023,
+    "sourceId": "trip-102592177",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2023"
+   }
+  },
+  {
+   "id": "trip-104603217",
+   "detail": true,
+   "retrievedAt": "2026-10-18T16:17:43+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2023,
+    "sourceId": "trip-104603217",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2023"
+   }
+  },
+  {
+   "id": "trip-10522767",
+   "detail": true,
+   "retrievedAt": "2026-10-17T11:31:39+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-1060936",
+   "detail": true,
+   "retrievedAt": "2026-10-14T22:06:50+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-106827878",
+   "detail": true,
+   "retrievedAt": "2026-10-14T22:11:42+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-106978548",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:33:10+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-109056007",
+   "detail": true,
+   "retrievedAt": "2026-10-17T16:10:53+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "renovated": 2023,
+    "sourceId": "trip-109056007",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 리모델링 연도: 2023"
+   }
+  },
+  {
+   "id": "trip-11025956",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:35:23+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-110978560",
+   "detail": true,
+   "retrievedAt": "2026-10-18T21:51:07+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2023,
+    "sourceId": "trip-110978560",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2023"
+   }
+  },
+  {
+   "id": "trip-111780160",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:36:02+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-111882193",
+   "detail": true,
+   "retrievedAt": "2026-10-14T05:37:26+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-114046190",
+   "detail": true,
+   "retrievedAt": "2026-10-15T12:14:46+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2023,
+    "sourceId": "trip-114046190",
+    "verifiedAt": "2026-10-15",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2023"
+   }
+  },
+  {
+   "id": "trip-114727270",
+   "detail": true,
+   "retrievedAt": "2026-10-17T21:11:59+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2020,
+    "sourceId": "trip-114727270",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2020"
+   }
+  },
+  {
+   "id": "trip-115179210",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:50:00+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-116623971",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:50:42+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-117153265",
+   "detail": true,
+   "retrievedAt": "2026-10-04T14:11:21+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-120175830",
+   "detail": true,
+   "retrievedAt": "2026-10-17T21:12:29+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2020,
+    "sourceId": "trip-120175830",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2020"
+   }
+  },
+  {
+   "id": "trip-120599112",
+   "detail": true,
+   "retrievedAt": "2026-10-03T18:15:23+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-12162781",
+   "detail": true,
+   "retrievedAt": "2026-10-16T05:12:49+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1982,
+    "renovated": 2008,
+    "sourceId": "trip-12162781",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1982 / 리모델링 연도: 2008"
+   }
+  },
+  {
+   "id": "trip-122204260",
+   "detail": true,
+   "retrievedAt": "2026-10-09T10:57:10+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-128565521",
+   "detail": true,
+   "retrievedAt": "2026-10-06T15:41:21+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-131625245",
+   "detail": true,
+   "retrievedAt": "2026-10-17T23:40:46+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2025,
+    "sourceId": "trip-131625245",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2025"
+   }
+  },
+  {
+   "id": "trip-132173849",
+   "detail": true,
+   "retrievedAt": "2026-10-14T12:40:42+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-132800325",
+   "detail": false,
+   "retrievedAt": "2026-10-04T01:13:03+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-132912318",
+   "detail": true,
+   "retrievedAt": "2026-10-04T14:44:00+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-133213595",
+   "detail": true,
+   "retrievedAt": "2026-10-18T05:18:49+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2025,
+    "sourceId": "trip-133213595",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2025"
+   }
+  },
+  {
+   "id": "trip-133843537",
+   "detail": true,
+   "retrievedAt": "2026-10-05T00:59:44+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-134498515",
+   "detail": true,
+   "retrievedAt": "2026-10-18T11:49:25+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2026,
+    "sourceId": "trip-134498515",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2026"
+   }
+  },
+  {
+   "id": "trip-134924375",
+   "detail": true,
+   "retrievedAt": "2026-10-04T14:44:54+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-135487031",
+   "detail": true,
+   "retrievedAt": "2026-10-18T11:56:50+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2026,
+    "sourceId": "trip-135487031",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2026"
+   }
+  },
+  {
+   "id": "trip-15790719",
+   "detail": true,
+   "retrievedAt": "2026-10-05T01:03:24+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-1740777",
+   "detail": true,
+   "retrievedAt": "2026-10-18T16:15:00+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2014,
+    "sourceId": "trip-1740777",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2014"
+   }
+  },
+  {
+   "id": "trip-17446872",
+   "detail": true,
+   "retrievedAt": "2026-10-18T19:04:55+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-17511223",
+   "detail": true,
+   "retrievedAt": "2026-10-19T11:14:33+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2018,
+    "sourceId": "trip-17511223",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2018"
+   }
+  },
+  {
+   "id": "trip-21145078",
+   "detail": true,
+   "retrievedAt": "2026-10-04T14:13:40+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-21831219",
+   "detail": true,
+   "retrievedAt": "2026-10-14T17:46:03+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-2196828",
+   "detail": true,
+   "retrievedAt": "2026-10-16T17:15:16+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1999,
+    "renovated": 2017,
+    "sourceId": "trip-2196828",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1999 / 리모델링 연도: 2017"
+   }
+  },
+  {
+   "id": "trip-2199655",
+   "detail": true,
+   "retrievedAt": "2026-10-16T00:00:49+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2007,
+    "renovated": 2020,
+    "sourceId": "trip-2199655",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2007 / 리모델링 연도: 2020"
+   }
+  },
+  {
+   "id": "trip-23200756",
+   "detail": true,
+   "retrievedAt": "2026-10-18T19:05:22+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2018,
+    "sourceId": "trip-23200756",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2018"
+   }
+  },
+  {
+   "id": "trip-23857210",
+   "detail": true,
+   "retrievedAt": "2026-10-04T19:47:13+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-24167026",
+   "detail": true,
+   "retrievedAt": "2026-10-18T16:16:52+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2019,
+    "sourceId": "trip-24167026",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2019"
+   }
+  },
+  {
+   "id": "trip-2510713",
+   "detail": true,
+   "retrievedAt": "2026-10-14T00:44:13+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-25195213",
+   "detail": true,
+   "retrievedAt": "2026-10-19T00:28:17+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "renovated": 2019,
+    "sourceId": "trip-25195213",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 리모델링 연도: 2019"
+   }
+  },
+  {
+   "id": "trip-2612104",
+   "detail": true,
+   "retrievedAt": "2026-10-14T22:07:49+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-26522502",
+   "detail": true,
+   "retrievedAt": "2026-10-14T17:50:24+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-28528614",
+   "detail": true,
+   "retrievedAt": "2026-10-19T00:34:52+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2019,
+    "sourceId": "trip-28528614",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2019"
+   }
+  },
+  {
+   "id": "trip-28828458",
+   "detail": true,
+   "retrievedAt": "2026-10-07T01:04:09+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-30012752",
+   "detail": true,
+   "retrievedAt": "2026-10-17T00:00:40+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2019,
+    "sourceId": "trip-30012752",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2019"
+   }
+  },
+  {
+   "id": "trip-31315741",
+   "detail": true,
+   "retrievedAt": "2026-10-11T13:36:27+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-42572779",
+   "detail": true,
+   "retrievedAt": "2026-10-19T04:50:52+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2019,
+    "sourceId": "trip-42572779",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2019"
+   }
+  },
+  {
+   "id": "trip-44402748",
+   "detail": true,
+   "retrievedAt": "2026-10-11T19:47:29+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-44406266",
+   "detail": true,
+   "retrievedAt": "2026-10-19T04:51:42+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2020,
+    "sourceId": "trip-44406266",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2020"
+   }
+  },
+  {
+   "id": "trip-4641981",
+   "detail": true,
+   "retrievedAt": "2026-10-19T04:53:27+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2016,
+    "sourceId": "trip-4641981",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2016"
+   }
+  },
+  {
+   "id": "trip-47438723",
+   "detail": true,
+   "retrievedAt": "2026-10-08T05:38:56+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-48967307",
+   "detail": true,
+   "retrievedAt": "2026-10-19T05:25:50+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2020,
+    "sourceId": "trip-48967307",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2020"
+   }
+  },
+  {
+   "id": "trip-4977705",
+   "detail": true,
+   "retrievedAt": "2026-10-14T12:33:06+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-50215136",
+   "detail": true,
+   "retrievedAt": "2026-10-14T22:08:02+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-50216002",
+   "detail": true,
+   "retrievedAt": "2026-10-08T09:35:39+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-54392693",
+   "detail": true,
+   "retrievedAt": "2026-10-14T22:09:38+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-54668131",
+   "detail": true,
+   "retrievedAt": "2026-10-19T10:07:51+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-54668131",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-54796734",
+   "detail": true,
+   "retrievedAt": "2026-10-16T17:14:15+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-57686110",
+   "detail": true,
+   "retrievedAt": "2026-10-19T05:22:39+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2020,
+    "sourceId": "trip-57686110",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2020"
+   }
+  },
+  {
+   "id": "trip-59482256",
+   "detail": true,
+   "retrievedAt": "2026-10-09T22:57:43+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-60161497",
+   "detail": true,
+   "retrievedAt": "2026-10-19T05:24:26+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-60161497",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-60317414",
+   "detail": true,
+   "retrievedAt": "2026-10-19T10:21:07+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-6147577",
+   "detail": false,
+   "retrievedAt": "2026-10-04T01:12:26+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-61961748",
+   "detail": true,
+   "retrievedAt": "2026-10-12T16:13:01+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-6272221",
+   "detail": true,
+   "retrievedAt": "2026-10-19T05:26:10+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1988,
+    "renovated": 2025,
+    "sourceId": "trip-6272221",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1988 / 리모델링 연도: 2025"
+   }
+  },
+  {
+   "id": "trip-6442586",
+   "detail": true,
+   "retrievedAt": "2026-10-14T12:40:24+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-66777412",
+   "detail": true,
+   "retrievedAt": "2026-10-16T21:57:30+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-66784819",
+   "detail": true,
+   "retrievedAt": "2026-10-16T21:58:10+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-66784819",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-68096090",
+   "detail": true,
+   "retrievedAt": "2026-10-04T14:01:13+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-686270",
+   "detail": true,
+   "retrievedAt": "2026-10-19T11:20:54+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1997,
+    "sourceId": "trip-686270",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1997"
+   }
+  },
+  {
+   "id": "trip-688197",
+   "detail": true,
+   "retrievedAt": "2026-10-16T22:02:50+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2000,
+    "sourceId": "trip-688197",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2000"
+   }
+  },
+  {
+   "id": "trip-688203",
+   "detail": true,
+   "retrievedAt": "2026-10-16T22:03:30+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1988,
+    "renovated": 2017,
+    "sourceId": "trip-688203",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1988 / 리모델링 연도: 2017"
+   }
+  },
+  {
+   "id": "trip-688250",
+   "detail": true,
+   "retrievedAt": "2026-10-19T11:14:59+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1984,
+    "sourceId": "trip-688250",
+    "verifiedAt": "2026-10-19",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1984"
+   }
+  },
+  {
+   "id": "trip-688630",
+   "detail": true,
+   "retrievedAt": "2026-10-03T14:03:04+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-69328610",
+   "detail": true,
+   "retrievedAt": "2026-10-04T18:16:37+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-703876",
+   "detail": true,
+   "retrievedAt": "2026-10-17T05:12:52+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1995,
+    "renovated": 2023,
+    "sourceId": "trip-703876",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1995 / 리모델링 연도: 2023"
+   }
+  },
+  {
+   "id": "trip-704194",
+   "detail": true,
+   "retrievedAt": "2026-10-04T18:17:05+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-704264",
+   "detail": true,
+   "retrievedAt": "2026-10-15T05:31:23+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "renovated": 2020,
+    "sourceId": "trip-704264",
+    "verifiedAt": "2026-10-15",
+    "note": "Trip.com 숙소 정보: 리모델링 연도: 2020"
+   }
+  },
+  {
+   "id": "trip-704384",
+   "detail": true,
+   "retrievedAt": "2026-10-13T01:01:29+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-705299",
+   "detail": true,
+   "retrievedAt": "2026-10-14T12:32:54+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-706180",
+   "detail": true,
+   "retrievedAt": "2026-10-14T17:51:54+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-706306",
+   "detail": true,
+   "retrievedAt": "2026-10-13T05:31:24+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-7066321",
+   "detail": true,
+   "retrievedAt": "2026-10-17T00:07:43+00:00",
+   "afterRelease": true,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-7072695",
+   "detail": true,
+   "retrievedAt": "2026-10-17T00:08:26+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2016,
+    "sourceId": "trip-7072695",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2016"
+   }
+  },
+  {
+   "id": "trip-71677949",
+   "detail": true,
+   "retrievedAt": "2026-10-17T00:10:41+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-71677949",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-71965416",
+   "detail": true,
+   "retrievedAt": "2026-10-18T16:12:32+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-71965416",
+    "verifiedAt": "2026-10-18",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-73423284",
+   "detail": true,
+   "retrievedAt": "2026-10-15T17:38:06+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-73423284",
+    "verifiedAt": "2026-10-15",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-736845",
+   "detail": true,
+   "retrievedAt": "2026-10-14T17:47:34+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-77695624",
+   "detail": true,
+   "retrievedAt": "2026-10-15T12:26:00+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2021,
+    "sourceId": "trip-77695624",
+    "verifiedAt": "2026-10-15",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2021"
+   }
+  },
+  {
+   "id": "trip-86017922",
+   "detail": true,
+   "retrievedAt": "2026-10-16T00:11:36+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2024,
+    "sourceId": "trip-86017922",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2024"
+   }
+  },
+  {
+   "id": "trip-91137429",
+   "detail": true,
+   "retrievedAt": "2026-10-16T05:18:06+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2022,
+    "sourceId": "trip-91137429",
+    "verifiedAt": "2026-10-16",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2022"
+   }
+  },
+  {
+   "id": "trip-91299134",
+   "detail": true,
+   "retrievedAt": "2026-10-04T18:17:20+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-976800",
+   "detail": true,
+   "retrievedAt": "2026-10-17T05:21:40+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 2003,
+    "renovated": 2025,
+    "sourceId": "trip-976800",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 2003 / 리모델링 연도: 2025"
+   }
+  },
+  {
+   "id": "trip-98760519",
+   "detail": true,
+   "retrievedAt": "2026-10-04T18:17:50+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  },
+  {
+   "id": "trip-987919",
+   "detail": true,
+   "retrievedAt": "2026-10-17T05:10:06+00:00",
+   "afterRelease": true,
+   "facilityYears": {
+    "opened": 1981,
+    "renovated": 2006,
+    "sourceId": "trip-987919",
+    "verifiedAt": "2026-10-17",
+    "note": "Trip.com 숙소 정보: 호텔 설립연도: 1981 / 리모델링 연도: 2006"
+   }
+  },
+  {
+   "id": "trip-994929",
+   "detail": false,
+   "retrievedAt": "2026-10-04T00:55:14+00:00",
+   "afterRelease": false,
+   "facilityYears": null
+  }
+ ]
+}

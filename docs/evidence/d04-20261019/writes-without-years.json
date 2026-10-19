@@ -1,0 +1,517 @@
+{
+ "measuredAt": "2026-10-19T12:01:58.555Z",
+ "gitHead": "7c5aa6b",
+ "dirty": false,
+ "environment": "Miniflare local D1 in the Claude Code cloud container. Not production D1; whether Miniflare counts rows_written like production D1 is unverified.",
+ "pages": [
+  {
+   "page": "jalan list (new properties)",
+   "url": "https://www.jalan.net/130000/LRG_137100/page2.html",
+   "observations": 30,
+   "links": 34,
+   "accepted": 30,
+   "rowsWritten": 348,
+   "rowsRead": 7577,
+   "statements": [
+    {
+     "statement": "save INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at) SELECT json_extract(value,'…'),json_extract(value,'…'",
+     "calls": 1,
+     "rowsWritten": 150,
+     "rowsRead": 38
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 60,
+     "rowsRead": 90
+    },
+    {
+     "statement": "save INSERT INTO hotel_names (hotel_id,name_key,name) SELECT json_extract(value,'…'),json_extract(value,'…'),json_extract(value,'…') FROM json_ea",
+     "calls": 1,
+     "rowsWritten": 60,
+     "rowsRead": 30
+    },
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 60,
+     "rowsRead": 30
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_me",
+     "calls": 2,
+     "rowsWritten": 4,
+     "rowsRead": 0
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 140
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 0
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,'…') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1685
+    }
+   ]
+  },
+  {
+   "page": "jalan list (known properties)",
+   "url": "https://www.jalan.net/130000/LRG_137100/",
+   "observations": 30,
+   "links": 34,
+   "accepted": 29,
+   "rowsWritten": 98,
+   "rowsRead": 742,
+   "statements": [
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 60,
+     "rowsRead": 30
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 29,
+     "rowsRead": 119
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 188
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "jalan detail (listed before)",
+   "url": "https://www.jalan.net/yad307416/",
+   "observations": 1,
+   "links": 0,
+   "accepted": 1,
+   "rowsWritten": 11,
+   "rowsRead": 1158,
+   "statements": [
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1130
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 4
+    },
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 2
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "trip detail (new property)",
+   "url": "https://www.trip.com/hotels/hakone-hotel-detail-704264/fujiya-hotel/",
+   "observations": 1,
+   "links": 0,
+   "accepted": 1,
+   "rowsWritten": 25,
+   "rowsRead": 66,
+   "statements": [
+    {
+     "statement": "save INSERT INTO hotel_names (hotel_id,name_key,name) SELECT json_extract(value,'…'),json_extract(value,'…'),json_extract(value,'…') FROM json_ea",
+     "calls": 1,
+     "rowsWritten": 8,
+     "rowsRead": 4
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 39
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 3
+    },
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET priority=?,prefecture=COALESCE(?,prefecture) WHERE url=? AND (priority IS NOT ? OR prefecture IS NOT COALESCE(?,prefec",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 0
+    },
+    {
+     "statement": "save UPDATE catalog_meta SET value=CAST(value AS INTEGER)+(SELECT COUNT(DISTINCT json_extract(j.value,'…')) FROM json_each(?) j WHERE NOT EXISTS ",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 2
+    }
+   ]
+  },
+  {
+   "page": "jalan list (seen again)",
+   "url": "https://www.jalan.net/130000/LRG_137100/",
+   "observations": 30,
+   "links": 34,
+   "accepted": 29,
+   "rowsWritten": 68,
+   "rowsRead": 772,
+   "statements": [
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 30,
+     "rowsRead": 60
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 29,
+     "rowsRead": 119
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 188
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "jalan detail (refresh)",
+   "url": "https://www.jalan.net/yad307416/",
+   "observations": 1,
+   "links": 0,
+   "accepted": 1,
+   "rowsWritten": 11,
+   "rowsRead": 1158,
+   "statements": [
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1130
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 4
+    },
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 2
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "trip detail (refresh)",
+   "url": "https://www.trip.com/hotels/hakone-hotel-detail-704264/fujiya-hotel/",
+   "observations": 1,
+   "links": 0,
+   "accepted": 1,
+   "rowsWritten": 11,
+   "rowsRead": 59,
+   "statements": [
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 28
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO hotels (id,region,prefecture,name,search_text,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,large_bath,outdoor,",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 4
+    },
+    {
+     "statement": "save INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,last_detail_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 2
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "jalan locale names (new)",
+   "url": "https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=ko_KR&kenCd=130000&stayCount=1&roomCount=1&distCd=01&crcyCd=KRW&activeSort=1&screenId=UIW1402&idx=1&pageNum=1",
+   "observations": 0,
+   "names": 30,
+   "links": 2,
+   "accepted": 30,
+   "rowsWritten": 79,
+   "rowsRead": 137,
+   "statements": [
+    {
+     "statement": "save INSERT INTO hotel_locale_names (hotel_id,name_ko,ko_url,ko_checked_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_extract(v",
+     "calls": 1,
+     "rowsWritten": 60,
+     "rowsRead": 60
+    },
+    {
+     "statement": "save INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at) SELECT json_extract(value,'…'),json_extract(value,'…'",
+     "calls": 1,
+     "rowsWritten": 10,
+     "rowsRead": 2
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 65
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "jalan locale names (seen again)",
+   "url": "https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=ko_KR&kenCd=130000&stayCount=1&roomCount=1&distCd=01&crcyCd=KRW&activeSort=1&screenId=UIW1402&idx=1&pageNum=1",
+   "observations": 0,
+   "names": 30,
+   "links": 2,
+   "accepted": 0,
+   "rowsWritten": 9,
+   "rowsRead": 205,
+   "statements": [
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 101
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  },
+  {
+   "page": "jalan locale names (other language)",
+   "url": "https://www.jalan.net/ui/uip1400/uiw1402.do?langCd=en_US&kenCd=130000&stayCount=1&roomCount=1&distCd=01&crcyCd=USD&activeSort=1&screenId=UIW1402&idx=1&pageNum=1",
+   "observations": 0,
+   "names": 30,
+   "links": 2,
+   "accepted": 30,
+   "rowsWritten": 49,
+   "rowsRead": 122,
+   "statements": [
+    {
+     "statement": "save INSERT INTO hotel_locale_names (hotel_id,name_en,en_url,en_checked_at) SELECT json_extract(value,'…'),json_extract(value,'…'),json_extract(v",
+     "calls": 1,
+     "rowsWritten": 30,
+     "rowsRead": 90
+    },
+    {
+     "statement": "save INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at) SELECT json_extract(value,'…'),json_extract(value,'…'",
+     "calls": 1,
+     "rowsWritten": 10,
+     "rowsRead": 2
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET status=CASE WHEN status='…' THEN '…' ELSE ? END,attempts=?,next_at=?,error=?,fetched_at=CASE WHEN ?='…' THEN ? ELSE fe",
+     "calls": 1,
+     "rowsWritten": 4,
+     "rowsRead": 1
+    },
+    {
+     "statement": "claim UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=(SELECT url FROM (SELECT * FROM (SELECT j.url,j.status,j.priority,COALESCE(unixe",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 20
+    },
+    {
+     "statement": "save UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=? AND ((lease_token=? AND lease_until>?) OR (lease_until<=? AND ?=1))",
+     "calls": 1,
+     "rowsWritten": 2,
+     "rowsRead": 1
+    },
+    {
+     "statement": "save INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(exclud",
+     "calls": 1,
+     "rowsWritten": 1,
+     "rowsRead": 1
+    }
+   ]
+  }
+ ]
+}
