@@ -53,6 +53,9 @@ try{
  const data=JSON.parse(readFileSync('data/jta-registered.json','utf8'));
  const attribution=require(compileLib(mkdtempSync(join(temp,'a-')),'lib/jta-attribution.ts'));
  assert.equal(data.license,'PDL1.0');assert(!Number.isNaN(Date.parse(data.retrievedAt)));
+ // Each list names the public PDF it was read from, also when refreshed from saved files (Codex review on PR #199).
+ for(const kind of ['hotel','ryokan'])assert.match(data[kind].url,/^https:[/][/]www[.]mlit[.]go[.]jp[/]kankocho[/]content[/][0-9]+[.]pdf$/,kind+' list address');
+ assert.notEqual(data.hotel.url,data.ryokan.url);
  assert.deepEqual(attribution.JTA_LINKS.map(l=>l.url),[data.source,data.licenseUrl],'the page credits the list page and the license the data names');
  const numbers=data.rows.map(r=>r[0]);
  assert.equal(new Set(numbers).size,numbers.length,'one row per registration number');

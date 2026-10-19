@@ -14,7 +14,9 @@ The monthly 登録ホテル・旅館更新情報 (registrations and removals) is
 a removal is not evidence that a stay closed (D08 9.2).
 
 Usage: python3 scripts/update-jta-registered.py [--from DIR]
-  --from DIR reads hotels.pdf and ryokan.pdf saved in DIR instead.
+  --from DIR reads the list page and the PDFs saved in DIR instead (index.html,
+  hotel.pdf, ryokan.pdf). The PDFs' public addresses still come from the saved
+  page, and the time retrieved is when the page was saved.
 """
 import argparse
 import json
@@ -111,7 +113,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     retrieved = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     if args.source:
-        links = {kind: str(args.source / f'{kind}.pdf') for kind in TITLES}
+        page = args.source / 'index.html'
+        retrieved = datetime.fromtimestamp(page.stat().st_mtime, timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        links = pdf_links(page.read_text(encoding='utf-8'))
         pdfs = {kind: (args.source / f'{kind}.pdf').read_bytes() for kind in TITLES}
     else:
         links = pdf_links(get(PAGE).decode('utf-8'))
