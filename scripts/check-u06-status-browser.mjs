@@ -198,7 +198,7 @@ for(const w of [360,390,1280]){
  const box=await plot.boundingBox(),second=TREND[1],px=box.x+(dayOf(second.date)-dayOf(first.date))/spanMs*box.width,py=box.y+box.height/2;
  if(mobile)await page.touchscreen.tap(px,py);else await page.mouse.move(px,py);
  const tipBox=trendSection.locator('.u06-chart-tip'),trendTip=await tipBox.isVisible()?await tipBox.innerText():'',edge=await sheet.boundingBox(),tb=await tipBox.boundingBox();
- const wantTip=[dateLabel(second.date)+'(UTC)',...['jalan','trip'].map(k=>`${n(second.pages[k].done)}쪽 (+${n(second.pages[k].done-first.pages[k].done)})`),`${n(second.records)}곳`];
+ const wantTip=[dateLabel(second.date)+'(UTC)',...['jalan','trip'].map(k=>`${n(second.pages[k].done)}쪽 (+${n(second.pages[k].done-first.pages[k].done)})`),`${n(second.records)}건`];
  check(`추이: ${mobile?'누르면':'마우스를 올리면'} 가장 가까운 날짜의 값과 앞 기록과의 차이가 툴팁에 보이고 화면 안에 있음`,wantTip.every(t=>trendTip.includes(t))&&!!tb&&tb.x>=edge.x&&tb.x+tb.width<=edge.x+edge.width,{trendTip,wantTip,tb,edge});
  if(!mobile){
   await plot.focus();await page.keyboard.press('End');await page.keyboard.press('ArrowLeft');
@@ -210,7 +210,7 @@ for(const w of [360,390,1280]){
  const trendRows=await trendSection.locator('.u06-table tbody tr').evaluateAll(rows=>rows.map(r=>[...r.children].map(c=>c.textContent)));
  const trendWant=TREND.map((d,i)=>[dateLabel(d.date),...['jalan','trip'].map(k=>n(d.pages[k].done)+(i?` (+${n(d.pages[k].done-TREND[i-1].pages[k].done)})`:'')),n(d.records)]);
  const trendRegion=await trendSection.locator('.u06-table-region').evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));
- check('추이: 표로 보기의 날짜·출처별 완료와 차이·곳 수가 기록과 같고 화면 폭 안',JSON.stringify(trendRows)===JSON.stringify(trendWant)&&trendRegion.scroll<=trendRegion.client+1,{trendRows,trendWant,trendRegion});
+ check('추이: 표로 보기의 날짜·출처별 완료와 차이·저장 기록 수가 기록과 같고 화면 폭 안',JSON.stringify(trendRows)===JSON.stringify(trendWant)&&trendRegion.scroll<=trendRegion.client+1,{trendRows,trendWant,trendRegion});
  const usageSection=sheet.locator('.u06-o8');await usageSection.scrollIntoViewIfNeeded();
  const meters=await usageSection.locator('.u06-meter').evaluateAll(list=>list.map(m=>({key:m.dataset.usage,text:m.querySelector('.u06-head span')?.textContent,warn:!!m.querySelector('.u06-issue'),bar:m.querySelector('.u06-bar').getBoundingClientRect().width,parts:[...m.querySelectorAll('.u06-bar i')].map(i=>({cls:i.className,w:i.getBoundingClientRect().width}))})));
  // A null count (no analytics row yet) reads ‘기록 없음’ with an empty bar, never 0.

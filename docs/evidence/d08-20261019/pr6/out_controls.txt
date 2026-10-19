@@ -1,0 +1,13 @@
+2026-10-19T19:06:56Z
+merged records kept: caught (rc 1) AssertionError [ERR_ASSERTION]: merged records leave, their cards stay
+absorbed names dropped: caught (rc 1) AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+absorbed names dropped, from the reference too: caught (rc 1) AssertionError [ERR_ASSERTION]: Merged Check Ryokan (trip-1465318) finds jalan-302008
+mergedInto not in the manifest: caught (rc 1) AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+mergedInto in core.json, which a page from before cannot open: caught (rc 1) Error: Snapshot columns differ in length
+page ignores mergedInto: caught (rc 1) FAIL 360px Trip.com ID로 저장한 즐겨찾기가 Jalan 카드 하나로, 저장된 상태로 보임
+comparison mapped only once: caught (rc 1) FAIL 360px 다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜
+unsaving leaves the absorbed id: caught (rc 1) FAIL 360px 그 카드의 저장을 풀면 두 ID가 모두 풀림
+unbroken copy: snapshot check rc 0, browser check rc 0
+controls: 8/8 caught, unbroken passes: True -> PASS
+exit=0
+2026-10-19T19:32:24Z

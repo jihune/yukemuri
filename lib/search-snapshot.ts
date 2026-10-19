@@ -67,5 +67,8 @@ export type SnapshotGeo={grade:GeoGrade[];lat:(number|null)[];lng:(number|null)[
 // (lib/japan-place-labels.ts geocodeInput, scripts/geo/geocode.py).
 export type GeocodeInput={address:string;prefecture:string|null;places:string[]};
 // files.geo is optional: a page older than D06 never reads it, so adding it
-// did not change SNAPSHOT_FORMAT.
-export type SnapshotManifest={format:typeof SNAPSHOT_FORMAT;id:string;generatedAt:string;hotels:number;coverage:SnapshotCoverage;files:{core:string;cards:string;text:string;status:string;geo?:string};bytes:Record<'core'|'cards'|'text'|'status',number>&{geo?:number}};
+// did not change SNAPSHOT_FORMAT. mergedInto (D08 PR 6) likewise: a provider record shown on
+// the card of the same stay's other provider record (a group whose own hotel is one of its
+// provider records), by id; it has no row in the files, and a saved, compared or shared
+// address of it goes to that card. A page older than it shows no card for such an address.
+export type SnapshotManifest={format:typeof SNAPSHOT_FORMAT;id:string;generatedAt:string;hotels:number;coverage:SnapshotCoverage;files:{core:string;cards:string;text:string;status:string;geo?:string};bytes:Record<'core'|'cards'|'text'|'status',number>&{geo?:number};mergedInto?:Record<string,string>};
