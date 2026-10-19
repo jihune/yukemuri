@@ -10,6 +10,7 @@ import BathCells from './bath-cells';
 import CopyName from './copy-name';
 import {useId,useRef} from 'react';
 import {displayNames,nameLang} from '@/lib/hotel-names';
+import {JTA_LABEL,jtaKind} from '@/lib/jta-attribution';
 // U05 B ‘탕 체크리스트’: the six bath columns (BathCells) sit in the same place on every
 // card, so cards read down the page column by column.
 export default function HotelCard({hotel:h,active,saved,pending,canSave,provider,onActive,onDetail,onFavorite,onMap,similar,unmetConditions,compared,onCompare}:{hotel:HotelSummary;active:boolean;saved:boolean;pending:boolean;canSave:boolean;provider:RatingProvider;onActive:(id:string|null)=>void;onDetail:(id:string)=>void;onFavorite:(id:string)=>void;onMap:(h:HotelSummary)=>void;similar?:boolean;unmetConditions?:string[];compared?:boolean;onCompare?:(id:string)=>void}){
@@ -21,7 +22,7 @@ export default function HotelCard({hotel:h,active,saved,pending,canSave,provider
   <button type="button" className="card-image" onClick={()=>onDetail(h.id)} aria-label={n.title+' 상세 보기'}><HotelPhoto hotel={h} loading="lazy"/></button>
   <button type="button" className={`favorite-button ${saved?'saved':''}`} onClick={()=>onFavorite(h.id)} disabled={!canSave||pending} aria-label={n.title+(saved?' 즐겨찾기 해제':' 즐겨찾기 저장')} aria-pressed={saved}><Heart size={19} fill={saved?'currentColor':'none'}/></button>
   <div className="card-head">
-   <div className="card-location"><span className="location-label">{h.location.label}</span><span className="card-kind">{h.kind==='ryokan'?'료칸':'숙소'}</span>{hotelFeature(h,'jalanHighClass').value===true&&<span className="highclass-tag">자란 하이클래스</span>}{similar&&<span className="similar-name-tag">유사한 이름</span>}</div>
+   <div className="card-location"><span className="location-label">{h.location.label}</span><span className="card-kind">{h.kind==='ryokan'?'료칸':'숙소'}</span>{hotelFeature(h,'jalanHighClass').value===true&&<span className="highclass-tag">자란 하이클래스</span>}{h.jta&&<span className="jta-tag">{JTA_LABEL[jtaKind(h.jta)]}</span>}{similar&&<span className="similar-name-tag">유사한 이름</span>}</div>
    <div className="card-name"><button type="button" className="card-title" onClick={()=>onDetail(h.id)}><h3 id={id+'t'} ref={titleRef} lang={nameLang(n.title)}>{n.title}</h3></button>{n.titleLang!=='ko'&&<CopyName name={n.title} label={n.titleLang==='en'?'영어 이름':'원어 이름'} target={titleRef} id={id+'t'}/>}</div>
    {n.ja&&<div className="card-name"><p className="name-ja" id={id+'j'} ref={jaRef} lang={nameLang(n.ja)}>{n.ja}</p><CopyName name={n.ja} label="원어 이름" target={jaRef} id={id+'j'}/></div>}
    <HotelLifecycleNote hotel={h} compact/>
