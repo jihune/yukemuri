@@ -444,7 +444,8 @@ legend{font-size:var(--yk-fs-sm);font-weight:700;margin-bottom:12px}
 }
 .card-location{align-items:flex-start;flex-wrap:wrap}
 .card-location>svg{margin-top:3px}
-.card-location .location-label{min-width:0;flex:1;overflow-wrap:anywhere;line-height:1.6}
+/* A tag beside the place (자란 하이클래스, 관광청 등록) wraps to the next line before the place narrows. */
+.card-location .location-label{min-width:min(10em,100%);flex:1;overflow-wrap:anywhere;line-height:1.6}
 .card-location .similar-name-tag{flex-shrink:0}
 .filter-content fieldset .filter-hint{font-size:var(--yk-fs-sm);line-height:1.7;margin:10px 0;color:var(--yk-text-3)}
 .bath-guide{font-size:var(--yk-fs-sm);line-height:1.8;color:var(--yk-text-3);margin:0 0 18px}

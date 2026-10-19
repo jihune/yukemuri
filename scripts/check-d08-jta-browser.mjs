@@ -12,7 +12,9 @@
 // - the footer and the data status sheet credit the agency.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start)
 // and the isolated Playwright install in docs/ui-u01-20261010.md.
-// Usage: node scripts/check-d08-jta-browser.mjs [base] [evidence.json]
+// --control serves the cards without `jta` (as before this change): the registered stay's checks
+// must then fail.
+// Usage: node scripts/check-d08-jta-browser.mjs [base] [evidence.json] [--control]
 import {createRequire} from 'node:module';
 import {writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
@@ -21,7 +23,7 @@ import {siteSearch} from './site-search-node.mjs';
 import {compileLib} from './build-search-snapshot.mjs';
 const require=createRequire(new URL('../.sites-runtime/u01-browser/package.json',import.meta.url));
 const {chromium}=require('playwright');
-const [base='http://127.0.0.1:8787',evidence]=process.argv.slice(2);
+const control=process.argv.includes('--control'),[base='http://127.0.0.1:8787',evidence]=process.argv.slice(2).filter(a=>a!=='--control');
 const results=[];let width=0;
 const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail});console.log(`${pass?'PASS':'FAIL'} ${width}px ${name}`)};
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-d08-jta-'));
@@ -39,6 +41,7 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  width=w;
  const context=await browser.newContext({viewport:{width:w,height:mobile?800:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1,locale:'ko-KR'});
  await context.route(url=>!url.href.startsWith(base),route=>route.abort().catch(()=>{}));
+ if(control)await context.route(/\/snapshot\/v\/[^/]+\/cards\.json$/,async route=>{const response=await route.fetch();const cards=await response.json();for(const c of cards)delete c.jta;await route.fulfill({response,json:cards})});
  const page=await context.newPage(),errors=[];page.setDefaultTimeout(8000);page.on('pageerror',e=>errors.push(String(e).slice(0,200)));
  const press=l=>mobile?l.tap():l.click();
  // The cards, found by their original names.
@@ -61,10 +64,12 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
  const section=sheet.locator('section[aria-labelledby="detail-jta-title"]');
  const heading=await section.locator('h2').textContent().catch(()=>null),body=await section.textContent().catch(()=>'');
  const links=await section.locator('a').evaluateAll(as=>as.map(a=>({href:a.href,text:a.textContent,target:a.target,rel:a.rel})));
- const sheetBox=await sheet.boundingBox(),sectionBox=await section.boundingBox().catch(()=>null);
  check(`상세: 종류 옆 ‘${label}’ 표시와 같은 이름의 절`,eyebrow===label&&heading===label,{eyebrow,heading});
  check(`상세: 뜻, 등록번호 ${stay.jta}, 출처(가공 작성)와 목록·이용규약 링크`,body.includes(JTA_MEANING)&&body.includes('등록번호 '+stay.jta)&&body.includes('を加工して作成')&&JSON.stringify(links.map(l=>l.href))===JSON.stringify(JTA_LINKS.map(l=>l.url))&&links.every(l=>l.target==='_blank'&&l.rel.includes('noopener')),{links});
- check('상세: 절이 시트 너비 안에 있음',!!sheetBox&&!!sectionBox&&sectionBox.x>=sheetBox.x&&sectionBox.x+sectionBox.width<=sheetBox.x+sheetBox.width+0.5,{sheetBox,sectionBox});
+ // The sheet slides in from the right: measured once its right edge is the window's, both boxes at once.
+ await page.waitForFunction(()=>{const e=document.querySelector('.hotel-detail');return!!e&&e.getAnimations().every(a=>a.playState!=='running')&&Math.abs(e.getBoundingClientRect().right-window.innerWidth)<0.5},null,{timeout:5000}).catch(()=>{});
+ const boxes=await page.evaluate(()=>{const box=e=>{const r=e?.getBoundingClientRect();return r?{left:r.left,right:r.right}:null};return{sheet:box(document.querySelector('.hotel-detail')),section:box(document.querySelector('section[aria-labelledby="detail-jta-title"]')),width:window.innerWidth}});
+ check('상세: 절이 시트 너비 안에 있음',!!boxes.sheet&&!!boxes.section&&boxes.section.left>=boxes.sheet.left&&boxes.section.right<=boxes.sheet.right+0.5&&boxes.sheet.right<=boxes.width+0.5,boxes);
  if(!mobile){
   // Tab through the sheet until the section's first link has focus.
   let reached=false;
@@ -108,6 +113,6 @@ for(const [w,mobile] of [[360,true],[390,true],[1280,false]]){
 }
 await browser.close();
 const failed=results.filter(r=>!r.pass);
-if(evidence)writeFileSync(evidence,JSON.stringify({checkedAt:new Date().toISOString(),base,stay:{id:stay.id,jta:stay.jta,title:displayNames(stay.names).title},plain:plain.id,results},null,1)+'\n');
+if(evidence)writeFileSync(evidence,JSON.stringify({checkedAt:new Date().toISOString(),base,control,stay:{id:stay.id,jta:stay.jta,title:displayNames(stay.names).title},plain:plain.id,results},null,1)+'\n');
 console.log(`checks=${results.length} failed=${failed.length} ${failed.length?'FAIL':'PASS'}`);
 process.exit(failed.length?1:0);
