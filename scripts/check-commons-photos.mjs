@@ -8,7 +8,7 @@ import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {compileLib} from './build-search-snapshot.mjs';
-import {extract,LICENCE,OUT,PUBLIC_DOMAIN,WIDTH} from './update-commons-photos.mjs';
+import {extract,LICENCE,OUT,PUBLIC_DOMAIN,UNNAMED,WIDTH} from './update-commons-photos.mjs';
 
 const require=createRequire(import.meta.url),temp=mkdtempSync(join(tmpdir(),'yukemuri-commons-photos-'));
 const hotel=(id,name)=>({id,names:{ko:name,ja:name,en:name},aliases:[],image:{url:'https://ak-d.tripcdn.com/images/a.jpg',alt:name,sourceId:id,isRepresentative:true},sources:[{sourceId:id,sourceType:'web',label:'숙소 상세',retrievedAt:'2026-10-01T00:00:00Z',verifiedAt:'2026-10-01',url:'https://www.trip.com/hotels/x-hotel-detail-1/',isMock:false}]});
@@ -25,7 +25,7 @@ function problem([trip,item,url,page,author,licence,licenceUrl,...rest]){
  if(!/^https:\/\/commons\.wikimedia\.org\/wiki\/File:./.test(page??''))return'file page';
  // A public domain file has no deed and may name no author; every other file names both.
  const pd=licence===PUBLIC_DOMAIN;
- if(author===null?!pd:!author||/^(unknown( author)?|own work)$/i.test(author)||/[<>]/.test(author))return'author';
+ if(author===null?!pd:!author||UNNAMED.test(author)||/[<>]/.test(author))return'author';
  if(!pd&&!LICENCE.test(licence??''))return'licence';
  if(pd?licenceUrl!==null:!/^https:\/\/creativecommons\.org\/./.test(licenceUrl??''))return'licence link';
  return null;
@@ -60,7 +60,9 @@ try{
  const page=(title,{artist='<a href="//commons.wikimedia.org/wiki/User:X" title="User:X">X</a>',licence='CC BY-SA 4.0',deed='https://creativecommons.org/licenses/by-sa/4.0',url=thumb('x.jpg')+'?utm_source=commons.wikimedia.org&utm_content=thumbnail',code,copyrighted,restrictions,missing=false}={})=>missing?{title,missing:true}:{title,imageinfo:[{thumburl:url,url,descriptionurl:'https://commons.wikimedia.org/wiki/'+title.replace(/ /g,'_'),extmetadata:{Artist:{value:artist},LicenseShortName:{value:licence},...(deed?{LicenseUrl:{value:deed}}:{}),...(code?{License:{value:code}}:{}),...(copyrighted?{Copyrighted:{value:copyrighted}}:{}),...(restrictions?{Restrictions:{value:restrictions}}:{})}}]};
  // Public domain as Commons states it (the name, code pd, not copyrighted).
  const pd={licence:'Public domain',deed:null,code:'pd',copyrighted:'False'};
- const bindings=[b('1','Q1','Kept one.jpg'),b('2','Q2','Talk.jpg'),b('3','Q3','No author.jpg'),b('4','Q4','Own.jpg'),b('5','Q5','Unknown.jpg'),b('6','Q6','Gfdl.jpg'),b('7','Q7','Pd.jpg'),b('8','Q8','Gone.jpg'),b('9','Q9','Elsewhere.jpg'),b('10','Q10','A.jpg'),b('10','Q11','A.jpg'),b('11','Q12','Old name.jpg'),b('12','Q13','No deed.jpg'),b('13','Q14','Cc0.jpg'),b('x','Q15','X.jpg'),b('14','Q16','Pd named.jpg'),b('15','Q17','Pd own.jpg'),b('16','Q18','Pd restricted.jpg'),b('17','Q19','Pd copyrighted.jpg'),b('18','Q20','Cc0 restricted.jpg'),b('19','Q21','No licence.jpg')];
+ // What Commons writes in Artist when a file page names no author (trip 856906's file, 2026-10-19).
+ const ASSUMED='No machine-readable author provided. Mangos assumed (based on copyright claims).';
+ const bindings=[b('1','Q1','Kept one.jpg'),b('2','Q2','Talk.jpg'),b('3','Q3','No author.jpg'),b('4','Q4','Own.jpg'),b('5','Q5','Unknown.jpg'),b('6','Q6','Gfdl.jpg'),b('7','Q7','Pd.jpg'),b('8','Q8','Gone.jpg'),b('9','Q9','Elsewhere.jpg'),b('10','Q10','A.jpg'),b('10','Q11','A.jpg'),b('11','Q12','Old name.jpg'),b('12','Q13','No deed.jpg'),b('13','Q14','Cc0.jpg'),b('x','Q15','X.jpg'),b('14','Q16','Pd named.jpg'),b('15','Q17','Pd own.jpg'),b('16','Q18','Pd restricted.jpg'),b('17','Q19','Pd copyrighted.jpg'),b('18','Q20','Cc0 restricted.jpg'),b('19','Q21','No licence.jpg'),b('20','Q22','Pd assumed.jpg'),b('21','Q23','Cc assumed.jpg')];
  const responses=[{query:{normalized:[{from:'File:Kept_one.jpg',to:'File:Kept one.jpg'}],redirects:[{from:'File:Old name.jpg',to:'File:New name.jpg'}],pages:[
   page('File:Kept one.jpg'),page('File:Talk.jpg',{artist:'<a href="//commons.wikimedia.org/wiki/User:S">Sakaori</a> (<a href="//commons.wikimedia.org/wiki/User_talk:S"><span class="signature-talk">talk</span></a>) &amp; Co'}),
   page('File:No author.jpg',{artist:''}),page('File:Own.jpg',{artist:'<span class="int-own-work" lang="en">Own work</span>'}),page('File:Unknown.jpg',{artist:'Unknown author'}),
@@ -68,18 +70,21 @@ try{
   page('File:Elsewhere.jpg',{url:'https://example.org/x.jpg'}),page('File:A.jpg'),page('File:New name.jpg'),page('File:No deed.jpg',{deed:null}),
   page('File:Cc0.jpg',{licence:'CC0',deed:'http://creativecommons.org/publicdomain/zero/1.0/deed.en'}),
   page('File:Pd named.jpg',pd),page('File:Pd own.jpg',{...pd,artist:'<span class="int-own-work" lang="en">Own work</span>'}),page('File:Pd restricted.jpg',{...pd,restrictions:'personality'}),
-  page('File:Pd copyrighted.jpg',{...pd,copyrighted:'True'}),page('File:Cc0 restricted.jpg',{licence:'CC0',deed:'https://creativecommons.org/publicdomain/zero/1.0/deed.en',restrictions:'trademarked'}),page('File:No licence.jpg',{licence:'',deed:null})]}}];
+  page('File:Pd copyrighted.jpg',{...pd,copyrighted:'True'}),page('File:Cc0 restricted.jpg',{licence:'CC0',deed:'https://creativecommons.org/publicdomain/zero/1.0/deed.en',restrictions:'trademarked'}),page('File:No licence.jpg',{licence:'',deed:null}),
+  page('File:Pd assumed.jpg',{...pd,artist:ASSUMED}),page('File:Cc assumed.jpg',{artist:ASSUMED})]}}];
  const x=extract(bindings,responses),kept=new Map(x.rows.map(r=>[r[0],r]));
- assert.deepEqual([...kept.keys()],['1','2','11','13','14','15']);
+ assert.deepEqual([...kept.keys()],['1','2','11','13','14','15','20']);
  assert.deepEqual(kept.get('1'),['1','Q1',thumb('x.jpg'),'https://commons.wikimedia.org/wiki/File:Kept_one.jpg','X','CC BY-SA 4.0','https://creativecommons.org/licenses/by-sa/4.0'],'a kept file: tags and tracking parameters dropped');
  assert.equal(kept.get('2')[4],'Sakaori & Co','a signature\'s talk link is not part of the name; entities decoded');
  assert.equal(kept.get('11')[3],'https://commons.wikimedia.org/wiki/File:New_name.jpg','a renamed file is followed');
  assert.equal(kept.get('13')[6],'https://creativecommons.org/publicdomain/zero/1.0/deed.en','a deed link is made https');
  assert.deepEqual(kept.get('14').slice(4),['X','Public domain',null],'a public domain file keeps its author and has no deed');
  assert.deepEqual(kept.get('15').slice(4),[null,'Public domain',null],'a public domain file may name no author');
+ assert.deepEqual(kept.get('20').slice(4),[null,'Public domain',null],'Commons\'s note for a missing author is no author');
  // Left out: a public domain name without Commons's code and copyright fields (7, 17), a use
- // restriction on public domain or CC0 (16, 18), no licence information (19).
- assert.deepEqual(x.dropped,[['3','no author'],['4','no author'],['5','no author'],['6','licence GFDL'],['7','licence Public domain'],['8','missing'],['9','no image address'],['10','two items or images'],['12','no licence link'],['16','restricted personality'],['17','licence Public domain'],['18','restricted trademarked'],['19','licence missing']]);
+ // restriction on public domain or CC0 (16, 18), no licence information (19), Commons's no-author note on
+ // a CC file (21).
+ assert.deepEqual(x.dropped,[['3','no author'],['4','no author'],['5','no author'],['6','licence GFDL'],['7','licence Public domain'],['8','missing'],['9','no image address'],['10','two items or images'],['12','no licence link'],['16','restricted personality'],['17','licence Public domain'],['18','restricted trademarked'],['19','licence missing'],['21','no author']]);
  for(const r of x.rows)assert.equal(problem(r),null,'a kept fixture row passes the extract check: '+r[0]);
 
  // The committed extract.
@@ -94,7 +99,7 @@ try{
  assert.deepEqual(data.hotels.filter(r=>names.has(r[0])&&names.get(r[0])!==r[1]).map(r=>r[0]),[],'the names extract gives the same item for each Trip id');
  // Control: a copy with one defect of each kind; the check must name every one.
  const cc=data.hotels.find(r=>r[5]!==PUBLIC_DOMAIN),pdRow=data.hotels.find(r=>r[5]===PUBLIC_DOMAIN);
- const seeded=[['author',cc,4,''],['author',cc,4,'Own work'],['author',cc,4,null],['licence',cc,5,'GFDL'],['licence link',cc,6,'http://example.org/'],['licence link',cc,6,null],['image host',cc,2,'https://example.org/a.jpg'],['thumbnail width',cc,2,thumb('A.jpg').replace(`${WIDTH}px`,'1000px')],['file page',cc,3,'https://en.wikipedia.org/wiki/File:A.jpg'],['item',cc,1,'X1'],['author',pdRow,4,''],['licence link',pdRow,6,'https://creativecommons.org/publicdomain/mark/1.0/']];
+ const seeded=[['author',cc,4,''],['author',cc,4,'Own work'],['author',cc,4,null],['author',cc,4,ASSUMED],['author',pdRow,4,ASSUMED],['licence',cc,5,'GFDL'],['licence link',cc,6,'http://example.org/'],['licence link',cc,6,null],['image host',cc,2,'https://example.org/a.jpg'],['thumbnail width',cc,2,thumb('A.jpg').replace(`${WIDTH}px`,'1000px')],['file page',cc,3,'https://en.wikipedia.org/wiki/File:A.jpg'],['item',cc,1,'X1'],['author',pdRow,4,''],['licence link',pdRow,6,'https://creativecommons.org/publicdomain/mark/1.0/']];
  const caught=seeded.filter(([kind,base,column,value])=>{const r=[...base];r[column]=value;return problem(r)===kind});
  assert.equal(caught.length,seeded.length,'the extract check catches every seeded defect');
  const licences=Object.entries(data.hotels.reduce((a,r)=>({...a,[r[5]]:(a[r[5]]??0)+1}),{})).sort((a,b)=>b[1]-a[1]).map(([l,n])=>n+' '+l).join(', ');

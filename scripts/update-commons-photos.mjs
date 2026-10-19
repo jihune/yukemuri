@@ -26,6 +26,10 @@ export const WIDTH=960;
 export const LICENCE=/^(CC BY(-SA)? \d\.\d( [A-Za-z-]+)?|CC0)$/;
 export const PUBLIC_DOMAIN='Public domain';
 const IMAGE_HOST=/^(upload|thumb)\.wikimedia\.org$/;
+// Author values that name no one: ‘Own work’ (Credit says it, not Artist), ‘Unknown author’,
+// and the note Commons writes when a file page gives no author (‘No machine-readable author
+// provided. <user> assumed (based on copyright claims).’, a guess, not a credit).
+export const UNNAMED=/^(unknown( author)?|own work|no machine-readable author provided\b.*)$/i;
 
 // HTML of an extmetadata value -> plain text.
 export function plain(html){
@@ -64,8 +68,7 @@ export function infos(responses){
    // A user signature's talk link is not part of the name.
    const author=plain(meta.Artist?.value).replace(/\s*\(\s*talk\s*\)/gi,''),licence=plain(meta.LicenseShortName?.value),licenceUrl=plain(meta.LicenseUrl?.value).replace(/^(https?:)?\/\//,'https://');
    let url=null;try{const u=new URL(info.thumburl??info.url);for(const key of [...u.searchParams.keys()])if(key.startsWith('utm_'))u.searchParams.delete(key);url=u.protocol==='https:'&&IMAGE_HOST.test(u.hostname)?u.href:null}catch{}
-   // ‘Own work’ in the author field names no one (Credit says it, not Artist).
-   const named=!!author&&!/^(unknown( author)?|own work)$/i.test(author),restrictions=plain(meta.Restrictions?.value);
+   const named=!!author&&!UNNAMED.test(author),restrictions=plain(meta.Restrictions?.value);
    // Public domain as Commons states it: the licence name, its code and not copyrighted. It
    // has no deed to link, and its author is shown when the file names one (parent session
    // decision, 2026-10-19T13:34Z). A use restriction (trademark, personality rights) on a
