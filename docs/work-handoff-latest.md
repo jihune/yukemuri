@@ -57,15 +57,15 @@
 - D08 외부 숙박 자료(사용자 10-19T12:2xZ, `D08-20261019.md` 9절): Overture Maps Places는 ‘측정 먼저(권장)’, 관광청 등록 호텔·료칸은 카드·상세에 ‘표시함(권장)’, Wikimedia Commons 사진은 ‘쓴다’(상위 세션 권장은 ‘나중에’), 지자체 여관업 허가 목록은 ‘오이타현부터’(권장은 ‘나중에’)를 골랐다. Foursquare 계정은 Overture 측정 뒤로 미루고 OSM은 지도 바탕으로만 쓴다(상위 세션 권장, 사용자가 따로 정하지 않음).
 - 같은 때 사용자가 결정 없이 할 수 있는 일 네 가지를 모두 시작하라고 골랐다: D04 다음 단계(D05 세션), 인계 문서 정리, C01 남은 오류 2건 재확인, 외부 숙박 자료 출처 조사(라쿠텐 말고 공개 저장이 되는 무료 출처).
 
-### 3. 지금 상태와 확인 명령(10-19T16:2xZ, 아홉 번째 상위 세션)
+### 3. 지금 상태와 확인 명령(10-19T17:4xZ, 아홉 번째 상위 세션)
 
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
-| main | 이 기록 PR이 들어간다. 그 앞은 `bf91b7f`(PR #206, D08 PR 2 운영 확인 기록), `565a736`(PR #198, D08 PR 2 Commons 사진), `205567b`(PR #205), `c5acc05`(PR #203), `98c1d9d`(PR #201, D08 PR 4 Overture 대략 위치 보정) | `git log --oneline -6 origin/main` |
-| 열린 PR | 모두 하위 세션 몫이다(상위 세션은 구독하지 않음). yukemuri #190(C06, C04 세션, 병합 10-21T00:00Z 뒤), #197(C07 방안 1, 병합 조건 맞춤(Codex 3회), 병합 10-21T00:00Z 뒤), #199(D08 PR 1 관광청 표시, L01 세션, #198 뒤 main을 합쳐 충돌 해결 검토 중), #204(D08 PR 5 47쌍 묶기, D08 Overture 세션, 15:2xZ 열림). 실행기 저장소는 없음(13:43Z) | `gh api "repos/jihune/yukemuri/pulls?state=open"`, 실행기 저장소도 같은 꼴 |
-| 운영 배포 | 마지막 코드 배포는 PR #198(`565a736`, run 39280843531, 10-19T15:49:22Z 시작, 단계는 16:00:47Z에 모두 성공, Worker `705011af`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `b5e5362845586f2b`, 25,225곳, 생성 읽기 133,955행)이다. 15:49Z부터 GitHub Actions 장애로 run 상태는 16:24:40Z에야 끝남으로 바뀌었다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
+| main | 이 기록 PR이 들어간다. 그 앞은 `5e0ba55`(PR #204, D08 PR 5 47쌍 묶기), `13be74d`(PR #207), `bf91b7f`(PR #206), `565a736`(PR #198, D08 PR 2 Commons 사진), `98c1d9d`(PR #201, D08 PR 4 Overture 대략 위치 보정) | `git log --oneline -6 origin/main` |
+| 열린 PR | 모두 하위 세션 몫이다(상위 세션은 구독하지 않음). yukemuri #190(C06, C04 세션, Codex 2회차 남은 P2 하나는 사용자 결정 대기, 병합 10-21T00:00Z 뒤), #197(C07 방안 1, 병합 조건 맞춤(Codex 3회), 병합 10-21T00:00Z 뒤), #199(D08 PR 1 관광청 표시, L01 세션, 이어 가는 Claude 검토 1회째 중). 실행기 저장소는 없음(13:43Z) | `gh api "repos/jihune/yukemuri/pulls?state=open"`, 실행기 저장소도 같은 꼴 |
+| 운영 배포 | 마지막 코드 배포는 PR #204(`5e0ba55`, run 39295291814, 10-19T17:34:36Z–17:44:46Z, Worker `8b00d72f`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `f59b2c47d218af25`, 25,225곳, 생성 읽기 133,955행)이다. 47쌍 가져오기는 다음 수집 실행의 준비 단계에서 돈다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분인데 GitHub `schedule`이 계정 단위로 몰아서 처리해 하루 약 5번만 온다(10-18T12:37Z–10-19T09:37Z 예약 22번 가운데 5번). 마지막 예약 실행은 11:12:28Z(실행기 run 39242955648, 앱 run 39242973283 성공)이고, 12:37Z·13:37Z·14:37Z 예약은 14:42Z까지 오지 않았다. 그때까지 공백 3시간 30분은 잰 간격(2시간 38분–4시간 49분) 안이고, C05 측정을 깨끗하게 두려고 수동으로 부르지 않았다. 쪽당 읽기는 10-19 깨끗한 구간 셋에서 약 1,900–2,500행, 120쪽 실행 하나가 스냅숏까지 약 45–52만 행이다. `collection-budget.mjs`는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000 | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, `gh api "repos/jihune/yukemuri-script-runner/actions/workflows/yukemuri-catalog.yml/runs?per_page=5"` |
-| 하위 세션 | 일함 여섯: O03(C05 측정), C04(C06 #190), L01(D08 PR 1 #199, 그 뒤 PR 3), C07(#197, 방안 2·3 설계), D08 Overture(PR 5 #204, 그 뒤 PR 6 한 번만 보이기). D08 Commons는 PR #198·#206으로 끝나 보관했다. 쉼 다섯: D05, U07, D07, U05, U06(아래 6). 13:44:27Z에 모두 새 상위 세션 id를 받았다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
+| 하위 세션 | 일함 여섯: O03(C05 측정), C04(C06 #190), L01(D08 PR 1 #199, 그 뒤 PR 3), C07(#197, 방안 2·3 설계), D08 Overture(PR 5 #204 병합, PR 6 한 번만 보이기 준비). D08 Commons는 PR #198·#206으로 끝나 보관했다. 쉼 다섯: D05, U07, D07, U05, U06(아래 6). 13:44:27Z에 모두 새 상위 세션 id를 받았다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 아홉 번째 상위 세션에 묶인 것: H01 7일차 `trig_0161s8o9GRSBBXwHS4X8e6uR`(10-20T01:20Z), D04 재측정 알림 `trig_018FW8R6jT5LL9Fz41MAEs3W`(11-29T03:05Z). 하위 세션 예약: O03의 10-20 매일 점검 확인 `trig_019xRCsefHCVg4otWF2ZhcYG`(10-20T03:00Z)와 C05 이틀 측정 `trig_0146LNrucE9sLnkudEpaEgX9`(10-21T02:10Z), C04·C07·L01의 PR 안전망 확인 하나씩(10-19T16:2xZ `list_triggers`). 그 밖에 사용자 keep-alive 루틴 두 개와 다른 프로젝트 예약 하나(건드리지 않음) | `list_triggers`(enabled true) |
 | 사용량 | 10-19T13:51:12Z 5시간 창 0.42(재설정 16:40Z), 7일 창 0.10(재설정 10-26T12:00Z), `isUsingOverage` false | 위 1-2 |
 | 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`. 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 아홉 번째 상위 세션에 설치된 판은 `e8fcc89 2026-10-19`(setup 32 `591edc1` 위 하네스 기록 커밋만) | 위 1-1 |
@@ -75,7 +75,7 @@
 1. H01 7단계 7일차(10-19 하루): 예약 `trig_0161s8o9GRSBBXwHS4X8e6uR`(10-20T01:20Z)대로 `usage.yml`을 돌려 `docs/H01-20261011.md`에 적고, 아래 8번 C1을 닫고 7단계를 정리한다(예약 prompt의 ‘4의 7번 C1’은 이 목록의 8번 C1이다). 매일 점검 실패선은 PR #188로 90%가 됐다(수집 예산은 85%). O03 자동 점검이 동작하므로 그 뒤 상위 세션의 Claude 매일 점검은 끝내고 실패 메일이 온 날만 run 요약을 본다.
 2. 10-21T00:00Z 뒤 병합 순서(C05 이틀 측정 보호): C06 PR #190(수집 이어 부르기, C04 세션) → C07 PR #197(방안 1, 빈 받기 묶음 건너뛰기) → C07 방안 2 PR(상위 세션이 10-19T13:3xZ에 (나)로 정함: 수집기의 실행 끝 집계 GET을 없애고 수집 뒤 배포 job이 스냅숏 빌드가 센 값으로 추이 행·집계 사본·카운터를 저장, O03의 `daily-check.mjs`를 고치면 O03에 알림) → C07 방안 3 PR(스냅숏 코드가 안 바뀐 push 배포는 운영 스냅숏을 다시 씀). 병합 조건은 `AGENTS.md`대로 확인하고, 앞 PR이 들어가면 뒤 PR은 main을 merge로 합쳐 CI를 다시 돌린다. C06 병합 뒤 수집을 바로 멈추려면 실행기 `YUKEMURI_ENABLED`만으로는 부족하고 Actions의 ‘Yukemuri collection chain’을 끄고 기다리는 run을 취소한다(PR #190이 `cloudflare-deploy.md`에 넣음).
 3. D08 외부 숙박 자료(`D08-20261019.md` 9–12절): PR 4 Overture 대략 위치 보정 #201(10-19T14:24Z)과 PR 2 Commons 사진 #198(15:49Z)은 병합·배포했다(`deployments.md`). PR 1 관광청 표시 #199(L01)는 병합 시각 제한이 없다. 병합 준비 알림이 오면 확인해 병합하고 배포를 기록한다. 세 PR이 `docs/D08-20261019.md`와 스냅숏·화면 파일을 함께 고친다(#199와 #201은 `lib/search-snapshot.ts`·`lib/search-snapshot-build.ts`·`components/hotel-explorer.tsx`·`components/collection-status-sheet.tsx`·`scripts/check-search-snapshot-worker.mjs`, #198과 #199는 `app/globals.css`·`scripts/cloud-check.py`, 10-19T13:4xZ `git diff --stat`). 그래서 먼저 병합한 뒤 나머지 PR은 main을 merge로 합쳐 CI를 다시 돌리고, D08 문서의 절 번호는 늦게 병합되는 쪽이 고친다. #201은 처음에 뺀 Foursquare 출처 124곳을 더해 사용자 결정대로 1,381곳을 고친다(상위 세션 답 10-19T13:50Z). PR 3 오이타현 여관업(L01, PR 1 뒤)은 상위 세션이 10-19T16:10Z에 화면 A(카드에는 없음, 상세 정보 출처 근처 한 줄과 CC BY 4.0 표기, ‘목록에 없다고 무허가·폐업이 아님’ 안내)와 목록에만 있는 634행은 근거 파일에만 둠으로 정했다(사용자 12:24Z 설명 ‘허가 여부와 새 허가를 붙인다’에 맞춤). PR 5 중복 47쌍 묶기는 #204로 열렸다(10-19T15:2xZ, 넣는 길은 근거 파일과 `ensureCatalog` 가져오기 단계, 받기 쿼리의 ‘묶인 상대 상세 먼저’는 직접 관리 묶음에만 남겨 받기 읽기가 늘지 않게 함). #204는 C07 #197과 같은 `lib/crawl-queue.ts`를 고치므로(바꾼 줄이 달라 시험 병합 충돌 없음, D08 Overture 세션 확인) 먼저 들어가면 #197 세션에 main을 합치라고 알린다. 사용자 결정(10-19T15:3xZ)에 따라 #204 병합 뒤 PR 6으로 묶인 쌍을 목록·지도에서 한 번만 보이게 한다.
-4. C05 이틀 측정(O03, 10-21T02:10Z): 결과가 오면 남은 제안(C04의 두 후보 가운데 아직 안 한 것, C07 방안 4–6: Trip 상세 받기 질의·색인, 이어 부르는 실행의 스냅숏 미루기, 백업 증분 내보내기)을 사용자에게 함께 묻는다.
+4. C05 이틀 측정(O03, 10-21T02:10Z): 결과가 오면 남은 제안(C04의 두 후보 가운데 아직 안 한 것, C07 방안 4–6: Trip 상세 받기 질의·색인, 이어 부르는 실행의 스냅숏 미루기, 백업 증분 내보내기)과 C06 #190 Codex 2회차의 남은 P2(실행기 예약과 이어 부르기가 겹쳐 실행이 하나 더 생김, roadmap ‘사용자 결정 대기’)를 사용자에게 함께 묻는다. #190은 그 P2가 정해져야 병합할 수 있다.
 5. O03 매일 점검: O03이 10-20T03:00Z에 10-20 실행을 본다(그날부터 90%로 판정).
 6. D04: PR #189로 끝났다. 11-29T03:05Z 예약으로 정기 재확인이 다 돌았는지 다시 잰다.
 7. C01: Jalan 연결 오류는 사라졌고 Trip.com 목록 페이지 없음 1건이 남았다. 공개 응답에 주소가 없고 유지관리 키를 쓰지 않아 그대로 둔다(사용자가 허락하면 한 번 읽어 찾을 수 있다).
@@ -122,7 +122,8 @@
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`), D08 PR 1 관광청 등록 표시와 PR 3 오이타현 여관업(10-19T12:3xZ 맡김) | 일함 |
-| `session_01KThJhPmvWG2sAnNZJ3dnFH` | D08 PR 4 Overture 대략 위치 보정과 PR 5 Jalan·Trip.com 중복 47쌍 묶기(브랜치 `claude/d08-overture`, brief `D08-20261019.md` 12절, 10-19T13:14Z 엶) | 일함 |
+| `session_01KThJhPmvWG2sAnNZJ3dnFH` | D08 PR 4 Overture 대략 위치 보정과 PR 5 Jalan·Trip.com 중복 47쌍 묶기(브랜치 `claude/d08-overture`, brief `D08-20261019.md` 12절, 10-19T13:14Z 엶), PR 6 묶인 쌍 한 번만 보이기(10-19T15:41Z 맡김) | 일함. PR 4 #201·PR 5 #204 병합, PR 6 준비 |
+| `session_012ku7LUVij2mmvETNkp5KLQ` | D08 PR 1 #199 이어 가는 Claude 검토 1회째(10-19T17:19Z, 아홉 번째가 엶, 대상 head `12e84d4`) | 일함. 결과를 기록한 뒤 보관한다 |
 | `session_011eZxw3sdBJd4VfNtNaaaki` | C07 수집과 배포의 D1 읽기 줄이기(브랜치 `claude/c04-reads`, brief `C07-20261019.md`, 10-19T12:35Z 엶) | 일함. 방안 1→2→3, 병합 10-21T00:00Z 뒤 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
@@ -145,6 +146,9 @@
 - 10-19T15:3xZ 사용자에게 묶은 쌍을 한 번만 보일지 물어 ‘한 번만 보이게(권장)’를 받았다(위 2). D08 Overture 세션에 PR 6 범위를 15:41Z에 보냈다.
 - 10-19T15:49Z D08 PR 2 #198(Commons 사진)을 head `06fe1c5`로 병합했다(`565a736`, Codex 3회 가운데 1·2회째 P2 3건 고침, 3회째 큰 문제 없음, 스레드 3개 해결, `checks`·GitGuardian 통과를 상위 세션이 직접 봄). 배포 run 39280843531의 단계는 16:00:47Z에 모두 성공했고, 15:49Z부터 GitHub Actions 장애(githubstatus ‘Degraded availability for GitHub Actions, GitHub Pages and Webhooks’)로 run 상태만 16:24:40Z까지 진행 중으로 남았다(`deployments.md`). D08 Commons 세션이 운영 상세 세 곳을 Chromium으로 확인한 기록 PR #206을 16:25Z에 병합했고(`bf91b7f`), brief의 끝나는 조건을 채운 그 세션 `session_01Uxvb7CAJHMJ55KWstKVNpt`를 보관했다.
 - 10-19T16:10Z L01 세션의 D08 PR 3 화면 설계에 답했다(위 4의 3). #199는 #198 뒤 main을 합쳐 충돌 해결 검토(Codex)를 받는 중이다.
+- 10-19T17:1xZ C06 #190의 Codex 1회차가 12:53Z 요청 뒤 4시간 넘게 멈춰(GitHub 장애 시간과 겹침) 새 head에 다시 요청해 1회차로 세게 했다(17:23Z P1 한 건, `1dcbd3a`에서 고침). 2회차(17:38Z)는 P2 두 건이었다. 하나는 고쳤고(`69a243d`), 실행기 예약과 이어 부르기가 겹치는 다른 하나는 사용자 결정으로 남겼다(위 4의 4).
+- 10-19T17:19Z D08 PR 1 #199에 이어 가는 Claude 검토 1회째(다섯 번 가운데 네 번째)를 맡길 검토 세션 `session_012ku7LUVij2mmvETNkp5KLQ`를 열었다(대상 head `12e84d4`, Codex 3회차 P2를 고친 `96eed52` 뒤 검토가 없었음).
+- 10-19T17:34Z D08 PR 5 #204(47쌍 묶기)를 head `ee44799`로 병합했다(`5e0ba55`, Codex 3회 가운데 1·2회째 P2 한 건씩 고침, 3회째 큰 문제 없음, 스레드 2개 해결, `checks`·GitGuardian 통과를 상위 세션이 직접 봄). 47쌍 가져오기는 다음 수집 실행의 준비 단계에서 돈다. C07 세션에 #197로 main을 합치라고 알렸다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
