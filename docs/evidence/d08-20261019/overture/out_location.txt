@@ -1,0 +1,38 @@
+grade 1, joined by rule c alone (no distance condition): {'n': 611, 'median': 11, 'p90': 52, 'max': 11109, '<50m': '89.2%', '<150m': '96.1%', '<500m': '98.7%', '>1km': '1.0%'}
+  of those, house numbers agree: {'n': 543, 'median': 11, 'p90': 50, 'max': 11109, '<50m': '90.2%', '<150m': '96.9%', '<500m': '99.3%', '>1km': '0.6%'}
+  control, random Overture place of the same prefecture: {'n': 611, 'median': 40609, 'p90': 139482, 'max': 576304, '<50m': '0.3%', '<150m': '0.7%', '<500m': '1.6%', '>1km': '95.9%'}
+grade 1, by Overture confidence bucket (rule c alone):
+  <0.5: {'n': 11, 'median': 31, 'p90': 1552, 'max': 1556, '<50m': '54.5%', '<150m': '63.6%', '<500m': '81.8%', '>1km': '18.2%'}
+  0.5-0.77: {'n': 18, 'median': 4, 'p90': 38, 'max': 1835, '<50m': '88.9%', '<150m': '88.9%', '<500m': '94.4%', '>1km': '5.6%'}
+  0.77-0.9: {'n': 88, 'median': 11, 'p90': 51, 'max': 11109, '<50m': '87.5%', '<150m': '95.5%', '<500m': '98.9%', '>1km': '1.1%'}
+  >=0.9: {'n': 494, 'median': 11, 'p90': 49, 'max': 4338, '<50m': '90.3%', '<150m': '97.2%', '<500m': '99.2%', '>1km': '0.4%'}
+grade 1, by Overture first source (rule c alone):
+  AllThePlaces: {'n': 0}
+  Foursquare: {'n': 50, 'median': 12, 'p90': 50, 'max': 495, '<50m': '90.0%', '<150m': '98.0%', '<500m': '100.0%', '>1km': '0.0%'}
+  Microsoft: {'n': 10, 'median': 6, 'p90': 32, 'max': 121, '<50m': '90.0%', '<150m': '100.0%', '<500m': '100.0%', '>1km': '0.0%'}
+  meta: {'n': 551, 'median': 11, 'p90': 52, 'max': 11109, '<50m': '89.1%', '<150m': '95.8%', '<500m': '98.5%', '>1km': '1.1%'}
+  far: 11109 m jalan-360662 グランステイ湯布院 | Overture グランステイ湯布院 meta conf 0.86 point 33.18330,131.43301 house agree
+  far: 4338 m jalan-303902 大玉リゾートヒルズホテル | Overture 大玉リゾートヒルズホテル meta conf 0.97 point 37.53440,140.37099 house agree
+  far: 1835 m jalan-304722 奈良ホテル | Overture 奈良ホテル meta conf 0.71 point 34.67533,135.85326 house unknown
+  far: 1556 m jalan-300073 鷹羽鉱泉 | Overture 鷹羽鉱泉 meta conf 0.49 point 37.04240,138.43013 house disagree
+  far: 1552 m jalan-379380 フォートリート箱根仙石原 | Overture フォートリート箱根仙石原 meta conf 0.24 point 35.27160,139.00961 house agree
+cascade joined pairs, distance between our point and Overture by our grade:
+  grade 1: 703 joined of 2155 hotels (32.6%): {'n': 703, 'median': 11, 'p90': 50, 'max': 11109, '<50m': '89.6%', '<150m': '96.6%', '<500m': '98.9%', '>1km': '0.9%'}
+  grade 2: 5165 joined of 15059 hotels (34.3%): {'n': 5165, 'median': 41, 'p90': 274, 'max': 842386, '<50m': '57.6%', '<150m': '83.8%', '<500m': '94.6%', '>1km': '2.2%'}
+  grade 3: 1631 joined of 6806 hotels (24.0%): {'n': 1631, 'median': 1112, 'p90': 4148, 'max': 40573, '<50m': '1.6%', '<150m': '7.6%', '<500m': '23.4%', '>1km': '54.1%'}
+  grade 4: 155 joined of 777 hotels (19.9%): {'n': 155, 'median': 3462, 'p90': 13043, 'max': 25146, '<50m': '3.2%', '<150m': '3.2%', '<500m': '12.9%', '>1km': '75.5%'}
+  grade 5: 1 joined of 144 hotels (0.7%): {'n': 1, 'median': 42155, 'p90': 42155, 'max': 42155, '<50m': '0.0%', '<150m': '0.0%', '<500m': '0.0%', '>1km': '100.0%'}
+  grade 6: 0 joined of 284 hotels (0.0%): {'n': 0}
+grades 3-6 (approximate): 1787 of 8011 hotels (22.3%) would get an Overture point; move: {'n': 1787, 'median': 1198, 'p90': 5079, 'max': 42155, '<50m': '1.7%', '<150m': '7.2%', '<500m': '22.5%', '>1km': '56.0%'}
+  of those, house numbers agree / disagree / unknown: {'agree': 1492, 'unknown': 170, 'disagree': 125}
+  by Overture confidence bucket: {'<0.5': 23, '0.5-0.77': 88, '0.77-0.9': 299, '>=0.9': 1377}
+  pass the proposed gate (house agree, move <= 5 km for grade 3, <= 20 km for 4-6): 1400; by grade {3: 1311, 4: 89}
+  of the gate, Overture confidence 0.5 or more: 1381; share of all approximate hotels: 17.5%
+grade 2 pairs over 5 km apart: 15; house numbers agree on 8
+  842386 m jalan-347068 東横ＩＮＮ高知 our 33.559433,133.537216 | Overture Foursquare conf 0.77 38.2632,140.8765 house agree
+  92392 m jalan-326480 ビジネス旅館わかみず our 35.993019,138.15477 | Overture Foursquare conf 0.77 36.7888,138.4518 house agree
+  16427 m jalan-353862 割烹・通年民宿やまや our 37.256584,138.36142 | Overture meta conf 0.84 37.1500,138.2330 house agree
+  12667 m jalan-305106 ｇｕｅｓｔ　ｒｏｏｍ　ガーデンあずみ野 our 36.372925,137.829712 | Overture meta conf 0.96 36.2833,137.9170 house unknown
+  10594 m jalan-356028 豊水館 our 42.485874,141.254395 | Overture meta conf 0.82 42.5500,141.3500 house agree
+  10350 m jalan-348856 いわきワシントンホテル our 37.055046,140.888779 | Overture meta conf 0.75 36.9743,140.9467 house unknown
+location control: grade-1 median 11 m vs random same-prefecture median 40609 m -> PASS

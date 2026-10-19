@@ -1,0 +1,13 @@
+snapshot b3d3b67da3da916a generated 2026-10-19T12:23:18.326Z: 25225 hotels (manifest says 25225)
+our grades: {1: 2155, 2: 15059, 3: 6806, 4: 777, 5: 144, 6: 284}
+our provider prefix: {'curated': 20, 'jalan': 23417, 'trip': 1788}
+our provider x grade: {('curated', 1): 20, ('jalan', 1): 1894, ('jalan', 2): 15059, ('jalan', 3): 5935, ('jalan', 4): 514, ('jalan', 5): 15, ('trip', 1): 241, ('trip', 3): 871, ('trip', 4): 263, ('trip', 5): 129, ('trip', 6): 284}
+our hotels with a Japanese address led by their prefecture: 23416 | without, by provider: {'curated': 20, 'jalan': 1, 'trip': 1788}
+our hotels with a name key (ja/en, no Hangul): 25214
+Overture places (country JP): 64616 | with a name key: 64616 | with locality: 63443 | with phone: 52939 | with website: 41059
+Overture by first source: {'meta': 58456, 'Microsoft': 912, 'Foursquare': 4873, 'AllThePlaces': 375}
+Overture by confidence bucket: {'0.5-0.77': 11311, '0.77-0.9': 16135, '<0.5': 2578, '>=0.9': 34592}
+snapshot phone-like strings of 10+ digits per file: {'cards': 0, 'core': 0, 'text': 0, 'geo': 0, 'status': 0} | field names with phone/tel: []
+control: the same pattern finds 52776 of 52939 Overture phone strings, and 2 of 2 phones planted in a copy of cards.json
+Overture distinct normalized phones: 46958; phones on 2+ places: 4767 covering 10748 places (largest group 90)
+phone check: our snapshot has 0 phone-like strings and 0 phone fields; control finds 52776/52939 in Overture -> PASS (rule a cannot run on our data)

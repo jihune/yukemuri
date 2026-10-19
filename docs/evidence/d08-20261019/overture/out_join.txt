@@ -1,0 +1,47 @@
+Overture prefecture: own (region or freeform) 9836, nearest-hotel only 54780; nearest-hotel agrees with own on 9487/9836 (96.5%)
+grade-1 hotels by distance to the nearest same-name Overture place (bin upper edge m: real / Overture points shuffled):
+  < 50: 694 / 0
+  < 100: 38 / 0
+  < 150: 12 / 0
+  < 300: 12 / 0
+  < 1000: 8 / 0
+  < 5000: 6 / 7
+  < 50000: 4 / 27
+  < inf: 9 / 749
+  < no same name: 1372 / 1372
+  rule b alone at 50 m: one match 674, several 20, one-to-one 671
+  rule b alone at 100 m: one match 710, several 22, one-to-one 705
+  rule b alone at 150 m: one match 722, several 22, one-to-one 717
+  rule b alone at 300 m: one match 734, several 22, one-to-one 729
+  rule b alone at 500 m: one match 737, several 25, one-to-one 732
+  rule b alone at 1000 m: one match 736, several 28, one-to-one 731
+cascade (threshold 150 m) over 25225 hotels:
+  rule a (phone): not run, our data has no phone (inputs.py)
+  rule b: hotels_with_candidates 744, one_match 722, several_matches 22, overture_hit_by_several 3, one_to_one 717, one_to_one_no_cross_rule_conflict 679
+  rule c: hotels_with_candidates 7233, one_match 7017, several_matches 216, overture_hit_by_several 0, one_to_one 7017, one_to_one_no_cross_rule_conflict 6976
+  same name somewhere but neither rule: 1305; no same name at all: 15943
+  joined one-to-one in total: 7655 of 25225 (30.3%)
+  joined by rule and our grade: {('b', 1): 679, ('c', 1): 24, ('c', 2): 5165, ('c', 3): 1631, ('c', 4): 155, ('c', 5): 1}
+  joined by our provider: {'curated': 13, 'jalan': 7586, 'trip': 56}
+  Overture places that are a candidate of 2+ of our hotels (any rule): 47; our provider mix: {'jalan+trip': 47} | same name on all of them: 47
+  of 238 hotels with several matches, 130 have all candidates within 150 m of each other (likely Overture duplicates)
+  control rule b, Overture points shuffled: one match 0 vs real 722 -> collapses
+  control rule c, Overture prefecture+municipality shuffled: one match 17 vs real 7604 -> collapses
+  control rule b, our names shuffled: one match 0 vs real 722 -> collapses
+  control rule c, our names shuffled: one match 28 vs real 7604 -> collapses
+  house numbers b: agree 546, disagree 30, unknown 103 -> agree rate 94.8%
+  house numbers b-control: agree 6, disagree 572, unknown 101 -> agree rate 1.0%
+  house numbers c: agree 6377, disagree 326, unknown 273 -> agree rate 95.1%
+  house numbers c-control: agree 102, disagree 6535, unknown 339 -> agree rate 1.5%
+by Overture confidence bucket: places, joined, join rate, house agree/disagree among joined
+  <0.5: 2578, 65, 2.5%, 55/6 (90.2%)
+  0.5-0.77: 11311, 259, 2.3%, 203/18 (91.9%)
+  0.77-0.9: 16135, 1183, 7.3%, 1049/63 (94.3%)
+  >=0.9: 34592, 6148, 17.8%, 5616/269 (95.4%)
+by Overture first source: places, joined, join rate
+  meta: 58456, 6733, 11.5%
+  Microsoft: 912, 194, 21.3%
+  Foursquare: 4873, 727, 14.9%
+  AllThePlaces: 375, 1, 0.3%
+joined by Overture basic category: {'hotel': 5085, 'lodging': 898, 'inn': 888, 'resort': 418, 'bed_and_breakfast': 234, 'private_lodging': 83, 'campground': 49}
+join controls: 4/4 collapse to 5% or less; house-number control under half the real rate: True -> PASS
