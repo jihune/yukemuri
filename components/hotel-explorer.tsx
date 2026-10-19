@@ -63,7 +63,10 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const [dismissSuggestions,setDismissSuggestions]=useState(0);
  function setFilters(value:HotelFilters|((previous:HotelFilters)=>HotelFilters)){setFilterState(value)}
 
- const [favorites,setFavorites]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
+ const [savedIds,setSavedIds]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
+ // D08 PR 6: an id saved, compared or shared before its record joined another stay's card
+ // (mergedInto) stands for that card.
+ const mergedInto=snap.snapshot?.manifest.mergedInto,favorites=useMemo(()=>[...new Set(savedIds.map(id=>mergedInto?.[id]??id))],[savedIds,mergedInto]);
  const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore,order}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady,!!favoritesError,firstPage);
  // The saved list cannot be shown without the favourites: the error banner and its retry say so.
  const favoritesBlocked=savedOnly&&!favoritesReady&&!!favoritesError;
@@ -107,6 +110,14 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   window.addEventListener('storage',changed);return()=>window.removeEventListener('storage',changed);
  },[]);
  useEffect(()=>{if(comparisonReady)try{localStorage.setItem(COMPARISON_STORAGE_KEY,JSON.stringify(comparisonIds))}catch{}},[comparisonIds,comparisonReady]);
+ // A compared or shared stay that joined another card opens as that card, also when another
+ // tab stores its id later (Codex P2 on PR #209); the address is replaced, not pushed, so the
+ // back button leaves as before.
+ useEffect(()=>{if(mergedInto&&comparisonIds.some(id=>mergedInto[id]))setComparisonIds([...new Set(comparisonIds.map(id=>mergedInto[id]??id))])},[mergedInto,comparisonIds]);
+ useEffect(()=>{
+  const base=detailId?mergedInto?.[detailId]:undefined;
+  if(base){const url=new URL(window.location.href);url.hash='stay/'+encodeURIComponent(base);window.history.replaceState(window.history.state,'',url);setDetailId(base)}
+ },[mergedInto,detailId]);
  function compare(id:string){
   if(!comparisonIds.includes(id)&&comparisonIds.length>=4)setToast('최대 4곳까지 비교할 수 있습니다. 기존 후보를 빼고 선택하세요.');
   setComparisonIds(previous=>toggleComparisonId(previous,id)??previous);
@@ -180,11 +191,12 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   return()=>controller.abort();
  },[detailId,detailAttempt]);
 
- async function loadFavorites(){setFavoritesError('');try{const data=await apiJson<{ids:string[]}>('/api/favorites');setFavorites(data.ids);setFavoritesReady(true)}catch(e){setFavoritesError(e instanceof Error?e.message:'즐겨찾기를 불러오지 못했습니다.')}}
+ async function loadFavorites(){setFavoritesError('');try{const data=await apiJson<{ids:string[]}>('/api/favorites');setSavedIds(data.ids);setFavoritesReady(true)}catch(e){setFavoritesError(e instanceof Error?e.message:'즐겨찾기를 불러오지 못했습니다.')}}
  async function saveFavorite(id:string,saved?:boolean){
   if(!favoritesReady||pending.includes(id))return;
-  const next=saved??!favorites.includes(id);setPending(p=>[...p,id]);
-  try{await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:id,saved:next})});setFavorites(f=>next?[...new Set([...f,id])]:f.filter(k=>k!==id));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
+  // Unsaving a card unsaves the ids that stand for it too.
+  const next=saved??!favorites.includes(id),ids=next?[id]:[id,...savedIds.filter(k=>k!==id&&mergedInto?.[k]===id)];setPending(p=>[...p,id]);
+  try{for(const hotelId of ids)await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId,saved:next})});setSavedIds(f=>next?[...new Set([...f,id])]:f.filter(k=>!ids.includes(k)));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
  }
  const shownFallback=detailFallback&&detailFallback.id===detailId?detailFallback:null,detailShown=detail??shownFallback;
  // The detail API does not carry the registration (D08): the stay's card does, in the snapshot or,

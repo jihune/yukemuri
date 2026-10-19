@@ -1,0 +1,4 @@
+snapshot 044d30dd92cc6495 generated 2026-10-19T18:20:08.644Z, 25278 places, mergedInto 0
+Jalan cards listed 47/47; with a photo of their Trip.com record 47; with a Trip.com rating 46; Trip.com records still listed 47
+controls: Jalan cards with a Trip.com photo outside the pairs ['jalan-327522']; shifted pairing 0
+PASS

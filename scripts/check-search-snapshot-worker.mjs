@@ -70,6 +70,19 @@ try{
  // 30 days (2026-09-13 to 2026-10-12) and one on each side.
  const daily=[['2026-09-12',1],['2026-09-13',2],['2026-10-11',3],['2026-10-12',4],['2026-10-13',5]],dayRow=seq=>({records:1000+seq,pages:{jalan:{done:10*seq,total:100},trip:{done:5*seq,total:50}}});
  for(const [date,seq] of daily)await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind('daily-progress:'+date,JSON.stringify({seq,...dayRow(seq)})).run();
+ // D08 PR 6: the seed holds no reviewed pair (D08 PR 5) with both records stored. Store the
+ // Trip.com record of one, under a Latin name its Jalan record lacks, and save the pair again
+ // through the maintenance API, as a pair is saved once both are stored.
+ {
+  const p=JSON.parse((await db.prepare('SELECT payload FROM hotel_source_groups WHERE hotel_id=jalan_hotel_id AND trip_hotel_id NOT IN (SELECT id FROM hotels) ORDER BY hotel_id LIMIT 1').first()).payload);
+  const template=await db.prepare("SELECT * FROM hotels WHERE id GLOB 'trip-*' AND trip_score IS NOT NULL ORDER BY id LIMIT 1").first(),jalan=JSON.parse((await db.prepare('SELECT payload FROM hotels WHERE id=?').bind(p.hotelId).first()).payload);
+  const h={...JSON.parse(template.payload),id:p.tripHotelId,names:{ko:p.matchedName,ja:p.matchedName,en:'Merged Check Ryokan'},aliases:[],prefecture:jalan.prefecture,regionId:jalan.regionId};
+  h.ratings=h.ratings.map(r=>({...r,sourceId:p.tripHotelId}));h.sources=h.sources.map((s,i)=>i?s:{...s,sourceId:p.tripHotelId});
+  const row={...template,id:p.tripHotelId,region:jalan.regionId,prefecture:jalan.prefecture,name:p.matchedName,payload:JSON.stringify(h)},cols=Object.keys(row);
+  await db.prepare(`INSERT INTO hotels (${cols.join(',')}) VALUES (${cols.map(()=>'?').join(',')})`).bind(...cols.map(c=>row[c])).run();
+  const saved=await mf.dispatchFetch('http://localhost/api/hotel-source-groups',{method:'PUT',headers:{'X-Yukemuri-Crawl-Key':KEY,'Content-Type':'application/json'},body:JSON.stringify({...p,checkedAt:new Date(Date.parse(p.checkedAt)+1000).toISOString()})});
+  assert.equal(saved.status,200,await saved.text());
+ }
  const tables=['hotels','hotel_names','hotel_lifecycle','hotel_source_groups','hotel_source_observations','hotel_name_localizations','hotel_description_translations','catalog_meta','crawl_jobs','visitor_favorites','hotel_result_sessions'];
  const fingerprint=async()=>{const out={};for(const t of tables)out[t]=JSON.stringify((await db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results);return out};
  const before=await fingerprint();
@@ -78,25 +91,39 @@ try{
  assert.deepEqual(await fingerprint(),before,'building the snapshot changed D1');
  const manifest=read(local,'manifest.json'),dir=join(local,'snapshot','v',manifest.id),file=name=>JSON.parse(readFileSync(join(dir,name+'.json'),'utf8'));
  const core=file('core'),cards=file('cards'),text=file('text'),status=file('status');
+ // A page loaded before mergedInto (D08 PR 6) reads these files with the same SNAPSHOT_FORMAT, and
+ // its openSnapshot (lib/static-search.ts) refuses a core field that is not a column of every hotel:
+ // mergedInto stays in the manifest, which such a page does not read beyond its known fields.
+ assert(Object.values(core).every(column=>Array.isArray(column)&&column.length===core.ids.length)&&cards.length===core.ids.length,'core holds hotel columns only');
  assert.equal(manifest.format,Number(readFileSync('lib/search-snapshot.ts','utf8').match(/^export const SNAPSHOT_FORMAT=(\d+);$/m)[1]),'manifest format is lib SNAPSHOT_FORMAT');assert.equal(manifest.generatedAt,'2026-10-12T00:00:00.000Z');
  for(const [name,path] of Object.entries(manifest.files))assert.equal(path,`/snapshot/v/${manifest.id}/${name}.json`);
 
+ // D08 PR 6: in a group whose own hotel is one of its provider records (the reviewed pairs the
+ // seed holds, D08 PR 5), the other provider record leaves every part of the snapshot when both
+ // rows are stored; its names search for the group's hotel, mergedInto sends its id there.
+ const merged=new Map((await db.prepare("SELECT p.id,g.hotel_id AS base FROM hotel_source_groups g JOIN hotels p ON p.id=CASE WHEN g.hotel_id=g.jalan_hotel_id THEN g.trip_hotel_id WHEN g.hotel_id=g.trip_hotel_id THEN g.jalan_hotel_id END WHERE EXISTS (SELECT 1 FROM hotels WHERE id=g.hotel_id)").all()).results.map(r=>[r.id,r.base]));
+ assert(merged.size>0,'the seed reaches the reviewed pairs: '+merged.size+' of '+(await db.prepare('SELECT COUNT(*) AS n FROM hotel_source_groups WHERE hotel_id=jalan_hotel_id OR hotel_id=trip_hotel_id').first()).n);assert.deepEqual(manifest.mergedInto,Object.fromEntries(merged));
+ assert(core.ids.every(id=>!merged.has(id))&&[...merged.values()].every(id=>core.ids.includes(id)),'merged records leave, their cards stay');
+ const peers=base=>[...merged].filter(([,b])=>b===base).map(([id])=>id);
  // Search columns: the hotels table, in id order, with the former map rule for
  // coordinates and the lifecycle state.
- const rows=(await db.prepare(`SELECT h.id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,bath_features,bath_known,search_text,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.longitude') END AS lng,l.state FROM hotels h LEFT JOIN hotel_lifecycle l ON l.hotel_id=h.id ORDER BY h.id`).all()).results;
+ const rows=(await db.prepare(`SELECT h.id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,bath_features,bath_known,search_text,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real') THEN json_extract(payload,'$.location.longitude') END AS lng,l.state FROM hotels h LEFT JOIN hotel_lifecycle l ON l.hotel_id=h.id ORDER BY h.id`).all()).results.filter(r=>!merged.has(r.id));
  assert.equal(manifest.hotels,rows.length);assert.equal(core.ids.length,rows.length);
  // Wikidata names (D07): which hotels get them is the rule's (scripts/check-wikidata-names.mjs);
  // here, that they take the name column, join the name search and match the Worker's hotels.
  const {withWikidataNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'wikidata-')),'lib/wikidata-names.ts')),added=new Map();
  const items=new Map(JSON.parse(readFileSync('data/wikidata-trip-names.json','utf8')).hotels.map(([trip,item])=>['trip-'+trip,item]));
- for(const r of (await db.prepare("SELECT id,json_extract(payload,'$.names') AS names FROM hotels").all()).results){
+ for(const r of (await db.prepare("SELECT id,json_extract(payload,'$.names') AS names FROM hotels").all()).results.filter(r=>!merged.has(r.id))){
   const names=JSON.parse(r.names),w=withWikidataNames({id:r.id,names,aliases:[],sources:[]}).names,item=items.get(r.id);
   const ko=w.ko!==names.ko?w.ko:null,en=w.en!==names.en?w.en:null;
   if(ko||en)added.set(r.id,{item,ko,en,names:[ko,en].filter(Boolean),shown:w,was:{...(ko?{ko:names.ko}:{}),...(en?{en:names.en}:{})}});
  }
  assert([...added.values()].some(a=>a.ko),'the seed reaches a Trip.com hotel that gets a Wikidata Korean name');
  assert.deepEqual([added.get('trip-703896')?.ko,added.get('trip-703896')?.en],[null,'Narita Tobu Hotel Airport'],'and one that gets an English name only');
- const {normalizeSearch,displayNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
+ const {normalizeSearch,displayNames,hotelNames}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'names-')),'lib/hotel-names.ts'));
+ // A merged record's names, Wikidata ones included, as its card searches them.
+ const payloads=new Map((await db.prepare('SELECT id,payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify([...merged.keys()])).all()).results.map(r=>[r.id,JSON.parse(r.payload)]));
+ const absorbed=base=>peers(base).flatMap(id=>hotelNames(withWikidataNames(payloads.get(id))));
  const columns={region:'region',prefecture:'prefecture',name:'name',kind:'kind',tripScore:'trip_score',tripReviews:'trip_reviews',jalanScore:'jalan_score',jalanReviews:'jalan_reviews',natural:'natural',features:'bath_features',known:'bath_known',lat:'lat',lng:'lng',state:'state'};
  assert.equal(core.name[core.ids.indexOf('trip-703896')],'Narita Tobu Hotel Airport','the name column is the English title');
  rows.forEach((row,i)=>{assert.equal(core.ids[i],row.id);for(const [k,c] of Object.entries(columns))assert.equal(core[k][i],k==='name'&&added.has(row.id)?displayNames(added.get(row.id).shown).title:row[c],row.id+' '+k)});
@@ -107,12 +134,12 @@ try{
  // it until P03 (lib/hotel-repository.ts catalogueSearchIndex): hotels not
  // closed, in id order, names from the stored payload then the aliases.
  const names=(await db.prepare('SELECT hotel_id,name_key FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
- rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text+(added.get(row.id)?.names??[]).map(normalizeSearch).join(''));assert.deepEqual(text.nameKeys[i],names.filter(n=>n.hotel_id===row.id).map(n=>n.name_key))});
+ rows.forEach((row,i)=>{assert.equal(text.searchText[i],row.search_text+[...added.get(row.id)?.names??[],...absorbed(row.id)].map(normalizeSearch).join(''));assert.deepEqual(text.nameKeys[i],[row.id,...peers(row.id)].flatMap(id=>names.filter(n=>n.hotel_id===id).map(n=>n.name_key)))});
  const places=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'places-')),'lib/japan-place-labels.ts'));
  const aliasRows=(await db.prepare('SELECT hotel_id,name FROM hotel_names ORDER BY hotel_id,name_key').all()).results;
- const index=(await db.prepare("SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id").all()).results.map(r=>{
+ const index=(await db.prepare("SELECT id,region,prefecture,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,bath_features,bath_known,json_extract(payload,'$.names') AS names,json_extract(payload,'$.location') AS location FROM hotels WHERE NOT EXISTS (SELECT 1 FROM hotel_lifecycle l WHERE l.hotel_id=hotels.id AND l.state IN ('closed','temporarily_closed')) ORDER BY id").all()).results.filter(r=>!merged.has(r.id)).map(r=>{
   const n=JSON.parse(r.names),place={prefecture:r.prefecture,regionId:r.region,location:JSON.parse(r.location),names:n};
-  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...aliasRows.filter(a=>a.hotel_id===r.id).map(a=>a.name),...(added.get(r.id)?.names??[])].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
+  return{id:r.id,names:[...new Set([n.ko,n.ja,n.en,...[r.id,...peers(r.id)].flatMap(id=>aliasRows.filter(a=>a.hotel_id===id).map(a=>a.name)),...(added.get(r.id)?.names??[]),...absorbed(r.id)].filter(Boolean))],location:places.formatHotelLocation(place),context:places.hotelPlaceSearchText(place),region:r.region,prefecture:r.prefecture,kind:r.kind,features:Number(r.bath_features??0),knownFeatures:Number(r.bath_known??0),tripScore:r.trip_score,tripReviews:r.trip_reviews,jalanScore:r.jalan_score,jalanReviews:r.jalan_reviews};
  });
  const open=core.ids.flatMap((id,i)=>text.names[i]===null?[]:[i]);
  assert.deepEqual(open.map(i=>core.ids[i]),index.map(h=>h.id),'index rows: every hotel not closed, in id order');
@@ -149,6 +176,20 @@ try{
  {const [id,a]=[...added].find(([,a])=>a.ko);assert.equal((await api('/api/hotels/'+id)).names.ko,a.ko,'the detail API shows the Wikidata Korean name')}
  for(const h of workerHotels.values())if(!added.has(h.id))assert(!h.sources.some(s=>s.sourceId.startsWith('wikidata-name:')),h.id+' has no Wikidata name');
  assert(cards.some(c=>c.lifecycle?.evidence?.openedAt)&&cards.some(c=>c.lifecycle?.reviewNeeded)&&cards.some(c=>c.photoCandidates),'cards carry opening dates, review flags and linked photos');
+ // A merged pair's card (the Worker's composed hotel, above) shows both providers, and a name only
+ // the merged record has finds that card through the page's own search.
+ {
+  const {openSnapshot,addSnapshotText,searchSnapshot}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'search-')),'lib/static-search.ts'));
+  const {DEFAULT_FILTERS}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'types-')),'lib/hotel-types.ts'));
+  const snapshot=openSnapshot(manifest,core,cards);addSnapshotText(snapshot,text);
+  assert([...merged.values()].some(base=>cards[core.ids.indexOf(base)].ratings.map(r=>r.provider).sort().join()==='jalan,trip'),'a merged card shows the ratings of both providers');
+  const own=new Map(rows.map(r=>[r.id,r.search_text])),searched=[];
+  for(const [id,base] of merged)for(const name of hotelNames(withWikidataNames(payloads.get(id))).filter(n=>!own.get(base).includes(normalizeSearch(n)))){
+   const r=searchSnapshot(snapshot,{...DEFAULT_FILTERS,query:name},'recommended');
+   assert(r.order.map(i=>core.ids[i]).includes(base),`${name} (${id}) finds ${base}`);searched.push(name);
+  }
+  assert(searched.length>0,'the seed reaches a merged record with a name of its own');
+ }
 
  // Map positions (D06): geo.json in core order; payload coordinates are grade 1
  // (4 when the payload marks them approximate) with the same values as core.
@@ -179,7 +220,9 @@ try{
 
  // Coverage as the list showed it; collection status as its API returned it.
  // The collector's end-of-run read counts the same aggregate.
- assert.deepEqual(manifest.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
+ // The Worker counts stored records; the snapshot counts cards, so the merged records less.
+ const counted=(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage;
+ assert.deepEqual(manifest.coverage,{...counted,records:counted.records-merged.size,crawledRecords:counted.crawledRecords-merged.size});
  // That read keeps the day's trend row (UTC day) from the counts it took; a later run the same
  // day replaces it.
  {
@@ -192,7 +235,12 @@ try{
  }
  const live=await api('/api/collection-status',{headers:{'X-Yukemuri-Crawl-Key':KEY}});
  const {fill,...shared}=status;
- assert.deepEqual({...shared,measuredAt:undefined},{...live,measuredAt:undefined});
+ {
+  const {BATH_FEATURE_MASK}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'mask-')),'lib/hotel-bath-facts.ts'));
+  const less=await db.prepare(`SELECT COUNT(*) AS records,COALESCE(SUM(CASE WHEN json_extract(payload,'$.sources[0].label') LIKE '%상세%' THEN 1 ELSE 0 END),0) AS detailRecords,COALESCE(SUM(CASE WHEN (bath_known & ${BATH_FEATURE_MASK})>0 THEN 1 ELSE 0 END),0) AS bathKnownRecords,COALESCE(SUM(CASE WHEN natural=1 THEN 1 ELSE 0 END),0) AS naturalOnsenRecords,COALESCE(SUM(CASE WHEN room_onsen=1 THEN 1 ELSE 0 END),0) AS roomOnsenRecords FROM hotels WHERE id IN (SELECT value FROM json_each(?))`).bind(JSON.stringify([...merged.keys()])).first();
+  assert.equal(less.records,merged.size);
+  assert.deepEqual({...shared,measuredAt:undefined},{...live,quality:Object.fromEntries(Object.entries(live.quality).map(([k,v])=>[k,v-less[k]])),measuredAt:undefined});
+ }
  assert.equal(live.fill,undefined,'the API has no data status fill');
  // The data status fill (U06), counted here apart from lib/search-snapshot-build.ts: the stored
  // payload from SQL, what the card and detail show from the Worker's own hotels (above), the
@@ -203,7 +251,7 @@ try{
   const places=(await db.prepare(`SELECT h.id,h.bath_known,json_extract(h.payload,'$.sources[0].label') AS label,json_extract(h.payload,'$.sources[0].bathDataVersion') AS version,
    json_extract(h.payload,'$.description') AS description,EXISTS(SELECT 1 FROM json_each(h.payload,'$.sources') s WHERE json_extract(s.value,'$.nameLocaleUrl') IS NOT NULL) AS locale,
    EXISTS(SELECT 1 FROM hotel_name_localizations n WHERE n.hotel_id=h.id AND n.payload IS NULL) AS looked,
-   (SELECT t.source_text=json_extract(h.payload,'$.description') FROM hotel_description_translations t WHERE t.hotel_id=h.id) AS translation FROM hotels h ORDER BY h.id`).all()).results;
+   (SELECT t.source_text=json_extract(h.payload,'$.description') FROM hotel_description_translations t WHERE t.hotel_id=h.id) AS translation FROM hotels h ORDER BY h.id`).all()).results.filter(p=>!merged.has(p.id));
   const ROWS=['detail','bath','rooms','years','rating','photo','nameKo','descKo'];
   const scope=()=>({records:0,rows:Object.fromEntries(ROWS.map(k=>[k,{filled:0,none:0,empty:0}])),geo:[0,0,0,0,0,0,0,0],staleTranslations:0});
   const want={scopes:{all:scope(),jalan:scope(),trip:scope()}};
