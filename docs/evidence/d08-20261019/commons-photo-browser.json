@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-10-19T13:42:32.681Z",
+ "checkedAt": "2026-10-19T14:53:17.881Z",
  "base": "http://127.0.0.1:8787",
  "browser": "Chromium 141.0.7390.37",
  "results": [
@@ -814,16 +814,23 @@
   },
   {
    "width": 1280,
-   "name": "키보드로 표기의 두 링크(파일 쪽, 라이선스)에 초점이 감",
+   "name": "키보드(Shift+Tab)로 ‘이전 사진’ 다음에 표기의 라이선스 링크, 파일 쪽 링크 순서로 초점이 감",
    "pass": true,
    "detail": {
     "reached": [
      {
-      "text": "Wikimedia Commons",
-      "inCredit": true
+      "text": "",
+      "label": "이전 사진",
+      "inCredit": false
      },
      {
       "text": "CC0",
+      "label": null,
+      "inCredit": true
+     },
+     {
+      "text": "Wikimedia Commons",
+      "label": null,
       "inCredit": true
      }
     ]

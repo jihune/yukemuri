@@ -2,7 +2,7 @@
 // - the detail's photos: the collected photo first with its source, then the Commons photo
 //   with its credit beside it (Wikimedia Commons file page, author, licence linked to its
 //   deed), stepping wraps back to the first; the credit stays inside the photo and clear of
-//   the previous/next buttons; keyboard reaches the credit's links;
+//   the previous/next buttons; Shift+Tab from the buttons reaches the credit's links;
 // - when the collected photo fails to load, the Commons photo shows with its credit;
 // - ‘정보 출처’ lists the Commons photo with its author and licence, linked to the file page;
 // - a public domain photo shows its author and ‘퍼블릭 도메인’ with no deed link;
@@ -75,18 +75,20 @@ for(const w of [360,390,1280]){
  check(`사진 넘기기(${mobile?'터치':'키보드 Enter'}): 1/2 Trip.com → 2/2 Commons 사진과 표기(파일 쪽·작가·라이선스) → 처음으로`,s.counter==='1/2'&&s.credit?.text==='Trip.com'&&second.counter==='2/2'&&second.src===url&&second.credit?.text===`Wikimedia Commons · ${author} · ${licence}`&&JSON.stringify(second.credit.links.map(({text,href})=>({text,href})))===JSON.stringify(want)&&second.credit.links[1].rel.includes('license')&&third.counter==='1/2'&&third.credit?.text==='Trip.com',{first:s,second,third});
  check('Commons 표기가 사진 안에 있고 이전·다음 단추와 겹치지 않으며, 표기의 링크는 44px 이상',inside(second.credit?.box,second.image)&&apart(second.credit?.box,second.nav)&&second.credit.links.every(l=>l.h>=44),{credit:second.credit?.box,nav:second.nav,image:second.image});
  if(!mobile){
-  // Keyboard: back to the Commons photo, then Tab from the image area reaches the credit links.
+  // Keyboard: back to the Commons photo with ‘다음 사진’, then Shift+Tab from that button walks back
+  // through the page's tab order: ‘이전 사진’, the licence link, the file page link. No link is
+  // focused directly, so a link left out of the tab order fails here.
   await next.focus();await tab.keyboard.press('Enter');await tab.waitForTimeout(300);
-  const reached=[];await detail.locator('.detail-image .photo-source-credit a').first().focus();
-  for(let i=0;i<2;i++){reached.push(await tab.evaluate(()=>({text:document.activeElement?.textContent,inCredit:!!document.activeElement?.closest('.photo-source-credit')})));await tab.keyboard.press('Tab')}
-  check('키보드로 표기의 두 링크(파일 쪽, 라이선스)에 초점이 감',reached.every(r=>r.inCredit)&&reached[0].text==='Wikimedia Commons'&&reached[1].text===licence,{reached});
+  const reached=[];
+  for(let i=0;i<3;i++){await tab.keyboard.press('Shift+Tab');reached.push(await tab.evaluate(()=>({text:document.activeElement?.textContent??'',label:document.activeElement?.getAttribute('aria-label'),inCredit:!!document.activeElement?.closest('.photo-source-credit')})))}
+  check('키보드(Shift+Tab)로 ‘이전 사진’ 다음에 표기의 라이선스 링크, 파일 쪽 링크 순서로 초점이 감',reached[0].label==='이전 사진'&&reached[1].inCredit&&reached[1].text===licence&&reached[2].inCredit&&reached[2].text==='Wikimedia Commons',{reached});
  }
  const listed=s.sources.find(x=>x.href===page);
  check('정보 출처에 ‘Wikimedia Commons 사진(작가, 라이선스)’이 파일 쪽 링크로 있음',listed?.text===`Wikimedia Commons 사진(${author}, ${licence}) ↗`,{sources:s.sources});
  check('상세 가로 넘침 없음',[s,second].every(x=>x.overflow.every(v=>v<=0)),{overflow:[s.overflow,second.overflow]});
 
  // 3. The longest author in the extract wraps the credit inside the photo, clear of the buttons.
- const LONG=JSON.parse(readFileSync(new URL('../data/commons-trip-photos.json',import.meta.url),'utf8')).hotels.map(r=>r[4]).sort((a,b)=>b.length-a.length)[0];
+ const LONG=JSON.parse(readFileSync(new URL('../data/commons-trip-photos.json',import.meta.url),'utf8')).hotels.map(r=>r[4]).filter(Boolean).sort((a,b)=>b.length-a.length)[0];
  await tab.route(/\/api\/hotels\/trip-688230$/,async route=>{const response=await route.fetch();const h=await response.json();h.commonsPhoto.author=LONG;await route.fulfill({response,json:h})});
  await open();if(mobile)await next.tap();else{await next.focus();await tab.keyboard.press('Enter')}
  await tab.waitForTimeout(400);s=await read();await shot('long-author');await tab.unroute(/\/api\/hotels\/trip-688230$/);
