@@ -1,0 +1,434 @@
+{
+ "checkedAt": "2026-10-19T17:15:56.282Z",
+ "base": "http://127.0.0.1:8787",
+ "control": true,
+ "stay": {
+  "id": "akan-tsuruga",
+  "jta": "R1932",
+  "title": "아칸 유쿠노사토 쓰루가"
+ },
+ "plain": "bourou-hakodate",
+ "first": {
+  "id": "hinanoza",
+  "jta": "R2692"
+ },
+ "results": [
+  {
+   "width": 360,
+   "name": "카드: ‘관광청 등록 료칸’ 표시가 카드 안에 있고 옆으로 넘치지 않음",
+   "pass": false,
+   "detail": {
+    "id": "akan-tsuruga",
+    "jta": "R1932",
+    "box": {
+     "x": 16,
+     "y": 373.5,
+     "width": 328,
+     "height": 369.984375
+    },
+    "tagBox": null,
+    "sideways": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "카드: 등록이 이어지지 않은 숙소에는 표시 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 종류 옆 ‘관광청 등록 료칸’ 표시와 같은 이름의 절",
+   "pass": false,
+   "detail": {
+    "eyebrow": null,
+    "heading": null
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 뜻, 등록번호 R1932, 출처(가공 작성)와 목록·이용규약 링크",
+   "pass": false,
+   "detail": {
+    "links": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 절이 시트 너비 안에 있음",
+   "pass": false,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "right": 360
+    },
+    "section": null,
+    "width": 360
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 등록이 이어지지 않은 숙소에는 표시도 절도 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 360,
+   "name": "실패: 상세를 못 받아도 카드 정보로 표시가 보이고 다시 시도 단추가 있음",
+   "pass": false,
+   "detail": {
+    "fallbackTag": null
+   }
+  },
+  {
+   "width": 360,
+   "name": "재시도: 다시 받으면 등록 절이 나옴",
+   "pass": false,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "불러오는 중: 안내가 뜨고 받은 뒤 등록 절이 나옴",
+   "pass": false,
+   "detail": {
+    "loading": true
+   }
+  },
+  {
+   "width": 360,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
+   }
+  },
+  {
+   "width": 360,
+   "name": "바닥글: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "자료 현황 출처 표기: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "카드: ‘관광청 등록 료칸’ 표시가 카드 안에 있고 옆으로 넘치지 않음",
+   "pass": false,
+   "detail": {
+    "id": "akan-tsuruga",
+    "jta": "R1932",
+    "box": {
+     "x": 16,
+     "y": 373.5,
+     "width": 358,
+     "height": 306.09375
+    },
+    "tagBox": null,
+    "sideways": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "카드: 등록이 이어지지 않은 숙소에는 표시 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 종류 옆 ‘관광청 등록 료칸’ 표시와 같은 이름의 절",
+   "pass": false,
+   "detail": {
+    "eyebrow": null,
+    "heading": null
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 뜻, 등록번호 R1932, 출처(가공 작성)와 목록·이용규약 링크",
+   "pass": false,
+   "detail": {
+    "links": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 절이 시트 너비 안에 있음",
+   "pass": false,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "right": 390
+    },
+    "section": null,
+    "width": 390
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 등록이 이어지지 않은 숙소에는 표시도 절도 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 390,
+   "name": "실패: 상세를 못 받아도 카드 정보로 표시가 보이고 다시 시도 단추가 있음",
+   "pass": false,
+   "detail": {
+    "fallbackTag": null
+   }
+  },
+  {
+   "width": 390,
+   "name": "재시도: 다시 받으면 등록 절이 나옴",
+   "pass": false,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "불러오는 중: 안내가 뜨고 받은 뒤 등록 절이 나옴",
+   "pass": false,
+   "detail": {
+    "loading": true
+   }
+  },
+  {
+   "width": 390,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
+   }
+  },
+  {
+   "width": 390,
+   "name": "바닥글: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "자료 현황 출처 표기: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "카드: ‘관광청 등록 료칸’ 표시가 카드 안에 있고 옆으로 넘치지 않음",
+   "pass": false,
+   "detail": {
+    "id": "akan-tsuruga",
+    "jta": "R1932",
+    "box": {
+     "x": 304,
+     "y": 251,
+     "width": 460,
+     "height": 293
+    },
+    "tagBox": null,
+    "sideways": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "카드: 등록이 이어지지 않은 숙소에는 표시 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 종류 옆 ‘관광청 등록 료칸’ 표시와 같은 이름의 절",
+   "pass": false,
+   "detail": {
+    "eyebrow": null,
+    "heading": null
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 뜻, 등록번호 R1932, 출처(가공 작성)와 목록·이용규약 링크",
+   "pass": false,
+   "detail": {
+    "links": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 절이 시트 너비 안에 있음",
+   "pass": false,
+   "detail": {
+    "sheet": {
+     "left": 560,
+     "right": 1280
+    },
+    "section": null,
+    "width": 1280
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드: Tab으로 출처 링크에 닿음",
+   "pass": false,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "상세: 등록이 이어지지 않은 숙소에는 표시도 절도 없음",
+   "pass": true,
+   "detail": {
+    "id": "bourou-hakodate"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "실패: 상세를 못 받아도 카드 정보로 표시가 보이고 다시 시도 단추가 있음",
+   "pass": false,
+   "detail": {
+    "fallbackTag": null
+   }
+  },
+  {
+   "width": 1280,
+   "name": "재시도: 다시 받으면 등록 절이 나옴",
+   "pass": false,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "불러오는 중: 안내가 뜨고 받은 뒤 등록 절이 나옴",
+   "pass": false,
+   "detail": {
+    "loading": true
+   }
+  },
+  {
+   "width": 1280,
+   "name": "스냅숏 파일 실패: 첫 페이지 카드(hinanoza)의 상세에 등록 표시와 절이 있음",
+   "pass": true,
+   "detail": {
+    "id": "hinanoza",
+    "jta": "R2692"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "바닥글: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "자료 현황 출처 표기: 관광청 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0"
+     ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

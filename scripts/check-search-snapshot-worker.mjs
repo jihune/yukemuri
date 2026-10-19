@@ -127,11 +127,18 @@ try{
   return JSON.parse(JSON.stringify({id:h.id,names:h.names,kind:h.kind,location:{label:h.location.label,latitude:h.location.latitude,longitude:h.location.longitude},image:{url:h.image.url,alt:h.image.alt,sourceId:h.image.sourceId,alternatives:h.image.alternatives},photoCandidates:h.photoCandidates,features,ratings:h.ratings.filter(r=>!r.isMock).map(r=>({provider:r.provider,score:r.score,scale:r.scale,reviewCount:r.reviewCount})),lifecycle:life&&{state:life.state,reviewNeeded:life.reviewNeeded,evidence:life.evidence?.openedAt?{openedAt:life.evidence.openedAt}:undefined}}));
  };
  assert.equal(cards.length,rows.length);const workerHotels=new Map();
- for(let i=0;i<core.ids.length;i+=4){
-  const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));
+ for(let i=0;i<core.ids.length;i+=4){const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));for(const h of hotels)workerHotels.set(h.id,h)}
+ // JTA registrations (D08): which stays get one is the rule's (scripts/check-jta-registration.mjs);
+ // here, that the cards carry the rule's links over the stays as the builder reads them (the
+ // Worker's hotels before the Wikidata names, with the prefecture column), and nothing else.
+ const {jtaCandidates,resolveJtaLinks}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'jta-')),'lib/jta-registration.ts'));
+ const jta=resolveJtaLinks(new Map(core.ids.flatMap((id,i)=>{const h=workerHotels.get(id),found=jtaCandidates({...h,names:{...h.names,...added.get(id)?.was},prefecture:core.prefecture[i]});return found.length?[[id,found]]:[]})));
+ assert(jta.size>0,'the seed reaches a registered stay');
+ core.ids.forEach((id,i)=>{
   // A card the rule named also notes the item and the names the added ones replaced.
-  hotels.forEach((h,n)=>{const a=added.get(h.id);assert.deepEqual(cards[i+n],a?{...summary(h),wikidataNames:{item:a.item,was:a.was}}:summary(h),h.id);workerHotels.set(h.id,h)});
- }
+  const h=workerHotels.get(id),a=added.get(id),link=jta.get(id);
+  assert.deepEqual(cards[i],{...summary(h),...(link?{jta:link.number}:{}),...(a?{wikidataNames:{item:a.item,was:a.was}}:{})},id);
+ });
  // The Worker's hotels carry the same Wikidata names, with the item among the sources; the
  // detail API too.
  for(const [id,a] of added){
