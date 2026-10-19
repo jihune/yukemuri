@@ -147,6 +147,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
     - `check_collection.py`·`check-collection-budget.mjs`·`check-collect-workflow.mjs`가 값과 단계 구성을 단언한다.
   - 수집기는 Sites release를 받지 않고 이 커밋의 `scripts/crawler/update-site.py`를 실행한다. 주소 허용은 `source_safety.site_api()`가 한다(workers.dev에는 `X-Yukemuri-Crawl-Key`만).
   - gentle 수집이 성공하고 1쪽 이상을 맡았으면 `uses: ./.github/workflows/deploy.yml`(`after_collection: true`, `secrets: inherit`)로 같은 커밋의 스냅숏을 다시 만들어 배포한다. 배포가 실패하면 그 수집 실행도 실패로 끝난다.
+  - 이어 부르기(C06, 2026-10-19 사용자 결정): 그 수집·스냅숏 배포가 성공한 main의 gentle 실행은 마지막 `chain` job에서 `collect-chain.yml`을 부른다(이 job만 `actions: write`, 실패해도 수집 실행은 성공). `collect-chain.yml`은 `yukemuri-catalog-updates` 잠금 밖에서 앞 실행이 만들어진 때부터 한 시간을 기다린 뒤 `scripts/collection-chain.mjs`의 규칙을 보고 다음 gentle 실행을 `GITHUB_TOKEN`의 `workflow_dispatch`로 부른다. 더 새 gentle 실행이 있거나, 그날 gentle 실행이 24번이거나, 사용량을 못 읽거나, 다음 몫이 16쪽 미만이면 부르지 않는다. 이어 부른 실행도 이름이 같아 감시와 매일 점검이 그대로 센다. 설계와 근거는 `C06-20261019.md`다.
 - 동시 실행 잠금(P03 규칙): `collect.yml`은 최상위에서 `yukemuri-catalog-updates`를 실행 전체 동안 잡는다(`cancel-in-progress: false`). 수집끼리, 그리고 push·수동 배포와 겹치지 않는다. job 단위 잠금은 두지 않는다. 계정 잠금(`cloudflare-account`)은 불린 배포 job 안에서만 잡으므로 잠금 순서가 push 배포와 같다. 불린 배포의 최상위 그룹은 `yukemuri-snapshot-after-collection`이다.
 - 대기 실행 보존(P03 다음 작업 5번, PR #48 Codex 검토 P2): GitHub 동시 실행 그룹은 기본(`queue: single`)으로 대기 실행을 하나만 둔다. 새 실행이 들어오면 앞의 대기 실행은 시작 전에 취소된다. 그러면 push 배포가 대기 수집을 취소하거나, 수집 부르기가 대기 배포를 취소할 수 있다. 뒤의 경우 새 수집이 아직 배포되지 않은 커밋의 수집기로 이전 Worker를 부를 수 있다. 그래서 세 그룹(`yukemuri-catalog-updates`, `yukemuri-snapshot-after-collection`, `cloudflare-account`)에 들어가는 모든 실행에 `queue: max`를 둔다(`collect.yml`, `deploy.yml` 최상위·job, `d1-setup.yml`). GitHub 문서(`github/docs` `data/reusables/actions/actions-group-concurrency.md`, 2026-10-12 확인, github.com·GHEC 적용)와 SchemaStore `github-workflow.json`(`queue`: `single`|`max`)에 따르면 대기 실행을 100개까지 두고, 기다리기 시작한 시각 순(FIFO)으로 돈다. 순서는 보장되지 않는다고 적혀 있다. `cancel-in-progress: true`와 함께 쓸 수 없다.
   - 결과: 대기 수집도 대기 배포도 취소되지 않는다. 수집 부르기 전에 대기하던 push 배포가 먼저 돈다. 대가로 연속 push가 더는 하나로 합쳐지지 않는다. push마다 배포(스냅숏 생성 1회 약 10.4만 행 읽기)가 차례로 돈다. 병합이 몰리는 날의 D1 읽기를 5단계 실측에서 본다.
@@ -222,10 +223,11 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 
 주의(6단계 전환 뒤):
 
-1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(C05 뒤 약 1시간, 그 전 최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 실행기 `YUKEMURI_ENABLED`를 `false`로 바꿔 수집 부르기를 멈춘 뒤 revert를 병합하고 다시 켠다.
+1. 수집(gentle)이 끝날 때마다 `collect.yml`이 `deploy.yml`을 불러 main HEAD를 다시 배포한다. Worker 되돌림만으로는 다음 수집(C05 뒤 약 1시간, 그 전 최대 3시간 뒤) 때 덮인다. main revert를 함께 해야 한다. 급하면 수집을 멈춘 뒤(아래 5번) revert를 병합하고 다시 켠다.
 2. `autoDeploy`를 `false`로 바꾸면 배포만이 아니라 수집도 멈춘다. `collect.yml`(`run-collection.py`)이 `autoDeploy`가 꺼져 있으면 요청 전에 실패하기 때문이다. 앱 감시 workflow가 12시간 뒤 실패로 알린다.
-3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 실행기 `YUKEMURI_ENABLED`를 `false`로 두고, 복구 뒤 스냅숏을 다시 만든 다음 켠다.
+3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 수집을 멈추고(아래 5번), 복구 뒤 스냅숏을 다시 만든 다음 켠다.
 4. 크롤 키(`YUKEMURI_CRAWL_ACCESS_KEY`)를 바꾼 뒤 그 전 버전으로 `worker-rollback`하면, 되돌린 Worker는 바꾸기 전 키를 쓴다. 요약에는 따로 표시되지 않는다. 롤백 뒤 수집 부르기가 403으로 실패하면 이 경우다. main revert를 병합해 새 배포가 지금 키를 다시 올리게 하거나, 키를 바꾼 적이 있으면 롤백 대상 버전을 키 변경 뒤의 것으로 고른다.
+5. 수집 멈추기(C06 이어 부르기 뒤): 실행기 `YUKEMURI_ENABLED`를 `false`로 바꾸면 실행기 예약만 멈춘다. 이미 돌고 있는 고리는 그날 몫이 16쪽 아래로 떨어지거나 `collection-chain.mjs`의 다른 규칙에 걸릴 때까지 한 시간마다 이어지고, 늦어도 다음 UTC 날 첫 실행 전에는 멈춘다. 바로 멈추려면 Actions에서 `Yukemuri collection chain`(`collect-chain.yml`) workflow를 끄고(Disable workflow), 기다리는 그 run이 있으면 취소한다. 꺼진 workflow는 부를 수 없어 다음 `chain` job은 실패하지만 수집 실행은 성공으로 남는다. 다시 켤 때는 그 workflow를 켜고 `YUKEMURI_ENABLED`를 `true`로 둔다. `autoDeploy`를 `false`로 두는 2번은 수집과 고리를 함께 멈춘다.
 
 ## 미확인
 
