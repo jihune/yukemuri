@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-19T13:44:20.245Z",
+ "measuredAt": "2026-10-19T14:15:28.107Z",
  "oldRef": "origin/main",
  "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
  "target": {
@@ -99,7 +99,7 @@
   "pages": 120,
   "claims": 216,
   "rounds": null,
-  "claimRead": 276069,
+  "claimRead": 276307,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -110,7 +110,7 @@
    },
    "POST /api/crawl": {
     "requests": 216,
-    "read": 276069,
+    "read": 276307,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -134,35 +134,35 @@
     "claims": 24,
     "pages": 21,
     "emptyClaims": 3,
-    "read": 1035,
+    "read": 1077,
     "emptyRead": 108
    },
    "jalan/baths": {
     "claims": 24,
     "pages": 21,
     "emptyClaims": 3,
-    "read": 31212,
+    "read": 31254,
     "emptyRead": 3924
    },
    "trip/detail": {
     "claims": 24,
     "pages": 24,
     "emptyClaims": 0,
-    "read": 49378,
+    "read": 49425,
     "emptyRead": 0
    },
    "jalan/refresh": {
     "claims": 24,
     "pages": 3,
     "emptyClaims": 21,
-    "read": 48141,
+    "read": 48147,
     "emptyRead": 45912
    },
    "trip/refresh": {
     "claims": 24,
     "pages": 5,
     "emptyClaims": 19,
-    "read": 84348,
+    "read": 84358,
     "emptyRead": 76190
    },
    "jalan/list": {
@@ -183,14 +183,14 @@
     "claims": 24,
     "pages": 24,
     "emptyClaims": 0,
-    "read": 55236,
+    "read": 55284,
     "emptyRead": 0
    },
    "jalan/localnames": {
     "claims": 24,
     "pages": 22,
     "emptyClaims": 2,
-    "read": 6428,
+    "read": 6471,
     "emptyRead": 522
    }
   },
@@ -200,7 +200,7 @@
   "pages": 120,
   "claims": 138,
   "rounds": 24,
-  "claimRead": 161725,
+  "claimRead": 161963,
   "claimWritten": 240,
   "emptyClaimWritten": 0,
   "requests": {
@@ -211,7 +211,7 @@
    },
    "POST /api/crawl": {
     "requests": 138,
-    "read": 161725,
+    "read": 161963,
     "written": 240
    },
    "PUT /api/crawl": {
@@ -235,35 +235,35 @@
     "claims": 24,
     "pages": 21,
     "emptyClaims": 3,
-    "read": 1035,
+    "read": 1077,
     "emptyRead": 108
    },
    "jalan/baths": {
     "claims": 24,
     "pages": 21,
     "emptyClaims": 3,
-    "read": 31212,
+    "read": 31254,
     "emptyRead": 3924
    },
    "trip/detail": {
     "claims": 24,
     "pages": 24,
     "emptyClaims": 0,
-    "read": 49378,
+    "read": 49425,
     "emptyRead": 0
    },
    "jalan/refresh": {
     "claims": 7,
     "pages": 3,
     "emptyClaims": 4,
-    "read": 6253,
+    "read": 6259,
     "emptyRead": 4024
    },
    "trip/refresh": {
     "claims": 6,
     "pages": 5,
     "emptyClaims": 1,
-    "read": 12150,
+    "read": 12160,
     "emptyRead": 3992
    },
    "jalan/list": {
@@ -284,14 +284,14 @@
     "claims": 24,
     "pages": 24,
     "emptyClaims": 0,
-    "read": 55236,
+    "read": 55284,
     "emptyRead": 0
    },
    "jalan/localnames": {
     "claims": 24,
     "pages": 22,
     "emptyClaims": 2,
-    "read": 6428,
+    "read": 6471,
     "emptyRead": 522
    }
   },
@@ -325,12 +325,12 @@
     5
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "jalan/baths priority empty": [
@@ -343,12 +343,12 @@
     1303
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "trip/detail national page": [
@@ -359,6 +359,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     5
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ]
   ],
   "jalan/refresh priority empty": [
@@ -371,12 +375,12 @@
     529
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "trip/refresh priority page": [
@@ -387,6 +391,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     2293
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/list priority empty": [
@@ -399,12 +407,12 @@
     2
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "trip/list priority empty": [
@@ -417,12 +425,12 @@
     2
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    1
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    2
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
    ]
   ],
   "trip/names priority page": [
@@ -433,6 +441,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     2250
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/localnames priority empty": [
@@ -445,12 +457,12 @@
     256
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "jalan/detail priority empty": [
@@ -463,12 +475,12 @@
     44
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "trip/detail priority page": [
@@ -479,6 +491,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     2242
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/refresh national empty": [
@@ -491,12 +507,12 @@
     505
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    2
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    1
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    2
    ]
   ],
   "trip/refresh national page": [
@@ -507,6 +523,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     57
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/localnames national page": [
@@ -517,6 +537,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     256
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    1
    ]
   ],
   "jalan/detail priority page": [
@@ -527,6 +551,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     45
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/baths priority page": [
@@ -537,6 +565,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     1304
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/refresh priority page": [
@@ -547,6 +579,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     530
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/localnames priority page": [
@@ -557,6 +593,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     258
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "jalan/detail national page": [
@@ -567,6 +607,10 @@
    [
     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
     6
+   ],
+   [
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ]
   ],
   "trip/refresh priority empty": [
@@ -579,12 +623,12 @@
     3988
    ],
    [
-    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
-    1
+    "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+    2
    ],
    [
-    "SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CA",
-    2
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
    ]
   ]
  },

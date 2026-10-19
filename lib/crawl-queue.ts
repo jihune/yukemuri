@@ -55,7 +55,7 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):claim.phase==='localnames'?'names':['names','baths'].includes(claim.phase)?'detail':claim.phase;
  const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
- if(repeated.results.length)return repeated.results;
+ if(repeated.results.length)return{jobs:repeated.results,exhausted:false};
  // D07: a Jalan locale list page is read again LOCALE_REFRESH_DAYS after it was done, on another default stay date,
  // and one that failed three times once its wait is over (as refresh does for list and detail pages).
  const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now}) AND (j.status<>'failed' OR j.next_at>0)`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
@@ -86,23 +86,19 @@ export async function claimCrawlJob(claim:CrawlClaim){
   const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL))`];
   branches.push({sql:`SELECT * FROM (SELECT ${columns},0 AS missing FROM ${jobs} WHERE j.provider=? AND j.kind='detail' AND j.status IN (${statuses.map(()=>'?').join(',')}) AND ${eligible} ${named} AND (${missingLinkedDetail})=0 ORDER BY j.priority,${fetched},j.attempts,j.url LIMIT 1)`,args:[claim.provider,...statuses,...eligibleArgs]});
  }
- const result=await db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
+ // C07: in the same transaction and at the same clock, whether the provider waits
+ // (pacing, a cooldown) or holds another claim: the two guards of the UPDATE. An
+ // empty claim with neither found no due page in its phase (exhausted).
+ const [result,wait]=await db.batch([db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
   WHERE url=(SELECT url FROM (${branches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1)
   AND lease_until<=? AND COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)<=? AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)
-  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now).all();
- if(result.results.length)return result.results;
+  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now),
+  db.prepare("SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)>? OR EXISTS (SELECT 1 FROM crawl_jobs WHERE provider=? AND lease_until>?) AS waiting").bind('crawl-provider-ready:'+claim.provider,now,claim.provider,now)]);
+ if(result.results.length)return{jobs:result.results,exhausted:false};
  // Concurrent retries of the same POST may arrive before either SELECT sees
 // the other claim. Return that same claim after the guarded UPDATE.
- return(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
-}
-
-// C07: why a claim found nothing. While the provider waits (pacing, a cooldown) or
-// another claim of it is active, a due page may still be there; otherwise the
-// phase had none at the clock of the claim. Two indexed lookups.
-export async function providerWaiting(provider:CrawlClaim['provider']){
- const now=Date.now()/1000;
- const row=await favoritesDb().prepare("SELECT EXISTS (SELECT 1 FROM catalog_meta WHERE key=? AND CAST(value AS REAL)>?) OR EXISTS (SELECT 1 FROM crawl_jobs WHERE provider=? AND lease_until>?) AS waiting").bind('crawl-provider-ready:'+provider,now,provider,now).first<{waiting:number}>();
- return row?.waiting===1;
+ const jobs=(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
+ return{jobs,exhausted:!jobs.length&&(wait.results[0] as {waiting:number}).waiting!==1};
 }
 
 export async function crawlHealth(){

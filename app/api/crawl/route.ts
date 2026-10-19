@@ -9,7 +9,7 @@ import type { Hotel } from '@/lib/hotel-types';
 import { sourceRegion } from '@/lib/hotel-region';
 import { verifiedHotels } from '@/lib/hotel-enrichment';
 import {hasCrawlAccess} from '@/lib/crawl-access';
-import {BATHS_CANDIDATE,claimCrawlJob,crawlClaim,crawlHealth,jobIdentity,LEASE_SECONDS,legacyRedirectRepair,isolateLegacyRedirect,providerWaiting,reviewedRedirectRepair,releaseReviewedRedirect} from '@/lib/crawl-queue';
+import {BATHS_CANDIDATE,claimCrawlJob,crawlClaim,crawlHealth,jobIdentity,LEASE_SECONDS,legacyRedirectRepair,isolateLegacyRedirect,reviewedRedirectRepair,releaseReviewedRedirect} from '@/lib/crawl-queue';
 import {writeLinkedSourceObservations} from '@/lib/hotel-source-groups';
 export async function GET(request:Request){
  if(!hasCrawlAccess(request))return Response.json({error:'Maintenance access required'},{status:403});
@@ -40,9 +40,9 @@ export async function POST(request:Request){
   try{await hotelRepository.ready();const result=await isolateLegacyRedirect(repair.data);return Response.json(result,{status:result.repaired||'alreadyIsolated' in result?200:409,headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Crawl policy repair failed',error);return Response.json({error:'Policy repair unavailable'},{status:503})}
  }
  const parsed=crawlClaim.safeParse(raw);if(!parsed.success)return Response.json({error:'Invalid crawl claim'},{status:400});
- try{await hotelRepository.ready();const jobs=await claimCrawlJob(parsed.data);
+ try{await hotelRepository.ready();const {jobs,exhausted}=await claimCrawlJob(parsed.data);
   // C07: an empty claim says whether its phase had no due page (exhausted) or the provider was busy.
-  return Response.json({jobs,leaseSeconds:LEASE_SECONDS,...(jobs.length?{}:{exhausted:!await providerWaiting(parsed.data.provider)})},{headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Crawl claim failed',error);return Response.json({error:'Claim unavailable; retry with the same token'},{status:503})}
+  return Response.json({jobs,leaseSeconds:LEASE_SECONDS,...(jobs.length?{}:{exhausted})},{headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Crawl claim failed',error);return Response.json({error:'Claim unavailable; retry with the same token'},{status:503})}
 }
 export async function PUT(request:Request){
  if(!hasCrawlAccess(request))return Response.json({error:'Maintenance access required'},{status:403});
