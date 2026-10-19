@@ -61,7 +61,7 @@
 | 열린 PR | 없음(yukemuri, yukemuri-script-runner, 10-19T11:4xZ) | `list_pull_requests`(state open), 두 저장소 |
 | 운영 배포 | 마지막 코드 배포는 PR #176(`1e84c3d`, run 39189908721, 10-19T02:25:43Z–02:36:57Z, Worker `419b4a3b`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `93374caa22178a16`, 25,126곳, 생성 읽기 130,889행)이다. 코드 배포마다 스냅숏을 다시 만들어 그날 D1 읽기에 약 13만 행이 든다(H01 6일차). 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분(`37 * * * *`)인데, 예약 22번(10-18T12:37Z–10-19T09:37Z) 가운데 5번만 실행됐고 그 뒤 11:12:28Z에 한 번 왔다(아래 8과 옮긴 파일 8의 10:04Z). 10:04Z에 수동으로 한 번 불렀다(실행기 run 39234803628, 앱 run 39234821810 성공). `collection-budget.mjs`는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000이다. 공개 스냅숏 `19f283fa33073d6a`(11:39:30Z): 25,225곳, Jalan 상세 완료 1,907·대기 21,679, Trip.com 상세 완료 1,707·대기 456, 실패는 Trip.com 목록 1(페이지 없음)뿐 | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, `gh api "repos/jihune/yukemuri-script-runner/actions/workflows/yukemuri-catalog.yml/runs?per_page=5"`, 스냅숏은 `User-Agent: YukemuriCatalogUpdater/1.0 (+https://github.com/jihune/yukemuri)`로 `/snapshot/manifest.json`의 `files.status` |
-| 하위 세션 | 일함: O03(C05 측정), C04(C06), D05(D04 다음 단계). 쉼: U07, D07, U05, U06, L01(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
+| 하위 세션 | 일함: O03(C05 측정, 매일 점검 90% PR #188), C04(C06). 쉼: D05, U07, D07, U05, U06, L01(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
 | 예약 | 여덟 번째 상위 세션에 묶인 것은 H01 7일차 `trig_01U6vLaQDDfYSNSwTyrSmw7y`(10-20T01:20Z) 하나다. 하위 세션 예약: O03의 10-20 매일 점검 확인 `trig_019xRCsefHCVg4otWF2ZhcYG`(10-20T03:00Z)와 C05 이틀 측정 `trig_0146LNrucE9sLnkudEpaEgX9`(10-21T02:10Z). 그 밖에 사용자 keep-alive 루틴 두 개와 다른 프로젝트 예약 하나가 있다(건드리지 않음) | `list_triggers`(enabled true) |
 | 사용량 | 10-19T11:18:07Z 5시간 창 0.32, 7일 창 0.86(75% 경고, 재설정 10-19T12:00Z), `isUsingOverage` false | 위 1-2 |
 | 하네스 | 하네스 관리 세션은 `session_01WusoPNSswrf4gH76sh9bF2`(10-18T21:54Z 시작, 사용자가 10-18T22:0xZ에 알려 줌). 앞 관리 세션 `session_01M7TTyzzQPadBMiWAGFWCR4`·`session_011ayTaQQUY8VUJQqLdxTrSz`·`session_01T99PGUq2MSWNS3NAJgNdrp`·`session_01Hb6mZa55hebUCaeC7z29mG`는 일을 맡지 않는다. 여덟 번째 상위 세션에 설치된 판은 setup 30 `f109a03 2026-10-19` | 위 1-1 |
@@ -72,7 +72,7 @@
 2. C06 수집 이어 부르기(사용자 10-19T11:42Z, brief `C06-20261019.md`, C04 세션 `session_01BFCCsaQ7tWzZRYedC5aTVL`이 10-19T11:5xZ에 받음): 앱 수집이 끝날 때 그날 몫이 남으면 `GITHUB_TOKEN`의 `workflow_dispatch`로 다음 수집을 부른다. 코드 PR이라 검토를 받고, 병합은 C05 측정이 섞이지 않게 10-21T00:00Z 뒤에 상위 세션이 한다.
 3. C05 이틀 측정(O03 세션 `session_01SPeE1gk4K6RXPY8wEmHF4G`, brief `C05-20261018.md`): O03이 10-19·10-20의 실행 수, 처리 쪽수, D1 비율, 실행기 Actions 분을 재어 10-21T02:10Z에 알린다. 그 뒤 상위 세션이 사용자에게 함께 제안할 것: 실행마다 드는 고정 읽기(실행 끝 대기열 읽기 약 8.5만 행, 스냅숏 약 12.5만 행)를 줄이는 방안, 코드 배포 때 스냅숏을 다시 만들지 않고 마지막 수집 스냅숏을 쓰는 방안(10-18은 배포 14번이 읽기 한도의 42.2%를 씀), C04의 두 후보(실행 안에서 쓴 행·읽은 행을 재며 멈춤, 몇 쪽짜리 마지막 실행 건너뛰기). C04의 10-18 모의(하루 약 930–1,190쪽)는 쪽당 읽기 1,557–2,265행을 썼는데, 10-18 실측은 쪽당 약 4,500행이라 맞지 않는다(아래 8의 10-19T12:0xZ). 지금 비용이면 하루 읽기 몫에 120쪽 실행이 약 5–6번 들어가고 읽기가 쪽수를 묶는다. `snapshotReads` 168,000은 스냅숏 증가 속도로 이틀 남짓 버티므로 측정 때 다시 본다.
 4. O03 매일 점검: 실행기 예약이 매일 01:41Z에 앱 점검을 부르고, 85% 이상·1102·0쪽 수집(그날 실행이 모두 0쪽일 때만)·26분 초과·백업 실패면 실패 메일이 간다. 첫 예약 실행은 5시간 8분 늦은 10-19T06:49:30Z였고 10-18 읽기 85.0% 한 줄로 설계대로 실패했다(기록 PR #181). O03이 10-20T03:00Z에 10-20 실행을 본다.
-5. D04 다음 단계(D05 세션 `session_01EbPNydUi1HEGqL6GRQxwcD`, 10-19T11:5xZ 시작 알림): `D04-20261015.md` 7.4의 확인하지 못한 것(운영 Trip.com 상세 전체의 연도 표지 비율, 정기 재확인이 며칠 만에 도는지, 운영 D1 행 수가 Miniflare와 맞는지)을 공개 GET과 읽기 전용 분석 조회로 잰다. 결과는 D05가 기록 PR로 올린다.
+5. D04 다음 단계(D05 세션, 기록 PR #189로 끝남, `D04-20261015.md` 8절): 스냅숏 `19f283fa33073d6a` 기준 Trip.com 1,788곳 가운데 851곳에 연도가 있고, 표본에서 표지가 있는 비율은 86.5%(52곳 중 45곳)다. 아직 D04 전 관측인 약 790곳은 정기 재확인으로 11-28 무렵까지 다시 받는다(추정, 하루 약 20곳). 그 뒤 약 1,470곳에 연도가 있게 된다(추정). 11-29 뒤 같은 스크립트로 다시 잰다. 카드·필터에 연도를 넣는 일은 지금 걸리는 곳이 적어 제안 목록으로만 둔다.
 6. 외부 숙박 자료 출처 조사(사용자 10-19T11:42Z): 라쿠텐 말고 약관상 저장·공개 재게시가 되는 무료 출처(정부·지자체 오픈 데이터, OpenStreetMap, Wikimedia Commons, 무료 제휴 API 등)를 상위 세션의 하위 에이전트가 조사한다. 결과는 작업 문서 `docs/D08-20261019.md`로 남기고, 붙일지는 사용자가 정한다.
 7. C1(유지보수 경로 CPU, PR #53 측정): 백업 `catalog-checkpoint.py`의 `limit=1000` 쪽과 수집 목록 PUT의 1102 위험은 지금 바꾸지 않는다. 7일차까지 1102가 0이면 ‘대응 없음’으로 닫고, 1102가 나오면 백업 `limit`을 250으로 낮추는 안부터 본다.
 8. C01 남은 오류 2건(10-19T11:4xZ 확인, 아래 8): Jalan 상세 연결 오류는 사라졌다. Trip.com 목록의 페이지 없음 1건은 남았지만 공개 응답은 주소를 담지 않아 어느 쪽인지 알 수 없다. 유지관리 키를 쓰지 않는 규칙(위 2)이라 그대로 두고, 404는 폐업 근거로 쓰지 않는다.
@@ -117,7 +117,7 @@
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`) | 쉼, 다음 일 미정 |
-| `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 일함. D04 다음 단계(10-19T11:5xZ 시작 알림) |
+| `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
@@ -133,6 +133,7 @@
 - 10-19T11:5xZ C06 brief를 PR #185(`7c5aa6b`)로 넣고 C04 세션에 맡겼다. D05 세션에 D04 다음 단계 시작을 알렸다. 외부 숙박 자료 출처 조사는 상위 세션의 하위 에이전트에 맡겼다.
 - 10-19T11:4xZ C01 남은 오류 2건: 공개 스냅숏 `19f283fa33073d6a`(11:39:30Z)의 `providers`에서 Jalan은 실패 0·재시도 0·`issues` 없음이라 10-08의 연결 오류는 사라졌다. Trip.com은 목록 실패 1(`missing_page`, 곧 `http_404`·`http_410`)이 남았다. 공개 응답은 대기열 주소를 담지 않아(`lib/read-collection-status.ts`) 어느 목록 쪽인지 알 수 없고, 유지관리 키는 쓰지 않으므로 그대로 둔다.
 - 10-19T12:0xZ C04 세션이 C06을 시작하며 알려 온 실측을 상위 세션이 확인했다. 10-18 앱 수집 run 39156227847(18:53Z)과 39169498982(21:49Z)의 ‘Size the run’ 줄에서 그날 읽기가 3,142,153 → 3,893,514행(차이 751,361행)이고, 그 사이 push 배포는 없었다. 스냅숏 약 12.5만 행과 실행 고정 약 8.5만 행을 빼면 쪽당 약 4,500행으로 `readsPerPage` 4,600에 거의 닿는다. 그래서 C06이 더하는 실행은 push 배포가 적은 날 하루 0–2번(최대 약 240쪽)으로 본다. 사용자에게 고친 숫자를 알리고, C06은 예약이 빠지는 날의 안전장치로 이어 하며, C04 세션은 쪽당 읽기가 늘어난 원인을 코드 변경 없이 재어 설계로만 보낸다. C06으로 매일 85% 가까이 차면 매일 점검의 ‘85% 이상’ 실패가 잦아질 수 있어 사용자에게 묻는다.
+- 10-19T12:1xZ D05의 D04 측정 기록 PR #189를 병합했다(`57df002`). 바뀐 파일이 `docs/` 아래 기록과 근거 파일뿐이고, `docs/evidence/d04-20261019/`의 측정 스크립트는 앱과 CI가 실행하지 않아 기록 PR로 봤다(D07·H01 근거 스크립트와 같음). D05는 상세 API 표본 25번(3초 간격)을 Playwright Chromium(HeadlessChrome)으로 보냈다. H02의 자동화 User-Agent 거절은 저장소 브라우저 검사 때문에 HeadlessChrome을 일부러 받는다(`lib/edge-guard.ts` 주석). 그래서 설계대로이고 바꿀 것은 없다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
@@ -148,7 +149,7 @@
 
 ## D05·D04 — 객실 정보와 시설 연도
 
-하위 세션 `session_01EbPNydUi1HEGqL6GRQxwcD`, 브랜치 `claude/d05-rooms`. 상세는 `D05-20261013.md`, `D04-20261015.md`. D05(PR #77)와 D04 2단계(PR #94)가 병합됐다. 다음 단계(`D04-20261015.md` 7.4의 확인하지 못한 것: 연도 표지 비율, 정기 재확인 주기, 운영 D1 행 수)는 여덟 번째 상위 세션이 10-19T11:5xZ에 시작을 알렸다.
+하위 세션 `session_01EbPNydUi1HEGqL6GRQxwcD`, 브랜치 `claude/d05-rooms`. 상세는 `D05-20261013.md`, `D04-20261015.md`. D05(PR #77)와 D04 2단계(PR #94)가 병합됐다. 다음 단계(`D04-20261015.md` 7.4의 확인하지 못한 것)는 기록 PR #189(`57df002`, 10-19T12:1xZ)로 끝났다. 결과는 `D04-20261015.md` 8절과 `docs/evidence/d04-20261019/`에 있다. 11-29 뒤 같은 스크립트로 정기 재확인이 다 돌았는지 다시 잰다(상위 세션이 그때 알림).
 
 ## D06 — 지도 좌표 보강
 
