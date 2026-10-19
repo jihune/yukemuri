@@ -1,0 +1,61 @@
+2026-10-19T11:47Z https://opendatacommons.org/licenses/odbl/1-0/ (curl raw)
+2026-10-19T11:47Z https://www.openstreetmap.org/copyright (curl raw)
+2026-10-19T11:48Z https://osmfoundation.org/wiki/Licence/Community_Guidelines/Collective_Database_Guideline_Guideline (action=raw)
+2026-10-19T11:48Z https://osmfoundation.org/wiki/Licence/Community_Guidelines/Substantial_-_Guideline (action=raw)
+2026-10-19T11:48Z https://osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline (action=raw)
+2026-10-19T11:48Z https://taginfo.geofabrik.de/asia:japan/api/4/tag/stats?key=tourism&value=hotel (+guest_house,hostel,motel, combinations; data_until 2026-10-18T20:16Z)
+2026-10-19T11:49Z https://data.e-gov.go.jp/data/api/action/package_search?q=title:旅館 (CKAN API)
+2026-10-19T11:49Z https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html (curl raw, 最終更新日 2026-10-01)
+2026-10-19T11:50Z https://www.mlit.go.jp/kankocho/content/002025313.pdf (登録ホテル一覧 926件 令和8年10月1日)
+2026-10-19T11:50Z https://www.mlit.go.jp/kankocho/content/002025314.pdf (登録旅館一覧 1359件 令和8年10月1日)
+2026-10-19T11:50Z https://www.mlit.go.jp/kankocho/site-policy.html (最終更新日 2025-12-04, PDL1.0)
+2026-10-19T11:51Z https://www.digital.go.jp/resources/open_data/public_data_license_v1.0
+2026-10-19T11:50-11:55Z https://data.bodik.jp/api/3/action/package_search?q=旅館業 (BODIK CKAN API, count 597)
+2026-10-19T11:50-11:55Z https://data.bodik.jp/dataset/a7da203c-8c3f-46d6-9e7a-46196d0161d2/resource/01098c01-3271-4424-8563-672df1e358e9/download/440001_ryokan_business_all.csv (大分県 旅館業 1983行)
+2026-10-19T11:50-11:55Z https://data.bodik.jp/api/3/action/package_show?id=440001_ryokan_business (CC BY 4.0, modified 2026-05-01)
+2026-10-19T11:50-11:55Z https://www.digital.go.jp/resources/open_data/municipal-standard-data-set-test (自治体標準ODS一覧)
+2026-10-19T11:50-11:55Z https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000188046_00007.html (旅館業法の相談窓口; 一覧なし)
+2026-10-19T11:50-11:55Z https://creativecommons.org/licenses/by/4.0/legalcode.en
+2026-10-19T11:50-11:55Z https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/index.html (国土数値情報 一覧)
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P09.html (宿泊容量メッシュ 2010, 非商用)
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P33.html (集客施設 2014, 非商用)
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-2014.html (観光資源 2014, 非商用)
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/other/agreement.html
+2026-10-19T11:50-11:55Z https://nlftp.mlit.go.jp/ksj/other/agreement_02.html (非商用 = 複製物の再配布を除く)
+2026-10-19T11:50-11:55Z https://data.gsj.jp/gkan/api/3/action/package_search?q=温泉 -> 403 CloudFront (到達不可)
+2026-10-19T11:50-11:55Z https://www.gsj.jp/license/index.html , https://www.gsj.jp/license/license.html (政府標準利用規約2.0, CC BY互換)
+2026-10-19T11:50-11:55Z https://www.gsj.jp/Map/JP/docs/DGM-GT02_doc.pdf (GT-2, 4,536箇所, 2005)
+2026-10-19T11:50-11:55Z https://www.env.go.jp/nature/onsen/data/index.html , https://www.env.go.jp/nature/onsen/pdf/6-7_p_1.pdf (令和6年度温泉利用状況, 集計のみ)
+2026-10-19T11:50-11:55Z https://www.env.go.jp/mail.html (PDL1.0)
+2026-10-19T11:55Z https://docs.overturemaps.org/attribution/ (Places: CDLA Permissive 2.0 / Foursquare Apache 2.0 / AllThePlaces CC0)
+2026-10-19T11:55Z https://docs.overturemaps.org/guides/places/ (monthly, ~81M, no OSM)
+2026-10-19T11:55Z https://docs.overturemaps.org/schema/reference/places/place/
+2026-10-19T11:55-11:59Z https://cdla.dev/permissive-2-0/
+2026-10-19T11:55-11:59Z s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/* (DuckDB 1.5.6, anonymous; JP lodging extract)
+2026-10-19T11:55-11:59Z https://docs.foursquare.com/data-products/docs/access-fsq-os-places , https://docs.foursquare.com/data-products/docs/fsq-places-open-source , https://huggingface.co/datasets/foursquare/fsq-os-places , https://opensource.foursquare.com/os-places/
+2026-10-19T11:55-11:59Z https://medium.com/@foursquare/evolving-fsq-os-places-fa7a3f5197cd -> 403 (WebFetch)
+2026-10-19T11:55-11:59Z https://www.apache.org/licenses/LICENSE-2.0.txt
+2026-10-19T11:55-11:59Z https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia (action=raw)
+2026-10-19T11:59Z https://query.wikidata.org/sparql (JP lodging Q5056668 counts)
+2026-10-19T11:59-12:01Z https://en.wikivoyage.org/wiki/Wikivoyage:Copyleft (action=raw)
+2026-10-19T11:59-12:01Z https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use (last edited 2026-02-21)
+2026-10-19T11:59-12:01Z https://www.jalan.net/jw/jwp0000/jww0001.do (じゃらんWebサービス; 2020-02-25 新規受付終了)
+2026-10-19T11:59-12:01Z https://webservice.recruit.co.jp/ (ホットペッパーグルメのみ)
+2026-10-19T11:59-12:01Z https://developer.yahoo.co.jp/webapi/map/ , https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/localsearch.html
+2026-10-19T12:01Z https://developers.booking.com/demand/docs/getting-started/prerequisites
+2026-10-19T12:01Z https://developer.agoda.com/demand/docs
+2026-10-19T12:01Z https://developers.expediagroup.com/rapid (JS, 本文なし)
+2026-10-19T12:01Z https://creator.expediagroup.com/lp/b/affhub/affiliate (Expedia Group Affiliate Programme T&C)
+2026-10-19T12:01Z https://www.trip.com/partners/index (JS, 本文なし; WebFetch も見出しのみ)
+2026-10-19T12:01-12:04Z https://partners.agoda.com/Content/pdf/Agoda_OnlineAffiliateAgreement.pdf (Online Affiliate v.2023)
+2026-10-19T12:01-12:04Z https://image.email.partnerships.booking.com/lib/fe3011737364047d711079/m/1/8561ae5a-efdc-4bdb-93d3-da8ba2dd5d03.pdf (General Partner Terms v2)
+2026-10-19T12:04Z https://query.wikidata.org/sparql (P10425 JP 1902, P18 326)
+2026-10-19T12:04Z https://commons.wikimedia.org/w/api.php (imageinfo) -> 429
+2026-10-19T12:04Z https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits (action=raw)
+2026-10-19T12:05Z https://tripadvisor-content-api.readme.io/reference/caching-policy , https://tripadvisor-content-api.readme.io/reference/faq
+2026-10-19T12:05Z https://www.hokoukukan.go.jp/metadata/detail/30 -> 403 (登録ホテル・旅館 CSV 旧版, 到達不可)
+2026-10-19T12:05Z https://www.pref.shizuoka.jp/kenkofukushi/eiseiyakuji/eiseionsen/1040424/1047835.html (更新日 2026-02-26)
+2026-10-19T12:05Z https://opendata.pref.shizuoka.jp/api/3/action/package_search -> 404 (カタログ ライセンス未確認)
+2026-10-19T12:06Z https://query.wikidata.org/sparql (JP lodging: P856 1289, en 4382, P571 508, P576 40)
+2026-10-19T12:07Z https://docs.foursquare.com/data-products/docs/places-os-data-schema

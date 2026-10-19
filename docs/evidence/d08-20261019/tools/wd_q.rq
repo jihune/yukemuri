@@ -1,0 +1,7 @@
+SELECT (COUNT(DISTINCT ?item) AS ?all) (COUNT(DISTINCT ?img) AS ?withImage) (COUNT(DISTINCT ?ko) AS ?withKo) (COUNT(DISTINCT ?coord) AS ?withCoord) WHERE {
+  ?item wdt:P31/wdt:P279* wd:Q5056668 .
+  ?item wdt:P17 wd:Q17 .
+  OPTIONAL { ?item wdt:P18 ?i . BIND(?item AS ?img) }
+  OPTIONAL { ?item rdfs:label ?l . FILTER(LANG(?l)="ko") BIND(?item AS ?ko) }
+  OPTIONAL { ?item wdt:P625 ?c . BIND(?item AS ?coord) }
+}

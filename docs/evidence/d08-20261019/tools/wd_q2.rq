@@ -1,0 +1,4 @@
+SELECT (COUNT(DISTINCT ?item) AS ?withTrip) (COUNT(DISTINCT ?img) AS ?tripWithImage) (SAMPLE(?f) AS ?sampleFile) WHERE {
+  ?item wdt:P10425 ?tid ; wdt:P17 wd:Q17 .
+  OPTIONAL { ?item wdt:P18 ?f . BIND(?item AS ?img) }
+}

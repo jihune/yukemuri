@@ -1,0 +1,11 @@
+import duckdb, os, time
+con = duckdb.connect()
+p = os.environ.get('HTTPS_PROXY','')
+con.execute("INSTALL httpfs; LOAD httpfs;")
+host = p.replace('http://','').replace('https://','').rstrip('/')
+con.execute(f"SET http_proxy='{host}'")
+con.execute("SET ca_cert_file='/root/.ccr/ca-bundle.crt'")
+con.execute("CREATE SECRET anon (TYPE s3, KEY_ID '', SECRET '', REGION 'us-west-2')")
+t=time.time()
+r = con.execute("SELECT count(*) FROM read_parquet('s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/*', hive_partitioning=1) LIMIT 1").fetchall()
+print(r, time.time()-t)
