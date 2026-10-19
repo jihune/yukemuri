@@ -3,6 +3,7 @@ import {useEffect,useRef,useState,type KeyboardEvent,type RefObject} from 'react
 import {RotateCcw,X} from 'lucide-react';
 import {Sheet,SheetContent,SheetTitle,SheetDescription,SheetClose} from '@/components/ui/sheet';
 import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS,OVERTURE_ATTRIBUTION,OVERTURE_NOTE,OVERTURE_LINKS} from '@/lib/geo-attribution';
+import {JTA_ATTRIBUTION,JTA_NOTE,JTA_LINKS} from '@/lib/jta-attribution';
 import {COLLECTION_PROVIDER_LABELS,COLLECTION_ISSUE_LABELS,FILL_ROWS,GEO_GROUPS,formatCollectionTime,type CollectionStatus,type FillScopeKey,type TrendDay} from '@/lib/collection-status';
 
 // U06: the data status screen. Every value comes from the snapshot's status.json, computed
@@ -167,6 +168,7 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
       <p>사진 저작권은 원출처에 있습니다. <a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></p>
       <p>{GEO_NOTE} <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p>
       <p>{OVERTURE_NOTE} <span lang="en">{OVERTURE_ATTRIBUTION}</span> {OVERTURE_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OVERTURE_LINKS.length-1?')':''}</span>)}</p>
+      <p>{JTA_NOTE} <span lang="ja">{JTA_ATTRIBUTION}</span> {JTA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===JTA_LINKS.length-1?')':''}</span>)}</p>
      </section>
     </div>
    </>}

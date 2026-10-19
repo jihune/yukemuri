@@ -21,6 +21,10 @@ export type HotelSummary={
  // so the public audit (scripts/check-wikidata-names.mjs --public) tells them from collected
  // names. No page reads it, so adding it did not change SNAPSHOT_FORMAT.
  wikidataNames?:{item:string;was:Partial<Pick<Hotel['names'],'ko'|'en'>>};
+ // D08: the Japan Tourism Agency registration number lib/jta-registration.ts linked (H… a
+ // registered hotel, R… a registered ryokan). A page older than it ignores it, and a page reading
+ // a snapshot without it shows no registration, so it did not change SNAPSHOT_FORMAT.
+ jta?:string;
 };
 export function hotelSummary(h:Hotel):HotelSummary{
  const features:HotelSummary['features']={};
