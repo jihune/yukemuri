@@ -45,6 +45,7 @@ commands = [
     ['node', 'scripts/check-source-policy.mjs'],
     ['node', 'scripts/check-snapshot-geo.mjs'],
     ['node', 'scripts/check-wikidata-names.mjs'],
+    ['node', 'scripts/check-commons-photos.mjs'],
     ['node', 'scripts/check-description-ui.cjs'],
 ]
 if args.full:
@@ -60,6 +61,7 @@ if args.full:
         ['node', 'scripts/check-edge-guard-worker.mjs'],
         ['node', 'scripts/check-deploy-config.mjs'],
         ['node', 'scripts/check-search-snapshot-worker.mjs'],
+        ['node', 'scripts/check-reviewed-groups-worker.mjs'],
         ['node', 'scripts/check-locale-names-worker.mjs'],
         ['node', 'scripts/check-snapshot-geo.mjs', '--built'],
         ['node', 'scripts/check-public-reads-worker.mjs'],

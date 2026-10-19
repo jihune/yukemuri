@@ -23,6 +23,12 @@ function agrees(label:string|null,names:string[]){
  return theirs.size>0&&names.some(name=>{const mine=words(name),[few,many]=mine.size<=theirs.size?[mine,theirs]:[theirs,mine];return few.size>0&&[...few].every(w=>many.has(w))});
 }
 const byTrip=new Map((extract.hotels as [string,string,string|null,string|null][]).map(([trip,item,ko,en])=>[trip,{item,ko,en}]));
+// The item a Trip.com record's exact id reaches, when the item still names the hotel; the
+// Commons photo (D08, lib/commons-photos.ts) takes this link and makes none of its own.
+export function wikidataItem(hotel:Hotel){
+ const row=/^trip-\d+$/.test(hotel.id)?byTrip.get(hotel.id.slice(5)):undefined;
+ return row&&agrees(row.en,Object.values(hotel.names))?row.item:null;
+}
 export function withWikidataNames(hotel:Hotel):Hotel{
  const row=/^trip-\d+$/.test(hotel.id)?byTrip.get(hotel.id.slice(5)):undefined,own=Object.values(hotel.names);
  if(!row||!agrees(row.en,own))return hotel;

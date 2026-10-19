@@ -64,7 +64,10 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.
- const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
+ // Only curated groups: a group whose own hotel is one of its provider records
+ // (the reviewed pairs of D08 PR 5) waits its normal turn, so the rows a claim
+ // reads do not grow with those groups (docs/D08-20261019.md 13.4).
+ const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE g.hotel_id<>COALESCE(g.jalan_hotel_id,'') AND g.hotel_id<>COALESCE(g.trip_hotel_id,'') AND (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
  // Due retries would otherwise stay behind the pending backlog indefinitely.
  // Use the national lane for those pages; all readiness and lease guards below
  // still apply. The priority lane continues normal discovery/enrichment.
@@ -83,7 +86,7 @@ export async function claimCrawlJob(claim:CrawlClaim){
   // for Jalan the URL the group names, for Trip a URL whose only detail id is a
   // group's id, or one that holds the detail marker twice.
   const after="substr(j.url,instr(j.url,'-hotel-detail-')+14)";
-  const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL))`];
+  const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON linked.hotel_id<>linked.jalan_hotel_id AND linked.hotel_id<>COALESCE(linked.trip_hotel_id,'') AND j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL AND hotel_id<>trip_hotel_id AND hotel_id<>COALESCE(jalan_hotel_id,'')))`];
   branches.push({sql:`SELECT * FROM (SELECT ${columns},0 AS missing FROM ${jobs} WHERE j.provider=? AND j.kind='detail' AND j.status IN (${statuses.map(()=>'?').join(',')}) AND ${eligible} ${named} AND (${missingLinkedDetail})=0 ORDER BY j.priority,${fetched},j.attempts,j.url LIMIT 1)`,args:[claim.provider,...statuses,...eligibleArgs]});
  }
  // C07: in the same transaction and at the same clock, whether the provider waits

@@ -3,7 +3,7 @@ import {normalizeHotelImage} from './hotel-images';
 import {FEATURE_KEYS,hotelFeature} from './hotel-bath-facts';
 
 export const SOURCE_POLICY={ratings:['trip','google','jalan','rakuten'],facilities:['jalan','official','trip'],photos:['trip','google','jalan','official']} as const;
-export type PhotoCandidate={url:string;sourceId:string;provider:'trip'|'google'|'jalan'|'official'|'unknown'};
+export type PhotoCandidate={url:string;sourceId:string;provider:'trip'|'google'|'jalan'|'official'|'unknown'|'commons'};
 export function photoProvider(url:string):PhotoCandidate['provider']{
  try{const host=new URL(url).hostname;if(/(^|\.)tripcdn\.com$/.test(host))return'trip';if(/(^|\.)googleusercontent\.com$/.test(host))return'google';if(/(^|\.)jalan\.(jp|net)$/.test(host))return'jalan';return'unknown'}catch{return'unknown'}
 }

@@ -62,6 +62,16 @@ try{
  const ids=(await db.prepare('SELECT id FROM hotels ORDER BY id').all()).results.map(r=>r.id);assert.deepEqual(seen,ids);
  for(const bad of ['?page=2','?after=%27x','?after=a&after=b','?limit=5'])assert.equal((await request('/api/photo-credits'+bad)).status,400,bad);
  assert.deepEqual((await request('/api/photo-credits?page=1')).body,credits);
+ // The Commons photo (D08) of a seed hotel the extract and the D07 link reach: the detail and the
+ // photo sources carry it with its credit, read without a D1 write.
+ // Public domain is shown in Korean (lib/commons-photos.ts).
+ const extract=new Map(JSON.parse(readFileSync('data/commons-trip-photos.json','utf8')).hotels.map(([trip,,url,page,author,licence,licenceUrl])=>['trip-'+trip,{url,page,author,licence:licence==='Public domain'?'퍼블릭 도메인':licence,licenceUrl}]));
+ const photo=extract.get('trip-688230'),detail=(await request('/api/hotels/trip-688230')).body;
+ assert.deepEqual(detail.commonsPhoto,photo,'the detail carries the Commons photo');
+ assert.equal(detail.sources.find(s=>s.sourceId==='commons-photo:trip-688230')?.url,photo.page,'and its file page among the sources');
+ const credited=listed.filter(i=>i.commons);
+ assert(credited.some(i=>i.hotelId==='trip-688230'),'the photo sources list it');
+ for(const i of credited){const p=extract.get(i.hotelId);assert.deepEqual(i.commons,{imageUrl:p.url,filePage:p.page,author:p.author,license:p.licence,licenseUrl:p.licenceUrl},i.hotelId)}
  // Detail reads write no translation request any more (P03, approved 2026-10-11T16:25Z).
  // Hotels whose description has letters and no Hangul (needsKoreanDescription) and no translation.
  const untranslated=(await db.prepare("SELECT h.id FROM hotels h WHERE json_extract(h.payload,'$.description') GLOB '*[A-Za-zぁ-んァ-ヶ一-龯]*' AND json_extract(h.payload,'$.description') NOT GLOB '*[가-힣]*' AND NOT EXISTS (SELECT 1 FROM hotel_description_translations t WHERE t.hotel_id=h.id) ORDER BY h.id LIMIT 5").all()).results.map(r=>r.id);
@@ -77,5 +87,7 @@ try{
  assert(built.data.cards.some(c=>c.wikidataNames?.was.ko!==undefined),'the seed has a hotel with a Wikidata Korean name');
  assert.equal(displayNames(cards.get(jalan).names).title,'시험 료칸','the Jalan Korean name titles its card');
  assert.deepEqual(listed.filter(i=>i.name!==displayNames(cards.get(i.hotelId).names).title).map(i=>[i.hotelId,i.name]),[],'photo sources name hotels as their cards do');
- console.log(`Public reads passed: ${reads('x').length} public routes answer without a 5xx before preparation, no D1 write before or after (detail of ${untranslated.length} untranslated hotels included), photo credits by cursor over ${seen.length} hotels with the counter total and the card names, snapshot reports the 5 unprepared steps until crawl-prepare.`);
+ // A card never shows a Commons photo: it has no room for the credit.
+ assert(!JSON.stringify(built.data.cards).includes('wikimedia.org'),'no card carries a Commons photo');
+ console.log(`Public reads passed: ${reads('x').length} public routes answer without a 5xx before preparation, no D1 write before or after (detail of ${untranslated.length} untranslated hotels included), photo credits by cursor over ${seen.length} hotels with the counter total and the card names (${credited.length} with a Commons photo, none on a card), snapshot reports the 5 unprepared steps until crawl-prepare.`);
 }finally{await mf.dispose();rmSync(temp,{recursive:true,force:true})}

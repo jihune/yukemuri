@@ -1,0 +1,946 @@
+{
+ "checkedAt": "2026-10-19T14:53:17.881Z",
+ "base": "http://127.0.0.1:8787",
+ "browser": "Chromium 141.0.7390.37",
+ "results": [
+  {
+   "width": 360,
+   "name": "목록 카드는 수집한 사진만 보임(Commons 사진 없음)",
+   "pass": true,
+   "detail": {
+    "cardSrc": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg"
+   }
+  },
+  {
+   "width": 360,
+   "name": "사진 넘기기(터치): 1/2 Trip.com → 2/2 Commons 사진과 표기(파일 쪽·작가·라이선스) → 처음으로",
+   "pass": true,
+   "detail": {
+    "first": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 190,
+       "bottom": 242,
+       "left": 17,
+       "right": 82
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 240,
+      "right": 348
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 360
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "second": {
+     "counter": "2/2",
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+     "credit": {
+      "text": "Wikimedia Commons · Barsaka2 · CC0",
+      "links": [
+       {
+        "text": "Wikimedia Commons",
+        "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+        "rel": "noopener noreferrer",
+        "h": 45
+       },
+       {
+        "text": "CC0",
+        "href": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "rel": "license noopener noreferrer",
+        "h": 45
+       }
+      ],
+      "box": {
+       "top": 68,
+       "bottom": 96,
+       "left": 17,
+       "right": 253
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 240,
+      "right": 348
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 360
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "third": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 190,
+       "bottom": 242,
+       "left": 17,
+       "right": 82
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 240,
+      "right": 348
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 360
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "Commons 표기가 사진 안에 있고 이전·다음 단추와 겹치지 않으며, 표기의 링크는 44px 이상",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 68,
+     "bottom": 96,
+     "left": 17,
+     "right": 253
+    },
+    "nav": {
+     "top": 202,
+     "bottom": 246,
+     "left": 240,
+     "right": 348
+    },
+    "image": {
+     "top": 56,
+     "bottom": 256,
+     "left": 1,
+     "right": 360
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "정보 출처에 ‘Wikimedia Commons 사진(작가, 라이선스)’이 파일 쪽 링크로 있음",
+   "pass": true,
+   "detail": {
+    "sources": [
+     {
+      "text": "Trip.com 숙소 상세 ↗",
+      "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+     },
+     {
+      "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+      "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+     },
+     {
+      "text": "Wikidata 숙소 이름(CC0) ↗",
+      "href": "https://www.wikidata.org/wiki/Q21654607"
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 68,
+     "bottom": 135,
+     "left": 17,
+     "right": 336
+    },
+    "nav": {
+     "top": 202,
+     "bottom": 246,
+     "left": 240,
+     "right": 348
+    },
+    "image": {
+     "top": 56,
+     "bottom": 256,
+     "left": 1,
+     "right": 360
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 68,
+      "bottom": 96,
+      "left": 17,
+      "right": 287
+     }
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "수집한 사진을 못 받으면 Commons 사진이 표기와 함께 보임",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+    "credit": "Wikimedia Commons · Barsaka2 · CC0",
+    "counter": "2/2"
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "목록 카드는 수집한 사진만 보임(Commons 사진 없음)",
+   "pass": true,
+   "detail": {
+    "cardSrc": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg"
+   }
+  },
+  {
+   "width": 390,
+   "name": "사진 넘기기(터치): 1/2 Trip.com → 2/2 Commons 사진과 표기(파일 쪽·작가·라이선스) → 처음으로",
+   "pass": true,
+   "detail": {
+    "first": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 190,
+       "bottom": 242,
+       "left": 17,
+       "right": 82
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 270,
+      "right": 378
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 390
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "second": {
+     "counter": "2/2",
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+     "credit": {
+      "text": "Wikimedia Commons · Barsaka2 · CC0",
+      "links": [
+       {
+        "text": "Wikimedia Commons",
+        "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+        "rel": "noopener noreferrer",
+        "h": 45
+       },
+       {
+        "text": "CC0",
+        "href": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "rel": "license noopener noreferrer",
+        "h": 45
+       }
+      ],
+      "box": {
+       "top": 68,
+       "bottom": 96,
+       "left": 17,
+       "right": 253
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 270,
+      "right": 378
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 390
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "third": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 190,
+       "bottom": 242,
+       "left": 17,
+       "right": 82
+      }
+     },
+     "nav": {
+      "top": 202,
+      "bottom": 246,
+      "left": 270,
+      "right": 378
+     },
+     "image": {
+      "top": 56,
+      "bottom": 256,
+      "left": 1,
+      "right": 390
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "Commons 표기가 사진 안에 있고 이전·다음 단추와 겹치지 않으며, 표기의 링크는 44px 이상",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 68,
+     "bottom": 96,
+     "left": 17,
+     "right": 253
+    },
+    "nav": {
+     "top": 202,
+     "bottom": 246,
+     "left": 270,
+     "right": 378
+    },
+    "image": {
+     "top": 56,
+     "bottom": 256,
+     "left": 1,
+     "right": 390
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "정보 출처에 ‘Wikimedia Commons 사진(작가, 라이선스)’이 파일 쪽 링크로 있음",
+   "pass": true,
+   "detail": {
+    "sources": [
+     {
+      "text": "Trip.com 숙소 상세 ↗",
+      "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+     },
+     {
+      "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+      "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+     },
+     {
+      "text": "Wikidata 숙소 이름(CC0) ↗",
+      "href": "https://www.wikidata.org/wiki/Q21654607"
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 68,
+     "bottom": 135,
+     "left": 17,
+     "right": 366
+    },
+    "nav": {
+     "top": 202,
+     "bottom": 246,
+     "left": 270,
+     "right": 378
+    },
+    "image": {
+     "top": 56,
+     "bottom": 256,
+     "left": 1,
+     "right": 390
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 68,
+      "bottom": 96,
+      "left": 17,
+      "right": 287
+     }
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "수집한 사진을 못 받으면 Commons 사진이 표기와 함께 보임",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+    "credit": "Wikimedia Commons · Barsaka2 · CC0",
+    "counter": "2/2"
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "목록 카드는 수집한 사진만 보임(Commons 사진 없음)",
+   "pass": true,
+   "detail": {
+    "cardSrc": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "사진 넘기기(키보드 Enter): 1/2 Trip.com → 2/2 Commons 사진과 표기(파일 쪽·작가·라이선스) → 처음으로",
+   "pass": true,
+   "detail": {
+    "first": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 194,
+       "bottom": 246,
+       "left": 585,
+       "right": 650
+      }
+     },
+     "nav": {
+      "top": 206,
+      "bottom": 250,
+      "left": 741,
+      "right": 849
+     },
+     "image": {
+      "top": 60,
+      "bottom": 260,
+      "left": 561,
+      "right": 861
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "second": {
+     "counter": "2/2",
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+     "credit": {
+      "text": "Wikimedia Commons · Barsaka2 · CC0",
+      "links": [
+       {
+        "text": "Wikimedia Commons",
+        "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+        "rel": "noopener noreferrer",
+        "h": 45
+       },
+       {
+        "text": "CC0",
+        "href": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "rel": "license noopener noreferrer",
+        "h": 45
+       }
+      ],
+      "box": {
+       "top": 72,
+       "bottom": 100,
+       "left": 585,
+       "right": 821
+      }
+     },
+     "nav": {
+      "top": 206,
+      "bottom": 250,
+      "left": 741,
+      "right": 849
+     },
+     "image": {
+      "top": 60,
+      "bottom": 260,
+      "left": 561,
+      "right": 861
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    },
+    "third": {
+     "counter": "1/2",
+     "src": "https://ak-d.tripcdn.com/images/1mc6b12000iiud6qr6141_R_960_660_R5_D.jpg",
+     "credit": {
+      "text": "Trip.com",
+      "links": [
+       {
+        "text": "Trip.com",
+        "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/",
+        "rel": "noopener noreferrer",
+        "h": 44
+       }
+      ],
+      "box": {
+       "top": 194,
+       "bottom": 246,
+       "left": 585,
+       "right": 650
+      }
+     },
+     "nav": {
+      "top": 206,
+      "bottom": 250,
+      "left": 741,
+      "right": 849
+     },
+     "image": {
+      "top": 60,
+      "bottom": 260,
+      "left": 561,
+      "right": 861
+     },
+     "sources": [
+      {
+       "text": "Trip.com 숙소 상세 ↗",
+       "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+      },
+      {
+       "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+       "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+      },
+      {
+       "text": "Wikidata 숙소 이름(CC0) ↗",
+       "href": "https://www.wikidata.org/wiki/Q21654607"
+      }
+     ],
+     "overflow": [
+      0,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Commons 표기가 사진 안에 있고 이전·다음 단추와 겹치지 않으며, 표기의 링크는 44px 이상",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 72,
+     "bottom": 100,
+     "left": 585,
+     "right": 821
+    },
+    "nav": {
+     "top": 206,
+     "bottom": 250,
+     "left": 741,
+     "right": 849
+    },
+    "image": {
+     "top": 60,
+     "bottom": 260,
+     "left": 561,
+     "right": 861
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드(Shift+Tab)로 ‘이전 사진’ 다음에 표기의 라이선스 링크, 파일 쪽 링크 순서로 초점이 감",
+   "pass": true,
+   "detail": {
+    "reached": [
+     {
+      "text": "",
+      "label": "이전 사진",
+      "inCredit": false
+     },
+     {
+      "text": "CC0",
+      "label": null,
+      "inCredit": true
+     },
+     {
+      "text": "Wikimedia Commons",
+      "label": null,
+      "inCredit": true
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "정보 출처에 ‘Wikimedia Commons 사진(작가, 라이선스)’이 파일 쪽 링크로 있음",
+   "pass": true,
+   "detail": {
+    "sources": [
+     {
+      "text": "Trip.com 숙소 상세 ↗",
+      "href": "https://www.trip.com/hotels/osaka-hotel-detail-688230/hotel-universal-port/"
+     },
+     {
+      "text": "Wikimedia Commons 사진(Barsaka2, CC0) ↗",
+      "href": "https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg"
+     },
+     {
+      "text": "Wikidata 숙소 이름(CC0) ↗",
+      "href": "https://www.wikidata.org/wiki/Q21654607"
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "overflow": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "가장 긴 작가 이름(80자)도 표기가 사진 안에서 줄을 바꾸고 단추와 겹치지 않음",
+   "pass": true,
+   "detail": {
+    "credit": {
+     "top": 72,
+     "bottom": 158,
+     "left": 585,
+     "right": 845
+    },
+    "nav": {
+     "top": 206,
+     "bottom": 250,
+     "left": 741,
+     "right": 849
+    },
+    "image": {
+     "top": 60,
+     "bottom": 260,
+     "left": 561,
+     "right": 861
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "퍼블릭 도메인 사진: ‘Wikimedia Commons · 작가 · 퍼블릭 도메인’, 링크는 파일 쪽 하나",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Shinagawa_Prince_Hotel_01.JPG/960px-Shinagawa_Prince_Hotel_01.JPG",
+    "credit": {
+     "text": "Wikimedia Commons · Abasaa · 퍼블릭 도메인",
+     "links": [
+      {
+       "text": "Wikimedia Commons",
+       "href": "https://commons.wikimedia.org/wiki/File:Shinagawa_Prince_Hotel_01.JPG",
+       "rel": "noopener noreferrer",
+       "h": 45
+      }
+     ],
+     "box": {
+      "top": 72,
+      "bottom": 119,
+      "left": 585,
+      "right": 845
+     }
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "수집한 사진을 못 받으면 Commons 사진이 표기와 함께 보임",
+   "pass": true,
+   "detail": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg/960px-%E3%83%9B%E3%83%86%E3%83%AB_%E3%83%A6%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AB_%E3%83%9D%E3%83%BC%E3%83%88.jpg",
+    "credit": "Wikimedia Commons · Barsaka2 · CC0",
+    "counter": "2/2"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 import {prepareCollectionPriorities} from './collection-priorities';
 import {attachLifecycle} from './hotel-lifecycle';
-import {attachSourceGroups,importVerifiedSourceGroups,refreshSourceGroupIndexes} from './hotel-source-groups';
+import {attachSourceGroups,importVerifiedSourceGroups,importReviewedSourceGroups,refreshSourceGroupIndexes} from './hotel-source-groups';
 import { favoritesDb } from './favorites-db';
 import { Hotel, FeatureKey, type CoreFeatureKey } from './hotel-types';
 import { catalogVersion, catalogCoverage } from './catalog-core';
@@ -15,6 +15,7 @@ import {needsKoreanDescription} from './hotel-description';
 import type {DescriptionPatch} from './description-contract';
 import {validComparisonIds} from './hotel-comparison';
 import {withWikidataNames} from './wikidata-names';
+import {withCommonsPhoto} from './commons-photos';
 import {localeNamesFor,prepareLocaleLists,withJalanLocaleNames} from './jalan-locale-names';
 const columns=['id','region','prefecture','name','search_text','kind','trip_score','trip_reviews','jalan_score','jalan_reviews','natural','large_bath','outdoor','private_bath','room_onsen','room_outdoor','bath_features','bath_known','payload'];
 const coreColumns:Record<CoreFeatureKey,string>={natural:'natural',largeBath:'large_bath',outdoor:'outdoor',privateBath:'private_bath',roomOnsen:'room_onsen',roomOutdoor:'room_outdoor'};
@@ -222,6 +223,9 @@ async function prepareExternalBathFacts(){
 }
 export async function prepareOnsenCatalog(){
  await ensureCatalog();
+ // Outside ensureCatalog's promise, which an isolate keeps: a pair still unknown is tried
+ // again on the next crawl-prepare in the same isolate (Codex P2 on PR #204).
+ await importReviewedSourceGroups();
  const search=await preparePlaceSearch();
  const priorities=await prepareCollectionPriorities();
  const bathScope=await prepareExternalBathFacts();
@@ -246,6 +250,8 @@ async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexName
 // database, read only: the seed version and its one-time steps (the keys of
 // importSnapshot, reindexNames, backfillBathFacts, importLocalizedNames and
 // importVerifiedSourceGroups). Empty when the catalogue is prepared.
+// importReviewedSourceGroups is not a seed step: its key follows its file's
+// content, and every crawl-prepare runs it (prepareOnsenCatalog).
 export async function catalogPreparation(){
  const once=['bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1'];
  const rows=await favoritesDb().prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?,?,?,?)').bind('snapshot','multilingual-index-v1',...once).all<{key:string;value:string}>();
@@ -268,9 +274,9 @@ export const hotelRepository={
    if(row.text_ko&&row.translated_at)hotel.descriptionTranslation={text:row.text_ko,translatedAt:row.translated_at};
    return[row.id,hotel];
   }));
-  // Wikidata and Jalan locale names as the search snapshot shows them (D07).
+  // Wikidata and Jalan locale names as the search snapshot shows them (D07); the Commons photo (D08).
   const locale=await localeNamesFor(ids);
-  return(await attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})))).map(h=>withJalanLocaleNames(withWikidataNames(h),locale.get(h.id)));
+  return(await attachLifecycle(await attachSourceGroups(ids.flatMap(id=>{const hotel=byId.get(id);return hotel?[hotel]:[]})))).map(h=>withJalanLocaleNames(withWikidataNames(withCommonsPhoto(h)),locale.get(h.id)));
  },
  async ready(){await ensureCatalog()},
 };

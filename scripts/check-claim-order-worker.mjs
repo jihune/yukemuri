@@ -3,7 +3,9 @@
 // and kind, over random queue states in a disposable D1. The reference query
 // below is that former selection, copied verbatim, except that its baths
 // condition follows the current Jalan parser version (v3 since D05) and also
-// looks at a curated group's Jalan observation (hotel_source_observations).
+// looks at a curated group's Jalan observation (hotel_source_observations), and
+// that a group whose own hotel is one of its provider records (D08 PR 5) names
+// no missing linked detail.
 import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
@@ -21,7 +23,7 @@ function formerSelection(claim,now){
  const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND (EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NOT 'v3' AND h.id NOT IN (SELECT value FROM json_each(?))) OR EXISTS (SELECT 1 FROM hotel_source_observations o WHERE o.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(o.payload,'$.links[0].url')=j.url AND json_extract(o.payload,'$.sources[0].bathDataVersion') IS NOT 'v3'))":'';
  const statuses=claim.phase==='refresh'?"('done','failed')":['names','baths'].includes(claim.phase)?"('done','pending','retry')":"('pending','retry')";
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
- const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
+ const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE g.hotel_id<>COALESCE(g.jalan_hotel_id,'') AND g.hotel_id<>COALESCE(g.trip_hotel_id,'') AND (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
  const order=claim.lane==='national'?"CASE WHEN j.status='retry' THEN 0 ELSE 1 END,COALESCE(unixepoch(j.fetched_at),0),j.next_at,j.attempts,j.url":'j.priority,'+missingLinkedDetail+',COALESCE(unixepoch(j.fetched_at),0),j.attempts,j.url';
  return{sql:`SELECT j.url,${missingLinkedDetail} AS missing FROM crawl_jobs j WHERE j.provider=? AND ${kindWhere} AND j.status IN ${statuses} AND j.next_at<=? AND j.lease_until<=? ${extra} ${refresh} ${claim.url?'AND j.url=?':''} ORDER BY ${order} LIMIT 1`,
   args:[claim.provider,...kinds,now,now,...(claim.phase==='baths'?['[]']:[]),...(claim.url?[claim.url]:[])]};
@@ -68,7 +70,8 @@ try{
   await db.prepare("INSERT INTO crawl_jobs (url,provider,kind,status,priority,fetched_at,attempts,next_at,lease_until) SELECT json_extract(value,'$.url'),json_extract(value,'$.provider'),json_extract(value,'$.kind'),json_extract(value,'$.status'),json_extract(value,'$.priority'),json_extract(value,'$.fetched_at'),json_extract(value,'$.attempts'),json_extract(value,'$.next_at'),json_extract(value,'$.lease_until') FROM json_each(?)").bind(JSON.stringify([...jobs.values()])).run();
   await db.prepare("INSERT OR IGNORE INTO hotels (id,region,name,search_text,kind,payload) SELECT json_extract(value,'$.id'),'all','x','x','hotel',json_extract(value,'$.payload') FROM json_each(?)").bind(JSON.stringify([...hotels.values()])).run();
   await db.prepare("INSERT OR IGNORE INTO hotel_source_observations (id,payload,observed_at) SELECT json_extract(value,'$.id'),json_extract(value,'$.payload'),'2026-10-11T00:00:00Z' FROM json_each(?)").bind(JSON.stringify([...observations.values()])).run();
-  const groups=Array.from({length:6},(_,i)=>({hotel_id:'claim-group-'+i,trip_hotel_id:random()<0.7?'trip-'+ids[(i*2)%ids.length]:null,jalan_hotel_id:random()<0.7?'jalan-'+ids[(i*2+1)%ids.length]:null}));
+  // Some groups are reviewed provider pairs (D08 PR 5): the Jalan record is the group's own hotel.
+  const groups=Array.from({length:6},(_,i)=>{const pair=random()<0.35,jalan=pair||random()<0.7?'jalan-'+ids[(i*2+1)%ids.length]:null;return{hotel_id:pair?jalan:'claim-group-'+i,trip_hotel_id:random()<0.7?'trip-'+ids[(i*2)%ids.length]:null,jalan_hotel_id:jalan}});
   await db.prepare("INSERT INTO hotel_source_groups (hotel_id,trip_hotel_id,jalan_hotel_id,payload,checked_at) SELECT json_extract(value,'$.hotel_id'),json_extract(value,'$.trip_hotel_id'),json_extract(value,'$.jalan_hotel_id'),'{}','2026-10-11T00:00:00Z' FROM json_each(?)").bind(JSON.stringify(groups)).run();
   const urls=[...jobs.keys()].filter(u=>!u.includes('-hotel-detail-')||!/-hotel-detail-.*-hotel-detail-/.test(u));
   for(const provider of ['jalan','trip'])for(const phase of ['detail','list','refresh','refresh-list','refresh-detail',provider==='jalan'?'baths':'names'])for(const lane of ['priority','national']){

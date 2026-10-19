@@ -1,0 +1,4 @@
+{"state":"curated groups only","groups":21,"jalan:detail":45,"jalan:baths":42,"trip:detail":158}
+{"state":"plus reviewed pairs the seed holds","groups":31,"jalan:detail":59,"jalan:baths":52,"trip:detail":170}
+{"state":"all 47 pairs, detail jobs pending","groups":68,"jalan:detail":96,"jalan:baths":89,"trip:detail":253}
+{"state":"all 47 pairs, detail jobs done","groups":68,"jalan:detail":96,"jalan:baths":89,"trip:detail":254}
