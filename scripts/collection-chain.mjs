@@ -33,7 +33,9 @@ export function nextRun({after,runs,budget,now},chain=CHAIN){
  // Only a run on main can carry the chain (collect.yml's chain job); any gentle run counts toward the day.
  // Only a run created later: an older one still queued or running finds this run newer when its own
  // wait decides, as runs that waited together may end in either order (#190 Codex review 3 P2).
- const newer=runs.find(r=>gentle(r)&&r.head_branch==='main'&&r.id!==after.id&&Date.parse(r.created_at)>Date.parse(after.created_at));
+ // created_at has whole seconds, so the run id orders two runs made in the same second.
+ const at=Date.parse(after.created_at);
+ const newer=runs.find(r=>gentle(r)&&r.head_branch==='main'&&r.id!==after.id&&(Date.parse(r.created_at)>at||(Date.parse(r.created_at)===at&&r.id>after.id)));
  if(newer)return no('newer-run',`gentle run ${newer.id} (${newer.status}) came after run ${after.id} and carries the chain`);
  const day=new Date(now).toISOString().slice(0,10),today=runs.filter(r=>gentle(r)&&String(r.created_at).startsWith(day)).length;
  if(today>=chain.maxRunsPerDay)return no('day-limit',`${today} gentle runs on ${day}, the limit is ${chain.maxRunsPerDay}`);

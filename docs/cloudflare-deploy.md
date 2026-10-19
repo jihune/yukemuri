@@ -227,7 +227,7 @@ Secret 세 개가 생기고 상위 세션이 맡기면 실행한다.
 2. `autoDeploy`를 `false`로 바꾸면 배포만이 아니라 수집도 멈춘다. `collect.yml`(`run-collection.py`)이 `autoDeploy`가 꺼져 있으면 요청 전에 실패하기 때문이다. 앱 감시 workflow가 12시간 뒤 실패로 알린다.
 3. D1 복구는 bookmark 뒤의 모든 쓰기(수집 관측, 새 주소의 즐겨찾기)를 덮어쓴다. 복구 전에 수집을 멈추고(아래 5번), 복구 뒤 스냅숏을 다시 만든 다음 켠다.
 4. 크롤 키(`YUKEMURI_CRAWL_ACCESS_KEY`)를 바꾼 뒤 그 전 버전으로 `worker-rollback`하면, 되돌린 Worker는 바꾸기 전 키를 쓴다. 요약에는 따로 표시되지 않는다. 롤백 뒤 수집 부르기가 403으로 실패하면 이 경우다. main revert를 병합해 새 배포가 지금 키를 다시 올리게 하거나, 키를 바꾼 적이 있으면 롤백 대상 버전을 키 변경 뒤의 것으로 고른다.
-5. 수집 멈추기(C06 이어 부르기 뒤): 실행기 `YUKEMURI_ENABLED`를 `false`로 바꾸면 실행기 예약만 멈춘다. 이미 돌고 있는 고리는 그날 몫이 16쪽 아래로 떨어지거나 `collection-chain.mjs`의 다른 규칙에 걸릴 때까지 한 시간마다 이어지고, 늦어도 다음 UTC 날 첫 실행 전에는 멈춘다. 바로 멈추려면 Actions에서 `Yukemuri collection chain`(`collect-chain.yml`) workflow를 끄고(Disable workflow), 기다리는 run이 있으면 모두 취소한다(앞 실행마다 따로 기다린다). 꺼진 workflow는 부를 수 없어 다음 `chain` job은 실패하지만 수집 실행은 성공으로 남는다. 다시 켤 때는 그 workflow를 켜고 `YUKEMURI_ENABLED`를 `true`로 둔다. `autoDeploy`를 `false`로 두는 2번은 수집과 고리를 함께 멈춘다.
+5. 수집 멈추기(C06 이어 부르기 뒤): 실행기 `YUKEMURI_ENABLED`를 `false`로 바꾸면 실행기 예약만 멈춘다. 이미 돌고 있는 고리는 몫이 16쪽 아래로 떨어지거나 `collection-chain.mjs`의 다른 규칙에 걸릴 때까지 한 시간마다 이어진다. 자정 전에 그날 몫을 다 쓰지 못한 고리는 자정을 넘긴 기다림이 새 날 몫을 받으므로 다음 날에도 이어진다. 확실히 멈추려면 아래처럼 workflow를 끈다. 바로 멈추려면 Actions에서 `Yukemuri collection chain`(`collect-chain.yml`) workflow를 끄고(Disable workflow), 기다리는 run이 있으면 모두 취소한다(앞 실행마다 따로 기다린다). 꺼진 workflow는 부를 수 없어 다음 `chain` job은 실패하지만 수집 실행은 성공으로 남는다. 다시 켤 때는 그 workflow를 켜고 `YUKEMURI_ENABLED`를 `true`로 둔다. `autoDeploy`를 `false`로 두는 2번은 수집과 고리를 함께 멈춘다.
 
 ## 미확인
 

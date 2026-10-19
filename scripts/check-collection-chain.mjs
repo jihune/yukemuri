@@ -62,7 +62,7 @@ assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 rea
 const base={after,runs:[run(90,120),after],budget,now};
 const CASES={
  'not-gentle-main':[{after:{...after,head_branch:'feature'}},{after:{...after,display_title:'Yukemuri collection (check-access)'}},{after:{...after,path:'.github/workflows/deploy.yml'}}],
- 'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(101,5,{status:'queued',conclusion:null})]}],
+ 'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(101,5,{status:'queued',conclusion:null})]},{runs:[after,{...after,id:101}]}],
  'day-limit':[{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i))]},{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i,{head_branch:'feature'}))]}],
  'usage-unreadable':[{budget:pagesFor(null)},{budget:pagesFor({rowsRead:'x',rowsWritten:0})}],
  'small-budget':[{budget:pagesFor({rowsRead:3_960_000,rowsWritten:0})},{budget:pagesFor({rowsRead:5_000_000,rowsWritten:0})}]
@@ -74,7 +74,8 @@ const check=(decide,label)=>{
  for(const status of ['completed','in_progress'])
   assert.equal(decide({...base,runs:[after,run(101,30,{head_branch:'feature',status})]}).dispatch,true,label+': a newer '+status+' gentle run off main cannot carry the chain (#190 Codex review 2 P2)');
  assert.equal(decide({...base,runs:[after,...Array.from({length:22},(_,i)=>run(200+i,63+i))]}).dispatch,true,label+': the 24th run of the day');
- assert.equal(decide({...base,runs:[after,run(99,70,{display_title:'Yukemuri collection (check-access)',status:'in_progress'})]}).dispatch,true,label+': a check-access run does not stop the chain');
+ assert.equal(decide({...base,runs:[after,run(101,30,{display_title:'Yukemuri collection (check-access)',status:'in_progress'})]}).dispatch,true,label+': a newer check-access run does not stop the chain');
+ assert.equal(decide({...base,runs:[{...after,id:99},after]}).dispatch,true,label+': a run made in the same second with a lower id is the older one');
  assert.equal(decide({...base,runs:[run(102,24*60+30),after]}).dispatch,true,label+': yesterday\'s runs do not count');
  // Runs that waited together may end in either order (queue: max, cloudflare-deploy.md): only the
  // newer run's wait dispatches (#190 Codex review 3 P2).
@@ -167,11 +168,14 @@ try{
   assert.fail('control without '+rule+' still passed');
  }
  // The clause #190 Codex review 3 found: an older run still queued or running stopped the newer run's wait.
- const clause=source.replace('&&Date.parse(r.created_at)>Date.parse(after.created_at));',"&&(Date.parse(r.created_at)>Date.parse(after.created_at)||r.status!=='completed'));");
- assert.notEqual(clause,source);
- const file=join(controls,'older-running.mjs');writeFileSync(file,clause);
- const copy=await import(pathToFileURL(file).href);
- assert.throws(()=>check(copy.nextRun,'control older-running'),undefined,'control with an older running run stopping the wait still passed');failed++;
+ // And a run made in the same second as the one before (#190 Claude review 1 P3): ordered by id.
+ for(const [name,from,to] of [['older-running','&&(Date.parse(r.created_at)>at||',"&&(r.status!=='completed'||Date.parse(r.created_at)>at||"],['same-second','||(Date.parse(r.created_at)===at&&r.id>after.id)','']]){
+  const copySource=source.replace(from,to);
+  assert.notEqual(copySource,source,name);
+  const file=join(controls,name+'.mjs');writeFileSync(file,copySource);
+  const copy=await import(pathToFileURL(file).href);
+  assert.throws(()=>check(copy.nextRun,'control '+name),undefined,'control '+name+' still passed');failed++;
+ }
 }finally{rmSync(controls,{recursive:true,force:true})}
 const shared=wait.replace('yukemuri-collection-chain-${{ inputs.after_run }}','yukemuri-collection-chain');
 assert.notEqual(shared,wait);
@@ -187,6 +191,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+2+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+3+CONDITIONS.length+4;
 assert.equal(failed,total);
 console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer gentle run exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
