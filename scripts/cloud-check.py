@@ -24,6 +24,7 @@ commands = [
     [sys.executable, 'scripts/runner/check_lifecycle.py'],
     ['node', 'scripts/check-lifecycle-official.mjs'],
     ['node', 'scripts/check-collect-workflow.mjs'],
+    ['node', 'scripts/check-collection-chain.mjs'],
     ['node', 'scripts/check-rollback-workflow.mjs'],
     ['node', 'scripts/check-cloudflare-usage.mjs'],
     ['node', 'scripts/check-daily-check.mjs'],

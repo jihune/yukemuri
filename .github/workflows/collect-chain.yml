@@ -1,0 +1,50 @@
+name: Yukemuri collection chain
+# C06 (user 2026-10-19): collect.yml starts this after a gentle run on main that
+# collected and refreshed its snapshot. The wait happens here, outside the
+# catalogue lock (yukemuri-catalog-updates), so push deploys are not held up:
+# collection-chain.mjs waits until an hour after that run was created (C05:
+# hourly) and dispatches the next gentle run with the workflow token (a
+# workflow_dispatch made with it still starts a run) unless a newer run, the
+# day's run limit or a small or unreadable budget says not to. A newer wait
+# cancels this one; the newest run carries the chain. No cron here, as in
+# collect.yml.
+run-name: Yukemuri collection chain (after run ${{ inputs.after_run }})
+on:
+  workflow_dispatch:
+    inputs:
+      after_run:
+        description: The collect.yml run to follow
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: yukemuri-collection-chain
+  cancel-in-progress: true
+# bash runs with -eo pipefail: a failing command piped into tee fails its step.
+defaults:
+  run:
+    shell: bash
+jobs:
+  wait:
+    runs-on: ubuntu-24.04
+    # Up to an hour of waiting, then a few requests.
+    timeout-minutes: 70
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # The Cloudflare token sizes the next run as collect.yml would (Account Analytics read).
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          AFTER_RUN: ${{ inputs.after_run }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/collection-chain.mjs

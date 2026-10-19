@@ -53,7 +53,8 @@ assert.match(budgetStep,/name: Size the run within the free D1 limits\n {8}id: b
 assert(!/YUKEMURI_CRAWL_ACCESS_KEY/.test(budgetStep)&&!/CLOUDFLARE_/.test(collectorStep),'the crawl key and the Cloudflare token stay in separate steps');
 assert.deepEqual([...new Set(collect.match(/secrets\.\w+/g)??[])].sort(),['secrets.CLOUDFLARE_ACCOUNT_ID','secrets.CLOUDFLARE_API_TOKEN','secrets.YUKEMURI_CRAWL_ACCESS_KEY'],'no other secret is named');
 assert(collect.indexOf('check_collection.py')<collect.indexOf('collection-budget.mjs')&&collect.indexOf('collection-budget.mjs')<collect.indexOf('run-collection.py --mode'),'offline checks, then the budget, then the key is used');
-assert.equal(collect.slice(collect.indexOf('  snapshot:\n')),[
+// The snapshot job, then the C06 chain job (check-collection-chain.mjs) as the last one.
+assert.equal(collect.slice(collect.indexOf('  snapshot:\n'),collect.indexOf('  # C06: ')),[
  '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
  'a successful gentle run that collected refreshes the snapshot through deploy.yml at the same commit');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
