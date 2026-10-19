@@ -53,8 +53,10 @@ export type SnapshotCoverage=typeof coverageJson;
 // (core.lat/lng keeps only those, as before), otherwise the approximate point
 // the snapshot builder found, rounded to 6 decimals. Every grade from 2 is
 // approximate: what the hotel detail calls location.isApproximate (the detail
-// API reads D1 and has no coordinates for these hotels).
-export const GEO_GRADE={none:0,source:1,block:2,oaza:3,city:4,prefecture:5,wikidata:6} as const;
+// API reads D1 and has no coordinates for these hotels). overture: a grade 3-6
+// point moved to the matched Overture Maps place (D08, scripts/snapshot-geo.mjs);
+// like Wikidata, a building's point that no booking site confirmed.
+export const GEO_GRADE={none:0,source:1,block:2,oaza:3,city:4,prefecture:5,wikidata:6,overture:7} as const;
 export type GeoGrade=typeof GEO_GRADE[keyof typeof GEO_GRADE];
 export type SnapshotGeo={grade:GeoGrade[];lat:(number|null)[];lng:(number|null)[]};
 // The geocoder's input for a hotel without payload coordinates

@@ -1,0 +1,12 @@
+no range check: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+payload points may move: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+grade 2 may move: caught (rc 1) AssertionError [ERR_ASSERTION]: grades 3-6 within range move; payload, block, too far and no point stay
+Microsoft not credited: caught (rc 1) AssertionError [ERR_ASSERTION]: every first source is credited: meta, Foursquare, Microsoft
+map credit dropped: caught (rc 1) AssertionError [ERR_ASSERTION]: and the map
+Foursquare not credited: caught (rc 1) AssertionError [ERR_ASSERTION]: every first source is credited: meta, Foursquare, Microsoft
+NOTICE.txt not linked: caught (rc 1) AssertionError [ERR_ASSERTION]: the credit links public/licenses/Foursquare-NOTICE.txt
+unserved license loaded: caught (rc 1) AssertionError [ERR_ASSERTION]: Missing expected exception: a source without a served license text refuses the extract
+unserved license kept: caught (rc 1) AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+not one-to-one: caught (rc 1) AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+unbroken copy: rc 0
+controls: 10/10 caught, unbroken passes: True -> PASS
