@@ -56,7 +56,7 @@
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
 | main | 이 기록 PR이 들어간다. 그 앞은 `1ca9088`(PR #171, U07 후속), `07e2f4e`(PR #173, 기록), `0a61e46`(PR #172, 기록), `1e03978`(PR #166, U07 PR 다), `2453e2d`(PR #163, C04 예산) | `git log --oneline -6 origin/main` |
-| 열린 PR | 없음(yukemuri, yukemuri-script-runner). U07이 #171 마지막 검토의 P3 2건과 검사 정리로 작은 후속 PR을 연다(아래 4의 3) | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
+| 열린 PR | yukemuri #176(U07 두 번째 후속, #171 마지막 검토 P3 2건과 검사 정리, 10-19T01:03Z 열림, head `d065c6a`, main `8b143f0`에서 시작). CI 뒤 Codex 1회째. 실행기 저장소는 없음 | `list_pull_requests`(state open), yukemuri와 yukemuri-script-runner |
 | 운영 배포 | 마지막 코드 배포는 PR #171(`1ca9088`, run 39177623003, 10-18T23:42:14Z–23:49:38Z, Worker `8bf8f461`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `88f1f324f8aee27d`, 24,694곳, 생성 읽기 128,157행)이다. 10-18의 코드 배포 여덟 번은 `deployments.md`에 있다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분(`37 * * * *`, 실행기 PR #14, 10-18T12:31Z)이다. GitHub `schedule`이 늦게 와서 첫 실행은 16:06:57Z였다(실행기 run 39143537085). `collection-budget.mjs`(PR #163)는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000이다. 0쪽 실행은 수집기와 스냅숏을 건너뛰어 D1을 읽지 않는다. 실행기 schedule 실행은 16:06:57Z·18:53:15Z·21:48:59Z로 약 3시간 간격이다. 마지막 앱 `collect.yml` 실행은 run 39169498982(21:49:06Z–21:59:43Z, 성공) | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, 실행기 `yukemuri-catalog.yml`도 같은 방법 |
 | 하위 세션 | 일함: O03(C05 측정), U07(#171 P3 후속 PR). 쉼: C04, D07, U05, U06, L01, D05(아래 6) | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
@@ -145,6 +145,7 @@
 - 10-18T23:16Z 일곱 번째 상위 세션이 이어받았다. 1의 결과는 위 7에 있다.
 - 10-18T23:30Z #171 5번째 검토(review 5565573910, 검토 커밋 `9b362ad`)는 P0~P2 0건, P3 2건이다(6번 경우의 판정 이름이 장음 영어를 `lang="en"`으로 적음, 원문 언어를 모르는 설명에 Chrome·Edge 안내가 보임(main과 같음)). U07이 두 스레드에 ‘다음 일로 넘김’을 답하고 해결했다. 검토 세션 `session_017QHD7E1qBjbgpu8VhxuaoE`는 이 줄을 push한 뒤 보관했다.
 - 10-18T23:4xZ U07의 병합 준비 알림(head `a796853`, 검토 뒤 바뀐 것은 U07 문서와 인계 U07 절뿐)을 받아 #171을 병합했다(`1ca9088`). 확인: 검토 커밋과 head를 각각 main과 합친 트리의 차이가 기록 파일 두 개뿐, `checks`(run 39176898956)·GitGuardian 통과, mergeable clean, 스레드 6개 해결. 배포 run 39177623003 성공(Worker `8bf8f461`, 스냅숏 `88f1f324f8aee27d`, 24,694곳, `deployments.md`).
+- 10-19T01:03Z U07이 두 번째 후속 PR #176을 열었다(네 건과 함께 U02 검사의 route 거부를 흘리는 한 줄 `51b70f1`, 상위 세션이 그대로 두게 함). U07의 확인: 결함을 심은 main 빌드에서 옛 U02·U06 검사는 시간 초과, 새 검사는 통과, 고친 트리에서 `cloud-check --full` 48개와 브라우저 검사 20개 통과.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
