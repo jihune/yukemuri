@@ -1,10 +1,11 @@
 // D08 PR 4 Overture credit in real Chromium (360·390px touch, 1280px mouse):
 // - the footer and the data status screen's ‘출처 표기’ show the Overture note, the
-//   attribution and its two links, wholly on screen when scrolled to, with no
-//   horizontal overflow;
+//   attribution of every source and its links (Overture, the CDLA Permissive 2.0 and
+//   Apache 2.0 texts, Foursquare's NOTICE.txt), wholly on screen when scrolled to, with
+//   no horizontal overflow;
 // - the map's attribution has the Overture Maps link next to OpenStreetMap, and a hit
 //   test at its centre lands on it;
-// - the CDLA Permissive 2.0 text the credit links to is served as text.
+// - every text the credit links to is served as text, byte for byte.
 // Needs the local site (node scripts/prepare-local-site.mjs, then pnpm start) and the
 // isolated Playwright install in docs/ui-u01-20261010.md.
 // Usage: node scripts/check-d08-overture-browser.mjs [base] [evidence.json] [screenshot dir]
@@ -20,9 +21,11 @@ const check=(name,pass,detail={})=>{results.push({width,name,pass:!!pass,detail}
 // The credit as lib/geo-attribution.ts writes it, read here from the source.
 const source=readFileSync('lib/geo-attribution.ts','utf8');
 const NOTE=/OVERTURE_NOTE='([^']+)'/.exec(source)[1],SOURCES=[...source.matchAll(/'(Data from [^']+)'/g)].map(m=>m[1]);
-const license=readFileSync('public/licenses/CDLA-Permissive-2.0.txt','utf8');
-const served=await fetch(base+'/licenses/CDLA-Permissive-2.0.txt');
-check('CDLA Permissive 2.0 전문이 글자로 그대로 제공됨',served.status===200&&/^text\/plain/.test(served.headers.get('content-type')??'')&&await served.text()===license,{status:served.status,type:served.headers.get('content-type')});
+const LINKS=[.../export const OVERTURE_LINKS=\[(.*)\] as const;/.exec(source)[1].matchAll(/url:'([^']+)'/g)].map(m=>m[1]),TEXTS=LINKS.filter(u=>u.startsWith('/licenses/'));
+for(const url of TEXTS){
+ const served=await fetch(base+url);
+ check(url+' 전문이 글자로 그대로 제공됨',served.status===200&&/^text\/plain/.test(served.headers.get('content-type')??'')&&await served.text()===readFileSync('public'+url,'utf8'),{status:served.status,type:served.headers.get('content-type')});
+}
 const browser=await chromium.launch();
 for(const w of [360,390,1280]){
  width=w;const mobile=w<900;
@@ -33,18 +36,21 @@ for(const w of [360,390,1280]){
  // A link that wraps has one box per line: each is hit-tested at its own centre.
  const credit=async root=>page.evaluate(([root,note,sources])=>{
   const p=[...document.querySelectorAll(root+' p')].find(e=>e.textContent.includes(note));if(!p)return null;
+  p.scrollIntoView({block:'center'});
   const r=p.getBoundingClientRect(),links=[...p.querySelectorAll('a')].map(a=>{const b=a.getBoundingClientRect(),boxes=[...a.getClientRects()].filter(x=>x.width>0);return{text:a.textContent,href:a.getAttribute('href'),target:a.target,lines:boxes.length,onScreen:b.top>=0&&b.bottom<=innerHeight&&b.left>=0&&b.right<=innerWidth,hit:boxes.length>0&&boxes.every(x=>{const hit=document.elementFromPoint(x.left+x.width/2,x.top+x.height/2);return!!hit&&(hit===a||a.contains(hit))})}});
   return{text:p.textContent,sources:sources.every(s=>p.textContent.includes(s)),overture:p.textContent.includes('Overture Maps Foundation, overturemaps.org'),inside:r.left>=0&&r.right<=innerWidth+0.5,links,overflow:document.documentElement.scrollWidth>innerWidth};
  },[root,NOTE,SOURCES]);
  await page.goto(base+'/',{waitUntil:'networkidle'});
  await page.locator('[data-overture-credit]').scrollIntoViewIfNeeded();
  const foot=await credit('footer.site-footer');
- check('바닥글: 안내 문장, Overture 표기(Meta·Microsoft 문구), 링크 둘(Overture Maps, 전문)이 화면 안에 있고 눌림, 가로 넘침 없음',!!foot&&foot.sources&&foot.overture&&foot.inside&&!foot.overflow&&foot.links.length===2&&foot.links[1].href==='/licenses/CDLA-Permissive-2.0.txt'&&foot.links.every(l=>l.onScreen&&l.hit&&l.target==='_blank'),foot);
- if(shots)await page.locator('footer.site-footer').screenshot({path:join(shots,`footer-${w}.png`)});
- await tap(page.locator('.u06-open'));
+ const same=c=>!!c&&c.links.length===LINKS.length&&c.links.every((l,i)=>l.href===LINKS[i]);
+ check(`바닥글: 안내 문장, Overture 표기(출처 ${SOURCES.length}곳 문구), 링크 ${LINKS.length}개(Overture Maps와 전문들)가 화면 안에 있고 눌림, 가로 넘침 없음`,!!foot&&foot.sources&&foot.overture&&foot.inside&&!foot.overflow&&same(foot)&&foot.links.every(l=>l.onScreen&&l.hit&&l.target==='_blank'),foot);
+ if(shots)await page.locator('[data-overture-credit]').screenshot({path:join(shots,`footer-${w}.png`)});
+ // Opened by its address: the footer button moves while the list keeps loading more stays.
+ await page.goto(base+'/#status',{waitUntil:'networkidle'});
  const sheet=page.locator('#u06-credits');await sheet.waitFor({timeout:10000});await sheet.scrollIntoViewIfNeeded();
  const status=await credit('.u06-credits');
- check('자료 현황 ‘출처 표기’: 같은 안내·표기·링크 둘이 화면 안에 있고 눌림, 가로 넘침 없음',!!status&&status.sources&&status.overture&&status.inside&&!status.overflow&&status.links.length===2&&status.links.every(l=>l.onScreen&&l.hit),status);
+ check(`자료 현황 ‘출처 표기’: 같은 안내·표기·링크 ${LINKS.length}개가 화면 안에 있고 눌림, 가로 넘침 없음`,!!status&&status.sources&&status.overture&&status.inside&&!status.overflow&&same(status)&&status.links.every(l=>l.onScreen&&l.hit),status);
  if(shots)await page.locator('.u06-credits').screenshot({path:join(shots,`status-credits-${w}.png`)});
  await page.goto(base+'/',{waitUntil:'networkidle'});
  if(mobile)await tap(page.locator('.mobile-map-toggle'));else await page.getByRole('button',{name:'지도 크게'}).click();

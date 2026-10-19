@@ -11,7 +11,10 @@ cases = [
     ('scripts/snapshot-geo.mjs', 'OVERTURE_MOVE={[GRADE.oaza]:5000,', 'OVERTURE_MOVE={[GRADE.block]:5000,[GRADE.oaza]:5000,', 'grade 2 may move'),
     ('lib/geo-attribution.ts', ",Microsoft:'Data from Microsoft. Available under CDLA Permissive 2.0.'", '', 'Microsoft not credited'),
     ('components/stay-map.tsx', 'map.attributionControl.addAttribution(OVERTURE_MAP_CREDIT);', '', 'map credit dropped'),
-    ('scripts/geo/update-overture.py', "elif not set(o['licenses']) <= LICENSES:", "elif False:", 'Foursquare kept'),
+    ('lib/geo-attribution.ts', ",Foursquare:'Data from Foursquare.", ",Foursquare2:'Data from Foursquare.", 'Foursquare not credited'),
+    ('lib/geo-attribution.ts', ",{label:'Foursquare NOTICE.txt',url:'/licenses/Foursquare-NOTICE.txt'}", '', 'NOTICE.txt not linked'),
+    ('scripts/snapshot-geo.mjs', "license==='CC0-1.0'||!!data.licenseTexts?.[license]", 'true', 'unserved license loaded'),
+    ('scripts/geo/update-overture.py', "elif not set(o['licenses']) <= set(LICENSE_TEXTS):", "elif False:", 'unserved license kept'),
     ('scripts/geo/update-overture.py', "return [(n, found[0]) for n, found in enumerate(hits) if len(found) == 1 and per_place[found[0]] == 1]",
      "return [(n, found[0]) for n, found in enumerate(hits) if len(found) == 1]", 'not one-to-one'),
 ]

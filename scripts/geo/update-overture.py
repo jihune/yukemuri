@@ -15,8 +15,9 @@ Join (docs/D08-20261019.md section 11.3): the same normalised name, then rule b
 (our source point within 150 m) or rule c (same prefecture and municipality),
 one-to-one only. Kept: our point at grade 3-6, house numbers agree, Overture
 confidence 0.5 or more, the move within 5 km (grade 3) or 20 km (grades 4-6),
-and only records under CDLA Permissive 2.0 or CC0 (Foursquare's Apache 2.0
-records are left out). The build checks the grade and the move again.
+and only records under a license whose text the site serves (CDLA Permissive
+2.0, Apache 2.0 with Foursquare's NOTICE.txt) or CC0. The build checks the grade
+and the move again.
 """
 import argparse
 import collections
@@ -36,7 +37,9 @@ OUT = ROOT / 'data/overture-geo.json'
 ORIGIN = 'https://yukemuri.jihune.workers.dev'
 AGENT = 'YukemuriCatalogUpdater/1.0 (+https://github.com/jihune/yukemuri)'
 BUCKET = 's3://overturemaps-us-west-2/release/{release}/theme=places/type=place/*'
-LICENSES = {'CDLA-Permissive-2.0', 'CC0-1.0'}
+# The license texts served beside the snapshot (public/licenses/); CC0 needs none.
+LICENSE_TEXTS = {'CDLA-Permissive-2.0': 'public/licenses/CDLA-Permissive-2.0.txt', 'Apache-2.0': 'public/licenses/Apache-2.0.txt', 'CC0-1.0': None}
+NOTICES = {'Foursquare': 'public/licenses/Foursquare-NOTICE.txt'}
 NEAR_M = 150
 MOVE_M = {3: 5000, 4: 20000, 5: 20000, 6: 20000}
 MIN_CONFIDENCE = 0.5
@@ -172,8 +175,8 @@ def keep(ours, places, pairs):
             why['confidence under 0.5'] += 1
         elif meters(r['lat'], r['lng'], o['lat'], o['lng']) > MOVE_M[r['grade']]:
             why['move beyond the grade range'] += 1
-        elif not set(o['licenses']) <= LICENSES:
-            why['license not CDLA Permissive 2.0 or CC0 (Foursquare)'] += 1
+        elif not set(o['licenses']) <= set(LICENSE_TEXTS):
+            why['license whose text the site does not serve'] += 1
         else:
             kept.append((n, j))
     return kept, why
@@ -248,12 +251,19 @@ def main():
         sys.exit(1)
     rows = sorted([ours[n]['id'], places[j]['id'], round(places[j]['lat'], 6), round(places[j]['lng'], 6),
                    round(places[j]['confidence'], 3), places[j]['datasets'][0]] for n, j in kept)
+    # Each first source and its license (one license per source, or the extract is refused).
+    sources = {}
+    for _, j in kept:
+        dataset, license = places[j]['datasets'][0], places[j]['licenses'][0]
+        if sources.setdefault(dataset, license) != license:
+            raise SystemExit(f'{dataset} records under two licenses: {sources[dataset]}, {license}')
     data = {'source': BUCKET.format(release=args.release).removesuffix('/*'), 'release': args.release, 'snapshot': manifest['id'],
-            'retrievedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'license': 'CDLA-Permissive-2.0',
-            'licenseText': 'public/licenses/CDLA-Permissive-2.0.txt',
+            'retrievedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'sources': dict(sorted(sources.items())),
+            'licenseTexts': {k: LICENSE_TEXTS[k] for k in sorted(set(sources.values())) if LICENSE_TEXTS[k]},
+            'notices': {k: v for k, v in NOTICES.items() if k in sources},
             'note': 'Overture Maps Places point (bbox centre) for hotels at map grades 3-6. Columns: hotelId, Overture id, lat, lng, '
-                    'confidence, first source. Records under CDLA Permissive 2.0 (Meta, Microsoft) or CC0 (AllThePlaces) only. '
-                    'docs/D08-20261019.md',
+                    'confidence, first source. sources: first source -> license; licenseTexts and notices: what the site serves '
+                    'with the points. docs/D08-20261019.md',
             'hotels': rows}
     body = '{\n' + ',\n'.join(' ' + json.dumps(k) + ':' + ('[\n' + ',\n'.join('  ' + json.dumps(r, ensure_ascii=False, separators=(',', ':')) for r in v) + '\n ]'
                                                            if k == 'hotels' else json.dumps(v, ensure_ascii=False)) for k, v in data.items()) + '\n}\n'

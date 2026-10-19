@@ -20,8 +20,9 @@ assert u.address_agreement('箱根町湯本', '湯本256', '箱根町') == 'unkn
 assert u.address_agreement('箱根町湯本２５６', '〒250-0311 湯本256', '箱根町') == 'agree', 'full-width digits; a postcode is no house number'
 
 # Hotels (grade, point) and places; every kept pair needs grade 3-6, house numbers agree,
-# confidence 0.5 or more, a move within the grade's range and a CDLA or CC0 license.
+# confidence 0.5 or more, a move within the grade's range and a license whose text the site serves.
 CDLA = ['CDLA-Permissive-2.0', 'CDLA-Permissive-2.0']
+APACHE = ['Apache-2.0', 'CDLA-Permissive-2.0']
 
 
 def hotel(hid, name, grade, lat, rest='箱根町湯本256-1'):
@@ -36,18 +37,20 @@ def place(pid, name, lat, conf=0.9, freeform='湯本256-1', licenses=CDLA, local
 ours = [hotel('jalan-1', '湯本館', 3, 35.0), hotel('jalan-2', '山荘', 3, 35.0), hotel('jalan-3', '月の宿', 2, 35.0),
         hotel('jalan-4', '花の宿', 3, 35.0), hotel('jalan-5', '星の宿', 3, 35.0), hotel('jalan-6', '海の宿', 4, 35.0),
         hotel('jalan-7', '森の宿', 3, 35.0), hotel('jalan-8', '川の宿', 3, 35.0), hotel('trip-9', '川の宿', 3, 35.0),
-        hotel('jalan-10', '空の宿', 1, 35.0, rest=None), hotel('jalan-11', '雪の宿', 3, 35.0, rest='箱根町宮ノ下1')]
+        hotel('jalan-10', '空の宿', 1, 35.0, rest=None), hotel('jalan-11', '雪の宿', 3, 35.0, rest='箱根町宮ノ下1'),
+        hotel('jalan-12', '風の宿', 3, 35.0)]
 places = [place('a', '湯本館', 35.02), place('b', '山荘', 35.06), place('c', '月の宿', 35.001),
           place('d', '花の宿', 35.01, conf=0.4), place('e', '星の宿', 35.01, freeform='湯本999'),
-          place('f', '海の宿', 35.15), place('g', '森の宿', 35.01, licenses=['Apache-2.0', 'CDLA-Permissive-2.0']),
-          place('h', '川の宿', 35.01), place('i', '空の宿', 35.0005), place('k', '雪の宿', 35.01, locality='小田原市')]
+          place('f', '海の宿', 35.15), place('g', '森の宿', 35.01, licenses=['ODbL-1.0', 'CDLA-Permissive-2.0']),
+          place('h', '川の宿', 35.01), place('i', '空の宿', 35.0005), place('k', '雪の宿', 35.01, locality='小田原市'),
+          place('m', '風の宿', 35.01, licenses=APACHE)]
 pairs = u.join(ours, places)
 joined = {ours[n]['id']: places[j]['id'] for n, j in pairs}
 assert 'jalan-8' not in joined and 'trip-9' not in joined, 'a place two of our hotels match is not one-to-one'
 assert joined.get('jalan-10') == 'i', 'rule b: a source point within 150 m'
 assert 'jalan-11' not in joined, 'rule c needs the same municipality'
 kept, why = u.keep(ours, places, pairs)
-assert sorted(ours[n]['id'] for n, _ in kept) == ['jalan-1', 'jalan-6'], kept
+assert sorted(ours[n]['id'] for n, _ in kept) == ['jalan-1', 'jalan-12', 'jalan-6'], 'Apache 2.0 (Foursquare) is kept: ' + str(kept)
 assert why == {'our point is a source, block-level or no point': 2, 'move beyond the grade range': 1, 'confidence under 0.5': 1,
-               'house numbers do not agree': 1, 'license not CDLA Permissive 2.0 or CC0 (Foursquare)': 1}, why
+               'house numbers do not agree': 1, 'license whose text the site does not serve': 1}, why
 print(f'Overture join rules passed: names, municipalities, house numbers, one-to-one, {len(why)} reasons to leave a pair out.')

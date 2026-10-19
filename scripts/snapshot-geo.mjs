@@ -34,9 +34,12 @@ export function loadWikidata(file=WIKIDATA_FILE){
 }
 
 // Hotel id -> [lat, lng] from the committed Overture extract (scripts/geo/update-overture.py).
+// Every row's first source needs a license the site serves the text of (CC0 needs none);
+// otherwise the whole extract is refused and the snapshot is built without it.
 export function loadOverture(file=OVERTURE_FILE){
  const data=JSON.parse(readFileSync(file,'utf8'));
- if(data.license!=='CDLA-Permissive-2.0'||!Array.isArray(data.hotels))throw new Error('Unexpected Overture extract: '+file);
+ const served=license=>license==='CC0-1.0'||!!data.licenseTexts?.[license];
+ if(!Array.isArray(data.hotels)||!data.hotels.every(r=>served(data.sources?.[r[5]])))throw new Error('Unexpected Overture extract: '+file);
  const points=new Map();
  for(const [id,,lat,lng] of data.hotels)if(inJapan(lat,lng))points.set(id,[lat,lng]);
  return points;

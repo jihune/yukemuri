@@ -1,2 +1,2 @@
 published counts 0,2155,15059,6806,777,144,284
-replayed counts  0,2155,15059,5634,692,144,284,1257 | overture {"moved":1257,"tooFar":0,"points":1257} | rows changed other than grade 7: 0
+replayed counts  0,2155,15059,5514,688,144,284,1381 | overture {"moved":1381,"tooFar":0,"points":1381} | rows changed other than grade 7: 0

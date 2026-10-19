@@ -76,15 +76,21 @@ try{
   g=start();r=await addGeo({ids,geo:g,inputs,wikidata:new Map([['16',[35,139]]]),geocode:async()=>found});
   assert.deepEqual(g.grade,[1,2,3,3,4,6,5,0,4,3]);assert.deepEqual(r.overture,{moved:0,tooFar:0,points:0});
  }
- // The committed Overture extract: CDLA Permissive 2.0 (or CC0) records only, one
+ // The committed Overture extract: every first source under a license whose text is
+ // served (CDLA Permissive 2.0, Apache 2.0 with Foursquare's NOTICE.txt) or CC0, one
  // point per hotel in Japan, confidence 0.5 or more, every first source credited.
  const ov=JSON.parse(readFileSync(OVERTURE_FILE,'utf8')),ovPoints=loadOverture();
- assert.equal(ov.license,'CDLA-Permissive-2.0');assert(ov.hotels.length>1000&&ovPoints.size===ov.hotels.length,'one point per hotel, all in Japan');
+ assert(ov.hotels.length>1000&&ovPoints.size===ov.hotels.length,'one point per hotel, all in Japan');
  assert(ov.hotels.every(r=>/^[a-z]+-\d+$/.test(r[0])&&r[4]>=0.5),'hotel ids and confidence 0.5 or more');
- const license=readFileSync(ov.licenseText,'utf8');
- assert(license.startsWith('Community Data License Agreement - Permissive - Version 2.0\n')&&license.includes('makes available the text of this agreement with the shared Data'),'the CDLA Permissive 2.0 text');
- const badLicense=join(temp,'overture-apache.json');writeFileSync(badLicense,JSON.stringify({...ov,license:'Apache-2.0'}));
- assert.throws(()=>loadOverture(badLicense),/Unexpected Overture extract/);
+ const TEXTS={'CDLA-Permissive-2.0':t=>t.startsWith('Community Data License Agreement - Permissive - Version 2.0\n')&&t.includes('makes available the text of this agreement with the shared Data'),
+  'Apache-2.0':t=>/^\s*Apache License\s+Version 2\.0, January 2004/.test(t)&&t.includes('You must give any other recipients of the Work or\n          Derivative Works a copy of this License')};
+ const texts=Object.fromEntries(Object.entries(ov.licenseTexts).map(([k,path])=>[k,readFileSync(path,'utf8')]));
+ for(const license of new Set(Object.values(ov.sources)))assert(license==='CC0-1.0'||TEXTS[license]?.(texts[license]),'the full text of '+license);
+ if(ov.sources.Foursquare){const notice=readFileSync(ov.notices.Foursquare,'utf8');assert(notice.includes('© 2026 Foursquare Labs, Inc. All rights reserved.')&&notice.includes('preserving the full content of this NOTICE.txt file')&&notice.includes('Notice of changes (Yukemuri'),'Foursquare NOTICE.txt with our change notice')}
+ for(const bad of [{...ov,sources:{...ov.sources,meta:'ODbL-1.0'}},{...ov,licenseTexts:{}},{...ov,sources:undefined}]){
+  const file=join(temp,'overture-bad.json');writeFileSync(file,JSON.stringify(bad));
+  assert.throws(()=>loadOverture(file),/Unexpected Overture extract/,'a source without a served license text refuses the extract');
+ }
  // The real geocoder runner: no installed dictionary, or a geocoder that exits.
  const empty=join(temp,'empty-db');mkdirSync(empty);
  geo=fresh();s=await addGeo({ids,geo,inputs,wikidata,geocode:dictionaryGeocoder({dbDir:empty})});
@@ -122,7 +128,7 @@ try{
  // Overture's credit names every first source in the extract, beside the CDLA text.
  const sources=[...new Set(ov.hotels.map(r=>r[5]))];
  assert(sources.every(s=>attribution.OVERTURE_SOURCES[s]&&attribution.OVERTURE_ATTRIBUTION.includes(attribution.OVERTURE_SOURCES[s])),'every first source is credited: '+sources.join(', '));
- assert(attribution.OVERTURE_LINKS.some(l=>'public'+l.url===ov.licenseText),'the credit links the license text');
+ for(const path of [...Object.values(ov.licenseTexts),...Object.values(ov.notices)])assert(attribution.OVERTURE_LINKS.some(l=>'public'+l.url===path),'the credit links '+path);
  assert.match(readFileSync('components/hotel-explorer.tsx','utf8'),/<p className="geo-credit" data-overture-credit><span>\{OVERTURE_NOTE\}<\/span> <span lang="en">\{OVERTURE_ATTRIBUTION\}<\/span>.*<\/footer>/,'the footer shows the Overture credit');
  assert.match(readFileSync('components/collection-status-sheet.tsx','utf8'),/<h2 id="u06-credits">.*\{OVERTURE_NOTE\} <span lang="en">\{OVERTURE_ATTRIBUTION\}<\/span>/s,'and the data status screen');
  assert.match(readFileSync('components/stay-map.tsx','utf8'),/map\.attributionControl\.addAttribution\(OVERTURE_MAP_CREDIT\)/,'and the map');
@@ -132,7 +138,7 @@ try{
   for(const link of attribution.GEO_LINKS)assert(footer.includes(`href="${link.url}"`),link.url);
   assert(footer.includes(attribution.OVERTURE_ATTRIBUTION)&&footer.includes(attribution.OVERTURE_NOTE),'the built footer has the Overture credit');
   for(const link of attribution.OVERTURE_LINKS)assert(footer.includes(`href="${link.url}"`),link.url);
-  assert.equal(readFileSync('dist/client'+attribution.OVERTURE_LINKS[1].url,'utf8'),license,'the license text is served');
+  for(const path of [...Object.values(ov.licenseTexts),...Object.values(ov.notices)])assert.equal(readFileSync(path.replace(/^public\//,'dist/client/'),'utf8'),readFileSync(path,'utf8'),path+' is served');
  }
  // Python side: grades, fallbacks and the dictionary pin, with a fake jageocoder.
  const py=spawnSync('python3',['scripts/geo/check_geocode.py'],{encoding:'utf8'});
