@@ -87,9 +87,10 @@ try{
   assert.match(robots,/^https:[/][/][^/]+[/]robots[.]txt$/,file);
   assert.equal(new URL(first).host,new URL(robots).host,file);
   assert.deepEqual(run.out,{'404':['went on',[robots,first]],'503':['stopped',[robots]],disallow:['stopped',[robots]],allow:['went on',[robots,first]],later:['stopped',[robots,first]],slow:['stopped',[robots]],...(elsewhere?{elsewhere:['stopped',[robots,first]]}:{})},file);
-  // A redirect is followed only on the same host.
-  const hop=python([load(file),'import urllib.request','h=m.SameHost();r=urllib.request.Request("https://www.example.jp/a")','same=h.redirect_request(r,None,302,"",{},"https://www.example.jp/b").full_url','try:h.redirect_request(r,None,302,"",{},"https://files.example/b");other="followed"','except SystemExit:other="refused"','print(json.dumps([same,other]))']);
-  assert.equal(hop.status,0,hop.stderr);assert.deepEqual(hop.out,['https://www.example.jp/b','refused'],file);
+  // A redirect is followed only to HTTPS on the same host (Codex review on PR #211).
+  const hop=python([load(file),'import urllib.request','h=m.SameHost();r=urllib.request.Request("https://www.example.jp/a")','same=h.redirect_request(r,None,302,"",{},"https://www.example.jp/b").full_url','out=[same]',
+   'for to in ("https://files.example/b","http://www.example.jp/b"):',' try:h.redirect_request(r,None,302,"",{},to);out.append("followed")',' except SystemExit:out.append("refused")','print(json.dumps(out))']);
+  assert.equal(hop.status,0,hop.stderr);assert.deepEqual(hop.out,['https://www.example.jp/b','refused','refused'],file);
  }
 
  // The committed list.

@@ -64,11 +64,12 @@ KINDS = {'旅館・ホテル', '簡易宿所', '下宿'}
 
 
 class SameHost(urllib.request.HTTPRedirectHandler):
-    """Follows a redirect only on the same host: another host's robots.txt was never read (Codex
-    review on PR #211)."""
+    """Follows a redirect only to HTTPS on the same host: another host's robots.txt was never
+    read, and plain HTTP is another origin (Codex review on PR #211)."""
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
-            raise SystemExit(f'Redirect to another host refused: {newurl}')
+        target = urllib.parse.urlsplit(newurl)
+        if target.scheme != 'https' or target.netloc != urllib.parse.urlsplit(req.full_url).netloc:
+            raise SystemExit(f'Redirect refused (another host or not HTTPS): {newurl}')
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
