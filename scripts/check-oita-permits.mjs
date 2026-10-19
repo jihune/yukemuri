@@ -59,24 +59,26 @@ try{
  // robots.txt is read before any other request, its rules hold for every address, and a failure
  // other than none being there (404) stops the run (Claude review on PR #199).
  // 'later': robots.txt allows the first address and refuses the next one (the PDFs, the CSV);
- // 'slow': it asks for an hour between requests; 'elsewhere': the catalog puts the CSV on another
- // host (Codex review on PR #211).
+ // 'slow': it asks for an hour between requests; 'elsewhere' and 'plain': the catalog puts the
+ // CSV on another host or on plain HTTP (Codex and Claude reviews on PR #211).
  const updaters=[
   {file:'scripts/update-jta-registered.py',args:[],later:'/kankocho/content/',answer:`'<a href="/kankocho/content/1.pdf"><span>登録ホテル一覧</span></a><a href="/kankocho/content/2.pdf"><span>登録旅館一覧</span></a>'.encode()`},
   {file:'scripts/update-oita-permits.py',args:['--snapshot',snap],later:'/dataset/',answer:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`,
-   elsewhere:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://files.example/c.csv"}]}}).encode()`},
+   elsewhere:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://files.example/c.csv"}]}}).encode()`,
+   plain:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"http://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`},
  ];
- for(const {file,args,later,answer,elsewhere} of updaters){
+ for(const {file,args,later,answer,elsewhere,plain} of updaters){
   const run=python([load(file),'m.time.sleep=lambda s:None','out={}',
-   `for mode in ("404","503","disallow","allow","later","slow"${elsewhere?',"elsewhere"':''}):`,
+   `for mode in ("404","503","disallow","allow","later","slow"${elsewhere?',"elsewhere","plain"':''}):`,
    ' calls=[]',
    ' def get(url,mode=mode,calls=calls):',
    '  calls.append(url)',
    `  if mode=="later" and len(calls)==2:return ${answer}`,
    `  if mode=="elsewhere" and len(calls)==2:return ${elsewhere}`,
+   ...(plain?[`  if mode=="plain" and len(calls)==2:return ${plain}`]:[]),
    '  if not url.endswith("/robots.txt"):raise RuntimeError("next")',
    '  if mode in ("404","503"):raise urllib.error.HTTPError(url,int(mode),"",{},None)',
-   `  return ("User-agent: *"+chr(10)+{"disallow":"Disallow: /","allow":"Disallow: /private/","later":"Disallow: ${later}","slow":"Crawl-delay: 3600","elsewhere":"Disallow: /private/"}[mode]).encode()`,
+   `  return ("User-agent: *"+chr(10)+{"disallow":"Disallow: /","allow":"Disallow: /private/","later":"Disallow: ${later}","slow":"Crawl-delay: 3600","elsewhere":"Disallow: /private/","plain":"Disallow: /private/"}[mode]).encode()`,
    ' m.get=get',
    ` try:m.main(${JSON.stringify(args)})`,
    ' except SystemExit:out[mode]=["stopped",calls]',
@@ -86,11 +88,18 @@ try{
   const robots=run.out['404'][1][0],first=run.out['404'][1][1];
   assert.match(robots,/^https:[/][/][^/]+[/]robots[.]txt$/,file);
   assert.equal(new URL(first).host,new URL(robots).host,file);
-  assert.deepEqual(run.out,{'404':['went on',[robots,first]],'503':['stopped',[robots]],disallow:['stopped',[robots]],allow:['went on',[robots,first]],later:['stopped',[robots,first]],slow:['stopped',[robots]],...(elsewhere?{elsewhere:['stopped',[robots,first]]}:{})},file);
+  assert.deepEqual(run.out,{'404':['went on',[robots,first]],'503':['stopped',[robots]],disallow:['stopped',[robots]],allow:['went on',[robots,first]],later:['stopped',[robots,first]],slow:['stopped',[robots]],...(elsewhere?{elsewhere:['stopped',[robots,first]],plain:['stopped',[robots,first]]}:{})},file);
   // A redirect is followed only to HTTPS on the same host (Codex review on PR #211).
   const hop=python([load(file),'import urllib.request','h=m.SameHost();r=urllib.request.Request("https://www.example.jp/a")','same=h.redirect_request(r,None,302,"",{},"https://www.example.jp/b").full_url','out=[same]',
    'for to in ("https://files.example/b","http://www.example.jp/b"):',' try:h.redirect_request(r,None,302,"",{},to);out.append("followed")',' except SystemExit:out.append("refused")','print(json.dumps(out))']);
   assert.equal(hop.status,0,hop.stderr);assert.deepEqual(hop.out,['https://www.example.jp/b','refused','refused'],file);
+  // And every request goes through that handler (Claude review on PR #211): get() builds its opener with it.
+  const via=python([load(file),'import urllib.request','handlers=[]',
+   'class Response:',' read=lambda self:b"ok"',' __enter__=lambda self:self',' __exit__=lambda self,*a:None',
+   'class Opener:',' open=lambda self,*a,**k:Response()',
+   'def build(*h):',' handlers.extend(h);return Opener()',
+   'urllib.request.build_opener=build','body=m.get("https://www.example.jp/a")','print(json.dumps([body.decode(),any(isinstance(h,m.SameHost) for h in handlers)]))']);
+  assert.equal(via.status,0,via.stderr);assert.deepEqual(via.out,['ok',true],file+': get() follows redirects through SameHost');
  }
 
  // The committed list.

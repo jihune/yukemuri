@@ -8,8 +8,8 @@ credits the agency and says the lists were processed (lib/jta-registration.ts).
 The PDF addresses change every month, so the script reads them from the list
 page. Four GETs to www.mlit.go.jp, one at a time, 3 seconds apart: robots.txt
 (none there on 2026-10-19, which allows everything; any other failure stops the
-run), the list page and the two PDFs. A redirect to another host or a
-robots.txt delay over 120 seconds stops the run. Needs `pdftotext` (poppler-utils). Run by hand
+run), the list page and the two PDFs. A redirect that is not HTTPS on the same
+host or a robots.txt delay over 120 seconds stops the run. Needs `pdftotext` (poppler-utils). Run by hand
 after the monthly update (the page's 最終更新日), check the counts, commit.
 
 The monthly 登録ホテル・旅館更新情報 (registrations and removals) is not read:

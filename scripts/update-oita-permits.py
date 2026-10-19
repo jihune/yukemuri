@@ -21,8 +21,8 @@ Their count is noted in the file.
 
 Three GETs to data.bodik.jp, one at a time, 3 seconds apart: robots.txt, the
 catalog's package record (license and the CSV's address) and the CSV. A CSV
-on another host, a redirect to another host or a robots.txt delay over 120
-seconds stops the run. Run by
+that is not HTTPS on data.bodik.jp, a redirect that is not HTTPS on the same
+host or a robots.txt delay over 120 seconds stops the run. Run by
 hand after the prefecture updates the list, check the counts, commit. A row
 that leaves the list is not evidence that a stay closed (D08 9.2).
 
@@ -182,8 +182,9 @@ def main(argv=None):
     if package['license_id'] != LICENSE:
         raise SystemExit(f"License is {package['license_id']}, not {LICENSE}")
     [resource] = [r for r in package['resources'] if r['format'].upper() == 'CSV']
-    if urllib.parse.urlsplit(resource['url']).netloc != urllib.parse.urlsplit(PACKAGE).netloc:
-        raise SystemExit(f"The CSV is on another host: {resource['url']}")
+    target = urllib.parse.urlsplit(resource['url'])
+    if target.scheme != 'https' or target.netloc != urllib.parse.urlsplit(PACKAGE).netloc:
+        raise SystemExit(f"The CSV is not on HTTPS at data.bodik.jp: {resource['url']}")
     if not robots_allowed(rules, resource['url']):
         raise SystemExit('robots.txt disallows the CSV')
     time.sleep(pause)
