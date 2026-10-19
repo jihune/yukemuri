@@ -124,7 +124,8 @@
 3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽었다.
 4. 표 확인(10:00Z–10:04Z): main은 `da03744`(PR #182)다. 열린 PR은 yukemuri `[]`, 실행기 `[]`다(실행기는 `add_repo` access push 뒤 clone, `3c4a7e1`). 마지막 코드 배포는 그대로 run 39189908721(#176)이다. 하위 세션 여덟 곳은 모두 idle이다. 처음 클론이 얕아(`git rev-parse --is-shallow-repository` true) `git fetch --depth=1000`으로 받은 뒤 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`를 봤다. main에 없는 커밋은 `claude/d05-rooms`의 `d2f7d53`(10-15, 내용이 이미 main에 있음, `docs/history/work-handoff-20261018.md`의 표와 같음)과 `claude/p02-search-snapshot` 11개(보류한 draft #38)뿐이라 가져올 기록 커밋은 없다. 수집은 실행기 catalog 예약이 05:15:34Z 뒤로 비어 수동으로 한 번 불렀다(아래 8의 10:04Z).
 5. 예약: 안전망 9회째(11:15Z)와 H01 7일차(10-20T01:20Z)를 `send_later`로 이 세션에 다시 만들고(`trig_01VKpV8C4mTH7YWgrRsoXbMH`, `trig_01U6vLaQDDfYSNSwTyrSmw7y`), 옛 두 개를 `delete_trigger`로 지웠다. 안전망 prompt는 세션 이름과 기록 브랜치만 바꿨다. 사용자 keep-alive 루틴 두 개와 O03의 예약 두 개, 다른 프로젝트 예약 하나는 건드리지 않았다.
-6. 알림(10:02Z–10:03Z): O03·U07·C04·D07·U05·U06·L01·D05와 일곱 번째에 `send_message`(priority later)로 새 id를 알렸고 모두 `delivered`였다. O03에는 자기 예약 두 개의 prompt에 적힌 알릴 곳을 새 id로 바꾸고, catalog 예약의 빈 구간을 C05 측정에 넣으라고 적었다. D05에는 `d2f7d53`을 따로 가져오지 않는다고 적었다.
+6. 알림(10:02Z–10:03Z): O03·U07·C04·D07·U05·U06·L01·D05와 일곱 번째에 `send_message`(priority later)로 새 id를 알렸고 모두 `delivered`였다. O03에는 자기 예약 두 개의 prompt에 적힌 알릴 곳을 새 id로 바꾸고, catalog 예약의 빈 구간을 C05 측정에 넣으라고 적었다. D05에는 `d2f7d53`을 따로 가져오지 않는다고 적었다. O03은 10:03Z에 두 예약의 알릴 곳을 바꾸고 빈 구간을 C05 측정에 넣었다고 답했다.
+7. 누락 점검: 일곱 번째의 `list_events(kinds=["user"], limit=100)`을 `before_id`로 끝까지 거슬러 읽었다(하위 에이전트, 16쪽, 10-18T23:16:27Z 첫 이벤트까지). 사람이 쓴 글은 두 개뿐이다. 하나는 시작 한 줄(23:16:27Z)이고, 다른 하나는 23:54:00Z의 브랜치 말(화면 캡처 한 장과 함께)이다. 뒤의 것은 원문 끝에 ‘claude 웹에서 이런 변동이 쉽게 가능한지는 잘 모르겠음’이 더 있고, 위 2의 기록 브랜치 줄에 들어 있다. 원문은 여덟 번째가 저장된 이벤트 파일에서 직접 확인했다. 나머지는 도구 결과, 세션 사이 메시지, 예약 prompt, stop hook, 하위 에이전트 보고다. 위 2·4에 빠진 사용자 지시는 없다.
 
 ### 8. 기록
 
