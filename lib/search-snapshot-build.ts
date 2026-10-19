@@ -13,7 +13,7 @@ import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';
 import {needsKoreanDescription} from './hotel-description';
-import {displayNames,normalizeSearch} from './hotel-names';
+import {displayNames,hotelNames,normalizeSearch} from './hotel-names';
 import {withWikidataNames} from './wikidata-names';
 import {withJalanLocaleNames,type LocaleNameRow} from './jalan-locale-names';
 import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
@@ -116,6 +116,19 @@ export async function buildSearchSnapshot(now:Date){
  const locale=new Map((await db.prepare('SELECT * FROM hotel_locale_names').all<LocaleNameRow>()).results.map(r=>[r.hotel_id,r]));
  const groups=(await db.prepare('SELECT hotel_id,trip_hotel_id,jalan_hotel_id FROM hotel_source_groups').all<{hotel_id:string;trip_hotel_id:string|null;jalan_hotel_id:string|null}>()).results;
  const members=new Set(groups.flatMap(g=>[g.hotel_id,g.trip_hotel_id,g.jalan_hotel_id].filter((id):id is string=>!!id)));
+ // D08 PR 6 (docs/D08-20261019.md 13.5): in a group whose own hotel is one of its provider
+ // records, the other provider record is shown on that hotel's card only. It leaves the rows,
+ // so the list, map, search and every count here; its names search for the card. Only when
+ // both rows are stored. A curated group's provider records are never hotels rows.
+ const pairs=groups.flatMap(g=>g.hotel_id===g.jalan_hotel_id||g.hotel_id===g.trip_hotel_id?[g.trip_hotel_id,g.jalan_hotel_id].flatMap(id=>id&&id!==g.hotel_id?[[id,g.hotel_id] as const]:[]):[]);
+ const paired=pairs.length?(await db.prepare('SELECT id,CASE WHEN id IN (SELECT value FROM json_each(?)) THEN payload END AS payload FROM hotels WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(pairs.map(p=>p[0])),JSON.stringify(pairs.flat())).all<{id:string;payload:string|null}>()).results:[];
+ const stored=new Map(paired.map(r=>[r.id,r.payload])),mergedInto=new Map(pairs.filter(([id,base])=>stored.has(id)&&stored.has(base)));
+ // The names of the records each card absorbs: stored, Wikidata and Jalan locale names (D07).
+ const absorbed=new Map<string,{names:string[];aliases:{key:string;name:string}[]}>();
+ for(const [id,base] of mergedInto){
+  const h=withJalanLocaleNames(withWikidataNames(enrichHotel(JSON.parse(stored.get(id)!) as Hotel)),locale.get(id)),own=absorbed.get(base)??{names:[],aliases:[]};
+  absorbed.set(base,{names:[...own.names,...hotelNames(h)],aliases:[...own.aliases,...aliases.get(id)??[]]});
+ }
  type Row={id:string;region:string;prefecture:string|null;name:string;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;natural:number|null;room_onsen:number|null;bath_features:number|null;bath_known:number|null;search_text:string;lat:number|null;lng:number|null;payload:string};
  // The record counts of the collection summary and status, counted on this pass
  // with the rules of their former queries (queryCoverage, readCollectionStatus).
@@ -125,8 +138,8 @@ export async function buildSearchSnapshot(now:Date){
  for(let cursor='';;){
   const rows=(await db.prepare(`SELECT id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,room_onsen,bath_features,bath_known,search_text,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng,payload FROM hotels WHERE id>? ORDER BY id LIMIT ${PAGE}`).bind(cursor).all<Row>()).results;
   const lifecycles=rows.length?new Map((await db.prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id>? AND hotel_id<=?').bind(cursor,rows.at(-1)!.id).all<Record<string,unknown>>()).results.map(r=>[r.hotel_id,r])):new Map();
-  const hotels=await attach(rows.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
-  rows.forEach((r,i)=>{
+  const kept=rows.filter(r=>!mergedInto.has(r.id)),hotels=await attach(kept.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
+  kept.forEach((r,i)=>{
    // Wikidata and Jalan locale names (D07) on the card, the name column (the shown title, which the
    // area map labels markers with) and the name search, as the detail API adds them.
    const w=withWikidataNames(hotels[i]),h=withJalanLocaleNames(w,locale.get(r.id)),state=h.lifecycle?.state??null,closed=state==='closed'||state==='temporarily_closed',raw=JSON.parse(r.payload) as Hotel;
@@ -134,12 +147,12 @@ export async function buildSearchSnapshot(now:Date){
    core.ids.push(r.id);core.region.push(r.region);core.prefecture.push(r.prefecture);core.name.push(h===hotels[i]?r.name:displayNames(h.names).title);core.kind.push(r.kind);
    core.tripScore.push(r.trip_score);core.tripReviews.push(r.trip_reviews);core.jalanScore.push(r.jalan_score);core.jalanReviews.push(r.jalan_reviews);
    core.natural.push(r.natural);core.features.push(r.bath_features);core.known.push(r.bath_known);core.lat.push(r.lat);core.lng.push(r.lng);core.state.push(state);
-   const own=aliases.get(r.id)??[];
+   const own=[...aliases.get(r.id)??[],...absorbed.get(r.id)?.aliases??[]],peer=absorbed.get(r.id)?.names??[];
    // Wikidata names join the substring and typo-tolerant search, never the shared name keys.
-   text.searchText.push(r.search_text+added.map(normalizeSearch).join(''));text.nameKeys.push(own.map(a=>a.key));
+   text.searchText.push(r.search_text+[...added,...peer].map(normalizeSearch).join(''));text.nameKeys.push(own.map(a=>a.key));
    // The former search index: the stored payload (not enriched) and table columns.
    const place={prefecture:r.prefecture,regionId:r.region,location:raw.location,names:raw.names};
-   text.names.push(closed?null:[...new Set([raw.names.ko,raw.names.ja,raw.names.en,...own.map(a=>a.name),...added].filter(Boolean))]);
+   text.names.push(closed?null:[...new Set([raw.names.ko,raw.names.ja,raw.names.en,...own.map(a=>a.name),...added,...peer].filter(Boolean))]);
    text.location.push(closed?null:formatHotelLocation(place));text.context.push(closed?null:hotelPlaceSearchText(place));
    // A source that marks its own coordinates approximate (only the sample seed
    // does; the collector contract refuses them) ranks as a city-level point.
@@ -164,7 +177,7 @@ export async function buildSearchSnapshot(now:Date){
  const status=collectionStatusFrom(now.getTime(),{providers:statusRows,...side,quality});
  // unprepared: seed steps crawl-prepare has not run on this database (a
  // deploy that changes the seed prepares it and builds again, deploy.yml).
- return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,first:firstPage(core,cards,coverage)};
+ return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,mergedInto:Object.fromEntries(mergedInto),first:firstPage(core,cards,coverage)};
 }
 // The first page of the default view (no conditions, recommended order): put
 // in the static page so the list shows before core and cards arrive.
