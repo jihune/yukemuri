@@ -213,7 +213,9 @@ async function run(page){
 const chromiumVersion=browser.version();
 for(width of [360,390]){
  const context=await browser.newContext({viewport:{width,height:780},isMobile:true,hasTouch:true,deviceScaleFactor:2,locale:'ko-KR',timezoneId:'Asia/Seoul'});
- await context.route('**/*',route=>['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort());
+ // A refused continue or abort is let go: twice an uncaught ‘Route is already handled!’ ended the
+ // whole run here (U07, 2026-10-18 and 2026-10-19).
+ await context.route('**/*',route=>(['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort()).catch(()=>{}));
  const page=await context.newPage();
  // Any list, search or map request that reaches the Worker (none should since P03).
  page.on('request',r=>{const u=new URL(r.url());if(/^\/api\/hotels(?:\/(?:map|suggestions|search-index))?$/.test(u.pathname)||u.searchParams.has('_rsc'))workerLists.push(u.pathname+u.search)});
