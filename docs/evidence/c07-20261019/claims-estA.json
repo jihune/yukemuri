@@ -1,0 +1,511 @@
+{
+ "measuredAt": "2026-10-19T13:05:31.067Z",
+ "oldRef": "origin/main",
+ "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
+ "target": {
+  "jobs": {
+   "jalan detail done": 1907,
+   "jalan detail pending": 21679,
+   "trip detail done": 1707,
+   "trip detail pending": 456,
+   "trip detail failed": 1,
+   "jalan list done": 4100,
+   "trip list done": 1300,
+   "jalan names done": 250,
+   "jalan names pending": 250
+  },
+  "hotels": 25225
+ },
+ "due": {
+  "jalan": 20,
+  "trip": 20
+ },
+ "collectors": {
+  "old": "origin/main",
+  "new": "this branch"
+ },
+ "seeded": {
+  "jalan detail done": 21,
+  "jalan detail pending": 2858,
+  "jalan list done": 102,
+  "jalan list pending": 397,
+  "jalan names pending": 94,
+  "trip detail done": 15,
+  "trip detail pending": 66,
+  "trip list done": 2,
+  "trip list pending": 47
+ },
+ "shaped": {
+  "jobs": {
+   "jalan detail done": 1907,
+   "jalan detail pending": 21679,
+   "jalan list done": 4100,
+   "jalan names done": 250,
+   "jalan names pending": 250,
+   "trip detail done": 1707,
+   "trip detail failed": 1,
+   "trip detail pending": 456,
+   "trip list done": 1300
+  },
+  "hotels": [
+   {
+    "p": "",
+    "n": 11
+   },
+   {
+    "p": "akan",
+    "n": 1
+   },
+   {
+    "p": "bourou",
+    "n": 2
+   },
+   {
+    "p": "chalet",
+    "n": 1
+   },
+   {
+    "p": "daiichi",
+    "n": 1
+   },
+   {
+    "p": "jalan",
+    "n": 22318
+   },
+   {
+    "p": "moku",
+    "n": 1
+   },
+   {
+    "p": "noboribetsu",
+    "n": 1
+   },
+   {
+    "p": "toya",
+    "n": 1
+   },
+   {
+    "p": "trip",
+    "n": 2107
+   },
+   {
+    "p": "yuen",
+    "n": 1
+   }
+  ]
+ },
+ "old": {
+  "pages": 120,
+  "claims": 154,
+  "rounds": null,
+  "claimRead": 285572,
+  "claimWritten": 240,
+  "emptyClaimWritten": 0,
+  "requests": {
+   "POST /api/crawl-prepare": {
+    "requests": 1,
+    "read": 9,
+    "written": 0
+   },
+   "POST /api/crawl": {
+    "requests": 154,
+    "read": 285572,
+    "written": 240
+   },
+   "PUT /api/crawl": {
+    "requests": 120,
+    "read": 83726,
+    "written": 1802
+   },
+   "GET /api/hotels/<id>": {
+    "requests": 1,
+    "read": 14,
+    "written": 0
+   },
+   "GET /api/crawl": {
+    "requests": 1,
+    "read": 80565,
+    "written": 3
+   }
+  },
+  "groups": {
+   "jalan/detail": {
+    "claims": 18,
+    "pages": 18,
+    "emptyClaims": 0,
+    "read": 632,
+    "emptyRead": 0
+   },
+   "jalan/baths": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 35013,
+    "emptyRead": 0
+   },
+   "trip/detail": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 41982,
+    "emptyRead": 0
+   },
+   "jalan/refresh": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 78642,
+    "emptyRead": 0
+   },
+   "trip/refresh": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 74855,
+    "emptyRead": 0
+   },
+   "jalan/list": {
+    "claims": 17,
+    "pages": 0,
+    "emptyClaims": 17,
+    "read": 68,
+    "emptyRead": 68
+   },
+   "trip/list": {
+    "claims": 17,
+    "pages": 0,
+    "emptyClaims": 17,
+    "read": 68,
+    "emptyRead": 68
+   },
+   "trip/names": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 49790,
+    "emptyRead": 0
+   },
+   "jalan/localnames": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 4522,
+    "emptyRead": 0
+   }
+  },
+  "emptyGroups": []
+ },
+ "new": {
+  "pages": 120,
+  "claims": 122,
+  "rounds": 18,
+  "claimRead": 285444,
+  "claimWritten": 240,
+  "emptyClaimWritten": 0,
+  "requests": {
+   "POST /api/crawl-prepare": {
+    "requests": 1,
+    "read": 9,
+    "written": 0
+   },
+   "POST /api/crawl": {
+    "requests": 122,
+    "read": 285444,
+    "written": 240
+   },
+   "PUT /api/crawl": {
+    "requests": 120,
+    "read": 83726,
+    "written": 1802
+   },
+   "GET /api/hotels/<id>": {
+    "requests": 1,
+    "read": 14,
+    "written": 0
+   },
+   "GET /api/crawl": {
+    "requests": 1,
+    "read": 80565,
+    "written": 3
+   }
+  },
+  "groups": {
+   "jalan/detail": {
+    "claims": 18,
+    "pages": 18,
+    "emptyClaims": 0,
+    "read": 632,
+    "emptyRead": 0
+   },
+   "jalan/baths": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 35013,
+    "emptyRead": 0
+   },
+   "trip/detail": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 41982,
+    "emptyRead": 0
+   },
+   "jalan/refresh": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 78642,
+    "emptyRead": 0
+   },
+   "trip/refresh": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 74855,
+    "emptyRead": 0
+   },
+   "jalan/list": {
+    "claims": 1,
+    "pages": 0,
+    "emptyClaims": 1,
+    "read": 4,
+    "emptyRead": 4
+   },
+   "trip/list": {
+    "claims": 1,
+    "pages": 0,
+    "emptyClaims": 1,
+    "read": 4,
+    "emptyRead": 4
+   },
+   "trip/names": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 49790,
+    "emptyRead": 0
+   },
+   "jalan/localnames": {
+    "claims": 17,
+    "pages": 17,
+    "emptyClaims": 0,
+    "read": 4522,
+    "emptyRead": 0
+   }
+  },
+  "emptyGroups": [
+   {
+    "emptyGroup": "jalan/list",
+    "round": 1
+   },
+   {
+    "emptyGroup": "trip/list",
+    "round": 1
+   }
+  ]
+ },
+ "statements": {
+  "jalan/detail national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    5
+   ]
+  ],
+  "jalan/baths priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    1304
+   ]
+  ],
+  "trip/detail national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    5
+   ]
+  ],
+  "jalan/refresh priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    4131
+   ]
+  ],
+  "trip/refresh national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    1308
+   ]
+  ],
+  "jalan/list priority empty": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    2
+   ],
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ]
+  ],
+  "trip/list priority empty": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    2
+   ],
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ]
+  ],
+  "trip/names priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    3505
+   ]
+  ],
+  "jalan/localnames priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    257
+   ]
+  ],
+  "jalan/detail priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    45
+   ]
+  ],
+  "trip/refresh priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    4798
+   ]
+  ],
+  "trip/detail priority page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    3494
+   ]
+  ],
+  "jalan/list national empty": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    2
+   ],
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ]
+  ],
+  "trip/list national empty": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    2
+   ],
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ]
+  ],
+  "trip/names national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    47
+   ]
+  ],
+  "jalan/refresh national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    4107
+   ]
+  ],
+  "jalan/baths national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    5660
+   ]
+  ],
+  "jalan/localnames national page": [
+   [
+    "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+    1
+   ],
+   [
+    "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+    261
+   ]
+  ]
+ },
+ "saved": {
+  "claimRead": 128,
+  "claims": 32
+ },
+ "failures": []
+}

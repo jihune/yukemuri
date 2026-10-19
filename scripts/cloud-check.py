@@ -16,6 +16,7 @@ commands = [
     [sys.executable, 'scripts/materialize-source-assets.py'],
     [sys.executable, 'scripts/crawler/check.py'],
     [sys.executable, 'scripts/crawler/check_diagnostics.py'],
+    [sys.executable, 'scripts/crawler/check_gentle_claims.py'],
     [sys.executable, 'scripts/crawler/check_retry_policy.py'],
     [sys.executable, 'scripts/crawler/check_site_access.py'],
     ['node', 'scripts/build-collector-release.mjs'],
