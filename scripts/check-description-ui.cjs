@@ -7,7 +7,8 @@ function load(file,dependencies={}){
  return module.exports;
 }
 const language=load('lib/hotel-description.ts');
-const Component=load('components/hotel-description.tsx',{'@/lib/hotel-description':language}).default;
+// The in-place translation (U07) is browser-only; it is checked in check-u07-translate-browser.mjs.
+const Component=load('components/hotel-description.tsx',{'@/lib/hotel-description':language,'./description-translate':{default:()=>null}}).default;
 const original='The hotel has free Wi-Fi and a restaurant called ブリランテ. Breakfast is available for a fee.';
 assert(language.needsKoreanDescription(original));
 assert(!language.needsKoreanDescription('한국어 설명입니다. Kyoto Hotel에서 머물 수 있습니다.'));
@@ -15,7 +16,7 @@ for(const source of ['日本の旅館です。レストランと露天風呂を�
 assert(!language.needsKoreanDescription('한국어로 작성한 설명이며 무료 Wi-Fi를 제공합니다.'));
 assert(!language.needsKoreanDescription('123 …'));
 let html=renderToStaticMarkup(React.createElement(Component,{hotel:{description:original}}));
-assert(html.includes(original)&&html.includes('자동으로 순차 반영'));
+assert(html.includes(original)&&html.includes('이 숙소의 한국어 번역은 없습니다'));
 assert(!html.includes('<details'));
 const text='이 호텔에는 무료 Wi-Fi와 브리란테 레스토랑이 있습니다. 조식은 유료로 제공됩니다.';
 html=renderToStaticMarkup(React.createElement(Component,{hotel:{description:original,descriptionTranslation:{text,translatedAt:'2026-10-04T09:00:00Z'}}}));

@@ -1,0 +1,20 @@
+PASS 360px 미확인 때문에 제외된 후보 수를 안내
+PASS 360px 안내가 화면 너비 안에 있고 가로 넘침 없음
+PASS 360px 시설·평점 조건이 없으면 안내 없음
+PASS 360px 스냅숏을 받기 전에 정적 첫 쪽 40곳이 기본 결과와 같은 순서로 보이고 로딩 안내 없음
+PASS 360px 스냅숏을 받은 뒤에도 같은 첫 쪽
+PASS 360px 스크립트 없이도 정적 HTML에 첫 쪽 카드 40곳, 조건 적용 안내 없음
+PASS 360px 기본 조건을 적은 주소는 정적 첫 쪽을 그대로 보임
+PASS 360px 조건 있는 주소는 앱 스크립트 전에 정적 첫 쪽 대신 조건 적용 안내를 보임
+PASS 360px 앱이 주소를 읽은 뒤에는 조건의 결과를 표시하고 안내를 지움
+PASS 360px 목록을 받는 중에는 로딩 안내만 보이고 미확인 안내는 숨김
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+route.abort: Route is already handled!
+    at /home/user/yukemuri/.sites-runtime/u07-seed/scripts/check-u02-browser.mjs:214:135 {
+  name: 'Error'
+}
+
+Node.js v24.22.0

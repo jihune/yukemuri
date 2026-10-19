@@ -1,0 +1,17 @@
+# node scripts/check-description-ui.cjs run from a scratch folder holding lib/hotel-description.ts and components/hotel-description.tsx, 2026-10-19T00:28:40Z, repo 51b70f1
+## plain
+Description UI checks passed: Japanese/Chinese/Latin/Cyrillic/Arabic and mixed text eligible; Korean/proper names skipped; Korean default; original preserved without an assumed language.
+rc=0
+## seeded (control: the stored translation moved below the original, inside <details>)
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(html.includes('lang="ko"')&&html.indexOf(text)<html.indexOf(original))
+
+rc=1
+## the check as on main 8b143f0, run from the repo root (components and lib as on this branch)
+Error: Cannot find module './description-translate'
+rc=1

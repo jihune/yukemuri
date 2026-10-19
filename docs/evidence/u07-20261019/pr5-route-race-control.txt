@@ -1,0 +1,15 @@
+# node docs/evidence/u07-20261019/tools/route-race-control.mjs old|new (Playwright from .sites-runtime/u01-browser), 2026-10-19T00:40:19Z
+## old
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+route.abort: Route is already handled!
+  name: 'Error'
+}
+
+Node.js v24.22.0
+rc=1
+## new
+mode=new routed=1 reached-end=1
+rc=0
