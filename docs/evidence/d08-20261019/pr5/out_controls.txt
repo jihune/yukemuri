@@ -1,0 +1,6 @@
+evidence without the scope sentence: caught (rc 1) AssertionError [ERR_ASSERTION]: the evidence says how the sales scope was judged
+imported every time: caught (rc 1) AssertionError [ERR_ASSERTION]: the content is imported once: the freed Trip.com id is not retried
+counted without saving: caught (rc 1) AssertionError [ERR_ASSERTION]: a pair without its Jalan record is unknown
+not chained into crawl-prepare: caught (rc 1) AssertionError [ERR_ASSERTION]: one key for the file content
+unbroken copy: build rc 0, check rc 0
+controls: 4/4 caught, unbroken passes: True -> PASS

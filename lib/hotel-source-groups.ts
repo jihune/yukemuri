@@ -6,6 +6,7 @@ import {sourceGroupPatch,type SourceGroupPatch} from './source-group-contract';
 import {normalizeSearch,hotelNames} from './hotel-names';
 import {featureMasks,hotelFeature,enrichBathFacts} from './hotel-bath-facts';
 import {providerRating} from './hotel-ratings';
+import reviewedGroups from '../data/source-groups-reviewed.json';
 export {sourceGroupPatch};
 type Group={hotel_id:string;trip_hotel_id:string|null;jalan_hotel_id:string|null;google_place_id:string|null;payload:string;checked_at:string};
 const idsFor=(g:Group)=>[g.hotel_id,g.trip_hotel_id,g.jalan_hotel_id].filter(Boolean) as string[];
@@ -85,4 +86,16 @@ export async function saveSourceGroup(p:SourceGroupPatch){
  }catch(e){if(String(e).includes('UNIQUE constraint'))return'conflict';throw e}
  await refreshSourceGroupIndexes([...idsFor(current??{hotel_id:p.hotelId,trip_hotel_id:null,jalan_hotel_id:null} as Group),p.tripHotelId??p.hotelId,p.jalanHotelId??p.hotelId]);
  return'saved';
+}
+// D08 PR 5: Jalan and Trip.com records of one property, reviewed in the repository
+// (data/source-groups-reviewed.json, docs/D08-20261019.md 13). Run by crawl-prepare once
+// per file content: every pair goes through saveSourceGroup's checks, and only the count
+// of each outcome is kept, in the catalog_meta row that marks the content done.
+export async function importReviewedSourceGroups(patches:unknown[]=reviewedGroups.patches){
+ const db=favoritesDb(),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(patches))));
+ const key='reviewed-source-groups:'+[...digest.slice(0,8)].map(b=>b.toString(16).padStart(2,'0')).join('');
+ if(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())return;
+ const counts:Record<string,number>={};
+ for(const raw of patches){const p=sourceGroupPatch.safeParse(raw);const result=p.success?await saveSourceGroup(p.data):'invalid';counts[result]=(counts[result]??0)+1}
+ await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,JSON.stringify(counts)).run();
 }
