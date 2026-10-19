@@ -90,7 +90,8 @@ try{
  assert.equal(one('pref-oosaka','大阪府大阪市淀川区新北野１－９－１５','ホテル　プラザオーサカ'),'H0673','the same words as parts');
  // A stay's address with no lot number: the exact name in the municipality (H0512).
  assert.equal(one('pref-hokkaido','北海道川上郡弟子屈町屈斜路温泉','屈斜路プリンスホテル'),'H0512');
- assert.equal(one('pref-hokkaido','北海道川上郡弟子屈町美留和','屈斜路プリンスホテル'),'H0512');
+ assert.equal(one('pref-hokkaido','北海道川上郡弟子屈町美留和','屈斜路プリンスホテル'),null,'another place in the town (Codex review on PR #199)');
+ assert.equal(one('pref-hokkaido','北海道川上郡弟子屈町','屈斜路プリンスホテル'),null,'no place to compare');
  assert.equal(one('pref-hokkaido','北海道川上郡標茶町屈斜路温泉','屈斜路プリンスホテル'),null,'another town');
  // An address in Latin letters (Trip.com): every lot number of the row, the postal code left out (H0365, H0754).
  const trip=(id,address,ja)=>({...stay('pref-chiba',address,ja),id});
