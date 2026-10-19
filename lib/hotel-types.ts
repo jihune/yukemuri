@@ -45,6 +45,8 @@ export type Hotel = {
   lifecycle?:HotelLifecycle;
   googlePlaceId?:string;
   photoCandidates?:import('./source-policy').PhotoCandidate[];
+  // D08: shown only with its credit, in the detail (lib/commons-photos.ts).
+  commonsPhoto?:import('./commons-photos').CommonsPhoto;
   id:string; names:{ko:string;ja:string;en:string}; aliases?:string[]; kind:'ryokan'|'hotel'|'unknown';
   regionId:RegionId; prefecture?:string|null; location:{label:string;address:string;latitude:number|null;longitude:number|null;isApproximate:boolean};
   description:string; descriptionTranslation?:{text:string;translatedAt:string}; image:{url:string;alt:string;sourceId:string;isRepresentative:boolean;alternatives?:string[]};
