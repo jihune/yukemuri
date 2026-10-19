@@ -1,0 +1,6 @@
+snapshot 82752b0b46fa3ed2 generated 2026-10-19T19:51:42.394Z, 25231 places (core 25231, coverage 25231)
+mergedInto 47; equals the 47 reviewed pairs: True
+Trip.com ids listed 0; Jalan ids listed 47
+stored records on the last trend day 2026-10-19: 25278; places + merged = 25278
+data status scopes: all 25231, jalan 23452, trip 1759
+PASS
