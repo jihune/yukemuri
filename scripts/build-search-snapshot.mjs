@@ -148,7 +148,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
    const buffer=Buffer.from(body);writeFileSync(join(dir,name+'.json'),buffer);paths[name]=`/snapshot/v/${id}/${name}.json`;
    sizes[name]={raw:buffer.length,gzip:gzipSync(buffer,{level:9}).length,brotli:brotliCompressSync(buffer,{params:{[constants.BROTLI_PARAM_QUALITY]:11}}).length};
   }
-  const manifest={format:SNAPSHOT_FORMAT,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw]))};
+  const manifest={format:SNAPSHOT_FORMAT,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,mergedInto:data.mergedInto,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw]))};
   writeFileSync(join(folder,'manifest.json'),JSON.stringify(manifest));
   // The static page, rendered again with this snapshot's default first page.
   if(existsSync(join(out,'index.html'))){
