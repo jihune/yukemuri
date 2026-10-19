@@ -1,0 +1,1287 @@
+{
+ "summary": {
+  "runs": 25,
+  "first": "2026-10-15T05:20:38Z",
+  "last": "2026-10-19T11:12:36Z",
+  "tripDetailDiagnostics": 1051,
+  "tripDetailPages": 1049,
+  "facilityYearMismatch": 0
+ },
+ "runs": [
+  {
+   "run": 38686271595,
+   "job": 116261723251,
+   "created": "2026-10-15T05:20:38Z",
+   "sha": "0830edc3aa684411abe61183fc164f4c4c08cf7c",
+   "sizeAtStart": {
+    "written": 0,
+    "read": 278678
+   },
+   "tripDetailDiagnostics": 51,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 52,
+     "accepted": 52,
+     "recordsAdded": 1,
+     "status": {
+      "done": 52
+     }
+    },
+    "trip detail": {
+     "pages": 51,
+     "accepted": 51,
+     "recordsAdded": 13,
+     "status": {
+      "done": 51
+     }
+    },
+    "jalan list": {
+     "pages": 17,
+     "accepted": 424,
+     "recordsAdded": 339,
+     "status": {
+      "done": 17
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 14889,
+     "completed": 1738
+    },
+    "trip": {
+     "discovered": 2147,
+     "completed": 897
+    }
+   }
+  },
+  {
+   "run": 38732762398,
+   "job": 116414359819,
+   "created": "2026-10-15T12:11:23Z",
+   "sha": "4bc3708443a42ae8ddddfeecf6b5d4cb44c5970e",
+   "sizeAtStart": {
+    "written": 11070,
+    "read": 1380564
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 54,
+     "accepted": 54,
+     "recordsAdded": 0,
+     "status": {
+      "done": 54
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 14,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 18,
+     "accepted": 473,
+     "recordsAdded": 427,
+     "status": {
+      "done": 18
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 15311,
+     "completed": 1781
+    },
+    "trip": {
+     "discovered": 2147,
+     "completed": 919
+    }
+   }
+  },
+  {
+   "run": 38777113540,
+   "job": 116567524786,
+   "created": "2026-10-15T17:24:47Z",
+   "sha": "0d2f58b62e2c8c5904c93e035f7bed425d229490",
+   "sizeAtStart": {
+    "written": 23174,
+    "read": 2234389
+   },
+   "tripDetailDiagnostics": 40,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 60,
+     "accepted": 57,
+     "recordsAdded": 0,
+     "status": {
+      "done": 57,
+      "retry": 3
+     }
+    },
+    "trip detail": {
+     "pages": 40,
+     "accepted": 40,
+     "recordsAdded": 14,
+     "status": {
+      "done": 40
+     }
+    },
+    "jalan list": {
+     "pages": 20,
+     "accepted": 493,
+     "recordsAdded": 465,
+     "status": {
+      "done": 20
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 15757,
+     "completed": 1823
+    },
+    "trip": {
+     "discovered": 2147,
+     "completed": 955
+    }
+   }
+  },
+  {
+   "run": 38812937043,
+   "job": 116690421813,
+   "created": "2026-10-15T21:51:00Z",
+   "sha": "2f7a217e6161d3ba99ba6566b777d365424297c2",
+   "sizeAtStart": {
+    "written": 35776,
+    "read": 2844235
+   },
+   "tripDetailDiagnostics": 46,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 53,
+     "accepted": 53,
+     "recordsAdded": 0,
+     "status": {
+      "done": 53
+     }
+    },
+    "trip detail": {
+     "pages": 45,
+     "accepted": 45,
+     "recordsAdded": 17,
+     "status": {
+      "done": 45
+     }
+    },
+    "jalan list": {
+     "pages": 22,
+     "accepted": 573,
+     "recordsAdded": 531,
+     "status": {
+      "done": 22
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 16276,
+     "completed": 1869
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1000
+    }
+   }
+  },
+  {
+   "run": 38826891617,
+   "job": 116736337968,
+   "created": "2026-10-15T23:59:58Z",
+   "sha": "2f7a217e6161d3ba99ba6566b777d365424297c2",
+   "sizeAtStart": {
+    "written": 0,
+    "read": 0
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 14,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 630,
+     "recordsAdded": 578,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 16846,
+     "completed": 1917
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1048
+    }
+   }
+  },
+  {
+   "run": 38854440335,
+   "job": 116822643760,
+   "created": "2026-10-16T05:10:59Z",
+   "sha": "9da08f63207471992b72618e90b3e0242cba9893",
+   "sizeAtStart": {
+    "written": 15585,
+    "read": 483462
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 14,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 619,
+     "recordsAdded": 564,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 17398,
+     "completed": 1965
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1096
+    }
+   }
+  },
+  {
+   "run": 38897174076,
+   "job": 116960323452,
+   "created": "2026-10-16T11:57:01Z",
+   "sha": "9da08f63207471992b72618e90b3e0242cba9893",
+   "sizeAtStart": {
+    "written": 30813,
+    "read": 978810
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 22,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 561,
+     "recordsAdded": 532,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 17902,
+     "completed": 2013
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1143
+    }
+   }
+  },
+  {
+   "run": 38936406112,
+   "job": 117092904367,
+   "created": "2026-10-16T17:00:56Z",
+   "sha": "9da08f63207471992b72618e90b3e0242cba9893",
+   "sizeAtStart": {
+    "written": 44787,
+    "read": 1500945
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 20,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 575,
+     "recordsAdded": 527,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 18390,
+     "completed": 2082
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1191
+    }
+   }
+  },
+  {
+   "run": 38971706090,
+   "job": 117211377947,
+   "created": "2026-10-16T21:47:22Z",
+   "sha": "9da08f63207471992b72618e90b3e0242cba9893",
+   "sizeAtStart": {
+    "written": 58822,
+    "read": 2043758
+   },
+   "tripDetailDiagnostics": 47,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 49,
+     "accepted": 49,
+     "recordsAdded": 0,
+     "status": {
+      "done": 49
+     }
+    },
+    "trip detail": {
+     "pages": 47,
+     "accepted": 47,
+     "recordsAdded": 21,
+     "status": {
+      "done": 47
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 615,
+     "recordsAdded": 543,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 18896,
+     "completed": 2154
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1238
+    }
+   }
+  },
+  {
+   "run": 38984219371,
+   "job": 117251818000,
+   "created": "2026-10-16T23:59:22Z",
+   "sha": "9da08f63207471992b72618e90b3e0242cba9893",
+   "sizeAtStart": {
+    "written": 73045,
+    "read": 2848692
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 10,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 614,
+     "recordsAdded": 529,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 19397,
+     "completed": 2226
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1286
+    }
+   }
+  },
+  {
+   "run": 39004972354,
+   "job": 117315463044,
+   "created": "2026-10-17T05:05:17Z",
+   "sha": "f1e851ffb44183a351e5f37ddbf3db29ad686e09",
+   "sizeAtStart": {
+    "written": 14367,
+    "read": 570489
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 15,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 584,
+     "recordsAdded": 533,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 19889,
+     "completed": 2298
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1334
+    }
+   }
+  },
+  {
+   "run": 39027866523,
+   "job": 117382312591,
+   "created": "2026-10-17T11:13:20Z",
+   "sha": "f1e851ffb44183a351e5f37ddbf3db29ad686e09",
+   "sizeAtStart": {
+    "written": 28435,
+    "read": 1152475
+   },
+   "tripDetailDiagnostics": 48,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 24,
+     "status": {
+      "done": 48
+     }
+    },
+    "jalan list": {
+     "pages": 24,
+     "accepted": 603,
+     "recordsAdded": 554,
+     "status": {
+      "done": 24
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 20408,
+     "completed": 2370
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1382
+    }
+   }
+  },
+  {
+   "run": 39047462074,
+   "job": 117438985860,
+   "created": "2026-10-17T15:59:43Z",
+   "sha": "f1e851ffb44183a351e5f37ddbf3db29ad686e09",
+   "sizeAtStart": {
+    "written": 43214,
+    "read": 1747478
+   },
+   "tripDetailDiagnostics": 40,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 41,
+     "accepted": 41,
+     "recordsAdded": 1,
+     "status": {
+      "done": 41
+     }
+    },
+    "trip detail": {
+     "pages": 40,
+     "accepted": 40,
+     "recordsAdded": 20,
+     "status": {
+      "done": 40
+     }
+    },
+    "jalan list": {
+     "pages": 39,
+     "accepted": 810,
+     "recordsAdded": 557,
+     "status": {
+      "done": 39
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 20953,
+     "completed": 2430
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1420
+    }
+   }
+  },
+  {
+   "run": 39069354506,
+   "job": 117503537163,
+   "created": "2026-10-17T21:03:59Z",
+   "sha": "83d6f7daf68588f958eae922328bd8a355510b5c",
+   "sizeAtStart": {
+    "written": 61266,
+    "read": 2318239
+   },
+   "tripDetailDiagnostics": 40,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 46,
+     "accepted": 46,
+     "recordsAdded": 0,
+     "status": {
+      "done": 46
+     }
+    },
+    "trip detail": {
+     "pages": 40,
+     "accepted": 40,
+     "recordsAdded": 18,
+     "status": {
+      "done": 40
+     }
+    },
+    "jalan list": {
+     "pages": 34,
+     "accepted": 852,
+     "recordsAdded": 453,
+     "status": {
+      "done": 34
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 21371,
+     "completed": 2490
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1460
+    }
+   }
+  },
+  {
+   "run": 39079360613,
+   "job": 117532975755,
+   "created": "2026-10-17T23:31:30Z",
+   "sha": "83d6f7daf68588f958eae922328bd8a355510b5c",
+   "sizeAtStart": {
+    "written": 77828,
+    "read": 3170016
+   },
+   "tripDetailDiagnostics": 26,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 33,
+     "accepted": 33,
+     "recordsAdded": 0,
+     "status": {
+      "done": 33
+     }
+    },
+    "trip detail": {
+     "pages": 26,
+     "accepted": 26,
+     "recordsAdded": 4,
+     "status": {
+      "done": 26
+     }
+    },
+    "jalan list": {
+     "pages": 20,
+     "accepted": 454,
+     "recordsAdded": 333,
+     "status": {
+      "done": 20
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 21712,
+     "completed": 2530
+    },
+    "trip": {
+     "discovered": 2148,
+     "completed": 1486
+    }
+   }
+  },
+  {
+   "run": 39099802372,
+   "job": 117593558607,
+   "created": "2026-10-18T05:13:15Z",
+   "sha": "2f0a076f48a63b3355e61f69372b8a444ae37708",
+   "sizeAtStart": {
+    "written": 11,
+    "read": 889676
+   },
+   "tripDetailDiagnostics": 36,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 44,
+     "accepted": 44,
+     "recordsAdded": 0,
+     "status": {
+      "done": 44
+     }
+    },
+    "trip detail": {
+     "pages": 36,
+     "accepted": 36,
+     "recordsAdded": 17,
+     "status": {
+      "done": 36
+     }
+    },
+    "trip list": {
+     "pages": 15,
+     "accepted": 8,
+     "recordsAdded": 6,
+     "status": {
+      "done": 15
+     }
+    },
+    "jalan list": {
+     "pages": 25,
+     "accepted": 594,
+     "recordsAdded": 374,
+     "status": {
+      "done": 25
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 22046,
+     "completed": 2582
+    },
+    "trip": {
+     "discovered": 2164,
+     "completed": 1520
+    }
+   }
+  },
+  {
+   "run": 39124615841,
+   "job": 117667017020,
+   "created": "2026-10-18T11:46:54Z",
+   "sha": "c53137f601a198f43a88c1bc56dd3fd1d7426989",
+   "sizeAtStart": {
+    "written": 6728,
+    "read": 1759973
+   },
+   "tripDetailDiagnostics": 43,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 38,
+     "accepted": 38,
+     "recordsAdded": 0,
+     "status": {
+      "done": 38
+     }
+    },
+    "trip detail": {
+     "pages": 42,
+     "accepted": 40,
+     "recordsAdded": 12,
+     "status": {
+      "done": 40,
+      "skipped": 2
+     }
+    },
+    "trip list": {
+     "pages": 3,
+     "accepted": 0,
+     "recordsAdded": 0,
+     "status": {
+      "done": 3
+     }
+    },
+    "jalan list": {
+     "pages": 22,
+     "accepted": 525,
+     "recordsAdded": 343,
+     "status": {
+      "done": 22
+     }
+    },
+    "jalan names": {
+     "pages": 15,
+     "accepted": 413,
+     "recordsAdded": 0,
+     "status": {
+      "done": 15
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 22363,
+     "completed": 2627
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1548
+    }
+   }
+  },
+  {
+   "run": 39143547354,
+   "job": 117722667567,
+   "created": "2026-10-18T16:07:05Z",
+   "sha": "704fa8d12d90f46962c815de480a2d36fdafe2d3",
+   "sizeAtStart": {
+    "written": 13861,
+    "read": 2622386
+   },
+   "tripDetailDiagnostics": 44,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 40,
+     "accepted": 39,
+     "recordsAdded": 0,
+     "status": {
+      "done": 39,
+      "retry": 1
+     }
+    },
+    "trip detail": {
+     "pages": 44,
+     "accepted": 44,
+     "recordsAdded": 14,
+     "status": {
+      "done": 44
+     }
+    },
+    "jalan list": {
+     "pages": 21,
+     "accepted": 538,
+     "recordsAdded": 410,
+     "status": {
+      "done": 21
+     }
+    },
+    "jalan names": {
+     "pages": 15,
+     "accepted": 400,
+     "recordsAdded": 0,
+     "status": {
+      "done": 15
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 22742,
+     "completed": 2672
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1578
+    }
+   }
+  },
+  {
+   "run": 39156227847,
+   "job": 117759901703,
+   "created": "2026-10-18T18:53:22Z",
+   "sha": "86c122b63f6e5d1e7a3aa44bb4157fff090366c6",
+   "sizeAtStart": {
+    "written": 21053,
+    "read": 3142153
+   },
+   "tripDetailDiagnostics": 34,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 43,
+     "accepted": 43,
+     "recordsAdded": 0,
+     "status": {
+      "done": 43
+     }
+    },
+    "trip detail": {
+     "pages": 34,
+     "accepted": 34,
+     "recordsAdded": 17,
+     "status": {
+      "done": 34
+     }
+    },
+    "jalan list": {
+     "pages": 26,
+     "accepted": 643,
+     "recordsAdded": 407,
+     "status": {
+      "done": 26
+     }
+    },
+    "jalan names": {
+     "pages": 17,
+     "accepted": 411,
+     "recordsAdded": 0,
+     "status": {
+      "done": 17
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23110,
+     "completed": 2724
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1612
+    }
+   }
+  },
+  {
+   "run": 39169498982,
+   "job": 117799420840,
+   "created": "2026-10-18T21:49:06Z",
+   "sha": "86c122b63f6e5d1e7a3aa44bb4157fff090366c6",
+   "sizeAtStart": {
+    "written": 28533,
+    "read": 3893514
+   },
+   "tripDetailDiagnostics": 6,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 8,
+     "accepted": 8,
+     "recordsAdded": 0,
+     "status": {
+      "done": 8
+     }
+    },
+    "trip detail": {
+     "pages": 6,
+     "accepted": 6,
+     "recordsAdded": 2,
+     "status": {
+      "done": 6
+     }
+    },
+    "jalan list": {
+     "pages": 2,
+     "accepted": 60,
+     "recordsAdded": 60,
+     "status": {
+      "done": 2
+     }
+    },
+    "jalan names": {
+     "pages": 2,
+     "accepted": 59,
+     "recordsAdded": 0,
+     "status": {
+      "done": 2
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23169,
+     "completed": 2732
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1616
+    }
+   }
+  },
+  {
+   "run": 39180817863,
+   "job": 117832981692,
+   "created": "2026-10-19T00:26:58Z",
+   "sha": "4d2438fe07c45635254c406f4e0a284a85d7bde3",
+   "sizeAtStart": {
+    "written": 0,
+    "read": 0
+   },
+   "tripDetailDiagnostics": 34,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 48,
+     "accepted": 48,
+     "recordsAdded": 0,
+     "status": {
+      "done": 48
+     }
+    },
+    "trip detail": {
+     "pages": 34,
+     "accepted": 34,
+     "recordsAdded": 17,
+     "status": {
+      "done": 34
+     }
+    },
+    "jalan list": {
+     "pages": 21,
+     "accepted": 524,
+     "recordsAdded": 415,
+     "status": {
+      "done": 21
+     }
+    },
+    "jalan names": {
+     "pages": 17,
+     "accepted": 433,
+     "recordsAdded": 0,
+     "status": {
+      "done": 17
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23546,
+     "completed": 2784
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1650
+    }
+   }
+  },
+  {
+   "run": 39201258415,
+   "job": 117894517603,
+   "created": "2026-10-19T04:47:39Z",
+   "sha": "44cf96d003ed42f9b1d75ca07e453dfe4299cb2b",
+   "sizeAtStart": {
+    "written": 7232,
+    "read": 596068
+   },
+   "tripDetailDiagnostics": 40,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 57,
+     "accepted": 57,
+     "recordsAdded": 0,
+     "status": {
+      "done": 57
+     }
+    },
+    "trip detail": {
+     "pages": 40,
+     "accepted": 40,
+     "recordsAdded": 19,
+     "status": {
+      "done": 40
+     }
+    },
+    "jalan list": {
+     "pages": 4,
+     "accepted": 21,
+     "recordsAdded": 21,
+     "status": {
+      "done": 4
+     }
+    },
+    "jalan names": {
+     "pages": 19,
+     "accepted": 489,
+     "recordsAdded": 0,
+     "status": {
+      "done": 19
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23586,
+     "completed": 2826
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1688
+    }
+   }
+  },
+  {
+   "run": 39203618035,
+   "job": 117901993877,
+   "created": "2026-10-19T05:15:41Z",
+   "sha": "44cf96d003ed42f9b1d75ca07e453dfe4299cb2b",
+   "sizeAtStart": {
+    "written": 10291,
+    "read": 1088305
+   },
+   "tripDetailDiagnostics": 40,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 60,
+     "accepted": 60,
+     "recordsAdded": 0,
+     "status": {
+      "done": 60
+     }
+    },
+    "trip detail": {
+     "pages": 40,
+     "accepted": 40,
+     "recordsAdded": 20,
+     "status": {
+      "done": 40
+     }
+    },
+    "jalan names": {
+     "pages": 20,
+     "accepted": 505,
+     "recordsAdded": 0,
+     "status": {
+      "done": 20
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23586,
+     "completed": 2866
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1728
+    }
+   }
+  },
+  {
+   "run": 39234821810,
+   "job": 118001254643,
+   "created": "2026-10-19T10:04:49Z",
+   "sha": "da03744433b86ce3c39f24d4687b7d690f079d53",
+   "sizeAtStart": {
+    "written": 13045,
+    "read": 1606568
+   },
+   "tripDetailDiagnostics": 51,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 50,
+     "accepted": 50,
+     "recordsAdded": 0,
+     "status": {
+      "done": 50
+     }
+    },
+    "trip detail": {
+     "pages": 51,
+     "accepted": 51,
+     "recordsAdded": 17,
+     "status": {
+      "done": 51
+     }
+    },
+    "jalan list": {
+     "pages": 2,
+     "accepted": 0,
+     "recordsAdded": 0,
+     "status": {
+      "done": 2
+     }
+    },
+    "jalan names": {
+     "pages": 17,
+     "accepted": 431,
+     "recordsAdded": 0,
+     "status": {
+      "done": 17
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23586,
+     "completed": 2901
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1762
+    }
+   }
+  },
+  {
+   "run": 39242973283,
+   "job": 118027985360,
+   "created": "2026-10-19T11:12:36Z",
+   "sha": "5783900773c185aaa4585d8616c300a89f6dfb18",
+   "sizeAtStart": {
+    "written": 15629,
+    "read": 2056042
+   },
+   "tripDetailDiagnostics": 49,
+   "facilityYearMismatch": [],
+   "pages": {
+    "jalan detail": {
+     "pages": 49,
+     "accepted": 49,
+     "recordsAdded": 0,
+     "status": {
+      "done": 49
+     }
+    },
+    "trip detail": {
+     "pages": 49,
+     "accepted": 49,
+     "recordsAdded": 22,
+     "status": {
+      "done": 49
+     }
+    },
+    "jalan names": {
+     "pages": 22,
+     "accepted": 571,
+     "recordsAdded": 0,
+     "status": {
+      "done": 22
+     }
+    }
+   },
+   "coverageAtEnd": {
+    "jalan": {
+     "discovered": 23586,
+     "completed": 2947
+    },
+    "trip": {
+     "discovered": 2163,
+     "completed": 1806
+    }
+   }
+  }
+ ]
+}
