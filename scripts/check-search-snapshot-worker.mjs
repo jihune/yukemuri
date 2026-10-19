@@ -155,16 +155,19 @@ try{
  };
  assert.equal(cards.length,rows.length);const workerHotels=new Map();
  for(let i=0;i<core.ids.length;i+=4){const {hotels}=await api('/api/hotel-comparison?ids='+core.ids.slice(i,i+4).join(','));for(const h of hotels)workerHotels.set(h.id,h)}
- // JTA registrations (D08): which stays get one is the rule's (scripts/check-jta-registration.mjs);
- // here, that the cards carry the rule's links over the stays as the builder reads them (the
- // Worker's hotels before the Wikidata names, with the prefecture column), and nothing else.
- const {jtaCandidates,resolveJtaLinks}=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'jta-')),'lib/jta-registration.ts'));
- const jta=resolveJtaLinks(new Map(core.ids.flatMap((id,i)=>{const h=workerHotels.get(id),found=jtaCandidates({...h,names:{...h.names,...added.get(id)?.was},prefecture:core.prefecture[i]});return found.length?[[id,found]]:[]})));
+ // JTA registrations and Oita permits (D08): which stays get one is the rule's
+ // (scripts/check-jta-registration.mjs, scripts/check-oita-permits.mjs); here, that the cards carry
+ // the rule's links over the stays as the builder reads them (the Worker's hotels before the
+ // Wikidata names, with the prefecture column), and nothing else.
+ const lists=createRequire(import.meta.url),{jtaCandidates,resolveJtaLinks}=lists(compileLib(mkdtempSync(join(temp,'jta-')),'lib/jta-registration.ts')),{oitaCandidates,resolveOitaPermits}=lists(compileLib(mkdtempSync(join(temp,'oita-')),'lib/oita-permits.ts'));
+ const linked=(candidates,resolve)=>resolve(new Map(core.ids.flatMap((id,i)=>{const h=workerHotels.get(id),found=candidates({...h,names:{...h.names,...added.get(id)?.was},prefecture:core.prefecture[i]});return found.length?[[id,found]]:[]})));
+ const jta=linked(jtaCandidates,resolveJtaLinks),oita=linked(oitaCandidates,resolveOitaPermits);
  assert(jta.size>0,'the seed reaches a registered stay');
+ assert(oita.size>0,'the seed reaches a permitted stay');
  core.ids.forEach((id,i)=>{
   // A card the rule named also notes the item and the names the added ones replaced.
-  const h=workerHotels.get(id),a=added.get(id),link=jta.get(id);
-  assert.deepEqual(cards[i],{...summary(h),...(link?{jta:link.number}:{}),...(a?{wikidataNames:{item:a.item,was:a.was}}:{})},id);
+  const h=workerHotels.get(id),a=added.get(id),link=jta.get(id),p=oita.get(id);
+  assert.deepEqual(cards[i],{...summary(h),...(link?{jta:link.number}:{}),...(p?{oita:{kind:p.kind,permitted:p.permitted,asOf:p.asOf}}:{}),...(a?{wikidataNames:{item:a.item,was:a.was}}:{})},id);
  });
  // The Worker's hotels carry the same Wikidata names, with the item among the sources; the
  // detail API too.
