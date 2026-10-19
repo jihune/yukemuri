@@ -62,7 +62,7 @@
 | 항목 | 상태 | 확인 명령 |
 |---|---|---|
 | main | 이 기록 PR이 들어간다. 그 앞은 `5e0ba55`(PR #204, D08 PR 5 47쌍 묶기), `13be74d`(PR #207), `bf91b7f`(PR #206), `565a736`(PR #198, D08 PR 2 Commons 사진), `98c1d9d`(PR #201, D08 PR 4 Overture 대략 위치 보정) | `git log --oneline -6 origin/main` |
-| 열린 PR | 모두 하위 세션 몫이다(상위 세션은 구독하지 않음). yukemuri #190(C06, C04 세션, Codex 2회차 남은 P2 하나는 사용자 결정 대기, 병합 10-21T00:00Z 뒤), #197(C07 방안 1, 병합 조건 맞춤(Codex 3회), 병합 10-21T00:00Z 뒤), #199(D08 PR 1 관광청 표시, L01 세션, 이어 가는 Claude 검토 1회째 중). 실행기 저장소는 없음(13:43Z) | `gh api "repos/jihune/yukemuri/pulls?state=open"`, 실행기 저장소도 같은 꼴 |
+| 열린 PR | 모두 하위 세션 몫이다(상위 세션은 구독하지 않음). yukemuri #190(C06, C04 세션, Codex 2회차 남은 P2 하나는 사용자 결정 대기, 병합 10-21T00:00Z 뒤), #197(C07 방안 1, 병합 조건 맞춤(Codex 3회), 병합 10-21T00:00Z 뒤), #199(D08 PR 1 관광청 표시, L01 세션, 검토 다섯 번 가운데 네 번째인 Claude 검토가 P3만 남겨 main 합치기와 CI 뒤 병합). 실행기 저장소는 없음(13:43Z) | `gh api "repos/jihune/yukemuri/pulls?state=open"`, 실행기 저장소도 같은 꼴 |
 | 운영 배포 | 마지막 코드 배포는 PR #204(`5e0ba55`, run 39295291814, 10-19T17:34:36Z–17:44:46Z, Worker `8b00d72f`, 마이그레이션 없음, 수집기 release `a2b4ab75…`, 스냅숏 `f59b2c47d218af25`, 25,225곳, 생성 읽기 133,955행)이다. 47쌍 가져오기는 다음 수집 실행의 준비 단계에서 돈다. 그 뒤로는 수집 실행마다 스냅숏만 다시 배포된다 | `docs/deployments.md` 마지막 줄, Actions 'Cloudflare deploy'와 `collect.yml` |
 | 수집(C03·C05) | 실행기 cron은 매시간 37분인데 GitHub `schedule`이 계정 단위로 몰아서 처리해 하루 약 5번만 온다(10-18T12:37Z–10-19T09:37Z 예약 22번 가운데 5번). 마지막 예약 실행은 11:12:28Z(실행기 run 39242955648, 앱 run 39242973283 성공)이고, 12:37Z·13:37Z·14:37Z 예약은 14:42Z까지 오지 않았다. 그때까지 공백 3시간 30분은 잰 간격(2시간 38분–4시간 49분) 안이고, C05 측정을 깨끗하게 두려고 수동으로 부르지 않았다. 쪽당 읽기는 10-19 깨끗한 구간 셋에서 약 1,900–2,500행, 120쪽 실행 하나가 스냅숏까지 약 45–52만 행이다. `collection-budget.mjs`는 `writesPerPage` 185, `readsPerPage` 4,600, `snapshotReads` 168,000, `runReads` 105,000 | `curl -s "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?per_page=3"`, `gh api "repos/jihune/yukemuri-script-runner/actions/workflows/yukemuri-catalog.yml/runs?per_page=5"` |
 | 하위 세션 | 일함 여섯: O03(C05 측정), C04(C06 #190), L01(D08 PR 1 #199, 그 뒤 PR 3), C07(#197, 방안 2·3 설계), D08 Overture(PR 5 #204 병합, PR 6 한 번만 보이기 준비). D08 Commons는 PR #198·#206으로 끝나 보관했다. 쉼 다섯: D05, U07, D07, U05, U06(아래 6). 13:44:27Z에 모두 새 상위 세션 id를 받았다 | 각 `get_session`, 브랜치별 `git log origin/main..origin/<브랜치>` |
@@ -123,7 +123,6 @@
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_01B1EMNXwBFR86E9fRdWbW1N` | L01 신규·폐업·휴관(브랜치 `claude/l01-lifecycle`), D08 PR 1 관광청 등록 표시와 PR 3 오이타현 여관업(10-19T12:3xZ 맡김) | 일함 |
 | `session_01KThJhPmvWG2sAnNZJ3dnFH` | D08 PR 4 Overture 대략 위치 보정과 PR 5 Jalan·Trip.com 중복 47쌍 묶기(브랜치 `claude/d08-overture`, brief `D08-20261019.md` 12절, 10-19T13:14Z 엶), PR 6 묶인 쌍 한 번만 보이기(10-19T15:41Z 맡김) | 일함. PR 4 #201·PR 5 #204 병합, PR 6 준비 |
-| `session_012ku7LUVij2mmvETNkp5KLQ` | D08 PR 1 #199 이어 가는 Claude 검토 1회째(10-19T17:19Z, 아홉 번째가 엶, 대상 head `12e84d4`) | 일함. 결과를 기록한 뒤 보관한다 |
 | `session_011eZxw3sdBJd4VfNtNaaaki` | C07 수집과 배포의 D1 읽기 줄이기(브랜치 `claude/c04-reads`, brief `C07-20261019.md`, 10-19T12:35Z 엶) | 일함. 방안 1→2→3, 병합 10-21T00:00Z 뒤 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01WusoPNSswrf4gH76sh9bF2` | 하네스 관리 세션(`jihune/agent-harness`, 10-18T21:54Z부터) | 다른 저장소 |
@@ -149,6 +148,7 @@
 - 10-19T17:1xZ C06 #190의 Codex 1회차가 12:53Z 요청 뒤 4시간 넘게 멈춰(GitHub 장애 시간과 겹침) 새 head에 다시 요청해 1회차로 세게 했다(17:23Z P1 한 건, `1dcbd3a`에서 고침). 2회차(17:38Z)는 P2 두 건이었다. 하나는 고쳤고(`69a243d`), 실행기 예약과 이어 부르기가 겹치는 다른 하나는 사용자 결정으로 남겼다(위 4의 4).
 - 10-19T17:19Z D08 PR 1 #199에 이어 가는 Claude 검토 1회째(다섯 번 가운데 네 번째)를 맡길 검토 세션 `session_012ku7LUVij2mmvETNkp5KLQ`를 열었다(대상 head `12e84d4`, Codex 3회차 P2를 고친 `96eed52` 뒤 검토가 없었음).
 - 10-19T17:34Z D08 PR 5 #204(47쌍 묶기)를 head `ee44799`로 병합했다(`5e0ba55`, Codex 3회 가운데 1·2회째 P2 한 건씩 고침, 3회째 큰 문제 없음, 스레드 2개 해결, `checks`·GitGuardian 통과를 상위 세션이 직접 봄). 47쌍 가져오기는 다음 수집 실행의 준비 단계에서 돈다. C07 세션에 #197로 main을 합치라고 알렸다.
+- 10-19T17:48Z #199 Claude 검토 세션 `session_012ku7LUVij2mmvETNkp5KLQ`가 head `12e84d4`에 리뷰 하나를 남겼다(리뷰 5575490120, P0–P2 없음, P3 3건: 스냅숏 없이 첫 페이지 밖 등록 숙소를 주소로 열면 등록 표시가 빠지는 알려진 한계, PR 설명 미갱신, `update-jta-registered.py`의 robots 확인 없음). `cloud-check.py --full` 통과, 브라우저 검사 40/40과 대조 22 실패, 공개 스냅숏으로 연결 1,263곳·1,187행 재현. 결과를 적고 그 세션을 보관했다. #199 CI 뒤 코드 PR #204가 main에 들어가 L01 세션에 main을 합쳐 CI를 다시 돌리게 했다. P3 1·3은 D08 다음 일(PR 3 앞 작은 후속 PR이나 PR 3에 함께), P3 2는 PR 본문만 고친다.
 
 ## U05 2단계 — 화면 구현(B ‘탕 체크리스트’)
 
