@@ -1,0 +1,276 @@
+{
+ "measuredAt": "2026-10-19T19:02:33.022Z",
+ "results": [
+  {
+   "width": 0,
+   "name": "스냅숏 매니페스트가 Trip.com ID를 Jalan 카드로 보냄",
+   "pass": true,
+   "detail": {
+    "trip": "trip-1465318",
+    "jalan": "jalan-302008",
+    "snapshot": "5d44da002d1f89a4",
+    "mergedInto": {
+     "trip-1465318": "jalan-302008"
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "Trip.com 기록의 이름(Merged Check Ryokan)으로 찾으면 Jalan 카드만 나옴",
+   "pass": true,
+   "detail": {
+    "found": [
+     "jalan-302008"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "Trip.com ID로 저장한 즐겨찾기가 Jalan 카드 하나로, 저장된 상태로 보임",
+   "pass": true,
+   "detail": {
+    "put": 200,
+    "savedCards": [
+     "jalan-302008"
+    ],
+    "pressed": "true",
+    "title": "즐겨찾기 1곳"
+   }
+  },
+  {
+   "width": 360,
+   "name": "Trip.com ID로 담은 비교 후보가 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "compared": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 360,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 360,
+   "name": "그 카드의 저장을 풀면 두 ID가 모두 풀림",
+   "pass": true,
+   "detail": {
+    "ids": []
+   }
+  },
+  {
+   "width": 360,
+   "name": "Trip.com ID의 공유 주소가 Jalan 카드의 상세로 열리고 주소가 그 ID로 바뀜, 두 공급자 평점",
+   "pass": true,
+   "detail": {
+    "hash": "#stay/jalan-302008",
+    "shown": true,
+    "providers": [
+     "jalan",
+     "trip"
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세를 닫으면 같은 사이트의 목록으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8791/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+   }
+  },
+  {
+   "width": 360,
+   "name": "자료 현황 ‘세는 기준’: 곳은 카드, 같은 숙소로 확인해 묶은 쌍은 1곳, 화면 안, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "곳(숙소 카드)목록에서 1곳으로 세는 단위이고, 숙소 카드 하나입니다. 카드는 대개 출처별 숙소 기록 하나라서, 같은 숙소가 자란넷과 Trip.com에 함께 있으면 2곳으로 셉니다. 직접 연결한 20곳과, 자란넷·Trip.com 기록을 같은 숙소로 확인해 묶은 쌍만 카드 하나에 두 출처의 평점·사진·링크를 모아 1곳으로 셉니다. 그래서 같은 출처라도 상세 페이지 비율과 상세까지 모은 곳 비율이 다를 수 있습니다.",
+    "inside": true,
+    "overflow": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "Trip.com 기록의 이름(Merged Check Ryokan)으로 찾으면 Jalan 카드만 나옴",
+   "pass": true,
+   "detail": {
+    "found": [
+     "jalan-302008"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "Trip.com ID로 저장한 즐겨찾기가 Jalan 카드 하나로, 저장된 상태로 보임",
+   "pass": true,
+   "detail": {
+    "put": 200,
+    "savedCards": [
+     "jalan-302008"
+    ],
+    "pressed": "true",
+    "title": "즐겨찾기 1곳"
+   }
+  },
+  {
+   "width": 390,
+   "name": "Trip.com ID로 담은 비교 후보가 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "compared": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 390,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 390,
+   "name": "그 카드의 저장을 풀면 두 ID가 모두 풀림",
+   "pass": true,
+   "detail": {
+    "ids": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "Trip.com ID의 공유 주소가 Jalan 카드의 상세로 열리고 주소가 그 ID로 바뀜, 두 공급자 평점",
+   "pass": true,
+   "detail": {
+    "hash": "#stay/jalan-302008",
+    "shown": true,
+    "providers": [
+     "jalan",
+     "trip"
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세를 닫으면 같은 사이트의 목록으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8791/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+   }
+  },
+  {
+   "width": 390,
+   "name": "자료 현황 ‘세는 기준’: 곳은 카드, 같은 숙소로 확인해 묶은 쌍은 1곳, 화면 안, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "곳(숙소 카드)목록에서 1곳으로 세는 단위이고, 숙소 카드 하나입니다. 카드는 대개 출처별 숙소 기록 하나라서, 같은 숙소가 자란넷과 Trip.com에 함께 있으면 2곳으로 셉니다. 직접 연결한 20곳과, 자란넷·Trip.com 기록을 같은 숙소로 확인해 묶은 쌍만 카드 하나에 두 출처의 평점·사진·링크를 모아 1곳으로 셉니다. 그래서 같은 출처라도 상세 페이지 비율과 상세까지 모은 곳 비율이 다를 수 있습니다.",
+    "inside": true,
+    "overflow": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Trip.com 기록의 이름(Merged Check Ryokan)으로 찾으면 Jalan 카드만 나옴",
+   "pass": true,
+   "detail": {
+    "found": [
+     "jalan-302008"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Trip.com ID로 저장한 즐겨찾기가 Jalan 카드 하나로, 저장된 상태로 보임",
+   "pass": true,
+   "detail": {
+    "put": 200,
+    "savedCards": [
+     "jalan-302008"
+    ],
+    "pressed": "true",
+    "title": "즐겨찾기 1곳"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Trip.com ID로 담은 비교 후보가 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "compared": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "그 카드의 저장을 풀면 두 ID가 모두 풀림",
+   "pass": true,
+   "detail": {
+    "ids": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "Trip.com ID의 공유 주소가 Jalan 카드의 상세로 열리고 주소가 그 ID로 바뀜, 두 공급자 평점",
+   "pass": true,
+   "detail": {
+    "hash": "#stay/jalan-302008",
+    "shown": true,
+    "providers": [
+     "jalan",
+     "trip"
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세를 닫으면 같은 사이트의 목록으로 돌아옴",
+   "pass": true,
+   "detail": {
+    "url": "http://127.0.0.1:8791/?region=all&q=&provider=trip&rating=0&reviews=0&features=&ryokan=0&saved=0&sort=recommended&view=split"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "자료 현황 ‘세는 기준’: 곳은 카드, 같은 숙소로 확인해 묶은 쌍은 1곳, 화면 안, 가로 넘침 없음",
+   "pass": true,
+   "detail": {
+    "text": "곳(숙소 카드)목록에서 1곳으로 세는 단위이고, 숙소 카드 하나입니다. 카드는 대개 출처별 숙소 기록 하나라서, 같은 숙소가 자란넷과 Trip.com에 함께 있으면 2곳으로 셉니다. 직접 연결한 20곳과, 자란넷·Trip.com 기록을 같은 숙소로 확인해 묶은 쌍만 카드 하나에 두 출처의 평점·사진·링크를 모아 1곳으로 셉니다. 그래서 같은 출처라도 상세 페이지 비율과 상세까지 모은 곳 비율이 다를 수 있습니다.",
+    "inside": true,
+    "overflow": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}
