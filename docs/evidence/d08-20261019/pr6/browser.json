@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-19T18:07:03.374Z",
+ "measuredAt": "2026-10-19T19:02:33.022Z",
  "results": [
   {
    "width": 0,
@@ -8,7 +8,7 @@
    "detail": {
     "trip": "trip-1465318",
     "jalan": "jalan-302008",
-    "snapshot": "4f22c1783e3f5866",
+    "snapshot": "5d44da002d1f89a4",
     "mergedInto": {
      "trip-1465318": "jalan-302008"
     }
