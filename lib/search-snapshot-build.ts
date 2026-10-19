@@ -17,6 +17,8 @@ import {displayNames,hotelNames,normalizeSearch} from './hotel-names';
 import {withWikidataNames} from './wikidata-names';
 import {withJalanLocaleNames,type LocaleNameRow} from './jalan-locale-names';
 import {jtaCandidates,resolveJtaLinks,type JtaCandidate} from './jta-registration';
+import {oitaCandidates,resolveOitaPermits} from './oita-permits';
+import type {ListCandidate} from './lodging-lists';
 import {DAILY_PROGRESS_KEY,FILL_ROWS,type CollectionFill,type FillScope,type FillScopeKey,type PageCounts,type TrendDay} from './collection-status';
 // Reads only (scripts/build-search-snapshot.mjs refuses any other statement).
 // Cards go through the same steps as the former list pages (hotelsInOrder):
@@ -131,8 +133,9 @@ export async function buildSearchSnapshot(now:Date){
   absorbed.set(base,{names:[...own.names,...hotelNames(h)],aliases:[...own.aliases,...aliases.get(id)??[]]});
  }
  type Row={id:string;region:string;prefecture:string|null;name:string;kind:string;trip_score:number|null;trip_reviews:number|null;jalan_score:number|null;jalan_reviews:number|null;natural:number|null;room_onsen:number|null;bath_features:number|null;bath_known:number|null;search_text:string;lat:number|null;lng:number|null;payload:string};
- // Japan Tourism Agency registrations (D08): every stay's candidate rows, decided across them after the pass.
- const jta=new Map<string,JtaCandidate[]>();
+ // Japan Tourism Agency registrations and Oita Prefecture permits (D08): every stay's candidate
+ // rows, decided across them after the pass.
+ const jta=new Map<string,JtaCandidate[]>(),oita=new Map<string,ListCandidate[]>();
  // The record counts of the collection summary and status, counted on this pass
  // with the rules of their former queries (queryCoverage, readCollectionStatus).
  const prefectures=new Set<string>(),quality={records:0,detailRecords:0,bathKnownRecords:0,naturalOnsenRecords:0,roomOnsenRecords:0};
@@ -166,6 +169,7 @@ export async function buildSearchSnapshot(now:Date){
    const item=w===hotels[i]?null:w.sources.find(s=>s.sourceId==='wikidata-name:'+w.id)!.url!.split('/').pop()!;
    cards.push(item?{...hotelSummary(h),wikidataNames:{item,was:Object.fromEntries((['ko','en'] as const).filter(k=>w.names[k]!==hotels[i].names[k]).map(k=>[k,hotels[i].names[k]]))}}:hotelSummary(h));
    const rows=jtaCandidates({...hotels[i],prefecture:r.prefecture});if(rows.length)jta.set(r.id,rows);
+   const permits=oitaCandidates({...hotels[i],prefecture:r.prefecture});if(permits.length)oita.set(r.id,permits);
    add(r.id,raw,h,r.bath_known);
    if(r.prefecture!==null)prefectures.add(r.prefecture);
    quality.records++;if(raw.sources[0]?.label?.includes('상세'))quality.detailRecords++;if((r.bath_known??0)&BATH_FEATURE_MASK)quality.bathKnownRecords++;
@@ -173,8 +177,8 @@ export async function buildSearchSnapshot(now:Date){
   });
   if(rows.length<PAGE)break;cursor=rows.at(-1)!.id;
  }
- const registered=resolveJtaLinks(jta);
- core.ids.forEach((id,i)=>{const link=registered.get(id);if(link)cards[i]={...cards[i],jta:link.number}});
+ const registered=resolveJtaLinks(jta),permitted=resolveOitaPermits(oita);
+ core.ids.forEach((id,i)=>{const link=registered.get(id),p=permitted.get(id);if(link)cards[i]={...cards[i],jta:link.number};if(p)cards[i]={...cards[i],oita:{kind:p.kind,permitted:p.permitted,asOf:p.asOf}}});
  const providers=[...new Set(queue.map(g=>g.provider))].sort();
  const jobs:CoverageJobs[]=providers.map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as CoverageJobs['provider'],discovered:total(queue,g=>of(g)&&g.kind==='detail'),completed:total(queue,g=>of(g)&&g.status==='done'),details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&WAITING.includes(g.status)),failed:total(queue,g=>of(g)&&g.status==='failed'),updated:latest(queue.filter(of).map(g=>g.updated))}});
  const statusRows:ProviderRow[]=providers.filter(p=>p==='jalan'||p==='trip').map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as ProviderRow['provider'],last_success:latest(queue.filter(of).map(g=>g.last_success)),completed_details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&OPEN.includes(g.status)),retry:total(queue,g=>of(g)&&g.status==='retry'),failed:total(queue,g=>of(g)&&g.status==='failed'),active:total(queue,of,'active')}});
