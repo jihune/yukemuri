@@ -131,6 +131,15 @@
 
 여섯 번째 → 일곱 번째의 결과는 `docs/history/work-handoff-20261019T0238Z.md`, 일곱 번째 → 여덟 번째의 결과(하네스 판, 사용량, 표 확인, 예약 이전, 알림, 누락 점검)는 옮긴 파일 「상위 세션 인계」 7에 있다. 여덟 번째 → 아홉 번째: 받는 세션이 위 1의 결과를 여기에 적는다. 이 문서가 다시 45 KB라 받는 세션이 결과를 적은 뒤 11:47Z 때와 같은 방법으로 지금 상태만 남게 다시 쓴다(2·5·6절은 글자 그대로).
 
+여덟 번째 → 아홉 번째 결과(아홉 번째 상위 세션 `session_01NNQyWcUC7714tEYd6CEkWZ`가 적음, 10-19T13:41:52Z 시작, 여덟 번째가 `create_session`으로 엶, 기록 브랜치 `claude/yukemuri-parent-9`):
+
+1. 하네스: `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/harness-version"` → `e8fcc89 2026-10-19`. 하네스 저장소를 `add_repo`(read)로 붙여 받은 main HEAD도 `e8fcc89`이고, `git merge-base --is-ancestor 591edc1 e8fcc89`가 참이며 `git diff --stat 591edc1 e8fcc89`는 `agents_work/REQUEST.md`·`agents_work/STATE.md` 두 파일뿐이다. 그래서 규칙은 setup 32와 같다. 추론 강도는 `grep -ho '"effort":"[a-z]*"' ~/.claude/projects/*/*.jsonl | sort | uniq -c` → `18 "effort":"xhigh"`, 환경 변수 `CLAUDE_CODE_EFFORT_LEVEL`도 xhigh다. `get_session`의 `lineage`는 깊이 2, 한도 8이다.
+2. 사용량: 이 세션의 `rate_limit_event`(13:42:09Z)에서 5시간 창 0.36(재설정 16:40Z), 7일 창 0.08(재설정 10-26T12:00Z), `isUsingOverage` false.
+3. `AGENTS.md`, `START_HERE.md`, `docs/roadmap.md`, `docs/cloud-development.md`, 이 문서를 읽었다.
+4. 표 확인(13:43Z): main `ee93be1`(PR #200). 열린 PR은 #190(head `eea8822`), #197(`754c33d`), #198(`d6a0e41`), #199(`69aaaec`)에 더해 #201(D08 PR 4 Overture 대략 위치 보정, `claude/d08-overture`, head `6cc7cd3`, 13:43:07Z 열림)이다. 실행기 저장소는 열린 PR 없음. 마지막 코드 배포는 여전히 PR #188이다. 수집은 마지막 예약 실행이 11:12:28Z(실행기 run 39242955648, 앱 run 39242973283)이고 12:37Z·13:37Z 예약은 13:43Z까지 오지 않았다(10-19T10:04Z에 분석한 GitHub `schedule` 몰아 처리와 같은 모양). `git fetch --depth=1000` 뒤 하위 브랜치마다 `git log --oneline origin/main..origin/<브랜치>`: main에 없는 커밋은 열린 PR 브랜치의 것뿐이다(`c04-reads` 2, `c04-writes` 8, `d08-commons-photos` 1, `d08-overture` 1, `l01-lifecycle` 6). 나머지 하위·상위 브랜치는 0이라 다음 기록 PR에 가져올 커밋은 없다. 하위 세션 `get_session`: O03·C04·L01은 턴을 끝내고 CI·검토·예약을 기다림(review_ready, 각자 예약 있음), D08 Commons·C07·D08 Overture는 턴을 돌고 있음, D05·U07·D07·U05·U06은 끝남(completed). 실행기 저장소는 `add_repo`(push)로 붙였다.
+5. 예약 이전(13:44Z): H01 7일차를 `trig_0161s8o9GRSBBXwHS4X8e6uR`(10-20T01:20Z), D04 재측정 알림을 `trig_018FW8R6jT5LL9Fz41MAEs3W`(11-29T03:05Z)로 같은 prompt로 이 세션에 만들고, 옛 `trig_01U6vLaQDDfYSNSwTyrSmw7y`·`trig_01FvnhQBAB7Zo6ijLNTRbZDx`를 `delete_trigger`로 지웠다. 사용자 keep-alive 루틴 두 개, 다른 프로젝트 예약 하나, 하위 세션 예약(O03 두 개, C04·C07·L01·D08 Commons 안전망 각 하나)은 건드리지 않았다.
+6. 알림(10-19T13:44:27Z, priority later): 하위 세션 열한 곳과 여덟 번째 상위 세션에 새 id를 알렸다. O03의 두 예약과 C04의 안전망 예약 prompt가 여덟 번째 id로 알리라고 적고 있어 그 id만 `update_trigger`로 바꾸게 했다. D08 세 세션(L01, Commons, Overture)에는 하네스 setup 32의 바깥 서비스·자료 이름 풀이 줄을 함께 전했다(측정 줄은 여덟 번째가 C07·C04에, 하네스 관리 세션이 O03에 이미 전함).
+
 ### 8. 기록
 
 10-19T11:47Z까지의 기록(여덟 번째의 인계 받기, 10:04Z 수동 수집과 GitHub 예약 공백 분석, 안전망 9회째, 사용자 결정)은 옮긴 파일 「상위 세션 인계」 8에 있다.
