@@ -19,7 +19,8 @@ const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='reviewed-groups-only',temp=mkdtempSync(join(tmpdir(),'yukemuri-reviewed-'));
 const modules=[{type:'ESModule',path:resolve('dist/server/index.js')},...readdirSync('dist/server',{recursive:true}).filter(p=>p.endsWith('.js')&&p!=='index.js').map(p=>({type:'ESModule',path:resolve('dist/server',p)}))];
-// One isolate per crawl-prepare: ensureCatalog keeps its promise per isolate.
+// A Worker isolate: ensureCatalog keeps its promise per isolate, the reviewed import runs on
+// every crawl-prepare.
 const isolate=()=>new Miniflare({modules,modulesRoot:resolve('dist/server'),compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'reviewed-test'},d1Persist:join(temp,'db'),bindings:{CRAWL_ACCESS_KEY:KEY}});
 const prepare=async runtime=>{const r=await runtime.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY}});assert.equal(r.status,200,await r.text())};
 const reviewed=JSON.parse(readFileSync('data/source-groups-reviewed.json','utf8')).patches;
@@ -45,8 +46,9 @@ try{
  assert.equal(await grouped(),present.size,'every pair whose Jalan record is stored is saved');
 
  // Every other Jalan record stored: one pair whose Trip.com id another group holds, one whose
- // Jalan record lacks the matched name, the rest to save. The next crawl-prepare (a new
- // isolate) tries the unknown pairs again, settles every pair and marks the content done.
+ // Jalan record lacks the matched name, the rest to save. The next crawl-prepare, in the same
+ // isolate (Codex P2 on PR #204), tries the unknown pairs again, settles every pair and marks
+ // the content done.
  const template=await db.prepare("SELECT * FROM hotels WHERE id='takinoya'").first(),cols=Object.keys(template),base=JSON.parse(template.payload);
  const insert=async(id,name,rating,pref='pref-osaka')=>{const h={...structuredClone(base),id,names:{ko:name,ja:name,en:name},aliases:[],prefecture:pref,regionId:pref,ratings:[{...base.ratings[0],provider:rating.provider,sourceId:id,score:rating.score,scale:rating.scale,reviewCount:77,isMock:false}],sources:[{...base.sources[0],sourceId:id}]};
   const row={...template,id,region:pref,prefecture:pref,name,search_text:name,payload:JSON.stringify(h)};await db.prepare(`INSERT INTO hotels (${cols.join(',')}) VALUES (${cols.map(()=>'?').join(',')})`).bind(...cols.map(c=>row[c])).run()};
@@ -57,7 +59,6 @@ try{
  await insert(renamed.hotelId,'別の宿',{provider:'jalan',score:3.9,scale:5});
  // In the prefecture of its Trip.com record when the seed holds that.
  for(const p of rest)await insert(p.hotelId,p.matchedName,{provider:'jalan',score:4.1,scale:5},(await db.prepare('SELECT prefecture FROM hotels WHERE id=?').bind(p.tripHotelId).first())?.prefecture??undefined);
- await runtime.dispose();runtime=isolate();db=await runtime.getD1Database('DB');
  await prepare(runtime);
  // The pairs saved the first time are replayed: the same evidence, nothing written.
  rows=await keys();const counts=JSON.parse(rows[0]?.value??'{}'),m=k=>counts[k]??0;

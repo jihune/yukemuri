@@ -223,6 +223,9 @@ async function prepareExternalBathFacts(){
 }
 export async function prepareOnsenCatalog(){
  await ensureCatalog();
+ // Outside ensureCatalog's promise, which an isolate keeps: a pair still unknown is tried
+ // again on the next crawl-prepare in the same isolate (Codex P2 on PR #204).
+ await importReviewedSourceGroups();
  const search=await preparePlaceSearch();
  const priorities=await prepareCollectionPriorities();
  const bathScope=await prepareExternalBathFacts();
@@ -242,13 +245,13 @@ async function backfillBathFacts(){
  }
  await db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(key,'done').run();
 }
-async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).then(()=>importReviewedSourceGroups()).catch(error=>{ready=null;throw error});await ready}
+async function ensureCatalog(){if(!ready)ready=importSnapshot().then(reindexNames).then(backfillBathFacts).then(importLocalizedNames).then(importVerifiedSourceGroups).catch(error=>{ready=null;throw error});await ready}
 // What ensureCatalog (run by /api/crawl-prepare) has not done yet on this
 // database, read only: the seed version and its one-time steps (the keys of
 // importSnapshot, reindexNames, backfillBathFacts, importLocalizedNames and
 // importVerifiedSourceGroups). Empty when the catalogue is prepared.
 // importReviewedSourceGroups is not a seed step: its key follows its file's
-// content, and the collector's next crawl-prepare runs it.
+// content, and every crawl-prepare runs it (prepareOnsenCatalog).
 export async function catalogPreparation(){
  const once=['bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1'];
  const rows=await favoritesDb().prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?,?,?,?)').bind('snapshot','multilingual-index-v1',...once).all<{key:string;value:string}>();
