@@ -24,6 +24,8 @@ cases = [
     ('mergedInto not in the manifest', [('scripts/build-search-snapshot.mjs', 'mergedInto:data.mergedInto,', '')], False, SNAPSHOT),
     ('mergedInto in core.json, which a page from before cannot open', [(BUILD, RETURN, ' Object.assign(core,{mergedInto:Object.fromEntries(mergedInto)});' + chr(10) + RETURN)], False, SNAPSHOT),
     ('page ignores mergedInto', [(PAGE, 'const mergedInto=snap.snapshot?.manifest.mergedInto,', 'const mergedInto=undefined as Record<string,string>|undefined,')], True, BROWSER),
+    # Codex P2 on PR #209: an id another tab stores later is mapped too.
+    ('comparison mapped only once', [(PAGE, '},[mergedInto,comparisonIds]);', '},[mergedInto]);')], True, BROWSER),
     ('unsaving leaves the absorbed id', [(PAGE, 'ids=next?[id]:[id,...savedIds.filter(k=>k!==id&&mergedInto?.[k]===id)];', 'ids=[id];')], True, BROWSER),
 ]
 

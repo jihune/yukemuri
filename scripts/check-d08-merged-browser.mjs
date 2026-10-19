@@ -6,7 +6,8 @@
 // site), and wrangler dev serves it with that D1.
 // - the Trip.com record has no card: a search by its own name lists the Jalan card only;
 // - its id saved and compared before (a favourite, the comparison in localStorage) shows as the
-//   Jalan card, saved; unsaving that card unsaves both ids;
+//   Jalan card, saved, also when another tab stores the Trip.com id again; unsaving that card
+//   unsaves both ids;
 // - its shared address (#stay/<Trip.com id>) opens the Jalan card's detail with both
 //   providers' ratings, the address replaced, and closing it returns to the list;
 // - the data status screen's ‘세는 기준’ says how grouped records are counted, with no
@@ -83,6 +84,13 @@ try{
   const compared=await page.evaluate(()=>localStorage.getItem('yukemuri-comparison-v1'));
   check('Trip.com ID로 저장한 즐겨찾기가 Jalan 카드 하나로, 저장된 상태로 보임',put===200&&savedCards.length===1&&savedCards[0]===pair.jalan&&pressed==='true'&&/1곳/.test(title),{put,savedCards,pressed,title});
   check('Trip.com ID로 담은 비교 후보가 Jalan 카드 ID로 바뀜',compared===JSON.stringify([pair.jalan]),{compared});
+  // Another tab (one opened before the deploy, say) stores the Trip.com id again: this tab hears
+  // the storage event and maps it to the Jalan card (Codex P2 on PR #209).
+  const other=await context.newPage();await other.goto(base+'/?q=',{waitUntil:'networkidle'});
+  await other.evaluate(trip=>localStorage.setItem('yukemuri-comparison-v1',JSON.stringify([trip])),pair.trip);
+  await page.waitForFunction(jalan=>localStorage.getItem('yukemuri-comparison-v1')===JSON.stringify([jalan]),pair.jalan,{timeout:5000}).catch(()=>{});
+  const relayed=await page.evaluate(()=>localStorage.getItem('yukemuri-comparison-v1'));await other.close();
+  check('다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜',relayed===JSON.stringify([pair.jalan]),{relayed});
   if(shots)await page.locator('#card-'+pair.jalan).screenshot({path:join(shots,`saved-${w}.png`)});
   if(await heart.count()){await tap(heart);await page.getByText('즐겨찾기에서 해제했어요.').waitFor({timeout:10000}).catch(()=>{})}
   const after=await favorites();

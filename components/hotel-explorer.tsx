@@ -109,12 +109,12 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   window.addEventListener('storage',changed);return()=>window.removeEventListener('storage',changed);
  },[]);
  useEffect(()=>{if(comparisonReady)try{localStorage.setItem(COMPARISON_STORAGE_KEY,JSON.stringify(comparisonIds))}catch{}},[comparisonIds,comparisonReady]);
- // A compared or shared stay that joined another card opens as that card; the address is
- // replaced, not pushed, so the back button leaves as before.
+ // A compared or shared stay that joined another card opens as that card, also when another
+ // tab stores its id later (Codex P2 on PR #209); the address is replaced, not pushed, so the
+ // back button leaves as before.
+ useEffect(()=>{if(mergedInto&&comparisonIds.some(id=>mergedInto[id]))setComparisonIds([...new Set(comparisonIds.map(id=>mergedInto[id]??id))])},[mergedInto,comparisonIds]);
  useEffect(()=>{
-  if(!mergedInto)return;
-  setComparisonIds(ids=>ids.some(id=>mergedInto[id])?[...new Set(ids.map(id=>mergedInto[id]??id))]:ids);
-  const base=detailId?mergedInto[detailId]:undefined;
+  const base=detailId?mergedInto?.[detailId]:undefined;
   if(base){const url=new URL(window.location.href);url.hash='stay/'+encodeURIComponent(base);window.history.replaceState(window.history.state,'',url);setDetailId(base)}
  },[mergedInto,detailId]);
  function compare(id:string){

@@ -1,5 +1,5 @@
 {
- "measuredAt": "2026-10-19T17:56:44.394Z",
+ "measuredAt": "2026-10-19T18:07:03.374Z",
  "results": [
   {
    "width": 0,
@@ -8,7 +8,7 @@
    "detail": {
     "trip": "trip-1465318",
     "jalan": "jalan-302008",
-    "snapshot": "2bb241a723a5d374",
+    "snapshot": "4f22c1783e3f5866",
     "mergedInto": {
      "trip-1465318": "jalan-302008"
     }
@@ -47,6 +47,14 @@
   },
   {
    "width": 360,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 360,
    "name": "그 카드의 저장을 풀면 두 ID가 모두 풀림",
    "pass": true,
    "detail": {
@@ -125,6 +133,14 @@
   },
   {
    "width": 390,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 390,
    "name": "그 카드의 저장을 풀면 두 ID가 모두 풀림",
    "pass": true,
    "detail": {
@@ -199,6 +215,14 @@
    "pass": true,
    "detail": {
     "compared": "[\"jalan-302008\"]"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "다른 탭이 Trip.com ID를 비교에 다시 넣어도 Jalan 카드 ID로 바뀜",
+   "pass": true,
+   "detail": {
+    "relayed": "[\"jalan-302008\"]"
    }
   },
   {
