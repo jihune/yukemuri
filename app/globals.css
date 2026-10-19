@@ -499,6 +499,11 @@ legend{font-size:var(--yk-fs-sm);font-weight:700;margin-bottom:12px}
 .detail-image .photo-source-credit{display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:calc(100% - 40px)}
 .detail-image .photo-source-credit a{display:inline-flex;align-items:center;gap:4px}
 .detail-image .photo-source-credit img{width:20px;height:20px;object-fit:cover;border-radius:50%}
+/* A Commons credit (D08: file page, author, licence) is longer than a source name: at the top it
+   keeps clear of the previous/next buttons at the bottom right, and runs as one wrapping line whose
+   links keep a 44px target in padding rather than in line height. */
+.detail-image .photo-source-credit.commons-credit{top:12px;bottom:auto;display:block;overflow-wrap:anywhere}
+.detail-image .photo-source-credit.commons-credit a{display:inline;min-height:0;padding-block:15px}
 .google-place-rating>b{font-weight:400;white-space:nowrap;color:var(--yk-text)}
 .collection-error{color:#a74b38}
 /* The onsen comparison surface. */
