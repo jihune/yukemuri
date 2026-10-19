@@ -1,0 +1,20 @@
+hotels with no same-name Overture place: 15943; of those with a source or block-level point (grade 1-2): 10773
+  an Overture lodging place within 100 m: 7105 (66.0%); same municipality and house numbers agree with one of them: 4817 (44.7% of 10773)
+  control, Overture points shuffled: within 100 m 7105, with agreeing house numbers 1
+  15 random examples (our name | Overture name | our address | Overture address):
+    旅館　からさわ | Karasawa Inn | 石川県金沢市藤江南1-102 | 1 Chome-102-1 Fujieminami
+    湯の谷温泉郷　ホテルゆのたに荘 | ゆのたに荘 | 新潟県魚沼市下折立245 | 下折立245
+    HOTEL HOUSEN ホテル朋泉 草加（埼玉県） | ビジネスホテル朋泉 | 埼玉県草加市住吉1-2-27 | 住吉1丁目2-27
+    Tabist インターナショナルホテル皆生 | インターナショナルホテル皆生 | 鳥取県米子市皆生温泉4-7-5 | 皆生温泉4-7-5
+    ホテルヴィスキオ京都　ｂｙ　ＧＲＡＮＶＩＡ | ヴィアイン京都駅八条口 | 京都府京都市南区東九条上殿田町44-1 | 南区室町通針小路東入ル東九条上殿田町44-1
+    ワーキングハウス | エクハシの宿 | 北海道根室市敷島町2‐64 | 敷島町2丁目64
+    東横ＩＮＮ千葉みなと駅前 | Toyoko Inn Chiba-minato Ekimae | 千葉県千葉市中央区中央港1-23-1 | 中央区中央港Chuo-ku1丁目23-1
+    京急ＥＸイン東京・日本橋 | Keikyu Ex Inn Nihombashi | 東京都中央区日本橋茅場町2-4-8 | 2 Chome-4-8 Nihonbashikayabacho
+    ＴｏｋｙｏＮＥＳＴ　Ｎｉｐｐｏｒｉ | Tokyo NEST | 東京都荒川区東日暮里6-55-10 | 6 Chome-55-10 Higashinippori
+    展望の湯　ホテルマーシュランド（BBHホテルグループ） | 千友館本館 | 北海道釧路市鳥取大通5丁目2番5号 | 5 Chome-2-5 Tottoriodori
+    仲間の宿　川きん | 川きん | 千葉県南房総市久枝749 | 久枝749
+    新松葉家 奴 | 旅館奴 | 長野県諏訪郡下諏訪町立町3346 | 下諏訪町立町3346
+    シャトレーゼ ガトーキングダム札幌 | ガトーキングダム | 北海道札幌市北区東茨戸132 | 北区東茨戸132番地 ガトーキングダムサッポロ フェアリーフォンテーヌ
+    100％源泉掛け流しの宿　雲仙スカイホテル | 雲仙スカイホテル | 長崎県雲仙市小浜町雲仙323―1 | 小浜町雲仙323-1
+    ホテルフジヨシ | フジヨシ | 大分県別府市野口元町1‐3 | 野口元町1-3
+unmatched diagnostic control: shuffled agreeing 1 vs real 4817 -> PASS
