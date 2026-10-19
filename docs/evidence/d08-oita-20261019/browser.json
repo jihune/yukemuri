@@ -1,0 +1,386 @@
+{
+ "checkedAt": "2026-10-19T19:15:34.720Z",
+ "base": "http://127.0.0.1:8787",
+ "control": false,
+ "stay": {
+  "id": "jalan-313222",
+  "oita": {
+   "kind": "旅館・ホテル",
+   "permitted": "2004-09-10",
+   "asOf": "2026-03-27"
+  },
+  "title": "川口屋旅館別亭久楽"
+ },
+ "plain": "jalan-301445",
+ "results": [
+  {
+   "width": 360,
+   "name": "카드: 허가 숙소의 카드에는 허가 이야기가 없고 옆으로 넘치지 않음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-313222",
+    "sideways": false
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 정보 출처에 ‘오이타현 여관업 허가 목록에 있음’와 旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준)",
+   "pass": true,
+   "detail": {
+    "title": "오이타현 여관업 허가 목록에 있음",
+    "listKind": "旅館・ホテル",
+    "body": "오이타현 여관업 허가 목록에 있음旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준). 목록에 없다고 무허가나 폐업이라는 뜻은 아닙니다. 오이타시 숙소는 시가 따로 관리해서 이 목록에 없고, 목록 기준일 뒤에 받은 허가는 빠져 있습니다. ‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)"
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 목록에 없다는 것의 뜻, 가공 출처와 데이터셋·CC BY 4.0 링크",
+   "pass": true,
+   "detail": {
+    "links": [
+     {
+      "href": "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "text": "大分県 旅館業営業許可施設一覧",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     },
+     {
+      "href": "https://creativecommons.org/licenses/by/4.0/deed.ja",
+      "text": "CC BY 4.0",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     }
+    ]
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 항목이 시트 너비 안에 있음",
+   "pass": true,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "right": 360
+    },
+    "entry": {
+     "left": 36,
+     "right": 325
+    },
+    "width": 360
+   }
+  },
+  {
+   "width": 360,
+   "name": "상세: 허가가 이어지지 않은 숙소에는 항목 없음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-301445"
+   }
+  },
+  {
+   "width": 360,
+   "name": "실패: 상세를 못 받으면 카드 정보와 다시 시도 단추만 있음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "재시도: 다시 받으면 허가 항목이 나옴",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 360,
+   "name": "바닥글: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "자료 현황 출처 표기: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0",
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 360,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 390,
+   "name": "카드: 허가 숙소의 카드에는 허가 이야기가 없고 옆으로 넘치지 않음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-313222",
+    "sideways": false
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 정보 출처에 ‘오이타현 여관업 허가 목록에 있음’와 旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준)",
+   "pass": true,
+   "detail": {
+    "title": "오이타현 여관업 허가 목록에 있음",
+    "listKind": "旅館・ホテル",
+    "body": "오이타현 여관업 허가 목록에 있음旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준). 목록에 없다고 무허가나 폐업이라는 뜻은 아닙니다. 오이타시 숙소는 시가 따로 관리해서 이 목록에 없고, 목록 기준일 뒤에 받은 허가는 빠져 있습니다. ‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)"
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 목록에 없다는 것의 뜻, 가공 출처와 데이터셋·CC BY 4.0 링크",
+   "pass": true,
+   "detail": {
+    "links": [
+     {
+      "href": "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "text": "大分県 旅館業営業許可施設一覧",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     },
+     {
+      "href": "https://creativecommons.org/licenses/by/4.0/deed.ja",
+      "text": "CC BY 4.0",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     }
+    ]
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 항목이 시트 너비 안에 있음",
+   "pass": true,
+   "detail": {
+    "sheet": {
+     "left": 0,
+     "right": 390
+    },
+    "entry": {
+     "left": 36,
+     "right": 355
+    },
+    "width": 390
+   }
+  },
+  {
+   "width": 390,
+   "name": "상세: 허가가 이어지지 않은 숙소에는 항목 없음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-301445"
+   }
+  },
+  {
+   "width": 390,
+   "name": "실패: 상세를 못 받으면 카드 정보와 다시 시도 단추만 있음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "재시도: 다시 받으면 허가 항목이 나옴",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 390,
+   "name": "바닥글: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "자료 현황 출처 표기: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0",
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 390,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  },
+  {
+   "width": 1280,
+   "name": "카드: 허가 숙소의 카드에는 허가 이야기가 없고 옆으로 넘치지 않음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-313222",
+    "sideways": false
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 정보 출처에 ‘오이타현 여관업 허가 목록에 있음’와 旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준)",
+   "pass": true,
+   "detail": {
+    "title": "오이타현 여관업 허가 목록에 있음",
+    "listKind": "旅館・ホテル",
+    "body": "오이타현 여관업 허가 목록에 있음旅館・ホテル 영업 · 허가 2004-09-10(2026-03-27 목록 기준). 목록에 없다고 무허가나 폐업이라는 뜻은 아닙니다. 오이타시 숙소는 시가 따로 관리해서 이 목록에 없고, 목록 기준일 뒤에 받은 허가는 빠져 있습니다. ‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 목록에 없다는 것의 뜻, 가공 출처와 데이터셋·CC BY 4.0 링크",
+   "pass": true,
+   "detail": {
+    "links": [
+     {
+      "href": "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "text": "大分県 旅館業営業許可施設一覧",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     },
+     {
+      "href": "https://creativecommons.org/licenses/by/4.0/deed.ja",
+      "text": "CC BY 4.0",
+      "target": "_blank",
+      "rel": "noopener noreferrer"
+     }
+    ]
+   }
+  },
+  {
+   "width": 1280,
+   "name": "상세: 항목이 시트 너비 안에 있음",
+   "pass": true,
+   "detail": {
+    "sheet": {
+     "left": 560,
+     "right": 1280
+    },
+    "entry": {
+     "left": 886,
+     "right": 1235
+    },
+    "width": 1280
+   }
+  },
+  {
+   "width": 1280,
+   "name": "키보드: Tab으로 출처 링크에 닿음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "상세: 허가가 이어지지 않은 숙소에는 항목 없음",
+   "pass": true,
+   "detail": {
+    "id": "jalan-301445"
+   }
+  },
+  {
+   "width": 1280,
+   "name": "실패: 상세를 못 받으면 카드 정보와 다시 시도 단추만 있음",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "재시도: 다시 받으면 허가 항목이 나옴",
+   "pass": true,
+   "detail": {}
+  },
+  {
+   "width": 1280,
+   "name": "바닥글: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "footer": {
+     "text": "‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "자료 현황 출처 표기: 오이타현 목록 가공 출처와 두 링크",
+   "pass": true,
+   "detail": {
+    "status": {
+     "text": "출처 표기사진 저작권은 원출처에 있습니다. 사진 출처지도 위치 중 일부는 주소·우편번호·지명으로 찾은 대략 위치이며 실제 숙소 위치와 다를 수 있습니다. 정확한 위치는 숙소 상세의 예약 사이트에서 확인하세요. 「位置参照情報（大字町丁目・街区レベル）令和5年」（国土交通省）、「Geolonia 住所データ」（株式会社Geolonia）、「アドレス・ベース・レジストリ」（デジタル庁）をもとに、株式会社情報試作室が加工した jageocoder 用住所データベース（街区レベル）を利用 (Geolonia 住所データ · アドレス・ベース・レジストリ 利用規約)대략 위치 중 일부는 숙소 이름·주소가 맞는 Overture Maps 장소의 위치로 고쳤습니다. Overture Maps Foundation, overturemaps.org. Data from Meta. Available under CDLA Permissive 2.0. Data from Microsoft. Available under CDLA Permissive 2.0. Data from Foursquare. Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0. Foursquare data was transformed to the Overture schema. Changed: 2026-03-18. NOTICE.txt. (Overture Maps · CDLA Permissive 2.0 전문 · Apache 2.0 전문 · Foursquare NOTICE.txt)‘관광청 등록 호텔·료칸’ 표시는 관광청 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「国際観光ホテル整備法 登録ホテル一覧・登録旅館一覧」（観光庁）を加工して作成 (観光庁 登録ホテル・旅館 · 公共データ利用規約（第1.0版）)‘오이타현 여관업 허가’ 표시는 오이타현 목록을 유케무리가 숙소 이름과 주소로 이어 붙여 만들었습니다. 「旅館業営業許可施設一覧」（大分県）を加工して作成 (大分県 旅館業営業許可施設一覧 · CC BY 4.0)",
+     "links": [
+      "http://127.0.0.1:8787/api/photo-credits",
+      "https://geolonia.github.io/japanese-addresses/",
+      "https://www.digital.go.jp/policies/base_registry_address_tos/",
+      "https://overturemaps.org/",
+      "http://127.0.0.1:8787/licenses/CDLA-Permissive-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Apache-2.0.txt",
+      "http://127.0.0.1:8787/licenses/Foursquare-NOTICE.txt",
+      "https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html",
+      "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0",
+      "https://data.bodik.jp/dataset/440001_ryokan_business",
+      "https://creativecommons.org/licenses/by/4.0/deed.ja"
+     ]
+    }
+   }
+  },
+  {
+   "width": 1280,
+   "name": "페이지 오류 없음",
+   "pass": true,
+   "detail": {
+    "errors": []
+   }
+  }
+ ]
+}

@@ -4,6 +4,7 @@ import {RotateCcw,X} from 'lucide-react';
 import {Sheet,SheetContent,SheetTitle,SheetDescription,SheetClose} from '@/components/ui/sheet';
 import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS,OVERTURE_ATTRIBUTION,OVERTURE_NOTE,OVERTURE_LINKS} from '@/lib/geo-attribution';
 import {JTA_ATTRIBUTION,JTA_NOTE,JTA_LINKS} from '@/lib/jta-attribution';
+import {OITA_ATTRIBUTION,OITA_NOTE,OITA_LINKS} from '@/lib/oita-attribution';
 import {COLLECTION_PROVIDER_LABELS,COLLECTION_ISSUE_LABELS,FILL_ROWS,GEO_GROUPS,formatCollectionTime,type CollectionStatus,type FillScopeKey,type TrendDay} from '@/lib/collection-status';
 
 // U06: the data status screen. Every value comes from the snapshot's status.json, computed
@@ -169,6 +170,7 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
       <p>{GEO_NOTE} <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p>
       <p>{OVERTURE_NOTE} <span lang="en">{OVERTURE_ATTRIBUTION}</span> {OVERTURE_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OVERTURE_LINKS.length-1?')':''}</span>)}</p>
       <p>{JTA_NOTE} <span lang="ja">{JTA_ATTRIBUTION}</span> {JTA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===JTA_LINKS.length-1?')':''}</span>)}</p>
+      <p>{OITA_NOTE} <span lang="ja">{OITA_ATTRIBUTION}</span> {OITA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OITA_LINKS.length-1?')':''}</span>)}</p>
      </section>
     </div>
    </>}
