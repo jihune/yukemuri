@@ -20,7 +20,9 @@ address can point to a person (D08 16, the ninth parent's answer of 18:20Z).
 Their count is noted in the file.
 
 Three GETs to data.bodik.jp, one at a time, 3 seconds apart: robots.txt, the
-catalog's package record (license and the CSV's address) and the CSV. Run by
+catalog's package record (license and the CSV's address) and the CSV. A CSV
+on another host, a redirect to another host or a robots.txt delay over 120
+seconds stops the run. Run by
 hand after the prefecture updates the list, check the counts, commit. A row
 that leaves the list is not evidence that a stay closed (D08 9.2).
 
@@ -61,9 +63,18 @@ BODY = re.compile(r'会社|\(株\)|\(有\)|法人|組合|協会|財団|社団|�
 KINDS = {'旅館・ホテル', '簡易宿所', '下宿'}
 
 
+class SameHost(urllib.request.HTTPRedirectHandler):
+    """Follows a redirect only on the same host: another host's robots.txt was never read (Codex
+    review on PR #211)."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
+            raise SystemExit(f'Redirect to another host refused: {newurl}')
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def get(url):
     request = urllib.request.Request(url, headers={'User-Agent': UA})
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with urllib.request.build_opener(SameHost()).open(request, timeout=120) as response:
         return response.read()
 
 
@@ -77,7 +88,11 @@ def robots(url):
         if e.code in (404, 410):
             return [], 0
         raise SystemExit(f'robots.txt: HTTP {e.code}, nothing fetched') from None
-    return robots_policy(text, AGENT)
+    rules, delay = robots_policy(text, AGENT)
+    # The crawler's limit (scripts/crawler/source_safety.py): a longer wait needs a person to look.
+    if not 0 <= delay <= 120:
+        raise SystemExit(f'robots.txt asks for {delay} seconds between requests: review before running')
+    return rules, delay
 
 
 def key(text):
@@ -166,6 +181,8 @@ def main(argv=None):
     if package['license_id'] != LICENSE:
         raise SystemExit(f"License is {package['license_id']}, not {LICENSE}")
     [resource] = [r for r in package['resources'] if r['format'].upper() == 'CSV']
+    if urllib.parse.urlsplit(resource['url']).netloc != urllib.parse.urlsplit(PACKAGE).netloc:
+        raise SystemExit(f"The CSV is on another host: {resource['url']}")
     if not robots_allowed(rules, resource['url']):
         raise SystemExit('robots.txt disallows the CSV')
     time.sleep(pause)

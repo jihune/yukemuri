@@ -8,7 +8,8 @@ credits the agency and says the lists were processed (lib/jta-registration.ts).
 The PDF addresses change every month, so the script reads them from the list
 page. Four GETs to www.mlit.go.jp, one at a time, 3 seconds apart: robots.txt
 (none there on 2026-10-19, which allows everything; any other failure stops the
-run), the list page and the two PDFs. Needs `pdftotext` (poppler-utils). Run by hand
+run), the list page and the two PDFs. A redirect to another host or a
+robots.txt delay over 120 seconds stops the run. Needs `pdftotext` (poppler-utils). Run by hand
 after the monthly update (the page's 最終更新日), check the counts, commit.
 
 The monthly 登録ホテル・旅館更新情報 (registrations and removals) is not read:
@@ -43,9 +44,18 @@ TITLES = {'hotel': '登録ホテル一覧', 'ryokan': '登録旅館一覧'}
 PREFECTURE = re.compile(r'(北海道|東京都|京都府|大阪府|\S{2,3}県)')
 
 
+class SameHost(urllib.request.HTTPRedirectHandler):
+    """Follows a redirect only on the same host: another host's robots.txt was never read (Codex
+    review on PR #211)."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
+            raise SystemExit(f'Redirect to another host refused: {newurl}')
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def get(url):
     request = urllib.request.Request(url, headers={'User-Agent': UA})
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with urllib.request.build_opener(SameHost()).open(request, timeout=120) as response:
         return response.read()
 
 
@@ -59,7 +69,11 @@ def robots(url):
         if e.code in (404, 410):
             return [], 0
         raise SystemExit(f'robots.txt: HTTP {e.code}, nothing fetched') from None
-    return robots_policy(text, AGENT)
+    rules, delay = robots_policy(text, AGENT)
+    # The crawler's limit (scripts/crawler/source_safety.py): a longer wait needs a person to look.
+    if not 0 <= delay <= 120:
+        raise SystemExit(f'robots.txt asks for {delay} seconds between requests: review before running')
+    return rules, delay
 
 
 def pdf_links(html):
