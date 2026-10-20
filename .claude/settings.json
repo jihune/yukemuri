@@ -1,1 +1,9 @@
-{"language": "korean"}
+{
+  "language": "korean",
+  "permissions": {
+    "allow": [
+      "mcp__claude-code-remote__add_repo",
+      "Bash(git merge --ff-only origin/main)"
+    ]
+  }
+}
