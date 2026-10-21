@@ -113,6 +113,13 @@ else:
 if args.prepare_only:sys.exit(0)
 
 completed=0;next_request={};next_claim={};first_written=None;blocked_hosts=set();redirect_counts={};first_detail_claims=set()
+# C07: in a gentle run a group whose claim found no due page while its provider
+# was free (the Worker says exhausted) is not asked again; an empty claim writes
+# nothing, so the other groups' claims stay the same. Pages that become due in
+# such a group during the run (a retry or refresh, or a detail page a list page
+# found) wait for the next run. A claim that is empty because the provider waits
+# or holds another claim, or a Worker that does not say, keeps the group.
+empty_groups=set();rounds=0;claims=0
 guard=SourceGuard(args.interval,args.jitter)
 # Each round gives both providers list discovery and detail enrichment.
 # Jalan's Korean and English list pages (names only, D07) come last in each round.
@@ -120,10 +127,10 @@ groups=[('jalan','list'),('jalan','detail'),('jalan','baths'),('trip','list'),('
 if args.gentle:groups=[('jalan','detail'),('jalan','baths'),('trip','detail'),('jalan','refresh'),('trip','refresh'),('jalan','list'),('trip','list'),('trip','names'),('jalan','localnames')]
 groups=[('jalan','refresh'),('trip','refresh')] if args.refresh_only else [('jalan','baths')] if args.enrich_baths else [('trip','names')] if args.enrich_names else [g for g in groups if (not args.provider or g[0]==args.provider) and (not args.kind or ('detail' if g[1] in ['names','baths'] else g[1])==args.kind)]
 while completed<args.max_pages:
- progress=False
+ progress=False;rounds+=1
  for provider,phase in groups:
   kind='detail' if phase in ['names','baths'] else phase
-  if provider in blocked_hosts:continue
+  if provider in blocked_hosts or (provider,phase) in empty_groups:continue
   time.sleep(max(0,min(60,next_claim.get(provider,0)-time.time())))
   # Give each provider's due detail retries a slot in every gentle run. This
   # does not change page limits, source pacing or any saved restriction.
@@ -132,7 +139,10 @@ while completed<args.max_pages:
   claim=dict(provider=provider,phase=phase,token=str(uuid.uuid4()),lane='national' if first_detail or completed%5==4 else 'priority')
   if args.refresh_only and args.kind:claim['kind']=args.kind
   if args.url:claim['url']=args.url
-  batch=api('/api/crawl',claim,method='POST')['jobs']
+  answer=api('/api/crawl',claim,method='POST');batch=answer['jobs'];claims+=1
+  if args.gentle and not batch and answer.get('exhausted') is True:
+   empty_groups.add((provider,phase))
+   print(json.dumps(dict(emptyGroup=provider+'/'+phase,round=rounds)),flush=True)
   for job in batch:
    kind=job['kind']
    progress=True
@@ -187,5 +197,6 @@ while completed<args.max_pages:
 if first_written:
  readback=api('/api/hotels/'+urllib.parse.quote(first_written))
  assert readback['id']==first_written
+print(json.dumps(dict(rounds=rounds,claims=claims)),flush=True)
 final=api('/api/crawl?provider=jalan&kind=list&limit=1')['coverage']
 print(json.dumps(dict(processed=completed,readbackId=first_written,coverage=final)),flush=True)

@@ -39,6 +39,9 @@ try{
  const claims=await Promise.all(tokens.map(token=>api('/api/crawl','POST',{provider:'jalan',phase:'detail',token})));
  assert.equal(claims.filter(c=>c.jobs.length).length,1,'Only one worker may claim the provider');
  const winner=claims.findIndex(c=>c.jobs.length),token=tokens[winner];assert.equal(claims[winner].jobs[0].url,url);
+ // C07: an empty claim says whether its phase had no due page with the provider free.
+ assert(claims.every((c,i)=>i===winner?!('exhausted' in c):c.exhausted===false),'A claim that lost to an active claim is not exhausted');
+ const none=await api('/api/crawl','POST',{provider:'trip',phase:'list',token:randomUUID()});assert.deepEqual(none.jobs,[]);assert.equal(none.exhausted,true,'No due page with the provider free is exhausted');
  assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token})).jobs[0].url,url,'POST retry must return the same job');
  const payload={url,status:'done',observations:[h],links:[],claimToken:token};
  await api('/api/crawl','PUT',{...payload,claimToken:randomUUID()},409);
@@ -53,14 +56,14 @@ try{
  const job=await db.prepare('SELECT * FROM crawl_jobs WHERE url=?').bind(url).first();assert.equal(job.attempts,1);assert.equal(job.lease_until,0);
  assert.equal((await api('/api/crawl','PUT',payload)).replayed,true);
  assert.equal((await db.prepare('SELECT attempts FROM crawl_jobs WHERE url=?').bind(url).first()).attempts,1,'Ack retry must not increase attempts');
- assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token:randomUUID()})).jobs.length,0,'Shared provider pacing must persist');
+ const paced=await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token:randomUUID()});assert.equal(paced.jobs.length,0,'Shared provider pacing must persist');assert.equal(paced.exhausted,false,'A paced provider is not exhausted');
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").run();
  const secondToken=randomUUID(),second=(await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token:secondToken})).jobs[0];
  await db.prepare('UPDATE crawl_jobs SET lease_until=0 WHERE url=?').bind(second.url).run();
  const recoveredToken=randomUUID(),recovered=(await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token:recoveredToken})).jobs[0];assert.equal(recovered.url,second.url);
  await api('/api/crawl','PUT',{url:second.url,status:'retry',observations:[],links:[],claimToken:secondToken},409);
  await api('/api/crawl','PUT',{url:recovered.url,status:'retry',error:'http_429',retryAfterSeconds:7200,providerCooldownSeconds:7200,observations:[],links:[],claimToken:recoveredToken});
- assert.equal((await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()})).jobs.length,0,'Cooldown includes enrichment');
+ const cooled=await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()});assert.equal(cooled.jobs.length,0,'Cooldown includes enrichment');assert.equal(cooled.exhausted,false,'A provider in a cooldown is not exhausted');
  // Only the exact obsolete one-page redirect pause can be isolated. Failed
  // repair attempts preserve every queue row and all provider metadata.
  const redirectUrl='https://www.jalan.net/yad999130/',legacyNext=Date.now()/1000+86400;
