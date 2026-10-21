@@ -117,6 +117,7 @@
 | `session_01EKeavHcR5d8PKrSwVHyhn6` | U05 사이트 UI/UX(브랜치 `claude/u05-ui`) | 쉼, 사용자 의견 대기 |
 | `session_015QRDYJDo2KtLmzZ681cnSe` | U06 수집 현황(브랜치 `claude/u06-status`) | 쉼, 새 일 없음 |
 | `session_011eZxw3sdBJd4VfNtNaaaki` | C07 수집과 배포의 D1 읽기 줄이기(브랜치 `claude/c04-reads`, brief `C07-20261019.md`, 10-19T12:35Z 엶) | 일함. 방안 1→2→3, 병합 10-21T00:00Z 뒤 |
+| `session_01DaUWL29kovvz9AxEhJKYVv` | C08 수집기 robots.txt 준수 없애기(브랜치 `claude/c08-no-robots`, brief `C08-20261021.md`, 10-21T01:23Z 엶) | 일함. 코드 PR 하나, 병합 날짜는 상위 세션이 정함 |
 | `session_01EbPNydUi1HEGqL6GRQxwcD` | D05 객실 정보와 D04 시설 연도(브랜치 `claude/d05-rooms`) | 쉼. D04 다음 단계는 PR #189로 끝남, 11-29 뒤 재측정 알림 대기 |
 | `session_01MSeEgz6aLGrzosk2QqMtwt` | 하네스 관리 세션(`jihune/agent-harness`, 10-20T16:0xZ부터, 앞 관리 세션 `session_01WusoPNSswrf4gH76sh9bF2`에서 넘겨받음) | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
