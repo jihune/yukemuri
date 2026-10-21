@@ -13,6 +13,7 @@ export const legacyRedirectRepair=z.object({action:z.literal('isolate-legacy-red
 export const reviewedRedirectRepair=z.object({action:z.literal('release-reviewed-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
 // After a read-only source check succeeds, release one obsolete page hold.
 // Exact old timestamp and reason are required; access pauses and active work win.
+// robots_* errors are rows from before C08 (2026-10-21), when the collector read robots.txt.
 export async function releaseReviewedRedirect(input:z.infer<typeof reviewedRedirectRepair>){
  const db=favoritesDb(),now=Date.now()/1000;
  const result=await db.batch([
@@ -25,7 +26,8 @@ export async function releaseReviewedRedirect(input:z.infer<typeof reviewedRedir
  return{repaired:result[0].meta.changes===1};
 }
 // Repair only the old one-page redirect policy. The page retains its original
-// retry time; a newer pause, active claim or another blocking failure wins.
+// retry time; a newer pause, active claim or another blocking failure wins
+// (robots_* errors: rows from before C08, as above).
 export async function isolateLegacyRedirect(input:z.infer<typeof legacyRedirectRepair>){
  const db=favoritesDb(),now=Date.now()/1000,ready=String(now+8),key='crawl-provider-ready:jalan';
  const job=await db.prepare('SELECT provider,status,error,attempts,next_at FROM crawl_jobs WHERE url=?').bind(input.url).first<{provider:string;status:string;error:string;attempts:number;next_at:number}>();

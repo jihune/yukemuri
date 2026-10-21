@@ -1,7 +1,9 @@
 import sys,unittest,urllib.error
+from itertools import pairwise
 from pathlib import Path
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parent/'crawler'))
-from source_safety import SourceGuard,SourcePolicyDenied,robots_policy,robots_allowed,USER_AGENT,SourceRedirect,policy_failure,check_source_body
+from source_safety import SourceGuard,SourcePolicyDenied,USER_AGENT,SourceRedirect,policy_failure,check_source_body
 from retry_policy import source_failure
 
 class Response:
@@ -10,38 +12,53 @@ class Response:
  def __exit__(self,*args):pass
  def read(self,*args):return self.data
 
+def paced(**kwargs):
+ """A guard on a fake clock; calls holds (url, time, headers) of every request."""
+ clock=[0.0];calls=[]
+ def request(req,timeout):
+  calls.append((req.full_url,clock[0],dict(req.header_items())))
+  return Response(b'User-agent: *\nDisallow: /\nCrawl-delay: 1\n' if req.full_url.endswith('/robots.txt') else b'hotel')
+ return SourceGuard(request=request,sleep=lambda n:clock.__setitem__(0,clock[0]+n),clock=lambda:clock[0],**kwargs),calls
+
 class SafetyChecks(unittest.TestCase):
- def test_rules_and_agent_groups(self):
-  rules,delay=robots_policy('User-agent: *\nDisallow: /hotels/private*\nAllow: /hotels/private/public$\nCrawl-delay: 11\n')
-  self.assertFalse(robots_allowed(rules,'https://www.trip.com/hotels/private-room'))
-  self.assertTrue(robots_allowed(rules,'https://www.trip.com/hotels/private/public'))
-  self.assertFalse(robots_allowed(rules,'https://www.trip.com/hotels/private/public/more'))
-  self.assertEqual(delay,11)
-  rules,_=robots_policy('User-agent: *\nDisallow: /\nUser-agent: YukemuriCatalogUpdater\nAllow: /hotels/\nDisallow: /account/\n')
-  self.assertTrue(robots_allowed(rules,'https://www.trip.com/hotels/normal'))
-  self.assertFalse(robots_allowed(rules,'https://www.trip.com/account/private'))
- def test_host_spacing_robot_cache_and_source_headers(self):
-  clock=[0.0];calls=[]
-  def request(req,timeout):
-   calls.append((req.full_url,clock[0],dict(req.header_items())))
-   return Response(b'User-agent: *\nDisallow: /account/\nCrawl-delay: 10\n' if req.full_url.endswith('robots.txt') else b'hotel')
-  def sleep(n):clock[0]+=n
-  guard=SourceGuard(request=request,sleep=sleep,clock=lambda:clock[0])
-  guard.open('https://www.jalan.net/yad123456/');guard.open('https://www.jalan.net/yad123457/')
-  self.assertEqual(len(calls),3);self.assertGreaterEqual(calls[1][1]-calls[0][1],10);self.assertGreaterEqual(calls[2][1]-calls[1][1],10)
+ # C08 (user decision 2026-10-21): robots.txt is never requested and a robots.txt
+ # Disallow no longer stops a page, so only the pages themselves are requested.
+ def test_only_the_pages_are_requested(self):
+  guard,calls=paced()
+  urls=['https://www.jalan.net/yad123456/','https://www.trip.com/hotels/tokyo-hotel-detail-1/a/','https://www.jalan.net/yad123457/']
+  for url in urls:self.assertEqual(guard.open(url).read(),b'hotel')
+  self.assertEqual([c[0] for c in calls],urls)
+  self.assertFalse([c for c in calls if 'robots' in c[0]])
+ # Pacing did not shrink with robots.txt gone: one host waits at least the
+ # interval (never under 8 seconds) plus up to the jitter between requests.
+ def test_host_spacing_did_not_shrink(self):
+  for interval,jitter,gap in [(8,0,8),(3,0,8),(0,0,8),(10,0,10),(8,4,8)]:
+   guard,calls=paced(interval=interval,jitter=jitter)
+   for n in range(4):guard.open(f'https://www.jalan.net/yad12345{n}/')
+   gaps=[b[1]-a[1] for a,b in pairwise(calls)]
+   self.assertEqual(len(gaps),3);self.assertTrue(all(g>=gap for g in gaps),(interval,jitter,gaps))
+  for draw,gap in [(0,8),(4,12)]:
+   with patch('source_safety.random.uniform',lambda a,b,draw=draw:draw if (a,b)==(0,4) else None):
+    guard,calls=paced()
+    guard.open('https://www.jalan.net/yad123456/');guard.open('https://www.jalan.net/yad123457/')
+   self.assertEqual(calls[1][1]-calls[0][1],gap,'the default 8 seconds plus a jitter draw of 0 to 4')
+  guard,calls=paced(jitter=0)
+  guard.open('https://www.jalan.net/yad123456/');guard.open('https://www.trip.com/hotels/tokyo-hotel-detail-1/a/');guard.open('https://www.jalan.net/yad123457/')
+  self.assertEqual([c[1] for c in calls],[0,0,8],'each host keeps its own spacing')
+ def test_source_headers(self):
+  guard,calls=paced()
+  guard.open('https://www.jalan.net/yad123456/')
   for _,_,headers in calls:
    self.assertEqual(headers['User-agent'],USER_AGENT)
    self.assertFalse(any('authorization' in k.lower() or 'crawl-key' in k.lower() or 'cookie' in k.lower() for k in headers))
- def test_denied_unavailable_and_unknown_hosts(self):
-  calls=[]
-  def denied(req,timeout):calls.append(req.full_url);return Response(b'User-agent: *\nDisallow: /yad\n')
-  guard=SourceGuard(request=denied,sleep=lambda x:None)
-  with self.assertRaises(SourcePolicyDenied):guard.open('https://www.jalan.net/yad123456/')
-  self.assertEqual(len(calls),1)
+ def test_unknown_hosts_and_page_errors(self):
+  guard,calls=paced()
+  for url in ['https://evil.example/yad123456/','http://www.jalan.net/yad123456/','https://www.jalan.net:8443/yad123456/']:
+   with self.assertRaisesRegex(SourcePolicyDenied,'unsupported_source'):guard.open(url)
+  self.assertEqual(calls,[])
+  # A page error reaches the caller, which pauses only that page (retry_policy).
   def unavailable(req,timeout):raise urllib.error.HTTPError(req.full_url,503,'unavailable',{},None)
-  with self.assertRaises(SourcePolicyDenied):SourceGuard(request=unavailable).open('https://www.trip.com/hotels/test')
-  with self.assertRaises(SourcePolicyDenied):guard.open('https://evil.example/yad123456/')
-  with self.assertRaises(SourcePolicyDenied):robots_policy('<html>Sign in to continue</html>')
+  with self.assertRaises(urllib.error.HTTPError):SourceGuard(request=unavailable,sleep=lambda n:None).open('https://www.trip.com/hotels/tokyo-hotel-detail-1/a/')
  def test_cooldown_does_not_ignore_retry_after(self):
   for code,minimum in [(403,86400),(429,21600)]:
    e=urllib.error.HTTPError('https://www.trip.com/hotels/test',code,'blocked',{'Retry-After':'100000'},None)
@@ -70,40 +87,30 @@ class SafetyChecks(unittest.TestCase):
   self.assertFalse(wait.safe);self.assertEqual(policy_failure(wait)['providerCooldownSeconds'],100000)
   changed=SourceRedirect(url,'https://www.jalan.net/yad999999/',302,{})
   self.assertFalse(changed.safe);self.assertEqual(policy_failure(changed)['providerCooldownSeconds'],0)
- def test_safe_redirect_is_paced_and_robots_checked(self):
+ def test_safe_redirect_is_paced(self):
   clock=[0.0];calls=[];url='https://www.jalan.net/yad329012/'
   def request(req,timeout):
    calls.append((req.full_url,clock[0]))
-   if req.full_url.endswith('robots.txt'):return Response(b'User-agent: *\nAllow: /\n')
    if req.full_url==url:raise SourceRedirect(url,url.rstrip('/'),301,{})
    return Response(b'hotel')
   guard=SourceGuard(request=request,sleep=lambda n:clock.__setitem__(0,clock[0]+n),clock=lambda:clock[0],jitter=0)
-  self.assertEqual(guard.open(url).read(),b'hotel');self.assertEqual(len(calls),3)
-  self.assertGreaterEqual(calls[2][1]-calls[1][1],8)
+  self.assertEqual(guard.open(url).read(),b'hotel');self.assertEqual([c[0] for c in calls],[url,url.rstrip('/')])
+  self.assertGreaterEqual(calls[1][1]-calls[0][1],8)
   with self.assertRaises(SourceRedirect):guard.open(url,follow_redirects=False)
-  self.assertEqual(calls[-1][0],url)
-  def denied_target(req,timeout):
-   if req.full_url.endswith('robots.txt'):return Response(b'User-agent: *\nDisallow: /yad329012$\n')
-   raise SourceRedirect(url,url.rstrip('/'),301,{})
-  with self.assertRaisesRegex(SourcePolicyDenied,'robots_disallowed'):SourceGuard(request=denied_target,sleep=lambda n:None).open(url)
- def test_redirect_loop_unknown_target_and_robots_redirect_stop(self):
+  self.assertEqual(calls[-1][0],url);self.assertGreaterEqual(calls[-1][1]-calls[-2][1],8)
+ def test_redirect_loop_and_unknown_target(self):
   url='https://www.jalan.net/yad329012/';calls=[]
   def looping(req,timeout):
    calls.append(req.full_url)
-   if req.full_url.endswith('robots.txt'):return Response(b'User-agent: *\nAllow: /\n')
    raise SourceRedirect(req.full_url,url.rstrip('/') if req.full_url==url else url,302,{})
   with self.assertRaisesRegex(SourcePolicyDenied,'source_redirect_page_review'):SourceGuard(request=looping,sleep=lambda n:None).open(url)
-  self.assertEqual(len(calls),3,'A loop never makes a third page request')
-  def robots_redirect(req,timeout):raise SourceRedirect(req.full_url,url,302,{})
-  with self.assertRaisesRegex(SourcePolicyDenied,'robots_redirect_requires_review') as caught:SourceGuard(request=robots_redirect,sleep=lambda n:None).open(url)
-  self.assertEqual(caught.exception.provider_wait,0);self.assertTrue(caught.exception.stop_run)
+  self.assertEqual(len(calls),2,'A loop never makes a third page request')
   def unknown(req,timeout):
    calls.append(req.full_url)
-   if req.full_url.endswith('robots.txt'):return Response(b'User-agent: *\nAllow: /\n')
    raise SourceRedirect(url,url+'?unknown=private-value',302,{})
   calls.clear()
   with self.assertRaises(SourceRedirect) as caught:SourceGuard(request=unknown,sleep=lambda n:None).open(url)
-  self.assertEqual(len(calls),2);self.assertNotIn('private-value',str(caught.exception.diagnostic))
+  self.assertEqual(len(calls),1);self.assertNotIn('private-value',str(caught.exception.diagnostic))
 
  def test_clear_challenge_and_ordinary_hotel_bodies(self):
   for raw in ['<title>Just a moment...</title>','<p>Verify you are human</p>','<p>Unusual traffic from your computer network</p>']:
@@ -113,15 +120,5 @@ class SafetyChecks(unittest.TestCase):
    check_source_body(raw)
   error=SourceRedirect('https://www.jalan.net/yad329012/','https://www.jalan.net/captcha/',302,{})
   self.assertEqual(policy_failure(error)['providerCooldownSeconds'],86400)
- def test_robots_fail_closed_without_inventing_future_pause(self):
-  for data in [b'<html>Sign in</html>',b'User-agent: *\nCrawl-delay: broken\n']:
-   calls=[]
-   def request(req,timeout):calls.append(req.full_url);return Response(data)
-   with self.assertRaises(SourcePolicyDenied) as caught:SourceGuard(request=request).open('https://www.jalan.net/yad329012/')
-   self.assertEqual(len(calls),1);self.assertTrue(caught.exception.stop_run);self.assertEqual(caught.exception.provider_wait,0)
-  for code,headers,minimum in [(503,{},0),(503,{'Retry-After':'900'},900),(403,{},86400),(429,{},21600)]:
-   def request(req,timeout):raise urllib.error.HTTPError(req.full_url,code,'test',headers,None)
-   with self.assertRaises(SourcePolicyDenied) as caught:SourceGuard(request=request).open('https://www.jalan.net/yad329012/')
-   self.assertTrue(caught.exception.stop_run);self.assertEqual(caught.exception.provider_wait,minimum)
 
 if __name__=='__main__':unittest.main()
