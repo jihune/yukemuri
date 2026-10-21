@@ -10,7 +10,7 @@ import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import assert from 'node:assert/strict';
-import {CHAIN,chainAfter,nextRun,waitMs} from './collection-chain.mjs';
+import {CHAIN,chainAfter,collecting,nextRun,overlapNow,waitMs} from './collection-chain.mjs';
 import {BUDGET,pagesFor} from './collection-budget.mjs';
 import {GENTLE_TITLE} from './check-collection-freshness.mjs';
 
@@ -83,6 +83,12 @@ const check=(decide,label)=>{
  for(const status of ['queued','in_progress'])
   assert.equal(decide({...base,runs:[{...older,status,conclusion:null},after]}).dispatch,true,label+': the newer run ended first and the older is '+status);
  assert.equal(decide({...base,after:older,runs:[older,after]}).rule,'newer-run',label+': then the older run\'s wait stops on the newer one');
+ // C06 (user 2026-10-21): a run made while the one before was queued or running repeats it and
+ // takes 0 pages, so the chain goes on as if it were not there; a run made after it ended carries it.
+ const ended={...after,updated_at:at(32)},repeat=run(101,50),later=run(102,20);
+ assert.equal(decide({...base,after:ended,runs:[ended,repeat]}).dispatch,true,label+': a run made while the one before was running repeats it');
+ assert.equal(decide({...base,after:ended,runs:[ended,later]}).rule,'newer-run',label+': a run made after the one before ended carries the chain, as before');
+ assert.equal(decide({...base,after:ended,runs:[ended,{...repeat,status:'in_progress',conclusion:null},later]}).rule,'newer-run',label+': a repeating run still going does not hold up the run after it');
  for(const [rule,cases] of Object.entries(CASES))for(const c of cases){
   const d=decide({...base,...c});
   assert.equal(d.dispatch,false,`${label}: ${rule} ${JSON.stringify(c).slice(0,120)}`);
@@ -90,6 +96,13 @@ const check=(decide,label)=>{
  }
 };
 check(nextRun,'nextRun');
+// Overlapping runs: one collects whichever ends first; runs that do not overlap all collect.
+{
+ const a={...run(1,90),updated_at:at(60)},b=run(2,80),c=run(3,30);
+ assert.deepEqual(collecting([c,b,a]).map(r=>r.id),[1,3],'b was made while a ran');
+ assert.deepEqual(collecting([{...a,status:'queued',conclusion:null},b]).map(r=>r.id),[1],'a still waits behind b: b repeats a');
+ assert.deepEqual(collecting([a,{...b,created_at:at(59)},c]).map(r=>r.id),[1,2,3],'made after a ended');
+}
 // An hour after the run before was created; never negative.
 assert.equal(waitMs(run(1,0),now),3_600_000);assert.equal(waitMs(run(1,45),now),900_000);assert.equal(waitMs(run(1,90),now),0);
 
@@ -125,6 +138,13 @@ const env={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,AFTER_RUN:'100',GI
  const d=await chainAfter({env,fetch:api.fetch,sleep:async()=>{},clock:()=>Date.parse('2026-10-21T00:40:00Z'),budget:async()=>budget,log:()=>{}});
  assert.equal(d.dispatch,true,d.reason);assert.match(api.calls[1].path,/created=%3E%3D2026-10-20T23%3A40%3A00Z&/);
 }
+{
+ // The chain job that started the wait may still be running: wait for that run to end before deciding (C06 overlap).
+ let reads=0;const api=stand(),slept=[];
+ const fetch=async(url,init)=>new URL(url).pathname.endsWith('/runs/100')&&reads++<2?Response.json({...after,status:'in_progress',conclusion:null}):api.fetch(url,init);
+ const d=await chainAfter({env,fetch,sleep:async ms=>{slept.push(ms)},clock:()=>now,budget:async()=>budget,log:()=>{}});
+ assert.equal(d.dispatch,true);assert.deepEqual(slept,[15_000,15_000,0],'two polls while the run before ends, then no wait (made over an hour ago)');
+}
 for(const [label,opts,reason] of [['newer run',{runs:[after,run(101,30)]},'newer-run'],['small budget',{},'small-budget']]){
  const api=stand(opts);
  const d=await chainAfter({env,fetch:api.fetch,sleep:async()=>{},clock:()=>now,budget:async()=>({...budget,pages:label==='small budget'?3:120}),log:()=>{}});
@@ -135,12 +155,31 @@ for(const [label,opts,pattern] of [['more than one page',{total:101},/more than 
 for(const bad of [{AFTER_RUN:''},{AFTER_RUN:'12; rm -rf /'},{GH_TOKEN:''},{GITHUB_REPOSITORY:'x'}])
  await assert.rejects(chainAfter({env:{...env,...bad},fetch:stand().fetch,sleep:async()=>{},clock:()=>now,budget:async()=>budget}),/required|run id/,JSON.stringify(bad));
 
+// collect.yml's overlap step (overlapNow) against a stand-in API.
+{
+ const ended={...after,updated_at:at(32)},self=run(101,50,{status:'in_progress',conclusion:null}),urls=[];
+ const api=(me,runs)=>async url=>{urls.push(url);return Response.json(new URL(url).pathname.endsWith('/runs/'+me.id)?me:{total_count:runs.length,workflow_runs:runs})};
+ const env2={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,GITHUB_RUN_ID:'101',GITHUB_API_URL:'https://api.example.test'};
+ assert.equal(await overlapNow({env:env2,fetch:api(self,[ended,self])}),'run 100 (completed) was queued or running when run 101 was made and carries the chain');
+ assert.match(urls[1],/\/actions\/workflows\/collect\.yml\/runs\?created=%3E%3D2026-10-21T05%3A50%3A00Z&per_page=100$/,'runs from six hours before this one');
+ for(const [label,me] of [['made after the run before ended',{...self,created_at:at(20)}],['a run off main',{...self,head_branch:'feature'}],['a check-access run',{...self,display_title:'Yukemuri collection (check-access)'}]])
+  assert.equal(await overlapNow({env:env2,fetch:api(me,[ended,me])}),'',label);
+ await assert.rejects(overlapNow({env:{...env2,GITHUB_RUN_ID:''},fetch:api(self,[])}),/run id/);
+}
+
 // The script as the workflow runs it, against a local API: no Cloudflare token
 // means an unreadable budget, so it reads, decides and dispatches nothing.
 const script=resolve('scripts/collection-chain.mjs');
 let requests=[];
-const old=run(100,90,{created_at:new Date(Date.now()-90*60_000).toISOString().replace(/\.\d{3}Z$/,'Z')});
-const server=createServer((req,res)=>{requests.push(req.method+' '+req.url);res.setHeader('content-type','application/json');res.end(JSON.stringify(req.url.includes('/runs/100')?old:{total_count:1,workflow_runs:[old]}))});
+const ago=m=>new Date(Date.now()-m*60_000).toISOString().replace(/\.\d{3}Z$/,'Z');
+const old=run(100,90,{created_at:ago(90)}),repeating=run(101,80,{created_at:ago(80),status:'in_progress',conclusion:null});
+let listing=[old];
+const server=createServer((req,res)=>{
+ requests.push(req.method+' '+req.url);res.setHeader('content-type','application/json');
+ if(req.url.includes('/runs/404')){res.statusCode=404;res.end('{}');return}
+ res.end(JSON.stringify(req.url.includes('/runs/100')?old:req.url.includes('/runs/101')?repeating:{total_count:listing.length,workflow_runs:listing}));
+});
+const spawnScript=(file,args,extra)=>new Promise(done=>{const child=spawn(process.execPath,[file,...args],{env:{PATH:process.env.PATH,...extra}});let out='',err='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);child.on('close',code=>done({code,out,err}))});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const folder=mkdtempSync(join(tmpdir(),'collection-chain-'));
 try{
@@ -151,6 +190,24 @@ try{
  assert.deepEqual(requests.map(r=>r.split('?')[0]),['GET /repos/jihune/yukemuri/actions/runs/100','GET /repos/jihune/yukemuri/actions/workflows/collect.yml/runs']);
  assert.match(readFileSync(join(folder,'summary.md'),'utf8'),/^- 이어 부르기\(run 100 뒤\): 부르지 않았다\(usage-unreadable\)/);
  assert(!result.out.includes(TOKEN));
+ // --overlap as collect.yml runs it: overlap=<why> for the budget step, nothing when the run collects,
+ // and a failed check collects as usual (exit 0, no overlap=).
+ const local={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,GITHUB_API_URL:`http://127.0.0.1:${server.address().port}`};
+ listing=[{...old,updated_at:ago(60)},repeating];
+ let o=await spawnScript(script,['--overlap'],{...local,GITHUB_RUN_ID:'101'});
+ assert.equal(o.code,0,o.err);assert.equal(o.out,'overlap=run 100 (completed) was queued or running when run 101 was made and carries the chain\n');
+ listing=[{...old,updated_at:ago(85)},repeating];
+ o=await spawnScript(script,['--overlap'],{...local,GITHUB_RUN_ID:'101'});
+ assert.equal(o.code,0,o.err);assert.equal(o.out,'','run 100 ended before run 101 was made');
+ o=await spawnScript(script,['--overlap'],{...local,GITHUB_RUN_ID:'404'});
+ assert.equal(o.code,0);assert.equal(o.out,'');assert.match(o.err,/^Overlap check failed, collecting as usual: GitHub API GET \/actions\/runs\/404 returned 404/);
+ // collection-budget.mjs then prints 0 pages with the reason the daily check passes (daily-check.mjs OVERLAP),
+ // and without it sizes the run as before (16 pages here: no Cloudflare token).
+ const budgetScript=resolve('scripts/collection-budget.mjs');
+ o=await spawnScript(budgetScript,[],{OVERLAP:'run 100 (completed) was queued or running when run 101 was made and carries the chain'});
+ assert.equal(o.out,'pages=0\nreason=overlap: run 100 (completed) was queued or running when run 101 was made and carries the chain\n');
+ o=await spawnScript(budgetScript,[],{OVERLAP:''});
+ assert.equal(o.out,'pages=16\nreason=usage unavailable: fallback to 16 pages\n');
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
 
 // Controls: each rule removed from a copy of collection-chain.mjs, and each
@@ -169,7 +226,11 @@ try{
  }
  // The clause #190 Codex review 3 found: an older run still queued or running stopped the newer run's wait.
  // And a run made in the same second as the one before (#190 Claude review 1 P3): ordered by id.
- for(const [name,from,to] of [['older-running','&&(Date.parse(r.created_at)>at||',"&&(r.status!=='completed'||Date.parse(r.created_at)>at||"],['same-second','||(Date.parse(r.created_at)===at&&r.id>after.id)','']]){
+ // And the overlap rule (C06, user 2026-10-21): without it, or with runs that only repeat another
+// holding up the runs after them.
+ for(const [name,from,to] of [['older-running','r.id!==after.id&&order(after,r)<0)',"r.id!==after.id&&(order(after,r)<0||r.status!=='completed'))"],['same-second','||a.id-b.id',''],
+  ['no-overlap-rule','if(!out.some(q=>inFlightAt(q,created(r))))out.push(r);','out.push(r);'],
+  ['repeats-block',"if(!out.some(q=>","if(!runs.filter(q=>gentle(q)&&q.head_branch==='main'&&order(q,r)<0).some(q=>"]]){
   const copySource=source.replace(from,to);
   assert.notEqual(copySource,source,name);
   const file=join(controls,name+'.mjs');writeFileSync(file,copySource);
@@ -191,6 +252,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+3+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+5+CONDITIONS.length+4;
 assert.equal(failed,total);
 console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer gentle run exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
