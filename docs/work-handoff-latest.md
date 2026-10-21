@@ -153,6 +153,7 @@
 - 10-20T10:52Z 하네스 관리 세션의 조사 결과(하네스 원장 [243]): ‘[Permission Grant]’는 자동 모드 분류기의 기본 soft_deny 규칙(CLI 2.1.304 `claude auto-mode defaults`)이라 누가 어떤 권한을 받는지 사용자가 말해야 풀린다. 그 세션의 대조 시험(10:26Z·10:50Z, 저장소 하나, `.claude/settings.json` 허용 규칙 있음·없음)도 둘 다 거부됐다. `autoMode.allow`는 사용자·관리 설정에서만 읽혀 클라우드에 닿지 않고(조직 설정은 Team·Enterprise 요금제), CLAUDE.md 문장·다른 세션 메시지·`create_session` 첫 프롬프트·예약 프롬프트는 동의로 치지 않는다. 쓸 수 있는 길은 사용자가 세션마다 저장소와 권한을 이름으로 적은 상시 승인 한 문장이다(위 1의 4번에 예문). 하네스는 이 교훈을 `cloud-session-ops`에 넣는다.
 - 10-21T01:2xZ 하네스 관리 세션이 10-21 사용자 지시(에이전트는 약관·robots.txt를 확인하지 않고 작업)를 알려 와, 상위 세션이 수집기의 robots.txt 준수까지 없앨지 물었고 사용자가 ‘robots.txt 준수 할 필요 없음’이라고 답했다. 결정 기록과 C08 brief(`C08-20261021.md`)를 쓰고 새 하위 세션에 맡긴다(위 4의 5).
 - 10-21T01:45Z C08 세션이 PR #232(head `e956d36`)를 열었다. 같은 호스트 간격은 그대로 `max(8, --interval)`초와 지터 0–4초이고, 저장소 기록에 운영 호스트의 Crawl-delay가 없어 호스트별 고정 간격은 두지 않았다. #211 P3는 리디렉션을 따르지 않게 고쳤다. #197과 `lib/crawl-queue.ts`·`data/collector-release.generated.json`·`scripts/cloud-check.py`가, #190과 `scripts/cloud-check.py`가 겹친다. C04·C07 세션에 결정과 겹침을 알렸다(01:4xZ, priority later).
+- 10-21T01:58Z #232가 병합 조건을 맞췄다(Codex 1회 큰 문제 없음, CI run 39529159369 성공, 충돌 없음). UTC 날 초반이라 그날 수집 실행이 배포 읽기를 보고 크기를 정할 수 있어, C06·C07보다 먼저 01:5xZ에 병합했다(`08b8aaa`). C08 세션이 배포와 다음 수집의 robots 요청 없음을 확인해 기록 PR을 낸다. #197은 이 병합 뒤 main을 합쳐야 한다.
 
 ## 작업별 절
 
