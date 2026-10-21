@@ -13,6 +13,7 @@ export const legacyRedirectRepair=z.object({action:z.literal('isolate-legacy-red
 export const reviewedRedirectRepair=z.object({action:z.literal('release-reviewed-redirect'),url:publicUrl,expectedNextAt:z.number().finite().positive()}).strict();
 // After a read-only source check succeeds, release one obsolete page hold.
 // Exact old timestamp and reason are required; access pauses and active work win.
+// robots_* errors are rows from before C08 (2026-10-21), when the collector read robots.txt.
 export async function releaseReviewedRedirect(input:z.infer<typeof reviewedRedirectRepair>){
  const db=favoritesDb(),now=Date.now()/1000;
  const result=await db.batch([
@@ -25,7 +26,8 @@ export async function releaseReviewedRedirect(input:z.infer<typeof reviewedRedir
  return{repaired:result[0].meta.changes===1};
 }
 // Repair only the old one-page redirect policy. The page retains its original
-// retry time; a newer pause, active claim or another blocking failure wins.
+// retry time; a newer pause, active claim or another blocking failure wins
+// (robots_* errors: rows from before C08, as above).
 export async function isolateLegacyRedirect(input:z.infer<typeof legacyRedirectRepair>){
  const db=favoritesDb(),now=Date.now()/1000,ready=String(now+8),key='crawl-provider-ready:jalan';
  const job=await db.prepare('SELECT provider,status,error,attempts,next_at FROM crawl_jobs WHERE url=?').bind(input.url).first<{provider:string;status:string;error:string;attempts:number;next_at:number}>();
@@ -55,7 +57,7 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const db=favoritesDb(),now=Date.now()/1000,kind=claim.phase==='refresh'?(claim.kind??'any'):claim.phase==='localnames'?'names':['names','baths'].includes(claim.phase)?'detail':claim.phase;
  const kinds=kind==='any'?['list','detail']:[kind];
  const repeated=await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all();
- if(repeated.results.length)return repeated.results;
+ if(repeated.results.length)return{jobs:repeated.results,exhausted:false};
  // D07: a Jalan locale list page is read again LOCALE_REFRESH_DAYS after it was done, on another default stay date,
  // and one that failed three times once its wait is over (as refresh does for list and detail pages).
  const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now}) AND (j.status<>'failed' OR j.next_at>0)`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
@@ -64,7 +66,10 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.
- const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
+ // Only curated groups: a group whose own hotel is one of its provider records
+ // (the reviewed pairs of D08 PR 5) waits its normal turn, so the rows a claim
+ // reads do not grow with those groups (docs/D08-20261019.md 13.4).
+ const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE g.hotel_id<>COALESCE(g.jalan_hotel_id,'') AND g.hotel_id<>COALESCE(g.trip_hotel_id,'') AND (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
  // Due retries would otherwise stay behind the pending backlog indefinitely.
  // Use the national lane for those pages; all readiness and lease guards below
  // still apply. The priority lane continues normal discovery/enrichment.
@@ -83,17 +88,22 @@ export async function claimCrawlJob(claim:CrawlClaim){
   // for Jalan the URL the group names, for Trip a URL whose only detail id is a
   // group's id, or one that holds the detail marker twice.
   const after="substr(j.url,instr(j.url,'-hotel-detail-')+14)";
-  const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL))`];
+  const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON linked.hotel_id<>linked.jalan_hotel_id AND linked.hotel_id<>COALESCE(linked.trip_hotel_id,'') AND j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL AND hotel_id<>trip_hotel_id AND hotel_id<>COALESCE(jalan_hotel_id,'')))`];
   branches.push({sql:`SELECT * FROM (SELECT ${columns},0 AS missing FROM ${jobs} WHERE j.provider=? AND j.kind='detail' AND j.status IN (${statuses.map(()=>'?').join(',')}) AND ${eligible} ${named} AND (${missingLinkedDetail})=0 ORDER BY j.priority,${fetched},j.attempts,j.url LIMIT 1)`,args:[claim.provider,...statuses,...eligibleArgs]});
  }
- const result=await db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
+ // C07: in the same transaction and at the same clock, whether the provider waits
+ // (pacing, a cooldown) or holds another claim: the two guards of the UPDATE. An
+ // empty claim with neither found no due page in its phase (exhausted).
+ const [result,wait]=await db.batch([db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
   WHERE url=(SELECT url FROM (${branches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1)
   AND lease_until<=? AND COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)<=? AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)
-  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now).all();
- if(result.results.length)return result.results;
+  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now),
+  db.prepare("SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)>? OR EXISTS (SELECT 1 FROM crawl_jobs WHERE provider=? AND lease_until>?) AS waiting").bind('crawl-provider-ready:'+claim.provider,now,claim.provider,now)]);
+ if(result.results.length)return{jobs:result.results,exhausted:false};
  // Concurrent retries of the same POST may arrive before either SELECT sees
 // the other claim. Return that same claim after the guarded UPDATE.
- return(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
+ const jobs=(await db.prepare("SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?").bind(claim.provider,kind,kind,claim.token,now).all()).results;
+ return{jobs,exhausted:!jobs.length&&(wait.results[0] as {waiting:number}).waiting!==1};
 }
 
 export async function crawlHealth(){

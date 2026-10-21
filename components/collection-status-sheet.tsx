@@ -3,6 +3,8 @@ import {useEffect,useRef,useState,type KeyboardEvent,type RefObject} from 'react
 import {RotateCcw,X} from 'lucide-react';
 import {Sheet,SheetContent,SheetTitle,SheetDescription,SheetClose} from '@/components/ui/sheet';
 import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS,OVERTURE_ATTRIBUTION,OVERTURE_NOTE,OVERTURE_LINKS} from '@/lib/geo-attribution';
+import {JTA_ATTRIBUTION,JTA_NOTE,JTA_LINKS} from '@/lib/jta-attribution';
+import {OITA_ATTRIBUTION,OITA_NOTE,OITA_LINKS} from '@/lib/oita-attribution';
 import {COLLECTION_PROVIDER_LABELS,COLLECTION_ISSUE_LABELS,FILL_ROWS,GEO_GROUPS,formatCollectionTime,type CollectionStatus,type FillScopeKey,type TrendDay} from '@/lib/collection-status';
 
 // U06: the data status screen. Every value comes from the snapshot's status.json, computed
@@ -50,7 +52,7 @@ function TrendChart({days}:{days:TrendDay[]}){
    {shown&&<i className="u06-cross" style={{left:x(shown)+'%'}}/>}
    {SERIES.map(s=><i key={s.key} className="u06-dot" data-series={s.key} style={{left:x(point)+'%',top:y(point.pages[s.key].done)+'%',background:s.color}}/>)}
    <span className="u06-xlabel" style={{left:0}}>{dateLabel(days[0].date)}</span><span className="u06-xlabel u06-xlabel-end">{dateLabel(days[last].date)}</span>
-   {shown&&<div className="u06-chart-tip" aria-hidden="true" style={x(shown)>55?{right:100-x(shown)+'%'}:{left:x(shown)+'%'}}><b>{dateLabel(shown.date)}(UTC)</b>{SERIES.map(s=>{const before=at?days[at-1].pages[s.key].done:null,done=shown.pages[s.key].done;return <span key={s.key}><i style={{background:s.color}}/>{s.label}<strong>{n(done)}쪽{before!==null?` (+${n(done-before)})`:''}</strong></span>})}<span>곳<strong>{n(shown.records)}곳</strong></span></div>}
+   {shown&&<div className="u06-chart-tip" aria-hidden="true" style={x(shown)>55?{right:100-x(shown)+'%'}:{left:x(shown)+'%'}}><b>{dateLabel(shown.date)}(UTC)</b>{SERIES.map(s=>{const before=at?days[at-1].pages[s.key].done:null,done=shown.pages[s.key].done;return <span key={s.key}><i style={{background:s.color}}/>{s.label}<strong>{n(done)}쪽{before!==null?` (+${n(done-before)})`:''}</strong></span>})}<span>저장 기록<strong>{n(shown.records)}건</strong></span></div>}
   </div></div>
  </div>;
 }
@@ -109,7 +111,7 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
        <p className="u06-lead">{rateText(fill.trend)}</p>
        <TrendChart days={fill.trend}/>
        <button type="button" className="u06-table-toggle" aria-expanded={trendTable} onClick={()=>setTrendTable(v=>!v)}>{trendTable?'표 닫기':'표로 보기'}</button>
-       {trendTable&&<div className="u06-table-region" tabIndex={0} role="region" aria-label="날짜별 수집 추이 표"><table className="u06-table"><caption className="sr-only">날짜별(UTC) 상세 페이지 완료와 곳 수, 괄호는 앞 기록과의 차이</caption><thead><tr><th scope="col">날짜(UTC)</th>{SERIES.map(s=><th key={s.key} scope="col">{s.label} 상세</th>)}<th scope="col">곳</th></tr></thead><tbody>{fill.trend.map((d,i,all)=><tr key={d.date}><th scope="row">{dateLabel(d.date)}</th>{SERIES.map(s=><td key={s.key}>{n(d.pages[s.key].done)}{i?` (${signed(d.pages[s.key].done-all[i-1].pages[s.key].done)})`:''}</td>)}<td>{n(d.records)}</td></tr>)}</tbody></table></div>}
+       {trendTable&&<div className="u06-table-region" tabIndex={0} role="region" aria-label="날짜별 수집 추이 표"><table className="u06-table"><caption className="sr-only">날짜별(UTC) 상세 페이지 완료와 저장 기록 수, 괄호는 앞 기록과의 차이</caption><thead><tr><th scope="col">날짜(UTC)</th>{SERIES.map(s=><th key={s.key} scope="col">{s.label} 상세</th>)}<th scope="col">저장 기록</th></tr></thead><tbody>{fill.trend.map((d,i,all)=><tr key={d.date}><th scope="row">{dateLabel(d.date)}</th>{SERIES.map(s=><td key={s.key}>{n(d.pages[s.key].done)}{i?` (${signed(d.pages[s.key].done-all[i-1].pages[s.key].done)})`:''}</td>)}<td>{n(d.records)}</td></tr>)}</tbody></table></div>}
       </>}
      </section>}
      <section className="u06-o3" aria-labelledby="u06-fill">
@@ -150,12 +152,12 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
      </section>})()}
      <section className="u06-o5">
       <details className="u06-defs"><summary>세는 기준</summary><dl>
-       <div><dt>곳(숙소 기록)</dt><dd>목록에서 1곳으로 세는 단위이고, 출처별 숙소 기록 하나입니다. 같은 숙소가 자란넷과 Trip.com에 함께 있으면 2곳으로 셉니다. 직접 연결한 20곳만 하나로 합칩니다. 그래서 같은 출처라도 상세 페이지 비율과 상세까지 모은 곳 비율이 다를 수 있습니다.</dd></div>
+       <div><dt>곳(숙소 카드)</dt><dd>목록에서 1곳으로 세는 단위이고, 숙소 카드 하나입니다. 카드는 대개 출처별 숙소 기록 하나라서, 같은 숙소가 자란넷과 Trip.com에 함께 있으면 2곳으로 셉니다. 직접 연결한 20곳과, 자란넷·Trip.com 기록을 같은 숙소로 확인해 묶은 쌍만 카드 하나에 두 출처의 평점·사진·링크를 모아 1곳으로 셉니다. 그래서 같은 출처라도 상세 페이지 비율과 상세까지 모은 곳 비율이 다를 수 있습니다.</dd></div>
        <div><dt>페이지</dt><dd>수집기가 받는 출처 페이지입니다. 상세 페이지와 목록 페이지를 따로 셉니다. 대기는 아직 받지 않은 페이지, 재시도는 오류 뒤 다시 받을 페이지, 실패는 다시 받지 않는 페이지입니다.</dd></div>
        <div><dt>채움·출처에 없음·아직 비어 있음</dt><dd>채움은 값이 있는 것, 출처에 없음은 출처를 확인했지만 그 정보가 없는 것, 아직 비어 있음은 아직 확인하지 않았거나 읽지 않았거나 번역하지 않은 것입니다.</dd></div>
        {FILL_ROWS.map(row=><div key={row.key}><dt>{row.label}</dt><dd>채움: {row.states[0]}. 출처에 없음: {row.states[1]}. 아직 비어 있음: {row.states[2]}. {row.note}</dd></div>)}
        <div><dt>수집 순서</dt><dd>하코네·유후인과 전통 온천마을을 먼저 보강하고, 규슈·홋카이도·오키나와 권역, 오사카·고베, 도쿄 인근 순으로 수집합니다. 공식 확인된 폐업·장기 휴관 숙소는 일반 탐색에서 제외하고 즐겨찾기에는 상태를 남깁니다. 전국 모든 숙소의 최신 상태를 아직 확보한 것은 아닙니다.</dd></div>
-       <div><dt>날짜별 수집 추이</dt><dd>수집 실행이 끝날 때 그날(UTC) 값을 한 줄 남기고 최근 30일을 보입니다. 같은 날 여러 번 실행하면 마지막 값이 남고, 실행이 없던 날은 점이 없습니다. 상세 페이지 완료는 위 출처별 페이지 수집의 완료와 같은 기준입니다.</dd></div>
+       <div><dt>날짜별 수집 추이</dt><dd>수집 실행이 끝날 때 그날(UTC) 값을 한 줄 남기고 최근 30일을 보입니다. 같은 날 여러 번 실행하면 마지막 값이 남고, 실행이 없던 날은 점이 없습니다. 상세 페이지 완료는 위 출처별 페이지 수집의 완료와 같은 기준입니다. 저장 기록은 수집기가 저장한 출처별 숙소 기록 수라서, 같은 숙소로 묶은 쌍도 2건으로 셉니다.</dd></div>
        <div><dt>Cloudflare 무료 사용량</dt><dd>검색 자료를 만들 때 Cloudflare 분석 API에서 그날(UTC) 계정 전체 사용량을 한 번 읽습니다. 화면을 열 때 다시 묻지 않습니다. 읽지 못하면 ‘사용량을 읽지 못함’으로 보입니다.</dd></div>
        <div><dt>계산 시각</dt><dd>배포와 수집 실행이 끝날 때 검색 자료를 만들면서 한 번 계산합니다. 화면을 열 때 서버에서 다시 세지 않습니다.</dd></div>
        <div><dt>Google Maps</dt><dd>{data.google.connected?'조회 설정됨 · 숙소 상세에서 요청할 때 평점·사진을 확인합니다.':'미연결 · Google 평점·사진의 새 조회는 아직 시작하지 않았습니다.'}</dd></div>
@@ -167,6 +169,8 @@ export default function CollectionStatusSheet({onClose,load,opener}:{onClose:()=
       <p>사진 저작권은 원출처에 있습니다. <a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></p>
       <p>{GEO_NOTE} <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p>
       <p>{OVERTURE_NOTE} <span lang="en">{OVERTURE_ATTRIBUTION}</span> {OVERTURE_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OVERTURE_LINKS.length-1?')':''}</span>)}</p>
+      <p>{JTA_NOTE} <span lang="ja">{JTA_ATTRIBUTION}</span> {JTA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===JTA_LINKS.length-1?')':''}</span>)}</p>
+      <p>{OITA_NOTE} <span lang="ja">{OITA_ATTRIBUTION}</span> {OITA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OITA_LINKS.length-1?')':''}</span>)}</p>
      </section>
     </div>
    </>}

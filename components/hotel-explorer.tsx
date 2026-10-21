@@ -35,6 +35,8 @@ import type {PreparedSearchIndex} from '@/lib/hotel-search-index';
 import {useSearchSnapshot} from './use-search-snapshot';
 import {POPSTATE} from '@/lib/history-events';
 import {GEO_ATTRIBUTION,GEO_NOTE,GEO_LINKS,OVERTURE_ATTRIBUTION,OVERTURE_NOTE,OVERTURE_LINKS} from '@/lib/geo-attribution';
+import {JTA_ATTRIBUTION,JTA_NOTE,JTA_LINKS} from '@/lib/jta-attribution';
+import {OITA_ATTRIBUTION,OITA_NOTE,OITA_LINKS} from '@/lib/oita-attribution';
 const NO_INDEX:PreparedSearchIndex=[];
 function writeBookingUrl(q:BookingQuery){const url=new URL(window.location.href);for(const [k,v] of Object.entries(q)){if(v)url.searchParams.set(k,String(v));else url.searchParams.delete(k)}history.replaceState(history.state,'',url.pathname+url.search+url.hash)}
 // U05 list: one place to choose where. Onsen towns are the first group (a town sets its
@@ -62,7 +64,10 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  const [dismissSuggestions,setDismissSuggestions]=useState(0);
  function setFilters(value:HotelFilters|((previous:HotelFilters)=>HotelFilters)){setFilterState(value)}
 
- const [favorites,setFavorites]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
+ const [savedIds,setSavedIds]=useState<string[]>([]),[savedOnly,setSavedOnly]=useState(false),[favoritesReady,setFavoritesReady]=useState(false),[favoritesError,setFavoritesError]=useState(''),[pending,setPending]=useState<string[]>([]);
+ // D08 PR 6: an id saved, compared or shared before its record joined another stay's card
+ // (mergedInto) stands for that card.
+ const mergedInto=snap.snapshot?.manifest.mergedInto,favorites=useMemo(()=>[...new Set(savedIds.map(id=>mergedInto?.[id]??id))],[savedIds,mergedInto]);
  const {response,preview,loading,searchError,reopenSearch,loadMore,hasMore,order}=useHotelResults(snap,filters,sort,savedOnly,favorites,favoritesReady,!!favoritesError,firstPage);
  // The saved list cannot be shown without the favourites: the error banner and its retry say so.
  const favoritesBlocked=savedOnly&&!favoritesReady&&!!favoritesError;
@@ -106,6 +111,14 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   window.addEventListener('storage',changed);return()=>window.removeEventListener('storage',changed);
  },[]);
  useEffect(()=>{if(comparisonReady)try{localStorage.setItem(COMPARISON_STORAGE_KEY,JSON.stringify(comparisonIds))}catch{}},[comparisonIds,comparisonReady]);
+ // A compared or shared stay that joined another card opens as that card, also when another
+ // tab stores its id later (Codex P2 on PR #209); the address is replaced, not pushed, so the
+ // back button leaves as before.
+ useEffect(()=>{if(mergedInto&&comparisonIds.some(id=>mergedInto[id]))setComparisonIds([...new Set(comparisonIds.map(id=>mergedInto[id]??id))])},[mergedInto,comparisonIds]);
+ useEffect(()=>{
+  const base=detailId?mergedInto?.[detailId]:undefined;
+  if(base){const url=new URL(window.location.href);url.hash='stay/'+encodeURIComponent(base);window.history.replaceState(window.history.state,'',url);setDetailId(base)}
+ },[mergedInto,detailId]);
  function compare(id:string){
   if(!comparisonIds.includes(id)&&comparisonIds.length>=4)setToast('최대 4곳까지 비교할 수 있습니다. 기존 후보를 빼고 선택하세요.');
   setComparisonIds(previous=>toggleComparisonId(previous,id)??previous);
@@ -179,13 +192,21 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
   return()=>controller.abort();
  },[detailId,detailAttempt]);
 
- async function loadFavorites(){setFavoritesError('');try{const data=await apiJson<{ids:string[]}>('/api/favorites');setFavorites(data.ids);setFavoritesReady(true)}catch(e){setFavoritesError(e instanceof Error?e.message:'즐겨찾기를 불러오지 못했습니다.')}}
+ async function loadFavorites(){setFavoritesError('');try{const data=await apiJson<{ids:string[]}>('/api/favorites');setSavedIds(data.ids);setFavoritesReady(true)}catch(e){setFavoritesError(e instanceof Error?e.message:'즐겨찾기를 불러오지 못했습니다.')}}
  async function saveFavorite(id:string,saved?:boolean){
   if(!favoritesReady||pending.includes(id))return;
-  const next=saved??!favorites.includes(id);setPending(p=>[...p,id]);
-  try{await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId:id,saved:next})});setFavorites(f=>next?[...new Set([...f,id])]:f.filter(k=>k!==id));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
+  // Unsaving a card unsaves the ids that stand for it too.
+  const next=saved??!favorites.includes(id),ids=next?[id]:[id,...savedIds.filter(k=>k!==id&&mergedInto?.[k]===id)];setPending(p=>[...p,id]);
+  try{for(const hotelId of ids)await apiJson('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotelId,saved:next})});setSavedIds(f=>next?[...new Set([...f,id])]:f.filter(k=>!ids.includes(k)));setToast(next?'즐겨찾기에 저장했어요.':'즐겨찾기에서 해제했어요.')}catch(e){setToast(e instanceof Error?e.message:'저장하지 못했습니다. 다시 시도해 주세요.')}finally{setPending(p=>p.filter(k=>k!==id))}
  }
  const shownFallback=detailFallback&&detailFallback.id===detailId?detailFallback:null,detailShown=detail??shownFallback;
+ // The detail API does not carry the registration or the permit (D08): the stay's card does, in the
+ // snapshot or, while the snapshot files have not loaded, among the cards shown (the static first
+ // page included). A stay opened from its address while the snapshot files cannot load, and not on
+ // the first page, shows neither: a known gap, since the Worker never reads the lists (Claude
+ // review on PR #199).
+ const detailAt=detailId?snap.snapshot?.position.get(detailId):undefined;
+ const detailCard=detailId?(detailAt!==undefined?snap.snapshot!.cards[detailAt]:displayHotels.find(h=>h.id===detailId)??(areaHotel?.id===detailId?areaHotel:undefined)??shownFallback):undefined;
  function openDetail(id:string){if(!detailId)listingPosition.current={x:window.scrollX,y:window.scrollY,opener:document.activeElement instanceof HTMLElement?document.activeElement:null};openStayHistory(id,!!detailId);setDetailId(id)}
  function closeDetail(){setDetailId(null);closeStayHistory()}
  function restoreDetailFocus(){restoreListingPosition(listingPosition.current)}
@@ -307,9 +328,9 @@ export default function HotelExplorer({firstPage=null}:{firstPage?:FirstPage|nul
  {comparisonIds.length>0&&!comparisonOpen&&!detailId&&<div className="comparison-dock"><button onClick={showComparison}><ArrowLeftRight size={17}/>{comparisonIds.length}곳 비교</button><button onClick={()=>setComparisonIds([])} aria-label="비교 후보 모두 비우기"><X size={18}/></button></div>}
  <HotelComparison open={comparisonOpen} ids={comparisonIds} onClose={()=>setComparisonOpen(false)} onRemove={id=>setComparisonIds(previous=>previous.filter(item=>item!==id))} onClear={()=>setComparisonIds([])} onRestoreFocus={restoreComparisonFocus} onDetail={openDetail}/>
  {statusOpen&&<CollectionStatusSheet onClose={closeStatus} load={loadStatus} opener={statusOpener}/>}
- <HotelDetail hotel={detail} fallback={detail?null:shownFallback} loading={detailLoading} onRetry={()=>setDetailAttempt(n=>n+1)} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detailShown&&favorites.includes(detailShown.id)} onFavorite={()=>detailShown&&saveFavorite(detailShown.id)} pending={!!detailShown&&pending.includes(detailShown.id)} canSave={favoritesReady} compared={!!detailShown&&comparisonIds.includes(detailShown.id)} onCompare={()=>detailShown&&compare(detailShown.id)} booking={booking} onBooking={onBooking}/>
+ <HotelDetail hotel={detail} fallback={detail?null:shownFallback} jta={detailCard?.jta} oita={detailCard?.oita} loading={detailLoading} onRetry={()=>setDetailAttempt(n=>n+1)} onClose={closeDetail} onRestoreFocus={restoreDetailFocus} favorite={!!detailShown&&favorites.includes(detailShown.id)} onFavorite={()=>detailShown&&saveFavorite(detailShown.id)} pending={!!detailShown&&pending.includes(detailShown.id)} canSave={favoritesReady} compared={!!detailShown&&comparisonIds.includes(detailShown.id)} onCompare={()=>detailShown&&compare(detailShown.id)} booking={booking} onBooking={onBooking}/>
  {detailLoading&&!shownFallback&&<div className="toast-message" role="status">숙소 상세를 불러오는 중…</div>}
  {toast&&<div className="toast-message" role="status">{toast}</div>}
- <footer className="site-footer"><section className="data-status" id="data-status" aria-labelledby="data-status-title"><h2 id="data-status-title" tabIndex={-1}>자료 현황</h2>{snap.snapshot||preview?<><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p><button className="result-refresh" onClick={refreshResults} disabled={loading} aria-label="새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영"><RotateCcw size={15}/>최신 자료 확인</button><button type="button" className="u06-open" onClick={openStatus}><BarChart3 size={15}/>수집 현황 자세히 보기</button></>:<p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p>}</section><span>유케무리 · 일본 온천 탐색</span><span><a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p><p className="geo-credit" data-overture-credit><span>{OVERTURE_NOTE}</span> <span lang="en">{OVERTURE_ATTRIBUTION}</span> {OVERTURE_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OVERTURE_LINKS.length-1?')':''}</span>)}</p></footer>
+ <footer className="site-footer"><section className="data-status" id="data-status" aria-labelledby="data-status-title"><h2 id="data-status-title" tabIndex={-1}>자료 현황</h2>{snap.snapshot||preview?<><p><b>{response.coverage.prefectures}개 도도부현 · 숙소 {response.coverage.records.toLocaleString()}개 항목</b> · 최근 출처 확인 {response.coverage.updatedAt.slice(0,10)} · 전국 정보 보강 중</p><button className="result-refresh" onClick={refreshResults} disabled={loading} aria-label="새로 배포된 숙소 자료가 있는지 확인하고 목록에 반영"><RotateCcw size={15}/>최신 자료 확인</button><button type="button" className="u06-open" onClick={openStatus}><BarChart3 size={15}/>수집 현황 자세히 보기</button></>:<p>{snap.loading?'숙소 정보를 불러오는 중…':'숙소 정보를 불러오지 못했습니다.'}</p>}</section><span>유케무리 · 일본 온천 탐색</span><span><a href="/api/photo-credits" target="_blank" rel="noopener noreferrer">사진 출처</a></span><p className="geo-credit" data-geo-credit><span>{GEO_NOTE}</span> <span lang="ja">{GEO_ATTRIBUTION}</span> {GEO_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===GEO_LINKS.length-1?')':''}</span>)}</p><p className="geo-credit" data-overture-credit><span>{OVERTURE_NOTE}</span> <span lang="en">{OVERTURE_ATTRIBUTION}</span> {OVERTURE_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OVERTURE_LINKS.length-1?')':''}</span>)}</p><p className="geo-credit" data-jta-credit><span>{JTA_NOTE}</span> <span lang="ja">{JTA_ATTRIBUTION}</span> {JTA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===JTA_LINKS.length-1?')':''}</span>)}</p><p className="geo-credit" data-oita-credit><span>{OITA_NOTE}</span> <span lang="ja">{OITA_ATTRIBUTION}</span> {OITA_LINKS.map((link,i)=><span key={link.url}>{i?' · ':'('}<a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a>{i===OITA_LINKS.length-1?')':''}</span>)}</p></footer>
  </>
 }
