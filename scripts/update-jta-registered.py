@@ -6,10 +6,9 @@ under the Public Data License 1.0 (PDL1.0, CC BY 4.0 compatible); the page
 credits the agency and says the lists were processed (lib/jta-registration.ts).
 
 The PDF addresses change every month, so the script reads them from the list
-page. Four GETs to www.mlit.go.jp, one at a time, 3 seconds apart: robots.txt
-(none there on 2026-10-19, which allows everything; any other failure stops the
-run), the list page and the two PDFs. A redirect that is not HTTPS on the same
-host or a robots.txt delay over 120 seconds stops the run. Needs `pdftotext` (poppler-utils). Run by hand
+page. Three GETs to www.mlit.go.jp, one at a time, 3 seconds apart: the list
+page and the two PDFs. robots.txt is not read (C08, user decision 2026-10-21).
+Any redirect stops the run. Needs `pdftotext` (poppler-utils). Run by hand
 after the monthly update (the page's 最終更新日), check the counts, commit.
 
 The monthly 登録ホテル・旅館更新情報 (registrations and removals) is not read:
@@ -27,7 +26,6 @@ import subprocess
 import sys
 import time
 import unicodedata
-import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -35,46 +33,27 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts/crawler'))
-from source_safety import AGENT, robots_allowed, robots_policy
+from source_safety import AGENT
 
 OUT = ROOT / 'data/jta-registered.json'
 PAGE = 'https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html'
 UA = AGENT + '/1.0 (+https://github.com/jihune/yukemuri)'
+PAUSE = 3  # seconds before each request after the first
 TITLES = {'hotel': '登録ホテル一覧', 'ryokan': '登録旅館一覧'}
 PREFECTURE = re.compile(r'(北海道|東京都|京都府|大阪府|\S{2,3}県)')
 
 
-class SameHost(urllib.request.HTTPRedirectHandler):
-    """Follows a redirect only to HTTPS on the same host: another host's robots.txt was never
-    read, and plain HTTP is another origin (Codex review on PR #211)."""
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Follows no redirect: each hop would be one more request with no pause before it
+    (D08 #211 last review P3). A moved address needs a person to look."""
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        target = urllib.parse.urlsplit(newurl)
-        if target.scheme != 'https' or target.netloc != urllib.parse.urlsplit(req.full_url).netloc:
-            raise SystemExit(f'Redirect refused (another host or not HTTPS): {newurl}')
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        raise SystemExit(f'Redirect refused: {req.full_url} -> {newurl}')
 
 
 def get(url):
     request = urllib.request.Request(url, headers={'User-Agent': UA})
-    with urllib.request.build_opener(SameHost()).open(request, timeout=120) as response:
+    with urllib.request.build_opener(NoRedirect()).open(request, timeout=120) as response:
         return response.read()
-
-
-def robots(url):
-    """The host's robots.txt rules for this updater and its crawl delay, read before any other
-    request there. None there (404, 410) allows everything; any other failure stops the run."""
-    site = urllib.parse.urlsplit(url)
-    try:
-        text = get(f'{site.scheme}://{site.netloc}/robots.txt').decode('utf-8-sig', errors='replace')
-    except urllib.error.HTTPError as e:
-        if e.code in (404, 410):
-            return [], 0
-        raise SystemExit(f'robots.txt: HTTP {e.code}, nothing fetched') from None
-    rules, delay = robots_policy(text, AGENT)
-    # The crawler's limit (scripts/crawler/source_safety.py): a longer wait needs a person to look.
-    if not 0 <= delay <= 120:
-        raise SystemExit(f'robots.txt asks for {delay} seconds between requests: review before running')
-    return rules, delay
 
 
 def pdf_links(html):
@@ -152,17 +131,10 @@ def main(argv=None):
         links = pdf_links(page.read_text(encoding='utf-8'))
         pdfs = {kind: (args.source / f'{kind}.pdf').read_bytes() for kind in TITLES}
     else:
-        rules, delay = robots(PAGE)
-        pause = max(3, delay)
-        if not robots_allowed(rules, PAGE):
-            raise SystemExit('robots.txt disallows the list page')
-        time.sleep(pause)
         links = pdf_links(get(PAGE).decode('utf-8'))
         pdfs = {}
         for kind, url in links.items():
-            if not robots_allowed(rules, url):
-                raise SystemExit(f'robots.txt disallows the {kind} PDF')
-            time.sleep(pause)
+            time.sleep(PAUSE)
             pdfs[kind] = get(url)
     lists = {}
     for kind, body in pdfs.items():

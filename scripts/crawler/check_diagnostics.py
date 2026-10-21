@@ -60,8 +60,8 @@ class DiagnosticChecks(unittest.TestCase):
   self.assertFalse(result['diagnosticValid']);self.assertEqual(result['stage'],'source_request');self.assertEqual(result['error'],'ValueError')
 
  def test_source_access_policy_is_preserved(self):
-  result,_=self.run_diagnostic('https://www.jalan.net/yad999999/','',error=SourcePolicyDenied('robots_disallowed'))
-  self.assertEqual(result['reason'],'robots_disallowed')
+  result,_=self.run_diagnostic('https://www.jalan.net/yad999999/','',error=SourcePolicyDenied('source_access_bot_challenge',86400,86400,stop_run=True))
+  self.assertEqual(result['reason'],'source_access_bot_challenge')
 
  def test_live_empty_response_keeps_retry_and_claim(self):
   url='https://www.jalan.net/yad999999/';claim='00000000-0000-4000-8000-000000000001';writes=[]
