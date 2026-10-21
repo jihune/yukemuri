@@ -19,10 +19,10 @@ snapshot): one nothing links is often a private home, where a name and an
 address can point to a person (D08 16, the ninth parent's answer of 18:20Z).
 Their count is noted in the file.
 
-Three GETs to data.bodik.jp, one at a time, 3 seconds apart: robots.txt, the
-catalog's package record (license and the CSV's address) and the CSV. A CSV
-that is not HTTPS on data.bodik.jp, a redirect that is not HTTPS on the same
-host or a robots.txt delay over 120 seconds stops the run. Run by
+Two GETs to data.bodik.jp, one at a time, 3 seconds apart: the catalog's
+package record (license and the CSV's address) and the CSV. robots.txt is not
+read (C08, user decision 2026-10-21). A CSV that is not HTTPS on data.bodik.jp
+or any redirect stops the run. Run by
 hand after the prefecture updates the list, check the counts, commit. A row
 that leaves the list is not evidence that a stay closed (D08 9.2).
 
@@ -40,7 +40,6 @@ import subprocess
 import sys
 import time
 import unicodedata
-import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -48,12 +47,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts/crawler'))
-from source_safety import AGENT, robots_allowed, robots_policy
+from source_safety import AGENT
 
 OUT = ROOT / 'data/oita-ryokan-permits.json'
 DATASET = 'https://data.bodik.jp/dataset/440001_ryokan_business'
 PACKAGE = 'https://data.bodik.jp/api/3/action/package_show?id=440001_ryokan_business'
 UA = AGENT + '/1.0 (+https://github.com/jihune/yukemuri)'
+PAUSE = 3  # seconds before each request after the first
 LICENSE = 'cc-by-40-intl'
 # The columns kept, in the order written. Every other column (the operator, the phone) is dropped.
 KEPT = ['ID', '施設名称', '営業の種類', '所在地_連結表記', '許可番号', '許可年月日']
@@ -63,37 +63,17 @@ BODY = re.compile(r'会社|\(株\)|\(有\)|法人|組合|協会|財団|社団|�
 KINDS = {'旅館・ホテル', '簡易宿所', '下宿'}
 
 
-class SameHost(urllib.request.HTTPRedirectHandler):
-    """Follows a redirect only to HTTPS on the same host: another host's robots.txt was never
-    read, and plain HTTP is another origin (Codex review on PR #211)."""
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Follows no redirect: each hop would be one more request with no pause before it
+    (D08 #211 last review P3). A moved address needs a person to look."""
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        target = urllib.parse.urlsplit(newurl)
-        if target.scheme != 'https' or target.netloc != urllib.parse.urlsplit(req.full_url).netloc:
-            raise SystemExit(f'Redirect refused (another host or not HTTPS): {newurl}')
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        raise SystemExit(f'Redirect refused: {req.full_url} -> {newurl}')
 
 
 def get(url):
     request = urllib.request.Request(url, headers={'User-Agent': UA})
-    with urllib.request.build_opener(SameHost()).open(request, timeout=120) as response:
+    with urllib.request.build_opener(NoRedirect()).open(request, timeout=120) as response:
         return response.read()
-
-
-def robots(url):
-    """The host's robots.txt rules for this updater and its crawl delay, read before any other
-    request there. None there (404, 410) allows everything; any other failure stops the run."""
-    site = urllib.parse.urlsplit(url)
-    try:
-        text = get(f'{site.scheme}://{site.netloc}/robots.txt').decode('utf-8-sig', errors='replace')
-    except urllib.error.HTTPError as e:
-        if e.code in (404, 410):
-            return [], 0
-        raise SystemExit(f'robots.txt: HTTP {e.code}, nothing fetched') from None
-    rules, delay = robots_policy(text, AGENT)
-    # The crawler's limit (scripts/crawler/source_safety.py): a longer wait needs a person to look.
-    if not 0 <= delay <= 120:
-        raise SystemExit(f'robots.txt asks for {delay} seconds between requests: review before running')
-    return rules, delay
 
 
 def key(text):
@@ -173,11 +153,6 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--snapshot', type=Path, required=True)
     snapshot, oita = stays(parser.parse_args(argv).snapshot)
-    rules, delay = robots(PACKAGE)
-    pause = max(3, delay)
-    if not robots_allowed(rules, PACKAGE):
-        raise SystemExit('robots.txt disallows the package record')
-    time.sleep(pause)
     package = json.loads(get(PACKAGE))['result']
     if package['license_id'] != LICENSE:
         raise SystemExit(f"License is {package['license_id']}, not {LICENSE}")
@@ -185,9 +160,7 @@ def main(argv=None):
     target = urllib.parse.urlsplit(resource['url'])
     if target.scheme != 'https' or target.netloc != urllib.parse.urlsplit(PACKAGE).netloc:
         raise SystemExit(f"The CSV is not on HTTPS at data.bodik.jp: {resource['url']}")
-    if not robots_allowed(rules, resource['url']):
-        raise SystemExit('robots.txt disallows the CSV')
-    time.sleep(pause)
+    time.sleep(PAUSE)
     retrieved = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     found, dropped = rows(get(resource['url']).decode('utf-8-sig'))
     linked = linked_rows(found, oita)

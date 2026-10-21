@@ -1,6 +1,6 @@
 // D08 PR 3 Oita Prefecture lodging business permits: the reader of scripts/update-oita-permits.py
 // (the operator and the phone never leave it), which rows it writes (a 簡易宿所 or 下宿 row only when
-// a stay links it), robots.txt before any other request in both list updaters, the committed list
+// a stay links it), paced requests with no robots.txt and no redirect in both list updaters (C08), the committed list
 // (data/oita-ryokan-permits.json), and the link rule
 // (lib/oita-permits.ts) on stays shaped like ours against real rows of the list. Every link it
 // must make sits beside the nearest stay it must refuse.
@@ -56,50 +56,61 @@ try{
  assert.equal(kept.status,0,kept.stderr);
  assert.deepEqual(kept.out,['0123456789abcdef',['KN440019102'],['KN440019101','KN440019102']],'the hotel, and the guesthouse a stay links; not the guesthouse or boarding house no stay links');
 
- // robots.txt is read before any other request, its rules hold for every address, and a failure
- // other than none being there (404) stops the run (Claude review on PR #199).
- // 'later': robots.txt allows the first address and refuses the next one (the PDFs, the CSV);
- // 'slow': it asks for an hour between requests; 'elsewhere' and 'plain': the catalog puts the
- // CSV on another host or on plain HTTP (Codex and Claude reviews on PR #211).
+ // Neither updater requests robots.txt (C08, user decision 2026-10-21), and every request after
+ // the first waits 3 seconds. 'elsewhere' and 'plain': the catalog puts the CSV on another host or
+ // on plain HTTP, which stops the run before the CSV (Codex and Claude reviews on PR #211).
+ // The run is cut once the requests are done (the PDF reader, the CSV reader).
  const updaters=[
-  {file:'scripts/update-jta-registered.py',args:[],later:'/kankocho/content/',answer:`'<a href="/kankocho/content/1.pdf"><span>登録ホテル一覧</span></a><a href="/kankocho/content/2.pdf"><span>登録旅館一覧</span></a>'.encode()`},
-  {file:'scripts/update-oita-permits.py',args:['--snapshot',snap],later:'/dataset/',answer:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`,
+  {file:'scripts/update-jta-registered.py',args:[],cut:'m.subprocess.run=cut',
+   answer:`'<a href="/kankocho/content/1.pdf"><span>登録ホテル一覧</span></a><a href="/kankocho/content/2.pdf"><span>登録旅館一覧</span></a>'.encode()`,
+   requests:['https://www.mlit.go.jp/kankocho/seisaku_seido/kokusaikankohotel/index.html','https://www.mlit.go.jp/kankocho/content/1.pdf','https://www.mlit.go.jp/kankocho/content/2.pdf']},
+  {file:'scripts/update-oita-permits.py',args:['--snapshot',snap],cut:'m.rows=cut',
+   answer:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`,
    elsewhere:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"https://files.example/c.csv"}]}}).encode()`,
-   plain:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"http://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`},
+   plain:`json.dumps({"result":{"license_id":"cc-by-40-intl","resources":[{"format":"CSV","url":"http://data.bodik.jp/dataset/a/resource/b/download/c.csv"}]}}).encode()`,
+   requests:['https://data.bodik.jp/api/3/action/package_show?id=440001_ryokan_business','https://data.bodik.jp/dataset/a/resource/b/download/c.csv']},
  ];
- for(const {file,args,later,answer,elsewhere,plain} of updaters){
-  const run=python([load(file),'m.time.sleep=lambda s:None','out={}',
-   `for mode in ("404","503","disallow","allow","later","slow"${elsewhere?',"elsewhere","plain"':''}):`,
-   ' calls=[]',
-   ' def get(url,mode=mode,calls=calls):',
-   '  calls.append(url)',
-   `  if mode=="later" and len(calls)==2:return ${answer}`,
-   `  if mode=="elsewhere" and len(calls)==2:return ${elsewhere}`,
-   ...(plain?[`  if mode=="plain" and len(calls)==2:return ${plain}`]:[]),
-   '  if not url.endswith("/robots.txt"):raise RuntimeError("next")',
-   '  if mode in ("404","503"):raise urllib.error.HTTPError(url,int(mode),"",{},None)',
-   `  return ("User-agent: *"+chr(10)+{"disallow":"Disallow: /","allow":"Disallow: /private/","later":"Disallow: ${later}","slow":"Crawl-delay: 3600","elsewhere":"Disallow: /private/","plain":"Disallow: /private/"}[mode]).encode()`,
+ for(const {file,args,cut,answer,elsewhere,plain,requests} of updaters){
+  const run=python([load(file),'events=[]','m.time.sleep=lambda s:events.append(["sleep",s])',
+   'def cut(*a,**k):raise RuntimeError("requests done")',cut,'out={}',
+   `for mode in ("ok",${elsewhere?'"elsewhere","plain"':''}):`,
+   ' events.clear()',
+   ' def get(url,mode=mode):',
+   '  events.append(["get",url])',
+   `  if len(events)==1:return {"ok":${answer}${elsewhere?`,"elsewhere":${elsewhere},"plain":${plain}`:''}}[mode]`,
+   '  return b"%PDF"',
    ' m.get=get',
    ` try:m.main(${JSON.stringify(args)})`,
-   ' except SystemExit:out[mode]=["stopped",calls]',
-   ' except RuntimeError:out[mode]=["went on",calls]',
+   ' except SystemExit:out[mode]=["stopped",events[:]]',
+   ' except RuntimeError:out[mode]=["went on",events[:]]',
+   ' except Exception as e:out[mode]=[type(e).__name__,events[:]]',
    'print(json.dumps(out))']);
   assert.equal(run.status,0,run.stderr);
-  const robots=run.out['404'][1][0],first=run.out['404'][1][1];
-  assert.match(robots,/^https:[/][/][^/]+[/]robots[.]txt$/,file);
-  assert.equal(new URL(first).host,new URL(robots).host,file);
-  assert.deepEqual(run.out,{'404':['went on',[robots,first]],'503':['stopped',[robots]],disallow:['stopped',[robots]],allow:['went on',[robots,first]],later:['stopped',[robots,first]],slow:['stopped',[robots]],...(elsewhere?{elsewhere:['stopped',[robots,first]],plain:['stopped',[robots,first]]}:{})},file);
-  // A redirect is followed only to HTTPS on the same host (Codex review on PR #211).
-  const hop=python([load(file),'import urllib.request','h=m.SameHost();r=urllib.request.Request("https://www.example.jp/a")','same=h.redirect_request(r,None,302,"",{},"https://www.example.jp/b").full_url','out=[same]',
-   'for to in ("https://files.example/b","http://www.example.jp/b"):',' try:h.redirect_request(r,None,302,"",{},to);out.append("followed")',' except SystemExit:out.append("refused")','print(json.dumps(out))']);
-  assert.equal(hop.status,0,hop.stderr);assert.deepEqual(hop.out,['https://www.example.jp/b','refused','refused'],file);
+  const paced=requests.flatMap((url,i)=>i?[['sleep',3],['get',url]]:[['get',url]]);
+  assert.deepEqual(run.out.ok,['went on',paced],file+': the pages only, no robots.txt, 3 seconds before each later request');
+  assert(!JSON.stringify(run.out).includes('robots'),file+': no robots.txt');
+  if(elsewhere)assert.deepEqual([run.out.elsewhere,run.out.plain],[['stopped',paced.slice(0,1)],['stopped',paced.slice(0,1)]],file);
+  // No redirect is followed, not even to HTTPS on the same host: each hop would be a request with
+  // no pause before it (D08 #211 last review P3).
+  const hop=python([load(file),'import urllib.request','h=m.NoRedirect();r=urllib.request.Request("https://www.example.jp/a")','out=[]',
+   'for to in ("https://www.example.jp/b","https://files.example/b","http://www.example.jp/b"):',' try:h.redirect_request(r,None,302,"",{},to);out.append("followed")',' except SystemExit:out.append("refused")','print(json.dumps(out))']);
+  assert.equal(hop.status,0,hop.stderr);assert.deepEqual(hop.out,['refused','refused','refused'],file);
   // And every request goes through that handler (Claude review on PR #211): get() builds its opener with it.
   const via=python([load(file),'import urllib.request','handlers=[]',
    'class Response:',' read=lambda self:b"ok"',' __enter__=lambda self:self',' __exit__=lambda self,*a:None',
    'class Opener:',' open=lambda self,*a,**k:Response()',
    'def build(*h):',' handlers.extend(h);return Opener()',
-   'urllib.request.build_opener=build','body=m.get("https://www.example.jp/a")','print(json.dumps([body.decode(),any(isinstance(h,m.SameHost) for h in handlers)]))']);
-  assert.equal(via.status,0,via.stderr);assert.deepEqual(via.out,['ok',true],file+': get() follows redirects through SameHost');
+   'urllib.request.build_opener=build','body=m.get("https://www.example.jp/a")','print(json.dumps([body.decode(),any(isinstance(h,m.NoRedirect) for h in handlers)]))']);
+  assert.equal(via.status,0,via.stderr);assert.deepEqual(via.out,['ok',true],file+': get() opens through NoRedirect');
+  // Through urllib itself: a redirecting server sees one request and the run stops.
+  const served=python([load(file),'import http.server,threading','seen=[]',
+   'class H(http.server.BaseHTTPRequestHandler):',
+   ' def do_GET(self):seen.append(self.path);self.send_response(302);self.send_header("Location","/b");self.end_headers()',
+   ' def log_message(self,*a):pass',
+   's=http.server.HTTPServer(("127.0.0.1",0),H);threading.Thread(target=s.serve_forever,daemon=True).start()',
+   'try:m.get("http://127.0.0.1:%d/a"%s.server_port);out="followed"','except SystemExit:out="refused"',
+   's.shutdown();print(json.dumps([out,seen]))']);
+  assert.equal(served.status,0,served.stderr);assert.deepEqual(served.out,['refused',['/a']],file);
  }
 
  // The committed list.
@@ -145,5 +156,5 @@ try{
  const row=data.rows.find(r=>r[0]==='KN440010155');
  const p=resolveOitaPermits(new Map([['jalan-2',oitaCandidates(stay('pref-ooita','大分県別府市駅前町１３－４','別府ステーションホテル'))]])).get('jalan-2');
  assert.deepEqual(p,{id:'KN440010155',kind:'旅館・ホテル',permitted:row[5],asOf:data.asOf});
- console.log(JSON.stringify({passed:'Oita permit reader, guesthouse rows only when linked, robots first in both list updaters, committed list, link rule with refusals',rows:data.rows.length,asOf:data.asOf}));
+ console.log(JSON.stringify({passed:'Oita permit reader, guesthouse rows only when linked, paced requests with no robots.txt and no redirect in both list updaters, committed list, link rule with refusals',rows:data.rows.length,asOf:data.asOf}));
 }finally{rmSync(temp,{recursive:true,force:true})}

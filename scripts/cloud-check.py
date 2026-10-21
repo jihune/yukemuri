@@ -18,6 +18,7 @@ commands = [
     [sys.executable, 'scripts/crawler/check_diagnostics.py'],
     [sys.executable, 'scripts/crawler/check_retry_policy.py'],
     [sys.executable, 'scripts/crawler/check_site_access.py'],
+    [sys.executable, 'scripts/check-source-safety.py'],
     ['node', 'scripts/build-collector-release.mjs'],
     [sys.executable, 'scripts/runner/check_bootstrap.py'],
     [sys.executable, 'scripts/runner/check_collection.py'],

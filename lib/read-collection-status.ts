@@ -15,6 +15,7 @@ export type CollectionStatusRows={providers:ProviderRow[];cooldowns:{key:string;
 export async function collectionStatusSideRows(db=favoritesDb()){
  const [cooldowns,issues]=await Promise.all([
   db.prepare("SELECT key,value FROM catalog_meta WHERE key IN ('crawl-provider-ready:jalan','crawl-provider-ready:trip')").all<{key:string;value:string}>(),
+  // The collector stopped writing robots_* reasons in C08 (2026-10-21); stored rows keep their category.
   db.prepare(`SELECT provider,CASE
    WHEN error IN ('http_404','http_410') THEN 'missing_page'
    WHEN error IN ('http_403','http_429','robots_disallowed','robots_http_403','robots_http_429') OR error LIKE 'source_access_%' THEN 'access_limited'

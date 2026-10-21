@@ -48,6 +48,7 @@ export const crawlUpdate=z.object({url:crawlJobUrl,claimToken:z.string().uuid().
 
 // Page retries cannot pause the provider without an access response, a clear
 // bot challenge, or an explicit source Retry-After reported by the updater.
+// robots_http_: an updater from before C08 (2026-10-21), which read robots.txt.
 export function providerCooldown(update:z.infer<typeof crawlUpdate>){
  if(!['retry','failed'].includes(update.status))return 0;
  const code=update.error?.match(/^(?:http_|robots_http_)(403|429)$/)?.[1];
