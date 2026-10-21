@@ -26,7 +26,7 @@ print('runs', len(rows), 'schedule', len(sched), 'other', len(manual),
 
 day = start
 while day < end:
-    nxt = min(day + timedelta(days=1), end)
+    nxt = min(day.replace(hour=0, minute=0, second=0) + timedelta(days=1), end)
     slots = 0
     t = day.replace(minute=37, second=0)
     while t < nxt:

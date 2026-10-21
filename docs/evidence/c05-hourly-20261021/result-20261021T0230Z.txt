@@ -1,0 +1,30 @@
+# C05 two-day measurement, written 2026-10-21T02:17Z by the O03 session.
+# runner-catalog-runs.tsv: runs of the runner's 'Yukemuri catalog updates'
+# (jihune/yukemuri-script-runner, private) created 2026-10-18T12:00Z to
+# 2026-10-21T00:00Z, read 2026-10-21T02:13Z through the GitHub MCP
+# actions_list (list_workflow_runs page 1 of all workflows, 100 runs of
+# total_count 204, oldest 2026-10-12T16:11:31Z, so the window is complete;
+# list_workflow_jobs per run). A cheaper-model subagent listed them; the O03
+# session checked the rows against known run ids and against the public app
+# repository's collect.yml list (45 of total_count 45, 15 runs in the same
+# window, each dispatched within 8 s of a catalog run).
+# Command (from the app repository root):
+#   python3 -I docs/evidence/c05-hourly-20261021/slot_gaps_hourly.py \
+#     docs/evidence/c05-hourly-20261021/runner-catalog-runs.tsv \
+#     2026-10-18T12:31:58Z 2026-10-21T00:00:00Z
+# 12:31:58Z is the merge of runner PR #14 (cron '37 * * * *').
+window 2026-10-18T12:31:58+00:00 -> 2026-10-21T00:00:00+00:00
+runs 15 schedule 13 other 2 not success 0
+10-18T12:31 -> 10-19T00:00 slots 12 schedule 3 other 0 schedule at 16:06:57 18:53:15 21:48:59 | other at 
+10-19T00:00 -> 10-20T00:00 slots 24 schedule 5 other 2 schedule at 00:26:51 05:15:34 11:12:28 17:44:52 22:36:46 | other at 04:47:31 10:04:40
+10-20T00:00 -> 10-21T00:00 slots 24 schedule 5 other 0 schedule at 01:16:22 06:33:03 12:06:10 17:29:33 20:50:17 | other at 
+schedule gaps h min/median/max 2.63 4.84 6.54
+gap_h 6.54 10-19T11:12:28 -> 10-19T17:44:52
+gap_h 5.95 10-19T05:15:34 -> 10-19T11:12:28
+gap_h 5.55 10-20T06:33:03 -> 10-20T12:06:10
+gap_h 5.39 10-20T12:06:10 -> 10-20T17:29:33
+gap_h 5.28 10-20T01:16:22 -> 10-20T06:33:03
+gap_h 4.87 10-19T17:44:52 -> 10-19T22:36:46
+gap_h 4.81 10-19T00:26:51 -> 10-19T05:15:34
+gap_h 3.58 10-18T12:31:58 -> 10-18T16:06:57
+job seconds min/max 6 10 jobs 15 minutes rounded up per job 15
