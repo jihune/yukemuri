@@ -35,6 +35,7 @@ try{
   ['trip-missing','trip','list','failed',null,'http_404',0],
   ['jalan-retry','jalan','detail','retry',null,'ValueError',0],
   ['jalan-redirect','jalan','detail','retry',null,'source_redirect_requires_review',0],
+  // robots_* rows: stored before C08 (2026-10-21); the collector no longer writes them, and they keep their category.
   ['jalan-robots-denied','jalan','detail','retry',null,'robots_disallowed',0],
   ['jalan-robots-offline','jalan','detail','retry',null,'robots_unavailable',0],
   ['jalan-robots-rate','jalan','detail','retry',null,'robots_http_429',0],
@@ -76,5 +77,5 @@ try{
  assert.equal(JSON.stringify((await db.prepare('SELECT * FROM crawl_jobs ORDER BY url').all()).results),expandedBefore,'Diagnostics never modify the queue');
  // The page is the same static shell for everyone (P03); the summary arrives with the snapshot.
  const page=await runtime.dispatchFetch('http://localhost/');assert.equal(page.status,200);const html=await page.text();assert(html.includes('일본 온천, 나에게 맞는 곳')&&html.includes('숙소 정보를 불러오는 중'));
- console.log('Collection status passed: quality counts, source/robots reason categories, bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and existing page.');
+ console.log('Collection status passed: quality counts, source reason categories (with rows from before C08), bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and existing page.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
