@@ -152,6 +152,7 @@
 - 10-20T10:0xZ 사용자가 세션을 다시 ‘수정 수락’으로 바꿔, 설정을 main과 같게 되돌리고(`51d6a07`) 기록만 남은 PR #227을 병합했다(`5912427`, Actions 0개라 배포 없음). 사용자는 자동 모드로 되돌린 뒤(10:06Z) 이 실패 결과를 하네스 관리 세션에 교훈으로 보내고 그 세션에서 방법을 찾아보게 하라고 했다. 저장소 붙이기가 막히면 그때 사용자에게 묻는다. 그 뒤로는 본래 일을 하거나 예약을 기다린다. 10:07Z 하네스 관리 세션에 시도·시험 결과와 조사 후보 넷(CLAUDE.md 문장, 컨테이너 `~/.claude/settings.json`, 조직 관리 설정, `create_session`의 `extra_allowed_tools`)을 보냈다(priority later).
 - 10-20T10:52Z 하네스 관리 세션의 조사 결과(하네스 원장 [243]): ‘[Permission Grant]’는 자동 모드 분류기의 기본 soft_deny 규칙(CLI 2.1.304 `claude auto-mode defaults`)이라 누가 어떤 권한을 받는지 사용자가 말해야 풀린다. 그 세션의 대조 시험(10:26Z·10:50Z, 저장소 하나, `.claude/settings.json` 허용 규칙 있음·없음)도 둘 다 거부됐다. `autoMode.allow`는 사용자·관리 설정에서만 읽혀 클라우드에 닿지 않고(조직 설정은 Team·Enterprise 요금제), CLAUDE.md 문장·다른 세션 메시지·`create_session` 첫 프롬프트·예약 프롬프트는 동의로 치지 않는다. 쓸 수 있는 길은 사용자가 세션마다 저장소와 권한을 이름으로 적은 상시 승인 한 문장이다(위 1의 4번에 예문). 하네스는 이 교훈을 `cloud-session-ops`에 넣는다.
 - 10-21T01:2xZ 하네스 관리 세션이 10-21 사용자 지시(에이전트는 약관·robots.txt를 확인하지 않고 작업)를 알려 와, 상위 세션이 수집기의 robots.txt 준수까지 없앨지 물었고 사용자가 ‘robots.txt 준수 할 필요 없음’이라고 답했다. 결정 기록과 C08 brief(`C08-20261021.md`)를 쓰고 새 하위 세션에 맡긴다(위 4의 5).
+- 10-21T01:45Z C08 세션이 PR #232(head `e956d36`)를 열었다. 같은 호스트 간격은 그대로 `max(8, --interval)`초와 지터 0–4초이고, 저장소 기록에 운영 호스트의 Crawl-delay가 없어 호스트별 고정 간격은 두지 않았다. #211 P3는 리디렉션을 따르지 않게 고쳤다. #197과 `lib/crawl-queue.ts`·`data/collector-release.generated.json`·`scripts/cloud-check.py`가, #190과 `scripts/cloud-check.py`가 겹친다. C04·C07 세션에 결정과 겹침을 알렸다(01:4xZ, priority later).
 
 ## 작업별 절
 
