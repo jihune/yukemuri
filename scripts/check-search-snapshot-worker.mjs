@@ -368,6 +368,38 @@ try{
   r=cli(['--geocoder-db',join(temp,'no-dictionary')]);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: no installed dictionary/);
   r=cli(['--geocoder-skip','dictionary download failed']);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: dictionary download failed/);
   assert(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).unprepared.length>0,'without the flag the report lists the unprepared steps');
+  assert.equal(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).progress,null,'no collection count without --progress-day');
+  // C07 plan 2: a collection day puts the count in the report; anything but YYYY-MM-DD fails.
+  r=cli(['--progress-day','2026-10-12']);assert.equal(r.status,0,r.stderr);
+  const progress=JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).progress;
+  assert.deepEqual([Object.keys(progress),progress.day],[['day','counts','jobs','counter'],'2026-10-12']);
+  for(const bad of ['','2026-10-1','yesterday'])assert.notEqual(cli(['--progress-day',bad]).status,0,`--progress-day '${bad}' fails`);
+ }
+ // C07 plan 2: with the day a collection finished, the build also makes the count the queue GET
+ // made at the end of each run until then (every hotels row, merged records included) and shows
+ // that day's trend row from it, without writing D1; the Worker stores it with the GET's rules.
+ {
+  const counter=(await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value,unchanged=await fingerprint();
+  const out=join(temp,'progress');mkdirSync(out,{recursive:true});
+  const day=await buildSnapshot({db,out,now:new Date('2026-10-12T00:00:00Z'),progressDay:'2026-10-12'});
+  assert.deepEqual(await fingerprint(),unchanged,'building with a collection day changed D1');
+  assert.equal(built.progress,null,'no count without a collection day');
+  const sql=await db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels').first();
+  assert.deepEqual({...day.progress,jobs:undefined},{day:'2026-10-12',counts:{records:sql.records,prefectures:sql.prefectures},jobs:undefined,counter});
+  assert.equal(sql.records,day.manifest.hotels+merged.size,'the merged records are counted');
+  // Stored through the Worker, the aggregate is the one the queue GET counts from SQL. (The trend
+  // rows above carry made-up sequence numbers; every stored one comes from this sequence.)
+  await db.prepare("UPDATE catalog_meta SET value='100' WHERE key='coverage-sequence'").run();
+  const stored=await api('/api/crawl',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY,'Content-Type':'application/json'},body:JSON.stringify({action:'record-coverage',...day.progress})});
+  assert.deepEqual(stored.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
+  // The snapshot differs from the one built without a day only in that day's trend row, which
+  // is the row now stored (as a build after the GET read it).
+  const dayManifest=read(out,'manifest.json'),fileOf=(dir,m,name)=>JSON.parse(readFileSync(join(dir,'snapshot','v',m.id,name+'.json'),'utf8'));
+  for(const name of ['core','cards','text','geo'])assert.deepEqual(fileOf(out,dayManifest,name),fileOf(local,manifest,name),name);
+  const plain=fileOf(local,manifest,'status'),withDay=fileOf(out,dayManifest,'status');
+  const row=JSON.parse((await db.prepare("SELECT value FROM catalog_meta WHERE key='daily-progress:2026-10-12'").first()).value),shown={date:'2026-10-12',records:row.records,pages:row.pages};
+  assert.notDeepEqual(plain.fill.trend.find(t=>t.date==='2026-10-12'),shown,'the check reaches a changed row');
+  assert.deepEqual(withDay,{...plain,fill:{...plain.fill,trend:plain.fill.trend.map(t=>t.date==='2026-10-12'?shown:t)}});
  }
  const kb=n=>(n/1024).toFixed(0)+'KiB';
  console.log(`Search snapshot passed: ${rows.length} hotels (${open.length} in the name index), core/text columns equal the table and the former index, ${cards.length} cards equal the Worker's hotels, coverage and collection status equal their APIs, the data status fill equals counts from SQL and the Worker's hotels, no D1 change, read-only guard, API source identical, idempotent rebuild. Sizes raw/gzip: ${Object.entries(built.sizes).map(([k,v])=>`${k} ${kb(v.raw)}/${kb(v.gzip)}`).join(', ')}; ${built.rowsRead} rows read in ${built.queries} queries.`);

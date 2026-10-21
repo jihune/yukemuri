@@ -77,23 +77,41 @@ function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  return promise;
 }
 const COVERAGE_SNAPSHOT='coverage-snapshot',COVERAGE_SEQUENCE='coverage-sequence';
-// Full count, read by the collector at the end of each run. It also resets
-// the record counter (first run, restored backups) from the true count in the
-// same transaction, so a write either lands before it and is counted, or after
-// it and adds to the corrected value (overlapping collector runs). The
-// aggregate is stored so other isolates need not count it again; a sequence
-// number taken in that transaction keeps a slower GET from storing an older
-// aggregate over a newer one.
+const NEXT_SEQUENCE="INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value";
+// U06 trend: the same counts as the day's row (UTC day; the day's last run stays).
+export const trendPages=(jobs:CoverageJobs[])=>Object.fromEntries((['jalan','trip'] as const).map(p=>{const job=jobs.find(j=>j.provider===p);return[p,{done:job?.details??0,total:job?.discovered??0}]}));
+// The aggregate, so other isolates need not count it again, and the day's
+// trend row; each only over an older sequence number, so a slower writer never
+// stores an older aggregate over a newer one.
+async function storeCoverage(db:D1Database,sequence:{results:unknown[]},coverage:ReturnType<typeof coverageFrom>,day:string,jobs:CoverageJobs[]){
+ const seq=Number((sequence.results as {value:string}[])[0].value);
+ const newer="INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')";
+ await db.batch([db.prepare(newer).bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})),db.prepare(newer).bind(DAILY_PROGRESS_KEY+day,JSON.stringify({seq,records:coverage.records,pages:trendPages(jobs)}))]);
+ return cacheCoverage(Promise.resolve(coverage));
+}
+// Full count (the queue GET; the collector called it at the end of each run
+// until C07). It also resets the record counter (first run, restored backups)
+// from the true count in the same transaction, so a write either lands before
+// it and is counted, or after it and adds to the corrected value. The sequence
+// number is taken in that transaction.
 export async function readCoverage(){
  const db=favoritesDb();
- const [sequence,,counts,jobs]=await db.batch([db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value").bind(COVERAGE_SEQUENCE),db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
- const coverage=coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]);
- const seq=Number((sequence.results as {value:string}[])[0].value);
- // U06 trend: the same counts as the day's row (UTC day; the day's last run stays).
- const pages=Object.fromEntries((['jalan','trip'] as const).map(p=>{const job=(jobs.results as CoverageJobs[]).find(j=>j.provider===p);return[p,{done:job?.details??0,total:job?.discovered??0}]}));
- const newer="INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE COALESCE(json_extract(catalog_meta.value,'$.seq'),-1)<json_extract(excluded.value,'$.seq')";
- await db.batch([db.prepare(newer).bind(COVERAGE_SNAPSHOT,JSON.stringify({seq,coverage})),db.prepare(newer).bind(DAILY_PROGRESS_KEY+new Date().toISOString().slice(0,10),JSON.stringify({seq,records:coverage.records,pages}))]);
- return cacheCoverage(Promise.resolve(coverage));
+ const [sequence,,counts,jobs]=await db.batch([db.prepare(NEXT_SEQUENCE).bind(COVERAGE_SEQUENCE),db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE catalog_meta.value!=excluded.value').bind(RECORD_COUNTER),...coverageStatements(db)]);
+ return storeCoverage(db,sequence,coverageFrom((counts.results as CoverageCounts[])[0],jobs.results as CoverageJobs[]),new Date().toISOString().slice(0,10),jobs.results as CoverageJobs[]);
+}
+// C07 plan 2: the same rows from the counts the search snapshot build made
+// after a collection (scripts/record-coverage.mjs), dated the UTC day the
+// collector finished. counter: the record counter as the build read it before
+// counting (null: none yet). It is reset only while it still holds that value:
+// a save adds to it in the save's own transaction, so a changed counter means
+// the count may miss a record, and the next collection's build resets it.
+export type CoverageRecord={day:string;counts:CoverageCounts;jobs:CoverageJobs[];counter:string|null};
+export async function recordCoverage(record:CoverageRecord){
+ const db=favoritesDb(),records=String(record.counts.records);
+ const [sequence]=await db.batch([db.prepare(NEXT_SEQUENCE).bind(COVERAGE_SEQUENCE),record.counter===null
+  ?db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(RECORD_COUNTER,records)
+  :db.prepare('UPDATE catalog_meta SET value=? WHERE key=? AND value=? AND value!=?').bind(records,RECORD_COUNTER,record.counter,records)]);
+ return storeCoverage(db,sequence,coverageFrom(record.counts,record.jobs),record.day,record.jobs);
 }
 // Exact record count over the aggregate of the last full count: from this
 // isolate's memory for five minutes, else as stored by the collector's GET.

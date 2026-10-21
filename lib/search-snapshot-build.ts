@@ -4,7 +4,7 @@ import {attachSourceGroups} from './hotel-source-groups';
 import {composePreferredHotel} from './source-policy';
 import {withLifecycle} from './hotel-lifecycle';
 import {formatHotelLocation,hotelPlaceSearchText,geocodeInput} from './japan-place-labels';
-import {coverageFrom,catalogPreparation,type CoverageJobs} from './hotel-repository';
+import {coverageFrom,catalogPreparation,RECORD_COUNTER,trendPages,type CoverageJobs,type CoverageRecord} from './hotel-repository';
 import {collectionStatusFrom,collectionStatusSideRows,type ProviderRow} from './read-collection-status';
 import {hotelSummary,GEO_GRADE,type HotelSummary,type SnapshotCore,type SnapshotText,type SnapshotGeo,type GeocodeInput} from './search-snapshot';
 // The builder writes the manifest with this format (scripts/build-search-snapshot.mjs).
@@ -70,7 +70,7 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date,groups:
   pages[provider][kind]={done:total(groups,g=>of(g)&&g.status==='done'),pending:total(groups,g=>of(g)&&OPEN.includes(g.status)),retry:total(groups,g=>of(g)&&g.status==='retry'),failed:total(groups,g=>of(g)&&g.status==='failed')};
   if(kind==='detail')pages[provider].detailChecked24h=total(groups,of,'recent');
  }
- // The last 30 UTC days' rows of the collector's end-of-run read (lib/hotel-repository.ts readCoverage).
+ // The last 30 UTC days' rows that each collection's count stores (lib/hotel-repository.ts recordCoverage).
  const day=(ms:number)=>new Date(ms).toISOString().slice(0,10);
  const trend=(await db.prepare('SELECT key,value FROM catalog_meta WHERE key>=? AND key<=? ORDER BY key').bind(DAILY_PROGRESS_KEY+day(now.getTime()-29*86400000),DAILY_PROGRESS_KEY+day(now.getTime())).all<{key:string;value:string}>()).results.map(r=>{const v=JSON.parse(r.value) as Omit<TrendDay,'date'>;return{date:r.key.slice(DAILY_PROGRESS_KEY.length),records:v.records,pages:v.pages}});
  const fill:CollectionFill={scopes:{all:emptyScope(),jalan:emptyScope(),trip:emptyScope()},pages,trend};
@@ -103,8 +103,14 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date,groups:
  };
  return{fill,add};
 }
-export async function buildSearchSnapshot(now:Date){
+// progressDay: the UTC day a collection finished, for the snapshot deploy after it
+// (C07 plan 2): the build also makes the count the collector made at the end of
+// its run until then, puts that day's trend row in, and returns the count for
+// recordCoverage. Without it the trend rows are shown as stored.
+export async function buildSearchSnapshot(now:Date,progressDay?:string){
  const db=favoritesDb();
+ // Before any count: recordCoverage resets the counter only if no save changed it since.
+ const counter=progressDay?(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(RECORD_COUNTER).all<{value:string}>()).results[0]?.value??null:null;
  const queue=await jobGroups(db,now);
  const {fill,add}=await collectionFill(db,now,queue);
  const core:SnapshotCore={ids:[],region:[],prefecture:[],name:[],kind:[],tripScore:[],tripReviews:[],jalanScore:[],jalanReviews:[],natural:[],features:[],known:[],lat:[],lng:[],state:[]};
@@ -139,11 +145,14 @@ export async function buildSearchSnapshot(now:Date){
  // The record counts of the collection summary and status, counted on this pass
  // with the rules of their former queries (queryCoverage, readCollectionStatus).
  const prefectures=new Set<string>(),quality={records:0,detailRecords:0,bathKnownRecords:0,naturalOnsenRecords:0,roomOnsenRecords:0};
+ // Every row, the records a card absorbs included: the rule of readCoverage's COUNT(*).
+ const all={records:0,prefectures:new Set<string>()};
  // The same coordinate rule as the former map query and hasCoordinates.
  const numeric=`json_type(payload,'$.location.latitude') IN ('integer','real') AND json_type(payload,'$.location.longitude') IN ('integer','real')`;
  for(let cursor='';;){
   const rows=(await db.prepare(`SELECT id,region,prefecture,name,kind,trip_score,trip_reviews,jalan_score,jalan_reviews,natural,room_onsen,bath_features,bath_known,search_text,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.latitude') END AS lat,CASE WHEN ${numeric} THEN json_extract(payload,'$.location.longitude') END AS lng,payload FROM hotels WHERE id>? ORDER BY id LIMIT ${PAGE}`).bind(cursor).all<Row>()).results;
   const lifecycles=rows.length?new Map((await db.prepare('SELECT * FROM hotel_lifecycle WHERE hotel_id>? AND hotel_id<=?').bind(cursor,rows.at(-1)!.id).all<Record<string,unknown>>()).results.map(r=>[r.hotel_id,r])):new Map();
+  all.records+=rows.length;for(const r of rows)if(r.prefecture!==null)all.prefectures.add(r.prefecture);
   const kept=rows.filter(r=>!mergedInto.has(r.id)),hotels=await attach(kept.map(r=>enrichHotel(JSON.parse(r.payload) as Hotel)),members,lifecycles);
   kept.forEach((r,i)=>{
    // Wikidata and Jalan locale names (D07) on the card, the name column (the shown title, which the
@@ -183,11 +192,15 @@ export async function buildSearchSnapshot(now:Date){
  const jobs:CoverageJobs[]=providers.map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as CoverageJobs['provider'],discovered:total(queue,g=>of(g)&&g.kind==='detail'),completed:total(queue,g=>of(g)&&g.status==='done'),details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&WAITING.includes(g.status)),failed:total(queue,g=>of(g)&&g.status==='failed'),updated:latest(queue.filter(of).map(g=>g.updated))}});
  const statusRows:ProviderRow[]=providers.filter(p=>p==='jalan'||p==='trip').map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as ProviderRow['provider'],last_success:latest(queue.filter(of).map(g=>g.last_success)),completed_details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&OPEN.includes(g.status)),retry:total(queue,g=>of(g)&&g.status==='retry'),failed:total(queue,g=>of(g)&&g.status==='failed'),active:total(queue,of,'active')}});
  const coverage=coverageFrom({records:quality.records,prefectures:prefectures.size},jobs);
+ const progress:CoverageRecord|null=progressDay?{day:progressDay,counts:{records:all.records,prefectures:all.prefectures.size},jobs,counter}:null;
+ // The row the collector's count used to store before this build read the trend.
+ if(progress&&progress.day>=new Date(now.getTime()-29*86400000).toISOString().slice(0,10)&&progress.day<=now.toISOString().slice(0,10))
+  fill.trend=[...fill.trend!.filter(t=>t.date!==progress.day),{date:progress.day,records:progress.counts.records,pages:trendPages(jobs) as TrendDay['pages']}].sort((a,b)=>a.date<b.date?-1:1);
  const [side,unprepared]=await Promise.all([collectionStatusSideRows(db),catalogPreparation()]);
  const status=collectionStatusFrom(now.getTime(),{providers:statusRows,...side,quality});
  // unprepared: seed steps crawl-prepare has not run on this database (a
  // deploy that changes the seed prepares it and builds again, deploy.yml).
- return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,mergedInto:Object.fromEntries(mergedInto),first:firstPage(core,cards,coverage)};
+ return{core,text,cards,geo,geocodeInputs,coverage,status:{...status,fill},unprepared,mergedInto:Object.fromEntries(mergedInto),first:firstPage(core,cards,coverage),progress};
 }
 // The first page of the default view (no conditions, recommended order): put
 // in the static page so the list shows before core and cards arrive.

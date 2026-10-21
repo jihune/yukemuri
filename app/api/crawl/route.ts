@@ -1,9 +1,9 @@
 import {collectionPriority} from '@/lib/collection-priorities';
 import {observeHotelPresence,observeMissingSource} from '@/lib/hotel-lifecycle';
-import { crawlUpdate,providerCooldown,LOCALE_LIST } from '@/lib/crawl-contract';
+import { coverageRecord,crawlUpdate,providerCooldown,LOCALE_LIST } from '@/lib/crawl-contract';
 import {LOCALE_PRIORITY,saveLocaleNames} from '@/lib/jalan-locale-names';
 import { favoritesDb } from '@/lib/favorites-db';
-import { hotelRepository, readCoverage, readCachedCoverage, writeHotels } from '@/lib/hotel-repository';
+import { hotelRepository, readCoverage, readCachedCoverage, recordCoverage, writeHotels } from '@/lib/hotel-repository';
 import { curatedCatalogHotels } from '@/lib/catalog-core';
 import type { Hotel } from '@/lib/hotel-types';
 import { sourceRegion } from '@/lib/hotel-region';
@@ -35,6 +35,10 @@ export async function POST(request:Request){
   if(raw.action==='release-reviewed-redirect'){
    const repair=reviewedRedirectRepair.safeParse(raw);if(!repair.success)return Response.json({error:'Invalid policy repair'},{status:400});
    try{await hotelRepository.ready();const result=await releaseReviewedRedirect(repair.data);return Response.json(result,{status:result.repaired?200:409,headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Reviewed redirect release failed',error);return Response.json({error:'Policy repair unavailable'},{status:503})}
+  }
+  if(raw.action==='record-coverage'){
+   const record=coverageRecord.safeParse(raw);if(!record.success)return Response.json({error:'Invalid coverage record'},{status:400});
+   try{await hotelRepository.ready();return Response.json({recorded:true,coverage:await recordCoverage(record.data)},{headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Coverage record failed',error);return Response.json({error:'Coverage record unavailable'},{status:503})}
   }
   const repair=legacyRedirectRepair.safeParse(raw);if(!repair.success)return Response.json({error:'Invalid policy repair'},{status:400});
   try{await hotelRepository.ready();const result=await isolateLegacyRedirect(repair.data);return Response.json(result,{status:result.repaired||'alreadyIsolated' in result?200:409,headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Crawl policy repair failed',error);return Response.json({error:'Policy repair unavailable'},{status:503})}

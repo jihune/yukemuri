@@ -172,8 +172,8 @@ try{
  await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','list','pref-hokkaido','pending',0,0)").bind(listUrl).run();
  const listPut=await api('/api/crawl','PUT',{url:listUrl,status:'done',observations:[repeated,repeated],links:[]});
  assert.equal(listPut.coverage.records,tripPut.coverage.records+1);assert.equal(listPut.coverage.records,await hotelCount());
- // A wrong counter (for example after a restore) is reset by the full count
- // the collector reads at the end of each run.
+ // A wrong counter (for example after a restore) is reset by the queue GET's
+ // full count (and by the count after each collection, C07 plan 2 below).
  await db.prepare("UPDATE catalog_meta SET value='5' WHERE key='hotel-records'").run();
  assert.equal((await api('/api/crawl?provider=trip&kind=detail&limit=1')).coverage.records,await hotelCount());
  assert.equal(Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value),await hotelCount());
@@ -232,7 +232,34 @@ try{
  assert.equal((await dayRow()).records,-8,'An older day row must not replace a newer stored one');
  await db.prepare('DELETE FROM catalog_meta WHERE key=?').bind(dayKey).run();
  await api('/api/crawl?provider=trip&kind=detail&limit=1');
- assert.equal((await dayRow()).records,await hotelCount(),'The end-of-run GET writes the day row');
+ assert.equal((await dayRow()).records,await hotelCount(),'The queue GET writes the day row');
+ // C07 plan 2: the snapshot deploy after a collection stores its build's count through the crawl key.
+ const meta=async key=>(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(key).first())?.value??null;
+ const jobsSeen=[{provider:'jalan',discovered:10,completed:7,details:5,pending:3,failed:1,updated:'2026-10-17T05:00:00Z'}];
+ const record=(o={})=>({action:'record-coverage',day:'2026-10-17',counts:{records:4321,prefectures:40},jobs:jobsSeen,counter:null,...o});
+ await api('/api/crawl','POST',record(),403,false);
+ for(const bad of [{day:'2026-10-7'},{counts:{records:-1,prefectures:40}},{counter:'x'},{jobs:[{...jobsSeen[0],provider:'maps'}]},{extra:1}])await api('/api/crawl','POST',record(bad),400);
+ await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(newer).run();
+ const counterBefore=await meta('hotel-records'),seqBefore=Number(await meta('coverage-sequence'));
+ const stored=await api('/api/crawl','POST',record());
+ assert.equal(stored.recorded,true);assert.equal(Number(await meta('coverage-sequence')),seqBefore+1,'One sequence number, as the GET takes');
+ assert.deepEqual(storedCoverage({value:await meta('coverage-snapshot')}),stored.coverage);
+ assert.deepEqual([stored.coverage.records,stored.coverage.prefectures,stored.coverage.pending,stored.coverage.failed,stored.coverage.completedDetailPages,stored.coverage.providers.jalan],[4321,40,3,1,5,{discovered:10,completed:7}]);
+ assert.deepEqual(JSON.parse(await meta('daily-progress:2026-10-17')),{seq:seqBefore+1,records:4321,pages:{jalan:{done:5,total:10},trip:{done:0,total:0}}},'The day row of the day the collection finished');
+ assert.equal(await meta('hotel-records'),counterBefore,'A counter that exists is not replaced when the build saw none');
+ await api('/api/crawl','POST',record({counter:String(Number(counterBefore)+1)}));
+ assert.equal(await meta('hotel-records'),counterBefore,'A counter that changed after the build read it is kept');
+ await api('/api/crawl','POST',record({counter:counterBefore}));
+ assert.equal(await meta('hotel-records'),'4321','A counter as the build read it is reset to its count');
+ await db.prepare("DELETE FROM catalog_meta WHERE key='hotel-records'").run();
+ await api('/api/crawl','POST',record({counts:{records:4322,prefectures:40}}));
+ assert.equal(await meta('hotel-records'),'4322','No counter yet: the count becomes one');
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.seq',1e9,'$.records',-8) WHERE key='daily-progress:2026-10-17'").run();
+ await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.seq',1e9,'$.coverage.failed',-8) WHERE key='coverage-snapshot'").run();
+ await api('/api/crawl','POST',record());
+ assert.deepEqual([JSON.parse(await meta('daily-progress:2026-10-17')).records,storedCoverage({value:await meta('coverage-snapshot')}).failed],[-8,-8],'An older count never replaces a newer one');
+ await db.prepare("DELETE FROM catalog_meta WHERE key='daily-progress:2026-10-17'").run();
+ await db.prepare("UPDATE catalog_meta SET value=? WHERE key='hotel-records'").bind(String(await hotelCount())).run();
  await db.prepare("UPDATE catalog_meta SET value=? WHERE key='coverage-snapshot'").bind(newer).run();
  await db.prepare("UPDATE catalog_meta SET value=json_set(value,'$.coverage.failed',-7) WHERE key='coverage-snapshot'").run();
  const fresh=new Miniflare(options);

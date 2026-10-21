@@ -17,7 +17,8 @@ export const BUDGET=Object.freeze({
  writesPerPage:185,    // 2026-10-18, after C04: runs wrote at most 56.0 a page, but a round of
                        // update-site.py --gentle can hold only a Jalan detail page (11 rows) and a Jalan
                        // list page of 30 new properties (348): 179.5 a page (measure-d1-writes.mjs --check),
-                       // and the run's last queue read writes 3 rows.
+                       // and the count the snapshot deploy stores after the run writes 4 rows
+                       // (compare-progress.mjs; the run's last queue read wrote them until C07 plan 2).
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
  readsPerPage:4600,    // 2026-10-18, a production-size D1 (compare-write-builds.mjs): a round's claims read
@@ -26,8 +27,10 @@ export const BUDGET=Object.freeze({
  snapshotReads:168000, // 2026-10-18: the last snapshot build read 122,302 rows (23,784 hotels, after
                        // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
                        // growth (5.73 rows a hotel, 3,051 hotels on 10-17)
- runReads:105000       // 2026-10-18, the same D1: a run's own preparation, readback and last queue read
-                       // (84,961 rows), plus two days of growth (3 rows a hotel, 520 names jobs twice)
+ runReads:100          // 2026-10-20 (C07 plan 2): a run's own preparation and readback (9 + 14 rows on
+                       // the 10-18 D1) and, in its snapshot deploy, the counter read and the stored count
+                       // (1 + 10 rows, docs/evidence/c07-20261019/progress-normal.json). The run-end queue
+                       // read (84,938 rows on 10-18, growing 3 a hotel) is gone; none of these grow.
 });
 
 // usage: {rowsRead, rowsWritten} of the account today; null counts mean no
