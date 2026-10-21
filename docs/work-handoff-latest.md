@@ -155,6 +155,7 @@
 - 10-21T01:45Z C08 세션이 PR #232(head `e956d36`)를 열었다. 같은 호스트 간격은 그대로 `max(8, --interval)`초와 지터 0–4초이고, 저장소 기록에 운영 호스트의 Crawl-delay가 없어 호스트별 고정 간격은 두지 않았다. #211 P3는 리디렉션을 따르지 않게 고쳤다. #197과 `lib/crawl-queue.ts`·`data/collector-release.generated.json`·`scripts/cloud-check.py`가, #190과 `scripts/cloud-check.py`가 겹친다. C04·C07 세션에 결정과 겹침을 알렸다(01:4xZ, priority later).
 - 10-21T01:58Z #232가 병합 조건을 맞췄다(Codex 1회 큰 문제 없음, CI run 39529159369 성공, 충돌 없음). UTC 날 초반이라 그날 수집 실행이 배포 읽기를 보고 크기를 정할 수 있어, C06·C07보다 먼저 01:5xZ에 병합했다(`08b8aaa`). C08 세션이 배포와 다음 수집의 robots 요청 없음을 확인해 기록 PR을 낸다. #197은 이 병합 뒤 main을 합쳐야 한다.
 - 10-21T02:13Z C08 세션의 기록 PR #233(C08 문서만)을 병합했다(`ed84e63`). #232 배포 run 39530366095가 성공했다(Worker `6561ad04`, 스냅숏 `53c54bebac5644e1` 25,409곳, 생성 읽기 141,339행, `deployments.md`). 병합 뒤 첫 수집 실행의 확인은 C08 세션이 이어서 한다.
+- 10-21T02:2xZ C07 세션이 #197에 main `08b8aaa`를 합쳤다(head `4c97c35`, CI 성공). 충돌은 생성 파일 `data/collector-release.generated.json`의 `"release"` 한 줄뿐이었고 생성 도구로 다시 계산했다. 상위 세션이 `git merge-tree --write-tree origin/main 0cb5bea`와 head를 대조해 코드가 같음을 확인하고, 파생 해시라 충돌 해결 검토는 받지 않기로 정했다.
 
 ## 작업별 절
 
