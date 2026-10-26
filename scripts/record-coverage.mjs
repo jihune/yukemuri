@@ -3,9 +3,10 @@
 // the day's trend row and the record counter, which the collector's queue GET
 // stored at the end of each run until then (lib/hotel-repository.ts
 // recordCoverage). deploy.yml runs it last, once the new Worker is live, and only
-// in the deploy a collection calls (after_collection); a push deploy writes no
-// aggregate. Prints one JSON line, from which scripts/daily-check.mjs reads the
-// pages pending and done; the key comes from YUKEMURI_CRAWL_ACCESS_KEY.
+// in the deploy a collection calls with the day it finished (collected_on); a
+// push, manual or lifecycle deploy writes no aggregate. Prints one JSON line,
+// from which scripts/daily-check.mjs reads the pages pending and done; the key
+// comes from YUKEMURI_CRAWL_ACCESS_KEY.
 // Usage: node scripts/record-coverage.mjs <public workers.dev origin> [snapshot-report.json]
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';

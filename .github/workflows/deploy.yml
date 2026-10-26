@@ -5,7 +5,8 @@ name: Cloudflare deploy
 # (docs/cloudflare-deploy.md). Every run also rebuilds the static search
 # snapshot from D1; the collection workflow calls this one after a run
 # (workflow_call, after_collection: true) so the snapshot follows the catalogue,
-# and only that run stores the run's count (record-coverage.mjs, C07 plan 2).
+# and only that run, which also passes collected_on, stores the run's count
+# (record-coverage.mjs, C07 plan 2; lifecycle.yml calls it without a day).
 # A manual run with preflight: true only reads (time travel, pending
 # migrations, the snapshot, catalog_meta) and runs deploy --dry-run; it needs
 # the database_id but not autoDeploy or publicOrigin. A push that changes only
@@ -31,7 +32,7 @@ on:
         type: boolean
         default: false
       collected_on:
-        description: With after_collection, the UTC day (YYYY-MM-DD) the collection finished
+        description: From the collection workflow only, the UTC day (YYYY-MM-DD) the collection finished; empty, no count is stored
         type: string
         default: ''
 # Two locks, always taken in the same order: the catalogue group (outer), then
@@ -169,11 +170,10 @@ jobs:
           GEO_DB: ${{ steps.geo.outputs.db }}
           GEOCODER_PYTHON: ${{ steps.geo.outputs.python }}
           GEO_REASON: ${{ steps.geo.outputs.reason || 'geocoder preparation failed' }}
-          AFTER_COLLECTION: ${{ inputs.after_collection == true }}
           COLLECTED_ON: ${{ inputs.collected_on }}
         run: |
           if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi
-          progress=(); if [[ "$AFTER_COLLECTION" == 'true' ]]; then progress=(--progress-day "$COLLECTED_ON"); fi
+          progress=(); if [[ -n "$COLLECTED_ON" ]]; then progress=(--progress-day "$COLLECTED_ON"); fi
           node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json "${geo[@]}" "${progress[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
           [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
@@ -222,11 +222,10 @@ jobs:
           GEO_DB: ${{ steps.geo.outputs.db }}
           GEOCODER_PYTHON: ${{ steps.geo.outputs.python }}
           GEO_REASON: ${{ steps.geo.outputs.reason || 'geocoder preparation failed' }}
-          AFTER_COLLECTION: ${{ inputs.after_collection == true }}
           COLLECTED_ON: ${{ inputs.collected_on }}
         run: |
           if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi
-          progress=(); if [[ "$AFTER_COLLECTION" == 'true' ]]; then progress=(--progress-day "$COLLECTED_ON"); fi
+          progress=(); if [[ -n "$COLLECTED_ON" ]]; then progress=(--progress-day "$COLLECTED_ON"); fi
           node scripts/build-search-snapshot.mjs --remote --require-prepared --report snapshot-report.json "${geo[@]}" "${progress[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
           [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
@@ -246,8 +245,9 @@ jobs:
       # C07 plan 2: after a collection, the count the last build made (its report's
       # progress) goes to the new Worker, which stores the aggregate, that day's
       # trend row and the record counter, as the collector's queue GET did at the
-      # end of the run before. A push or manual deploy writes no aggregate.
-      - if: steps.gate.outputs.mode == 'deploy' && inputs.after_collection
+      # end of the run before. A push, manual or lifecycle deploy (no collected_on)
+      # writes no aggregate.
+      - if: steps.gate.outputs.mode == 'deploy' && inputs.collected_on != ''
         env:
           YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
           ORIGIN: ${{ steps.gate.outputs.public_origin }}
