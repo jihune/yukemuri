@@ -1,6 +1,6 @@
 {
- "measuredAt": "2026-10-26T12:47:14.835Z",
- "oldRef": "origin/main",
+ "measuredAt": "2026-10-26T13:24:44.297Z",
+ "oldRef": "5bccf54",
  "control": "date",
  "end": "2026-10-19T23:58:00Z",
  "build": "2026-10-20T00:07:00Z",
@@ -63,9 +63,9 @@
   "rowsRead": {
    "oldGet": 80807,
    "oldBuild": 115766,
-   "newBuild": 115767,
+   "newBuild": 115770,
    "newRecord": 9,
-   "saved": 80797
+   "saved": 80794
   },
   "rowsWritten": {
    "oldGet": 4,
@@ -78,7 +78,8 @@
     "prefectures": 47
    },
    "jobs": 2,
-   "counter": "24527"
+   "counter": "24527",
+   "sequence": "2"
   },
   "failures": [
    "catalog_meta daily-progress:2026-10-19: old {\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}} / new {\"seq\":2,\"records\":24527,\"pages\":{\"jalan\":{\"done\":1907,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2164}}}",

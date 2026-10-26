@@ -372,24 +372,24 @@ try{
   // C07 plan 2: a collection day puts the count in the report; anything but YYYY-MM-DD fails.
   r=cli(['--progress-day','2026-10-12']);assert.equal(r.status,0,r.stderr);
   const progress=JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).progress;
-  assert.deepEqual([Object.keys(progress),progress.day],[['day','counts','jobs','counter'],'2026-10-12']);
+  assert.deepEqual([Object.keys(progress),progress.day],[['day','counts','jobs','counter','sequence'],'2026-10-12']);
   for(const bad of ['','2026-10-1','yesterday'])assert.notEqual(cli(['--progress-day',bad]).status,0,`--progress-day '${bad}' fails`);
  }
  // C07 plan 2: with the day a collection finished, the build also makes the count the queue GET
  // made at the end of each run until then (every hotels row, merged records included) and shows
  // that day's trend row from it, without writing D1; the Worker stores it with the GET's rules.
  {
+  // The trend rows above carry made-up sequence numbers; every stored one comes from this sequence.
+  await db.prepare("UPDATE catalog_meta SET value='100' WHERE key='coverage-sequence'").run();
   const counter=(await db.prepare("SELECT value FROM catalog_meta WHERE key='hotel-records'").first()).value,unchanged=await fingerprint();
   const out=join(temp,'progress');mkdirSync(out,{recursive:true});
   const day=await buildSnapshot({db,out,now:new Date('2026-10-12T00:00:00Z'),progressDay:'2026-10-12'});
   assert.deepEqual(await fingerprint(),unchanged,'building with a collection day changed D1');
   assert.equal(built.progress,null,'no count without a collection day');
   const sql=await db.prepare('SELECT COUNT(*) AS records,COUNT(DISTINCT prefecture) AS prefectures FROM hotels').first();
-  assert.deepEqual({...day.progress,jobs:undefined},{day:'2026-10-12',counts:{records:sql.records,prefectures:sql.prefectures},jobs:undefined,counter});
+  assert.deepEqual({...day.progress,jobs:undefined},{day:'2026-10-12',counts:{records:sql.records,prefectures:sql.prefectures},jobs:undefined,counter,sequence:'100'});
   assert.equal(sql.records,day.manifest.hotels+merged.size,'the merged records are counted');
-  // Stored through the Worker, the aggregate is the one the queue GET counts from SQL. (The trend
-  // rows above carry made-up sequence numbers; every stored one comes from this sequence.)
-  await db.prepare("UPDATE catalog_meta SET value='100' WHERE key='coverage-sequence'").run();
+  // Stored through the Worker, the aggregate is the one the queue GET counts from SQL.
   const stored=await api('/api/crawl',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY,'Content-Type':'application/json'},body:JSON.stringify({action:'record-coverage',...day.progress})});
   assert.deepEqual(stored.coverage,(await api('/api/crawl?provider=jalan&kind=detail&limit=1',{headers:{'X-Yukemuri-Crawl-Key':KEY}})).coverage);
   // The snapshot differs from the one built without a day only in that day's trend row, which

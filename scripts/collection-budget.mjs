@@ -28,8 +28,8 @@ export const BUDGET=Object.freeze({
                        // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
                        // growth (5.73 rows a hotel, 3,051 hotels on 10-17)
  runReads:100          // 2026-10-20 (C07 plan 2): a run's own preparation and readback (9 + 14 rows on
-                       // the 10-18 D1) and, in its snapshot deploy, the counter read and the stored count
-                       // (1 + 10 rows, docs/evidence/c07-20261019/progress-normal.json). The run-end queue
+                       // the 10-18 D1) and, in its snapshot deploy, the counter and sequence read and the
+                       // stored count (4 + 10 rows, docs/evidence/c07-20261019/progress-normal.json). The run-end queue
                        // read (84,938 rows on 10-18, growing 3 a hotel) is gone; none of these grow.
 });
 

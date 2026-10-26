@@ -20,7 +20,7 @@ assert.equal(pagesFor({rowsRead:3_170_016,rowsWritten:77_828}).pages,38);
 // Whatever today's usage, a run's pages stay within 85% at the costliest costs measured (2026-10-18):
 // 179.5 rows written a page (a round of a Jalan detail and a new Jalan list page; runs wrote at most
 // 56.0 a page) and 4 a run (the stored count); 3,481 + 525 read a round and 582 a page, a round holding at
-// least one page; the run's own 9 + 14 reads and its stored count's 1 + 10 (C07 plan 2); and a snapshot after
+// least one page; the run's own 9 + 14 reads and its stored count's 4 + 10 (C07 plan 2); and a snapshot after
 // the run of 122,302 rows plus 10,000 for D07's names and two days of growth (2 x 3,051 x 5.73).
 // A run of 0 pages skips the collector and the snapshot.
 for(let written=0;written<=85_000;written++){
@@ -29,7 +29,7 @@ for(let written=0;written<=85_000;written++){
 }
 for(let read=0;read<=4_250_000;read++){
  const {pages}=pagesFor({rowsRead:read,rowsWritten:0});
- assert.ok(pages===0||read+pages*(3_481+525+582)+9+14+1+10+122_302+10_000+2*3_051*5.73<=4_250_000,'reads '+read);
+ assert.ok(pages===0||read+pages*(3_481+525+582)+9+14+4+10+122_302+10_000+2*3_051*5.73<=4_250_000,'reads '+read);
 }
 // Reads decide: 4,250,000 - 3,800,000 - 168,000 - 100 = 281,900 rows -> 61 pages.
 assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,61);

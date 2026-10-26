@@ -52,7 +52,7 @@ const count=z.number().int().min(0).max(10_000_000);
 export const coverageRecord=z.object({action:z.literal('record-coverage'),day:z.string().regex(/^20\d\d-[01]\d-[0-3]\d$/),
  counts:z.object({records:count,prefectures:count}).strict(),
  jobs:z.array(z.object({provider:z.enum(['jalan','trip']),discovered:count,completed:count,details:count,pending:count,failed:count,updated:z.string().max(40).nullable()}).strict()).max(2),
- counter:z.string().regex(/^\d{1,8}$/).nullable()}).strict();
+ counter:z.string().regex(/^\d{1,8}$/).nullable(),sequence:z.string().regex(/^\d{1,12}$/).nullable()}).strict();
 
 // Page retries cannot pause the provider without an access response, a clear
 // bot challenge, or an explicit source Retry-After reported by the updater.

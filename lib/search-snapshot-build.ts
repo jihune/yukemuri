@@ -4,7 +4,7 @@ import {attachSourceGroups} from './hotel-source-groups';
 import {composePreferredHotel} from './source-policy';
 import {withLifecycle} from './hotel-lifecycle';
 import {formatHotelLocation,hotelPlaceSearchText,geocodeInput} from './japan-place-labels';
-import {coverageFrom,catalogPreparation,RECORD_COUNTER,trendPages,type CoverageJobs,type CoverageRecord} from './hotel-repository';
+import {coverageFrom,catalogPreparation,COVERAGE_SEQUENCE,RECORD_COUNTER,trendPages,type CoverageJobs,type CoverageRecord} from './hotel-repository';
 import {collectionStatusFrom,collectionStatusSideRows,type ProviderRow} from './read-collection-status';
 import {hotelSummary,GEO_GRADE,type HotelSummary,type SnapshotCore,type SnapshotText,type SnapshotGeo,type GeocodeInput} from './search-snapshot';
 // The builder writes the manifest with this format (scripts/build-search-snapshot.mjs).
@@ -109,8 +109,10 @@ async function collectionFill(db:ReturnType<typeof favoritesDb>,now:Date,groups:
 // recordCoverage. Without it the trend rows are shown as stored.
 export async function buildSearchSnapshot(now:Date,progressDay?:string){
  const db=favoritesDb();
- // Before any count: recordCoverage resets the counter only if no save changed it since.
- const counter=progressDay?(await db.prepare('SELECT value FROM catalog_meta WHERE key=?').bind(RECORD_COUNTER).all<{value:string}>()).results[0]?.value??null:null;
+ // Before any count: recordCoverage stores the count only if no other count was stored since
+ // (the sequence) and resets the counter only if no save changed it since.
+ const seen=progressDay?new Map((await db.prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?)').bind(RECORD_COUNTER,COVERAGE_SEQUENCE).all<{key:string;value:string}>()).results.map(r=>[r.key,r.value])):new Map<string,string>();
+ const counter=seen.get(RECORD_COUNTER)??null,sequence=seen.get(COVERAGE_SEQUENCE)??null;
  const queue=await jobGroups(db,now);
  const {fill,add}=await collectionFill(db,now,queue);
  const core:SnapshotCore={ids:[],region:[],prefecture:[],name:[],kind:[],tripScore:[],tripReviews:[],jalanScore:[],jalanReviews:[],natural:[],features:[],known:[],lat:[],lng:[],state:[]};
@@ -192,7 +194,7 @@ export async function buildSearchSnapshot(now:Date,progressDay?:string){
  const jobs:CoverageJobs[]=providers.map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as CoverageJobs['provider'],discovered:total(queue,g=>of(g)&&g.kind==='detail'),completed:total(queue,g=>of(g)&&g.status==='done'),details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&WAITING.includes(g.status)),failed:total(queue,g=>of(g)&&g.status==='failed'),updated:latest(queue.filter(of).map(g=>g.updated))}});
  const statusRows:ProviderRow[]=providers.filter(p=>p==='jalan'||p==='trip').map(provider=>{const of=(g:JobGroup)=>g.provider===provider;return{provider:provider as ProviderRow['provider'],last_success:latest(queue.filter(of).map(g=>g.last_success)),completed_details:total(queue,g=>of(g)&&g.status==='done'&&g.kind==='detail'),pending:total(queue,g=>of(g)&&OPEN.includes(g.status)),retry:total(queue,g=>of(g)&&g.status==='retry'),failed:total(queue,g=>of(g)&&g.status==='failed'),active:total(queue,of,'active')}});
  const coverage=coverageFrom({records:quality.records,prefectures:prefectures.size},jobs);
- const progress:CoverageRecord|null=progressDay?{day:progressDay,counts:{records:all.records,prefectures:all.prefectures.size},jobs,counter}:null;
+ const progress:CoverageRecord|null=progressDay?{day:progressDay,counts:{records:all.records,prefectures:all.prefectures.size},jobs,counter,sequence}:null;
  // The row the collector's count used to store before this build read the trend.
  if(progress&&progress.day>=new Date(now.getTime()-29*86400000).toISOString().slice(0,10)&&progress.day<=now.toISOString().slice(0,10))
   fill.trend=[...fill.trend!.filter(t=>t.date!==progress.day),{date:progress.day,records:progress.counts.records,pages:trendPages(jobs) as TrendDay['pages']}].sort((a,b)=>a.date<b.date?-1:1);

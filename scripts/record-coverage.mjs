@@ -22,6 +22,9 @@ for(let attempt=1;;attempt++){
   console.log(JSON.stringify({recordedCoverage:{day:progress.day,records:c.records,pending:c.pending,completedDetailPages:c.completedDetailPages}}));
   break;
  }
+ // The sequence moved after this build read it: a queue GET stored a newer count, or an earlier
+ // try of this record took the number before failing. The next collection's deploy stores its own.
+ if(response.status===200&&body?.recorded===false){console.log(JSON.stringify({recordedCoverage:null,skipped:'the coverage sequence moved since the build read it'}));break}
  console.log(`record-coverage ${attempt}: HTTP ${response.status}`);
  // 503 is a D1 failure worth another try (the rows only ever take a newer count); nothing else is.
  if(response.status!==503||attempt>=3)throw new Error('record-coverage failed: HTTP '+response.status);

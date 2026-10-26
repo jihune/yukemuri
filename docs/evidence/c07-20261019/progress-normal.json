@@ -1,6 +1,6 @@
 {
- "measuredAt": "2026-10-26T12:44:19.880Z",
- "oldRef": "origin/main",
+ "measuredAt": "2026-10-26T13:21:49.042Z",
+ "oldRef": "5bccf54",
  "control": null,
  "end": "2026-10-19T21:20:00Z",
  "build": "2026-10-19T21:29:00Z",
@@ -63,9 +63,9 @@
   "rowsRead": {
    "oldGet": 80807,
    "oldBuild": 115766,
-   "newBuild": 115767,
+   "newBuild": 115770,
    "newRecord": 10,
-   "saved": 80796
+   "saved": 80793
   },
   "rowsWritten": {
    "oldGet": 4,
@@ -78,7 +78,8 @@
     "prefectures": 47
    },
    "jobs": 2,
-   "counter": "24527"
+   "counter": "24527",
+   "sequence": "2"
   },
   "failures": []
  }

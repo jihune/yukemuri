@@ -76,7 +76,8 @@ function cacheCoverage(promise:ReturnType<typeof queryCoverage>){
  promise.catch(()=>{if(coverageCache?.promise===promise)coverageCache=null});
  return promise;
 }
-const COVERAGE_SNAPSHOT='coverage-snapshot',COVERAGE_SEQUENCE='coverage-sequence';
+const COVERAGE_SNAPSHOT='coverage-snapshot';
+export const COVERAGE_SEQUENCE='coverage-sequence';
 const NEXT_SEQUENCE="INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1 RETURNING value";
 // U06 trend: the same counts as the day's row (UTC day; the day's last run stays).
 export const trendPages=(jobs:CoverageJobs[])=>Object.fromEntries((['jalan','trip'] as const).map(p=>{const job=jobs.find(j=>j.provider===p);return[p,{done:job?.details??0,total:job?.discovered??0}]}));
@@ -101,15 +102,23 @@ export async function readCoverage(){
 }
 // C07 plan 2: the same rows from the counts the search snapshot build made
 // after a collection (scripts/record-coverage.mjs), dated the UTC day the
-// collector finished. counter: the record counter as the build read it before
-// counting (null: none yet). It is reset only while it still holds that value:
-// a save adds to it in the save's own transaction, so a changed counter means
-// the count may miss a record, and the next collection's build resets it.
-export type CoverageRecord={day:string;counts:CoverageCounts;jobs:CoverageJobs[];counter:string|null};
+// collector finished. sequence and counter: the two as the build read them
+// before counting (null: none yet). The sequence number is taken only while it
+// still holds that value, so the count keeps the order of its read as the GET's
+// does; when another count was stored since, nothing is written (null). The
+// counter is reset only while it still holds the value read: a save adds to it
+// in the save's own transaction, so a changed counter means the count may miss
+// a record. With no counter yet, a save cannot change it, so it is made from a
+// count taken in its own statement, as the GET makes it.
+export type CoverageRecord={day:string;counts:CoverageCounts;jobs:CoverageJobs[];counter:string|null;sequence:string|null};
 export async function recordCoverage(record:CoverageRecord){
  const db=favoritesDb(),records=String(record.counts.records);
- const [sequence]=await db.batch([db.prepare(NEXT_SEQUENCE).bind(COVERAGE_SEQUENCE),record.counter===null
-  ?db.prepare('INSERT INTO catalog_meta (key,value) VALUES (?,?) ON CONFLICT(key) DO NOTHING').bind(RECORD_COUNTER,records)
+ const [sequence]=await db.batch([record.sequence===null
+  ?db.prepare("INSERT INTO catalog_meta (key,value) VALUES (?,'1') ON CONFLICT(key) DO NOTHING RETURNING value").bind(COVERAGE_SEQUENCE)
+  :db.prepare('UPDATE catalog_meta SET value=CAST(value AS INTEGER)+1 WHERE key=? AND value=? RETURNING value').bind(COVERAGE_SEQUENCE,record.sequence)]);
+ if(!sequence.results.length)return null;
+ await db.batch([record.counter===null
+  ?db.prepare('INSERT INTO catalog_meta (key,value) SELECT ?,COUNT(*) FROM hotels WHERE 1 ON CONFLICT(key) DO NOTHING').bind(RECORD_COUNTER)
   :db.prepare('UPDATE catalog_meta SET value=? WHERE key=? AND value=? AND value!=?').bind(records,RECORD_COUNTER,record.counter,records)]);
  return storeCoverage(db,sequence,coverageFrom(record.counts,record.jobs),record.day,record.jobs);
 }

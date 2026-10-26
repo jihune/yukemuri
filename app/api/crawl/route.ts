@@ -38,7 +38,9 @@ export async function POST(request:Request){
   }
   if(raw.action==='record-coverage'){
    const record=coverageRecord.safeParse(raw);if(!record.success)return Response.json({error:'Invalid coverage record'},{status:400});
-   try{await hotelRepository.ready();return Response.json({recorded:true,coverage:await recordCoverage(record.data)},{headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Coverage record failed',error);return Response.json({error:'Coverage record unavailable'},{status:503})}
+   try{await hotelRepository.ready();const coverage=await recordCoverage(record.data);
+    // null: the sequence moved after the build read it; nothing written (scripts/record-coverage.mjs).
+    return Response.json(coverage?{recorded:true,coverage}:{recorded:false},{headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Coverage record failed',error);return Response.json({error:'Coverage record unavailable'},{status:503})}
   }
   const repair=legacyRedirectRepair.safeParse(raw);if(!repair.success)return Response.json({error:'Invalid policy repair'},{status:400});
   try{await hotelRepository.ready();const result=await isolateLegacyRedirect(repair.data);return Response.json(result,{status:result.repaired||'alreadyIsolated' in result?200:409,headers:{'Cache-Control':'no-store'}})}catch(error){console.error('Crawl policy repair failed',error);return Response.json({error:'Policy repair unavailable'},{status:503})}
