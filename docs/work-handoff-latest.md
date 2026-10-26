@@ -136,7 +136,6 @@
 | 세션 | 맡은 일 | 상태 |
 |---|---|---|
 | `session_01A4FGJTVNdacXg9v4xe6SVt` | 열세 번째 상위 세션(10-26T13:33:32Z 시작, 열두 번째가 `create_session`으로 엶, 계보 깊이 6/8, 하네스 `34ead07`, 기록 브랜치 `claude/yukemuri-parent-13`) | 지금 상위 세션. 다음 인계는 사용자가 웹에서 연다(위 1) |
-| `session_015iTzSTfAAHC8Gtf5YvuaVB` | Claude 검토 세션: 앱 #246(C07 방안 2) 2회차, `485214f` 전체 변경(10-26T13:52Z 엶) | 검토 중. 결과를 기록한 뒤 보관한다 |
 | `session_01AbFSndiB424iTGKjQmcS7M` | Claude 검토 세션: 실행기 #16(O04 PR B) 1회차, `be4f509` 전체 변경(10-26T13:58Z 엶) | 검토 중. 결과를 기록한 뒤 보관한다 |
 | `session_01SarDBHKWzi47RJ6veCY6oi`(열두 번째), `session_01K7Ngq8H1MFPV9E1sgVXSpW`(열한 번째) | 옛 상위 세션. 열두 번째는 10-26T12:42:04Z 시작(계보 깊이 5, 하네스 `5f8c5b4`, 기록 브랜치 `claude/yukemuri-parent-12`), 열한 번째는 10-20T08:08:01Z 시작(깊이 4, `afc1966`, `claude/yukemuri-parent-11`) | 인계를 마치고 사용자 지시로 마무리했다(열한 번째 10-26T13:2xZ, 열두 번째 13:40Z). 보관하지 않는다. 메시지를 받으면 다음 상위 세션에 넘긴다 |
 | `session_01H1PVupTHtCDUN7hr4H8M6W`(열 번째), `session_01NNQyWcUC7714tEYd6CEkWZ`(아홉 번째), `session_01WLm1fDq57bsuP7dANpKmPD`(여덟 번째), `session_01KGKwywGmDoBP9sLbFaUVCU`(일곱 번째), `session_01T2rEzYyaSi8qtavjsZawQB`(여섯 번째), `session_01XUUTkd9FhQQbmKkqVnsnCj`(다섯 번째), `session_012tbsAbaHuG1Xhs94L4LatJ`(네 번째), `session_01PuNgLiSyMdn35DxmRigJmK`·`session_01KfLU3P8YrmZdyxehAEp9rp`·`session_01BSbr1zrttr8mSibf5bfz2R`(세 번째·두 번째·첫 번째) | 옛 상위 세션. 시작 시각·하네스 판·기록 브랜치는 `docs/history/work-handoff-20261026T1246Z.md`(열 번째)와 `docs/history/work-handoff-20261020T0812Z.md`(그 앞) 「상위 세션 인계」 6에 있다 | 모두 인계를 마쳤다. 보관하지 않는다. 메시지를 받으면 다음 상위 세션에 넘긴다 |
@@ -182,6 +181,7 @@
 - 10-26T14:00Z O03의 앱 기록 PR #252(`O04-20261026.md` 3·4절, #15와 #16 기록)를 검토 없이 병합했다(`d9dd33b`).
 - 10-26T14:02Z 실행기 #17을 병합했다(실행기 `18f6253`, Codex 1회 `315f550` ‘큰 문제 없음’). 검토 규칙 문서 바꾸기(위 4의 0)는 두 저장소 모두 끝났다. #16과는 merge-tree rc 0이고, O03이 병합 전에 main을 합쳐 CI를 다시 돌린다.
 - 10-26T14:0xZ 사용자가 답했다(위 2): API 키는 재발급하지 않음, #16 병합 판단은 상위 세션에 맡김, 다음 상위 세션이 필요하면 안내하고 놓쳐도 계속 다시 알림.
+- 10-26T14:10Z #246 2회차 결과: Codex(`485214f`)는 큰 문제 없음, Claude 검토 세션 `session_015iTzSTfAAHC8Gtf5YvuaVB`는 P1 1건(`lifecycle.yml`이 `deploy.yml`을 `after_collection: true`로만 부르고 `collected_on`을 넘기지 않아, 이 PR이 더한 `--progress-day`가 빈 값이 되어 lifecycle 배포가 실패함, 상위 세션이 브랜치의 두 workflow 줄로 확인)과 P3 1건이었다. C07에 고치고 3회차(Codex, `485214f` 뒤 차이, 마지막)를 받으라고 알렸다. 검토 세션은 보관했다.
 
 ## 작업별 절
 
