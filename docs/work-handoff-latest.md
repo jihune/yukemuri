@@ -187,6 +187,8 @@
 - 10-26T14:24Z–14:25Z O03 확인: 배포 run 40339141494 성공(실행기 `4be2a33`, 출력은 script·schedules·subdomain ok, crons `41 1 * * *`·`23 19 * * *`, workersDev false, Secret은 로그에서 가려짐). 스케줄러 workers.dev 주소는 404(대조로 없는 이름과 같은 응답, 앱 주소는 200), export는 `default { scheduled }` 하나. Cloudflare 라우트 목록은 읽기 토큰이 없어 미확인이다. 첫 바깥 부르기는 10-27T01:41Z 매일 점검이다. O03 기록 PR #256을 병합했다(`58e0e45`). 그 뒤 O03이 더한 `b26a88f`(workers.dev 확인 두 줄)는 다음 기록 PR로 들어온다.
 - 10-26T14:36Z C07이 #246 병합 준비를 알렸다(head `84c65fc`, 3회차 Codex 14:35Z ‘큰 문제 없음’, CI 성공, 열린 스레드 0, main과 충돌 없음). 10-28T00:13Z 병합 예약 `trig_01N116LVFfABms1bWTMMEGng`를 걸었다. C07은 3회차 기록 커밋을 #244 병합 뒤 main 합치기 push와 함께 올린다.
 - 10-26T15:3xZ C07이 방안 3을 로컬에서 준비했다(`a675df4`, `84c65fc` 위, push 배포가 입력 지문이 같으면 운영 스냅숏을 다시 내보냄, cloud-check --full exit 0). 사용자가 C07 세션에 직접 허락해(원문 ‘방안 3 준비 커밋을 백업으로 claude/c04-reads-plan3 브랜치에 push해도 된다.’) 백업 브랜치 `claude/c04-reads-plan3`에 push했다(`git ls-remote`로 `a675df4` 확인). PR은 #246 병합 뒤 최신 main에서 `claude/c04-reads`로 연다.
+- 10-26T16:48Z C04: C06 고리가 운영에서 처음 이어졌다. 실행기가 부른 gentle 실행 40349356161(15:26:39Z, collect·snapshot/deploy·chain 성공, 120쪽 몫에 111쪽 모두 done)이 끝난 뒤 기다림 run 40355321898이 다음 실행을 불렀고, 이어 부른 실행 40359178469가 16:26:42Z에 `github-actions[bot]`으로 만들어졌다. 겹침(`reason=overlap:`)과 60분을 넘긴 실행 뒤 부르기는 아직 없어 10-27 하루 측정 때 함께 센다.
+- 10-26T16:48Z 메일 체계 세션(`session_018QEo5X3imWFpGvp86pp5dR`, 다른 프로젝트)이 같은 Cloudflare 로그인에 두 번째 계정이 생겼다고 알렸다(유케무리 계정은 건드리지 않음). 상위 세션이 확인하니 앱(`deploy.yml`·`collect.yml`·`collect-chain.yml`·`usage.yml`·`daily-check.mjs` 등)과 실행기(`cloudflare-load.yml`·`cloudflare-sync.yml`·`yukemuri-scheduler.yml`·`deploy-scheduler.py`) 모두 Secret의 고정 `CLOUDFLARE_ACCOUNT_ID`를 쓰고 계정 목록에서 고르지 않는다. 12:56Z 뒤의 스냅숏 배포(run 40349356161 `snapshot / deploy` 16:02:53Z 성공)와 바깥 예약기 배포(run 40339141494)도 성공해 영향이 없다.
 
 ## 작업별 절
 
