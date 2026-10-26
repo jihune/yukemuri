@@ -83,8 +83,8 @@
 
 0. 새 검토 규칙(위 2)으로 옮기기(10-26T13:3xZ 열두 번째가 적고 열세 번째가 하는 중):
    - 일하는 세 하위 세션(C04·C07·O03)에 1의 6 알림과 함께 10-26T13:39Z에 전했다. 열린 PR에는 다음 회차부터 적용하고 P2는 병합을 막지 않는다.
-   - 1회차 Claude 검토 세션: 실행기 #15는 13:38Z에 `528efee`(전체 변경)로 열었다(아래 6). 결과가 PR 리뷰로 오면 P0~P1이 없을 때 병합하고, 있으면 O03이 고친 뒤 Codex 3회차(`528efee` 뒤 차이)다. 앱 #246은 C07이 P2 수정 `485214f`를 push한 head에서 연다(그 head가 2회차: Codex는 `ca44d82` 뒤 차이와 1회차 지적 둘, Claude는 전체 변경). 검토 세션은 결과를 기록한 뒤 보관한다.
-   - 문서 PR: 앱은 #251(`AGENTS.md`·`docs/cloud-development.md`·진행 중 brief 셋, 등급 1, Codex 1회). `skills/yukemuri-maintenance/SKILL.md`에는 옛 규칙 문장이 없었다. 실행기 `AGENTS.md` ‘작업과 검토’는 #15가 같은 `project-files.json`을 고치므로 #15 병합 뒤 실행기 저장소에 문서 PR을 따로 낸다.
+   - Claude 검토 세션: 실행기 #15는 1회차 Claude 몫이 P0~P1 없이 끝나 13:52Z에 병합했다(아래 8). 앱 #246은 `485214f`에 2회차로 열었다(Codex는 `ca44d82` 뒤 차이와 1회차 지적 둘, Claude는 전체 변경, 아래 6). 결과가 오면 P0~P1이 없을 때 10-28 UTC부터 병합하고, 있으면 C07이 고친 뒤 Codex 3회차가 마지막이다.
+   - 문서 PR: 앱은 #251로 병합했다(`8a1922f`). `skills/yukemuri-maintenance/SKILL.md`에는 옛 규칙 문장이 없었다. 실행기는 #17(등급 1, CI 뒤 Codex 1회)이다. 실행기 #16(PR B)도 `project-files.json`을 고치므로 뒤에 들어가는 쪽이 main을 merge로 합친다.
    - #244 병합 예약(10-27T00:07Z, `trig_01Xm1X245KoJkjvifrSsMprE`)을 그대로 이어 간다. #244는 옛 규칙의 Codex 1회가 큰 문제 없음으로 끝났고 다음 회차가 없으므로, ‘열린 PR에는 다음 회차부터’에 따라 1회차 Claude 검토를 새로 열지 않고 병합한다(열두 번째가 정함).
    - O04 PR B는 실행기 Actions 쓰기 토큰을 쓰므로 등급 3이다. 검토가 끝나면 병합 전에 사용자 확인을 받는다(O03에 알림).
 
@@ -134,7 +134,7 @@
 | 세션 | 맡은 일 | 상태 |
 |---|---|---|
 | `session_01A4FGJTVNdacXg9v4xe6SVt` | 열세 번째 상위 세션(10-26T13:33:32Z 시작, 열두 번째가 `create_session`으로 엶, 계보 깊이 6/8, 하네스 `34ead07`, 기록 브랜치 `claude/yukemuri-parent-13`) | 지금 상위 세션. 다음 인계는 사용자가 웹에서 연다(위 1) |
-| `session_015VsGA2rrGD2ggfQZmekJt9` | Claude 검토 세션: 실행기 #15(O04 PR A) 1회차 Claude 몫, `528efee` 전체 변경(10-26T13:38Z 엶) | 검토 중. 결과를 기록한 뒤 보관한다 |
+| `session_015iTzSTfAAHC8Gtf5YvuaVB` | Claude 검토 세션: 앱 #246(C07 방안 2) 2회차, `485214f` 전체 변경(10-26T13:52Z 엶) | 검토 중. 결과를 기록한 뒤 보관한다 |
 | `session_01SarDBHKWzi47RJ6veCY6oi`(열두 번째), `session_01K7Ngq8H1MFPV9E1sgVXSpW`(열한 번째) | 옛 상위 세션. 열두 번째는 10-26T12:42:04Z 시작(계보 깊이 5, 하네스 `5f8c5b4`, 기록 브랜치 `claude/yukemuri-parent-12`), 열한 번째는 10-20T08:08:01Z 시작(깊이 4, `afc1966`, `claude/yukemuri-parent-11`) | 인계를 마치고 사용자 지시로 마무리했다(열한 번째 10-26T13:2xZ, 열두 번째 13:40Z). 보관하지 않는다. 메시지를 받으면 다음 상위 세션에 넘긴다 |
 | `session_01H1PVupTHtCDUN7hr4H8M6W`(열 번째), `session_01NNQyWcUC7714tEYd6CEkWZ`(아홉 번째), `session_01WLm1fDq57bsuP7dANpKmPD`(여덟 번째), `session_01KGKwywGmDoBP9sLbFaUVCU`(일곱 번째), `session_01T2rEzYyaSi8qtavjsZawQB`(여섯 번째), `session_01XUUTkd9FhQQbmKkqVnsnCj`(다섯 번째), `session_012tbsAbaHuG1Xhs94L4LatJ`(네 번째), `session_01PuNgLiSyMdn35DxmRigJmK`·`session_01KfLU3P8YrmZdyxehAEp9rp`·`session_01BSbr1zrttr8mSibf5bfz2R`(세 번째·두 번째·첫 번째) | 옛 상위 세션. 시작 시각·하네스 판·기록 브랜치는 `docs/history/work-handoff-20261026T1246Z.md`(열 번째)와 `docs/history/work-handoff-20261020T0812Z.md`(그 앞) 「상위 세션 인계」 6에 있다 | 모두 인계를 마쳤다. 보관하지 않는다. 메시지를 받으면 다음 상위 세션에 넘긴다 |
 | `session_01SPeE1gk4K6RXPY8wEmHF4G` | O03 사용량 점검 자동화와 C05 수집 예약 매시간(브랜치 `claude/o03-usage-check`, 앱·실행기) | 일함. O04(brief `O04-20261026.md`, 10-26T12:5xZ 맡김). 설계(#248) 받아들임, 실행기 PR A #15는 Codex 2회 끝·Claude 검토 세션 대기, 사용자 토큰·Secret 완료(만료 없음), PR B(등급 3)는 #15 병합 뒤 연다 |
@@ -171,6 +171,10 @@
 - 10-26T13:45Z 이 문서(54,205바이트, main `e31695e`과 같음)를 바꾸지 않고 `docs/history/work-handoff-20261026T1345Z.md`로 옮겼다(`cmp` 같음). 그 뒤 7의 열한 번째 → 열두 번째 결과와 8의 기록 줄을 지우고 가리키는 문장만 남겼다. 그 기록 가운데 아직 할 일은 1·3·4절에 있다.
 - 10-26T13:38Z 실행기 #15에 Claude 검토 세션 `session_015VsGA2rrGD2ggfQZmekJt9`를 열었다(head `528efee`, 전체 변경, 세 줄을 넣음, 결과는 PR 리뷰와 이 세션에 메시지). 옛 규칙으로 Codex 2회가 끝난 PR이라 새 규칙의 1회차 Claude 몫을 채운다.
 - 10-26T13:4xZ 문서 PR #251(검토 규칙 위험 등급, 앱 `AGENTS.md`·`docs/cloud-development.md`·brief 셋, 등급 1)을 열고 Codex 1회를 요청했다. 이 기록은 그 검토 뒤 같은 PR에 커밋한다.
+- 10-26T13:51Z #251을 병합했다(`8a1922f`, Codex 1회 `f03501c` ‘큰 문제 없음’, 그 뒤 기록 파일만 더함, 문서만이라 배포 없음). 기록 브랜치를 main에 맞췄다.
+- 10-26T13:52Z 실행기 #15를 병합했다(실행기 `f024b15`, head `528efee`). Claude 검토 세션의 PR 리뷰(13:47Z)는 P0~P1 없음, P2 1건(설계가 적은 ‘바깥 예약기 실행이 없던 날 경고’가 PR A에 없음), P3 4건이었다. P2는 PR B로 옮기라고, P3는 PR B나 O04 문서의 다음 일로 두라고 O03에 알렸다. 실행기 PR이라 앱 배포는 없다. 검토 세션 `session_015VsGA2rrGD2ggfQZmekJt9`는 결과를 기록해 보관한다.
+- 10-26T13:52Z 앱 #246 head `485214f`(C07이 Codex 1회차 P2 둘을 고침, CI 성공)에 2회차 Claude 검토 세션 `session_015iTzSTfAAHC8Gtf5YvuaVB`를 열었다(전체 변경). C07은 같은 head에 Codex 2회차(`ca44d82` 뒤 차이)를 요청한다.
+- 10-26T13:54Z 실행기 문서 PR #17(실행기 `AGENTS.md` ‘작업과 검토’·‘Code Review Rules’를 위험 등급으로, `project-files.json`의 그 항목, 브랜치 `claude/yukemuri-parent-13`)을 열었다. CI 뒤 Codex 1회다. O03은 PR B를 실행기 #16으로 열었다(등급 3).
 
 ## 작업별 절
 
