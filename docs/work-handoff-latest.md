@@ -186,6 +186,7 @@
 - 10-26T14:23Z 실행기 #16(O04 PR B)을 병합했다(실행기 `4be2a33`, head `694ee76`). 사용자가 맡긴 판단(위 2)이고 근거는 이렇다. 1회차 P1 둘을 `71c0437`·`642d1e0`에서 고쳤고 2회차 Codex(`642d1e0`)는 큰 문제 없음이다. 마지막 검토 뒤 변경은 main 합치기뿐이다(`git merge-tree --write-tree origin/main 642d1e0`이 head 트리와 같음). CI 성공, 충돌 없음이다. 배포 workflow는 main push·private 저장소에서만 돌고 권한은 `contents: read`다. 토큰이 다른 Cloudflare workflow도 부를 수 있는 점은 Worker Secret을 꺼내려면 이미 D1 편집 권한이 있는 Cloudflare 계정이 필요해 새로 넓어지는 권한이 아니다. 만료 없음은 사용자가 정했다. O03이 배포 run과 19:23Z 백업 칸, 다음 날 매일 점검을 확인한다.
 - 10-26T14:24Z–14:25Z O03 확인: 배포 run 40339141494 성공(실행기 `4be2a33`, 출력은 script·schedules·subdomain ok, crons `41 1 * * *`·`23 19 * * *`, workersDev false, Secret은 로그에서 가려짐). 스케줄러 workers.dev 주소는 404(대조로 없는 이름과 같은 응답, 앱 주소는 200), export는 `default { scheduled }` 하나. Cloudflare 라우트 목록은 읽기 토큰이 없어 미확인이다. 첫 바깥 부르기는 10-27T01:41Z 매일 점검이다. O03 기록 PR #256을 병합했다(`58e0e45`). 그 뒤 O03이 더한 `b26a88f`(workers.dev 확인 두 줄)는 다음 기록 PR로 들어온다.
 - 10-26T14:36Z C07이 #246 병합 준비를 알렸다(head `84c65fc`, 3회차 Codex 14:35Z ‘큰 문제 없음’, CI 성공, 열린 스레드 0, main과 충돌 없음). 10-28T00:13Z 병합 예약 `trig_01N116LVFfABms1bWTMMEGng`를 걸었다. C07은 3회차 기록 커밋을 #244 병합 뒤 main 합치기 push와 함께 올린다.
+- 10-26T15:3xZ C07이 방안 3을 로컬에서 준비했다(`a675df4`, `84c65fc` 위, push 배포가 입력 지문이 같으면 운영 스냅숏을 다시 내보냄, cloud-check --full exit 0). 사용자가 C07 세션에 직접 허락해(원문 ‘방안 3 준비 커밋을 백업으로 claude/c04-reads-plan3 브랜치에 push해도 된다.’) 백업 브랜치 `claude/c04-reads-plan3`에 push했다(`git ls-remote`로 `a675df4` 확인). PR은 #246 병합 뒤 최신 main에서 `claude/c04-reads`로 연다.
 
 ## 작업별 절
 
