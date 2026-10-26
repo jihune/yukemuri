@@ -193,9 +193,11 @@ assert.equal(deployMode({...base,databaseId:id,publicOrigin:origin,autoDeploy:tr
 assert.equal(deployMode({...base,databaseId:id},{preflight:true,deferred:true}).mode,'preflight');
 // The deploy script: key only in a 0600 file passed by --secrets-file, removed after.
 {
- const temp=mkdtempSync(join(tmpdir(),'deploy-worker-')),stub=join(temp,'wrangler.js'),log=join(temp,'calls.json'),KEY='deploy-check-key-0123456789';
- writeFileSync(stub,`const fs=require('fs');const a=process.argv.slice(2);const f=a[a.indexOf('--secrets-file')+1];fs.writeFileSync(${JSON.stringify(log)},JSON.stringify({args:a,file:f,mode:(fs.statSync(f).mode&0o777).toString(8),content:JSON.parse(fs.readFileSync(f,'utf8'))}));console.log('Current Version ID: 0123abcd-0000-4000-8000-000000000000');if(process.env.STUB_FAIL)process.exit(3)`);
- const run=(args,env)=>spawnSync('bash',['scripts/cloudflare-deploy-worker.sh',...args],{env:{PATH:process.env.PATH,RUNNER_TEMP:temp,WRANGLER_JS:stub,...env},encoding:'utf8'});
+ const temp=mkdtempSync(join(tmpdir(),'deploy-worker-')),stub=join(temp,'wrangler.js'),log=join(temp,'calls.json'),count=join(temp,'count'),KEY='deploy-check-key-0123456789';
+ // STUB_API_FAILS: how many calls fail on a Cloudflare API request first (the 10-23 and 10-25 snapshot deploys).
+ writeFileSync(stub,`const fs=require('fs');const a=process.argv.slice(2);const f=a[a.indexOf('--secrets-file')+1];fs.writeFileSync(${JSON.stringify(log)},JSON.stringify({args:a,file:f,mode:(fs.statSync(f).mode&0o777).toString(8),content:JSON.parse(fs.readFileSync(f,'utf8'))}));const c=${JSON.stringify(count)},k=fs.existsSync(c)?Number(fs.readFileSync(c,'utf8')):0;fs.writeFileSync(c,String(k+1));if(k<Number(process.env.STUB_API_FAILS||0)){console.error('[ERROR] A request to the Cloudflare API (/accounts/x/workers/scripts/yukemuri/assets-upload-session) failed. [code: 10013]');process.exit(1)}console.log('Current Version ID: 0123abcd-0000-4000-8000-000000000000');if(process.env.STUB_FAIL)process.exit(3)`);
+ const run=(args,env)=>{rmSync(count,{force:true});return spawnSync('bash',['scripts/cloudflare-deploy-worker.sh',...args],{env:{PATH:process.env.PATH,RUNNER_TEMP:temp,WRANGLER_JS:stub,WRANGLER_RETRY_SECONDS:'0',...env},encoding:'utf8'})};
+ const calls=()=>Number(readFileSync(count,'utf8'));
  let r=run([],{CRAWL_ACCESS_KEY:KEY,GITHUB_SHA:'abc'});
  let seen=JSON.parse(readFileSync(log,'utf8'));
  assert.equal(r.status,0,r.stderr);assert.deepEqual(seen.args.filter(a=>a!==seen.file),['deploy','--config','dist/server/wrangler.json','--secrets-file']);
@@ -206,6 +208,15 @@ assert.equal(deployMode({...base,databaseId:id},{preflight:true,deferred:true}).
  assert.equal(r.status,0);assert.deepEqual(seen.args.slice(0,2),['deploy','--dry-run']);assert.notEqual(seen.content.CRAWL_ACCESS_KEY,KEY,'a dry run never sees the key');assert(!existsSync(seen.file));
  r=run([],{CRAWL_ACCESS_KEY:KEY,STUB_FAIL:'1'});seen=JSON.parse(readFileSync(log,'utf8'));
  assert.notEqual(r.status,0,'a failed deploy fails the script');assert(!existsSync(seen.file),'removed after a failure too');
+ assert.equal(calls(),1,'a failure that is not a Cloudflare API request is not tried again');
+ // One failed Cloudflare API request deploys once more with the same secrets file; a second failure ends it.
+ r=run([],{CRAWL_ACCESS_KEY:KEY,GITHUB_SHA:'abc',STUB_API_FAILS:'1'});
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.equal(calls(),2);
+ assert.match(r.stdout,/A Cloudflare API request failed; deploying once more in 0 s\.\n[\s\S]*Deployed Worker version: `0123abcd-0000-4000-8000-000000000000` from abc/);
+ assert(!(r.stdout+r.stderr).includes(KEY),'key never printed');
+ r=run([],{CRAWL_ACCESS_KEY:KEY,STUB_API_FAILS:'2'});seen=JSON.parse(readFileSync(log,'utf8'));
+ assert.notEqual(r.status,0,'two failed requests fail the deploy');assert.equal(calls(),2,'tried once more only');assert(!existsSync(seen.file));
+ rmSync(count,{force:true});
  r=run([],{});assert.notEqual(r.status,0,'no key, no deploy');
  assert.deepEqual(readdirSync(temp).sort(),['calls.json','wrangler.js'],'no temporary file left');
  rmSync(temp,{recursive:true,force:true});
