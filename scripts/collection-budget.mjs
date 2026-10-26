@@ -60,7 +60,9 @@ export async function budgetToday({fetch=globalThis.fetch,env=process.env,config
 }
 
 async function main(){
- const {pages,reason}=await budgetToday();
+ // C06: a run that repeats another gentle run in flight (collect.yml's overlap step) takes 0 pages.
+ const overlap=process.env.OVERLAP;
+ const {pages,reason}=overlap?{pages:0,reason:'overlap: '+overlap}:await budgetToday();
  console.log('pages='+pages);
  console.log('reason='+reason.replace(/[\r\n]/g,' '));
  const summary=process.env.GITHUB_STEP_SUMMARY;

@@ -94,6 +94,10 @@ assert.deepEqual(budgetLeft(spent(-3,400)),{writes:-3,reads:400});assert.equal(b
 for(const [w,r] of [[0,400],[-3,400],[30,0],[30,-12]])assert.deepEqual(runFailures({...done,pages:0,reason:spent(w,r)}),[],`writes ${w}, reads ${r}: the share is used`);
 assert.deepEqual(runFailures({...done,pages:0,reason:spent(30,400)}),['0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)']);
 for(const reason of [undefined,null,'usage unavailable: fallback to 16 pages'])assert.deepEqual(runFailures({...done,pages:0,reason}),['0쪽 실행인데 reason=에서 남은 예산을 읽지 못함'],String(reason));
+// C06: a run made while another gentle run was in flight took 0 pages by design (collection-budget.mjs OVERLAP);
+// only a reason= that starts with overlap: passes.
+assert.deepEqual(runFailures({...done,pages:0,reason:'overlap: run 1 (completed) was queued or running when run 2 was made and carries the chain'}),[]);
+assert.deepEqual(runFailures({...done,pages:0,reason:'usage unavailable; overlap: x'}),['0쪽 실행인데 reason=에서 남은 예산을 읽지 못함']);
 assert.deepEqual(runFailures({...done,pages:120,reason:spent(0,400)}),[],'pages taken: the budget line is not judged');
 assert.deepEqual(dayFailures([]),[]);assert.deepEqual(dayFailures([{...done,pages:0},{...done,pages:3}]),[]);
 assert.deepEqual(dayFailures([{...done,pages:0},{...done,pages:0}]),['그날 gentle 실행 2회가 모두 0쪽이다(수집 없음)']);
@@ -254,4 +258,4 @@ try{
  assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-90, exceeded, zero-pages, no-permission/);
  assert(!ran.out.includes(GH_TOKEN),'token never printed');
 }finally{server.closeAllConnections();server.close();rmSync(folder,{recursive:true,force:true})}
-console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 90% of each free limit (just under and 85% pass), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);
+console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 90% of each free limit (just under and 85% pass), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used or after repeating a run in flight passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);

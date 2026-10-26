@@ -2,7 +2,10 @@ name: Yukemuri collection
 # H01 step 6: collection runs here against the Cloudflare Worker. No cron: a
 # public repository's schedule turns off after 60 days without activity, so the
 # private runner repository keeps the cron (hourly since C05, every 3 hours
-# before) and dispatches this workflow with mode gentle. Until cloudflare-deploy.json records publicOrigin
+# before) and dispatches this workflow with mode gentle. A gentle run on main
+# that collected and refreshed its snapshot also starts collect-chain.yml,
+# which dispatches the next one about an hour later (C06, the chain job).
+# Until cloudflare-deploy.json records publicOrigin
 # (and autoDeploy), a run fails before any request.
 run-name: Yukemuri collection (${{ inputs.mode }})
 on:
@@ -58,15 +61,27 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
+      # C06 (user 2026-10-21): a run made while another gentle run on main was
+      # queued or running (the runner's dispatch next to the chain's) only
+      # repeats it, so it takes 0 pages and that run carries the chain. Prints
+      # overlap=<why> or nothing; a failed check collects as usual.
+      - name: Check for a gentle run in flight
+        id: overlap
+        if: inputs.mode == 'gentle'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/collection-chain.mjs --overlap | tee -a "$GITHUB_OUTPUT"
       # C03: as many pages as today's free D1 limits allow (at most 120), 16 when
-      # usage cannot be read, 0 when the day's budget is used. The Cloudflare
-      # token reaches this step only (Account Analytics read, as usage.yml).
+      # usage cannot be read, 0 when the day's budget is used or the run repeats
+      # another. The Cloudflare token reaches this step only (Account Analytics
+      # read, as usage.yml).
       - name: Size the run within the free D1 limits
         id: budget
         if: inputs.mode == 'gentle'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OVERLAP: ${{ steps.overlap.outputs.overlap }}
         run: node scripts/collection-budget.mjs | tee -a "$GITHUB_OUTPUT"
       - name: Run the Python collector against the Worker
         env:
@@ -89,3 +104,22 @@ jobs:
       after_collection: true
       collected_on: ${{ needs.collect.outputs.collected_on }}
     secrets: inherit
+  # C06: GitHub drops most of the runner's hourly dispatches, so a run that
+  # collected and deployed starts the wait for the next one (collect-chain.yml,
+  # outside this run's lock). Only this job may dispatch; a failed dispatch
+  # ends the chain without failing the collection, and the runner's next
+  # dispatch starts it again.
+  chain:
+    needs: [collect, snapshot]
+    if: inputs.mode == 'gentle' && github.ref == 'refs/heads/main' && needs.collect.result == 'success' && needs.collect.outputs.pages != '0' && needs.snapshot.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    continue-on-error: true
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh workflow run collect-chain.yml --repo "$GITHUB_REPOSITORY" --ref main -f after_run="$RUN_ID"

@@ -51,11 +51,16 @@ const budgetStep=steps.find(t=>/id: budget\n/.test(t))??'';
 const collectorStep=steps.find(t=>/run-collection\.py --mode/.test(t))??'';
 // C07 plan 2: the UTC day the collector finished, taken right after it, for the count the snapshot deploy stores.
 assert((steps[steps.indexOf(collectorStep)+1]??'').startsWith(['      - name: Note the day the collection finished','        id: collected',"        if: inputs.mode == 'gentle'",'        run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"\n'].join('\n')),'the collection day follows the collector');
-assert.match(budgetStep,/name: Size the run within the free D1 limits\n {8}id: budget\n {8}if: inputs\.mode == 'gentle'\n {8}env:\n {10}CLOUDFLARE_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_API_TOKEN \}\}\n {10}CLOUDFLARE_ACCOUNT_ID: \$\{\{ secrets\.CLOUDFLARE_ACCOUNT_ID \}\}\n {8}run: node scripts\/collection-budget\.mjs \| tee -a "\$GITHUB_OUTPUT"\n?$/,'gentle runs size themselves with collection-budget.mjs');
+assert.match(budgetStep,/name: Size the run within the free D1 limits\n {8}id: budget\n {8}if: inputs\.mode == 'gentle'\n {8}env:\n {10}CLOUDFLARE_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_API_TOKEN \}\}\n {10}CLOUDFLARE_ACCOUNT_ID: \$\{\{ secrets\.CLOUDFLARE_ACCOUNT_ID \}\}\n {10}OVERLAP: \$\{\{ steps\.overlap\.outputs\.overlap \}\}\n {8}run: node scripts\/collection-budget\.mjs \| tee -a "\$GITHUB_OUTPUT"\n?$/,'gentle runs size themselves with collection-budget.mjs, 0 pages when the run repeats another (C06)');
+// C06 overlap step (collection-chain.mjs --overlap, check-collection-chain.mjs): the workflow token only, before the budget.
+const overlapStep=steps.find(t=>/id: overlap\n/.test(t))??'';
+assert.match(overlapStep,/name: Check for a gentle run in flight\n {8}id: overlap\n {8}if: inputs\.mode == 'gentle'\n {8}env:\n {10}GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/collection-chain\.mjs --overlap \| tee -a "\$GITHUB_OUTPUT"(?:\n {6}#.*)*\n?$/,'a gentle run first checks for another in flight');
+assert(steps.indexOf(overlapStep)+1===steps.indexOf(budgetStep),'the overlap check comes just before the budget');
 assert(!/YUKEMURI_CRAWL_ACCESS_KEY/.test(budgetStep)&&!/CLOUDFLARE_/.test(collectorStep),'the crawl key and the Cloudflare token stay in separate steps');
 assert.deepEqual([...new Set(collect.match(/secrets\.\w+/g)??[])].sort(),['secrets.CLOUDFLARE_ACCOUNT_ID','secrets.CLOUDFLARE_API_TOKEN','secrets.YUKEMURI_CRAWL_ACCESS_KEY'],'no other secret is named');
 assert(collect.indexOf('check_collection.py')<collect.indexOf('collection-budget.mjs')&&collect.indexOf('collection-budget.mjs')<collect.indexOf('run-collection.py --mode'),'offline checks, then the budget, then the key is used');
-assert.equal(collect.slice(collect.indexOf('  snapshot:\n')),[
+// The snapshot job, then the C06 chain job (check-collection-chain.mjs) as the last one.
+assert.equal(collect.slice(collect.indexOf('  snapshot:\n'),collect.indexOf('  # C06: ')),[
  '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets: inherit',''].join('\n'),
  'a successful gentle run that collected refreshes the snapshot through deploy.yml at the same commit');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
