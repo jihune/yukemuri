@@ -9,6 +9,8 @@ import {collectionStatusFrom,collectionStatusSideRows,type ProviderRow} from './
 import {hotelSummary,GEO_GRADE,type HotelSummary,type SnapshotCore,type SnapshotText,type SnapshotGeo,type GeocodeInput} from './search-snapshot';
 // The builder writes the manifest with this format (scripts/build-search-snapshot.mjs).
 export {SNAPSHOT_FORMAT} from './search-snapshot';
+// A published snapshot is used again only on a prepared catalogue (C07 plan 3).
+export {catalogPreparation};
 import {DEFAULT_FILTERS,type Hotel} from './hotel-types';
 import {openSnapshot,resultPage,searchSnapshot,type SearchResponse} from './static-search';
 import {BATH_FEATURE_MASK} from './hotel-bath-facts';

@@ -156,7 +156,7 @@ assert.match(deploy,/echo "prepared=.*unprepared\.length===0/,'the snapshot step
  assert(stepBlocks.filter(b=>/scripts\/geo\/|jageocoder/.test(b.text)&&!/build-search-snapshot/.test(b.text)).every(b=>/^ {8}continue-on-error: true$/m.test(b.text)),'every geocoder step is optional');
  assert(stepOf('actions/cache@')<stepOf('scripts/geo/prepare.sh')&&stepOf('scripts/geo/prepare.sh')<stepOf('build-search-snapshot.mjs --remote --report'),'cache, prepare, then the snapshot');
  for(const b of stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text))){
-  assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" "${progress[@]}" | tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');
+  assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" "${progress[@]}"')&&b.text.includes('| tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');
  }
  const installs=readFileSync('scripts/geo/prepare.sh','utf8').split('\n').filter(l=>/\bpip"? install\b/.test(l)&&!/^\s*(#|step=)/.test(l));
  assert(installs.length===1&&installs.every(l=>/--require-hashes --only-binary=:all: --no-deps -r scripts\/geo\/requirements\.txt$/.test(l)),'Python packages only hash-pinned wheels');
@@ -180,6 +180,15 @@ const progressLine=builds[0].text.match(/^ +(progress=\(\); if .+; fi)$/m)[1];
 for(const [day,shown] of [['','0'],['2026-10-26','2 --progress-day 2026-10-26']]){
  const r=spawnSync('bash',['-c',progressLine+'; echo ${#progress[@]} "${progress[@]}"'],{env:{...process.env,COLLECTED_ON:day},encoding:'utf8'});
  assert.equal(r.stdout.trim(),shown,`COLLECTED_ON='${day}'`);
+}
+// C07 plan 3: only a push deploy's first build may publish the site's snapshot again; a called
+// (collection, lifecycle) or manual deploy, and the build after preparing, build afresh.
+assert(builds[0].text.includes('id: snapshot\n')&&builds[0].text.includes("REUSE_FROM: ${{ github.event_name == 'push' && !inputs.after_collection && steps.gate.outputs.public_origin || '' }}\n")&&builds[0].text.includes('"${progress[@]}" "${reuse[@]}" | tee'),'a push deploy offers the site\'s snapshot to its first build');
+assert(builds[1].text.includes('id: prepared_snapshot\n')&&!/reuse/i.test(builds[1].text),'the build after preparing the catalogue never publishes the site\'s snapshot again');
+const reuseLine=builds[0].text.match(/^ +(reuse=\(\); if .+; fi)$/m)[1];
+for(const [from,shown] of [['','0'],['https://yukemuri.example.workers.dev','2 --reuse https://yukemuri.example.workers.dev']]){
+ const r=spawnSync('bash',['-c',reuseLine+'; echo ${#reuse[@]} "${reuse[@]}"'],{env:{...process.env,REUSE_FROM:from},encoding:'utf8'});
+ assert.equal(r.stdout.trim(),shown,`REUSE_FROM='${from}'`);
 }
 assert.equal(stepOf('record-coverage.mjs'),stepBlocks.length-1,'the count is stored last, after every deploy and smoke');
 assert.equal(stepBlocks.at(-1).cond,"steps.gate.outputs.mode == 'deploy' && inputs.collected_on != ''");
