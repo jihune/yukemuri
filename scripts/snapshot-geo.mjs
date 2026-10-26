@@ -14,6 +14,8 @@ import {fileURLToPath} from 'node:url';
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 export const WIKIDATA_FILE=join(ROOT,'data/wikidata-trip-hotels.json');
 export const OVERTURE_FILE=join(ROOT,'data/overture-geo.json');
+// The geocoder: its script, the dictionary pins and the package pins.
+export const GEOCODER_DIR=join(ROOT,'scripts/geo');
 // lib/search-snapshot.ts GEO_GRADE (compiled there; repeated for the plain script).
 export const GRADE={none:0,source:1,block:2,oaza:3,city:4,prefecture:5,wikidata:6,overture:7};
 export const GRADE_NAMES=['없음','출처','街区','大字','시정촌','도도부현','Wikidata','Overture'];
@@ -50,7 +52,7 @@ export function loadOverture(file=OVERTURE_FILE){
 export function dictionaryGeocoder({dbDir,python='python3',timeout=600000}){
  return async inputs=>{
   if(!existsSync(join(dbDir,'README.md')))throw new Error('no installed dictionary in '+dbDir);
-  const r=spawnSync(python,['-I',join(ROOT,'scripts/geo/geocode.py'),'--db-dir',dbDir],{input:JSON.stringify(inputs),encoding:'utf8',maxBuffer:64*1024*1024,timeout});
+  const r=spawnSync(python,['-I',join(GEOCODER_DIR,'geocode.py'),'--db-dir',dbDir],{input:JSON.stringify(inputs),encoding:'utf8',maxBuffer:64*1024*1024,timeout});
   if(r.error)throw new Error('geocoder did not run: '+r.error.code);
   if(r.status!==0)throw new Error('geocoder exit '+r.status+': '+String(r.stderr).trim().split('\n').at(-1)?.slice(0,200));
   return JSON.parse(r.stdout);
