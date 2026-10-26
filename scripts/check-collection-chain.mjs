@@ -97,12 +97,16 @@ const check=(decide,label)=>{
 };
 check(nextRun,'nextRun');
 // Overlapping runs: one collects whichever ends first; runs that do not overlap all collect.
-{
+const checkCollecting=(collecting,label='collecting')=>{
  const a={...run(1,90),updated_at:at(60)},b=run(2,80),c=run(3,30);
- assert.deepEqual(collecting([c,b,a]).map(r=>r.id),[1,3],'b was made while a ran');
- assert.deepEqual(collecting([{...a,status:'queued',conclusion:null},b]).map(r=>r.id),[1],'a still waits behind b: b repeats a');
- assert.deepEqual(collecting([a,{...b,created_at:at(59)},c]).map(r=>r.id),[1,2,3],'made after a ended');
-}
+ assert.deepEqual(collecting([c,b,a]).map(r=>r.id),[1,3],label+': b was made while a ran');
+ assert.deepEqual(collecting([{...a,status:'queued',conclusion:null},b]).map(r=>r.id),[1],label+': a still waits behind b: b repeats a');
+ assert.deepEqual(collecting([a,{...b,created_at:at(59)},c]).map(r=>r.id),[1,2,3],label+': made after a ended');
+ // #190 last review P3-1: a run that failed or was cancelled starts no chain, so a run made while it ran collects.
+ for(const conclusion of ['failure','cancelled'])
+  assert.deepEqual(collecting([{...a,conclusion},b,c]).map(r=>r.id),[1,2,3],label+': a '+conclusion+' run holds up nothing');
+};
+checkCollecting(collecting);
 // An hour after the run before was created; never negative.
 assert.equal(waitMs(run(1,0),now),3_600_000);assert.equal(waitMs(run(1,45),now),900_000);assert.equal(waitMs(run(1,90),now),0);
 
@@ -164,6 +168,8 @@ for(const bad of [{AFTER_RUN:''},{AFTER_RUN:'12; rm -rf /'},{GH_TOKEN:''},{GITHU
  assert.match(urls[1],/\/actions\/workflows\/collect\.yml\/runs\?created=%3E%3D2026-10-21T05%3A50%3A00Z&per_page=100$/,'runs from six hours before this one');
  for(const [label,me] of [['made after the run before ended',{...self,created_at:at(20)}],['a run off main',{...self,head_branch:'feature'}],['a check-access run',{...self,display_title:'Yukemuri collection (check-access)'}]])
   assert.equal(await overlapNow({env:env2,fetch:api(me,[ended,me])}),'',label);
+ for(const conclusion of ['failure','cancelled'])
+  assert.equal(await overlapNow({env:env2,fetch:api(self,[{...ended,conclusion},self])}),'','the run before ended '+conclusion+' and starts no chain');
  await assert.rejects(overlapNow({env:{...env2,GITHUB_RUN_ID:''},fetch:api(self,[])}),/run id/);
 }
 
@@ -230,12 +236,13 @@ try{
 // holding up the runs after them.
  for(const [name,from,to] of [['older-running','r.id!==after.id&&order(after,r)<0)',"r.id!==after.id&&(order(after,r)<0||r.status!=='completed'))"],['same-second','||a.id-b.id',''],
   ['no-overlap-rule','if(!out.some(q=>inFlightAt(q,created(r))))out.push(r);','out.push(r);'],
-  ['repeats-block',"if(!out.some(q=>","if(!runs.filter(q=>gentle(q)&&q.head_branch==='main'&&order(q,r)<0).some(q=>"]]){
+  ['repeats-block',"if(!out.some(q=>","if(!runs.filter(q=>gentle(q)&&q.head_branch==='main'&&order(q,r)<0).some(q=>"],
+  ['failed-blocks',"(q.conclusion==='success'&&Date.parse(q.updated_at)>t)","Date.parse(q.updated_at)>t"]]){
   const copySource=source.replace(from,to);
   assert.notEqual(copySource,source,name);
   const file=join(controls,name+'.mjs');writeFileSync(file,copySource);
   const copy=await import(pathToFileURL(file).href);
-  assert.throws(()=>check(copy.nextRun,'control '+name),undefined,'control '+name+' still passed');failed++;
+  assert.throws(()=>{check(copy.nextRun,'control '+name);checkCollecting(copy.collecting,'control '+name)},undefined,'control '+name+' still passed');failed++;
  }
 }finally{rmSync(controls,{recursive:true,force:true})}
 const shared=wait.replace('yukemuri-collection-chain-${{ inputs.after_run }}','yukemuri-collection-chain');
@@ -252,6 +259,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+5+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+6+CONDITIONS.length+4;
 assert.equal(failed,total);
-console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer gentle run exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
+console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer collecting gentle run on main exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
