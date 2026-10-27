@@ -28,8 +28,10 @@ const gentle=r=>r.display_title===GENTLE_TITLE;
 const created=r=>Date.parse(r.created_at);
 // created_at has whole seconds, so the run id orders two runs made in the same second.
 const order=(a,b)=>created(a)-created(b)||a.id-b.id;
-// A completed run's updated_at is when it ended (10-19 runs: the end of their last job).
-const inFlightAt=(q,t)=>q.status!=='completed'||Date.parse(q.updated_at)>t;
+// A completed run's updated_at is when it ended (10-19 runs: the end of their last job). A run that
+// failed or was cancelled never starts the chain job, so it holds up no run made while it ran
+// (#190 last review P3-1).
+const inFlightAt=(q,t)=>q.status!=='completed'||(q.conclusion==='success'&&Date.parse(q.updated_at)>t);
 
 // C06 (user 2026-10-21): the gentle runs on main that collect, in order of
 // creation. A run made while an earlier collecting run was queued or running
