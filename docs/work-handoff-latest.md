@@ -171,6 +171,7 @@
 - 10-27T06:2xZ 하네스 setup 43(`3989e0d`)은 스킬 몇 줄이라(위 1의 1) `cloud-session-ops` §8대로 이 문서와 #246 병합 예약 prompt에 옮겨 적고, 인계는 다음 날 10-28의 일의 경계(#246 병합과 그 기록 PR 뒤)로 미뤘다. 일하는 세 곳에는 걸린 줄만 전했다.
 - 10-27T10:4xZ 하네스 setup 44(`24a9371`)도 스킬 한 줄이라 같은 방법으로 위 1의 1과 #246 병합 예약 prompt에 옮겨 적고 같은 10-28 경계에서 인계한다. 그 줄(이 PR이 만든 P2는 다음 push에서 고침)이 `AGENTS.md`·`cloud-development.md`의 P2 문장과 부딪혀 사용자에게 물었다.
 - 10-27T10:5xZ 사용자가 P2 질문에 ‘권장대로 고침’으로 답했다. `roadmap.md` 사용자 결정 대기의 행을 결정 기록으로 옮기고 위 2에 적었다. 앱 `AGENTS.md`·`cloud-development.md`와 실행기 `AGENTS.md`를 문서 PR(등급 1, Codex 1회)로 고치고, 일하는 세 곳에 이 규칙을 전한다.
+- 10-27T10:46Z 기록 PR #270(결정 기록)을 검토 없이 병합했다(`31af12e`). 10:50Z 앱 문서 PR #271(head `cedeac1`, Codex 1회 ‘Didn't find any major issues’, 리뷰 스레드 0, 문서만이라 `checks` 생략·배포 없음)을 병합했다(`aa455f5`). 10:53Z 실행기 문서 PR #18(head `087e481`, `AGENTS.md`와 `project-files.json` 항목, `check-project-files.py` 고치기 전 rc 1·뒤 rc 0, CI `verify` 둘 success, Codex 1회 ‘Didn't find any major issues’)을 병합했다(실행기 `8925d8f`, main push는 site checks만 부르고 예약기 배포는 부르지 않음). C04·C07·O03에 새 P2 규칙을 10:4xZ에 전했다.
 
 ## 작업별 절
 
