@@ -120,6 +120,14 @@ completed=0;next_request={};next_claim={};first_written=None;blocked_hosts=set()
 # found) wait for the next run. A claim that is empty because the provider waits
 # or holds another claim, or a Worker that does not say, keeps the group.
 empty_groups=set();rounds=0;claims=0
+# C09 (user 2026-10-26): 503s in a row from one provider pause it for the rest of
+# this run only (a 503 with Retry-After already stops it, with a provider wait).
+# Nothing goes to the queue, so its pages stay due and the next run asks it
+# again; the run's other pages go to the other provider.
+# 10-25: two runs got 108 Jalan 503s in a row; the 41 other runs of 10-19 to 10-26
+# got none (C09-20261026.md), so three keep a lone 503 from pausing a provider.
+UNAVAILABLE_IN_A_ROW=3
+unavailable={};paused=[]
 guard=SourceGuard(args.interval,args.jitter)
 # Each round gives both providers list discovery and detail enrichment.
 # Jalan's Korean and English list pages (names only, D07) come last in each round.
@@ -191,12 +199,16 @@ while completed<args.max_pages:
    result=api('/api/crawl',payload)
    if payload['status']=='done' and result['accepted'] and payload['observations'] and not first_written:first_written=result.get('readbackId') or payload['observations'][0]['id']
    print(json.dumps(dict(url=url,status=payload['status'],reason=payload.get('error'),providerCooldownSeconds=payload.get('providerCooldownSeconds',0),accepted=result['accepted'],records=result['coverage']['records'])),flush=True)
+   unavailable[provider]=unavailable.get(provider,0)+1 if payload.get('error')=='http_503' else 0
+   if unavailable[provider]>=UNAVAILABLE_IN_A_ROW and provider not in blocked_hosts:
+    blocked_hosts.add(provider);paused.append(provider)
+    print(json.dumps(dict(providerPaused=provider,reason='http_503',consecutive=unavailable[provider],at=now())),flush=True)
    next_request[host]=time.time()+max(3,args.interval);next_claim[provider]=time.time()+max(3,args.interval);completed+=1
   if completed>=args.max_pages:break
  if not progress:break
 if first_written:
  readback=api('/api/hotels/'+urllib.parse.quote(first_written))
  assert readback['id']==first_written
-print(json.dumps(dict(rounds=rounds,claims=claims)),flush=True)
+print(json.dumps(dict(rounds=rounds,claims=claims,**({'pausedProviders':paused} if paused else {}))),flush=True)
 final=api('/api/crawl?provider=jalan&kind=list&limit=1')['coverage']
 print(json.dumps(dict(processed=completed,readbackId=first_written,coverage=final)),flush=True)
