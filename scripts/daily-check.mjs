@@ -5,8 +5,9 @@
 // of that day ran its collect job 26 minutes or more, did not succeed or has not
 // finished, or took 0 pages while its budget line shows room left (C05: with an
 // hourly runner a run after the day's D1 share is used takes 0 pages by design;
-// a day whose runs all took 0 pages fails too). Usage or runs that cannot be read fail; they never
-// read as zero. Each request stops after 30 s, so one half never blocks the other. The
+// a day whose runs all took 0 pages fails too), or reported retry or failed for more than half
+// of its pages (C09; the 503s in a row that paused a provider for the rest of the run do not
+// count). Usage or runs that cannot be read fail; they never read as zero. Each request stops after 30 s, so one half never blocks the other. The
 // tables go to GITHUB_STEP_SUMMARY. usage.yml runs it with check: true; the runner
 // repository dispatches that once a day and checks its own backups (its runs are
 // private). control replaces one real value after reading, to show that the check
@@ -23,7 +24,7 @@ export const BUDGET_STEP='##[group]Run node scripts/collection-budget.mjs';
 // The reason= of a run that repeated another gentle run in flight (C06, collection-budget.mjs).
 export const OVERLAP=/^overlap: /;
 export const COLLECTOR_STEP='Run the Python collector against the Worker';
-export const CONTROLS=['none','over-90','exceeded','zero-pages','no-permission'];
+export const CONTROLS=['none','over-90','exceeded','zero-pages','many-failed','no-permission'];
 export const TIMEOUT_MS=30_000; // each Cloudflare and GitHub request; a hang must not stop the other half
 // no-permission sends this instead of the real token, so the real API refuses it.
 export const CONTROL_TOKEN='o03-control-invalid-token';
@@ -62,7 +63,7 @@ export function parseLog(text){
   if(m&&pages===null)pages=Number(m[1]);
   else if(line.startsWith('reason=')&&reason===null)reason=line.slice(7);
  }
- const counts={};
+ const counts={},paused=[];
  let processed=null,pending=null,completed=null;
  for(const line of lines){
   if(!line.startsWith('{'))continue;
@@ -70,8 +71,10 @@ export function parseLog(text){
   try{o=JSON.parse(line)}catch{continue}
   if(typeof o?.url==='string'&&typeof o.status==='string'&&!o.sourceDiagnostic)counts[o.status]=(counts[o.status]??0)+1;
   if(Number.isInteger(o?.processed)&&o.coverage){processed=o.processed;pending=o.coverage.pending??null;completed=o.coverage.completedDetailPages??null}
+  // C09: update-site.py paused this provider after that many 503s in a row.
+  if(typeof o?.providerPaused==='string')paused.push({provider:o.providerPaused,consecutive:o.consecutive});
  }
- return {pages,reason,processed,counts,pending,completed};
+ return {pages,reason,processed,counts,paused,pending,completed};
 }
 
 // The pages the run's budget allowed by writes and by reads, from its reason= line
@@ -94,6 +97,13 @@ export function runFailures(run){
   if(!left)out.push('0쪽 실행인데 reason=에서 남은 예산을 읽지 못함');
   else if(left.writes>0&&left.reads>0)out.push(`0쪽 실행인데 그날 예산이 남아 있었다(writes allow ${left.writes}, reads ${left.reads})`);
  }
+ // C09: retry and failed on more than half the pages the run reported; exactly half passes. The
+ // 503s that paused a provider are left out, so a pause alone never fails a run, and the pages
+ // after it were not asked. The pages come from the page lines: a run stopped at its time limit
+ // prints no processed= line.
+ const reported=Object.values(run.counts).reduce((a,n)=>a+n,0);
+ const skipped=run.paused.reduce((a,p)=>a+p.consecutive,0),bad=(run.counts.retry??0)+(run.counts.failed??0)-skipped;
+ if(run.pages>0&&2*bad>reported)out.push(`처리한 ${reported}쪽 가운데 retry·failed가 ${bad}쪽으로 절반을 넘는다`+(skipped?`(공급자를 쉬게 한 503 ${skipped}쪽은 세지 않음)`:''));
  return out;
 }
 
@@ -135,12 +145,12 @@ export function runTable(runs){
   '| app run | 만든 시각 | 결과 | 쪽수(`pages=`) | ‘Size the run’ `reason=` | 수집 단계 | collect job | 처리 | 쪽 상태 | 끝난 뒤 대기·상세 완료 | 판정 |',
   '|---|---|---|---:|---|---:|---:|---:|---|---|---|'];
  for(const r of runs){
-  const states=Object.entries(r.counts).map(([s,n])=>`${s} ${n}`).join(', ')||'-';
+  const states=(Object.entries(r.counts).map(([s,n])=>`${s} ${n}`).join(', ')||'-')+(r.paused.length?'; 쉼: '+r.paused.map(p=>`${p.provider}(503 ${p.consecutive}번 잇달아)`).join(', '):'');
   const failures=runFailures(r);
   lines.push(`| ${r.id} | ${clock(r.createdAt)} | ${r.status==='completed'?r.conclusion:r.status} | ${r.pages??'-'} | ${(r.reason??'-').replace(/\|/g,'/')} | ${span(r.stepSeconds)} | ${span(r.jobSeconds)} `
    +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':r.pages===0?(OVERLAP.test(r.reason??'')?'통과(겹쳐서 건너뜀)':'통과(예산 소진)'):'통과'} |`);
  }
- lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날. 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
+ lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날, 쪽 상태의 합(처리한 쪽) 가운데 retry·failed가 절반을 넘는 실행(정확히 절반은 통과, C09). 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 같은 공급자의 503이 잇달아 와서 그 실행 동안 쉰 공급자는 쪽 상태 칸에 ‘쉼:’으로 적는다. 쉬게 한 503 쪽은 retry·failed로 세지 않으므로 쉰 것만으로는 실패가 아니다(C09). 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
  return lines;
 }
 
@@ -175,6 +185,12 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
    if(runs.length)runs[0]={...runs[0],pages:0};
    else failures.push('대조 입력 zero-pages를 적용하지 못함: 그날 gentle 실행이 없다');
   }
+  // many-failed: the first run that reported pages reports them all as failed (C09).
+  if(control==='many-failed'){
+   const i=runs.findIndex(r=>r.pages>0&&Object.keys(r.counts).length);
+   if(i>=0)runs[i]={...runs[i],counts:{failed:Object.values(runs[i].counts).reduce((a,n)=>a+n,0)},paused:[]};
+   else failures.push('대조 입력 many-failed를 적용하지 못함: 그날 쪽을 받은 gentle 실행이 없다');
+  }
   details.push(...runTable(runs));
   for(const r of runs)for(const f of runFailures(r))failures.push(`gentle run ${r.id}: ${f}`);
   failures.push(...dayFailures(runs));
@@ -185,7 +201,7 @@ export async function dailyCheck({env=process.env,fetch=globalThis.fetch,now=new
  }
  const lines=[`# 매일 점검(O03) — ${date}(UTC)`,''];
  if(control!=='none')lines.push(`> 대조 입력 \`${control}\`: 실제 값 하나를 일부러 바꿔 점검이 실패하는지 본다. 아래 표의 해당 값은 실제 값이 아니다.`,'');
- lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.','');
+ lines.push(failures.length?`**실패 ${failures.length}건**`:'**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음, 절반 넘게 retry·failed)에 들지 않는다.','');
  for(const f of failures)lines.push('- 실패: '+f);
  if(failures.length)lines.push('');
  lines.push(...details);
