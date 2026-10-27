@@ -180,6 +180,8 @@
 
 - 10-27T05:24Z 이 문서(71,129바이트, main `23c16e8`과 같음)를 바꾸지 않고 `docs/history/work-handoff-20261027T0520Z.md`로 옮겼다(`cmp` 같음). 그 뒤 7의 열네 번째 → 열다섯 번째 결과와 8의 기록 줄을 지우고 가리키는 문장만 남겼고, 3의 표와 4의 1에서 10-26의 확인 값을 줄였다. 그 기록 가운데 아직 할 일은 1·3·4·6절에 있다.
 - 10-27T05:21Z 실행기 저장소 `add_repo`(push)와 하네스 저장소 `add_repo`(read)가 자동 권한 검사 ‘[Access Added As A Means]’에 막혔다. 위 1의 4대로 우회하지 않고 사용자에게 실행기 예문을 보였다.
+- 10-27T05:30Z 인계 받기 기록 PR #268을 검토 없이 병합했다(`f2638ef`, head `cdac1e2`, 기록 파일 둘). 기록 브랜치를 main에 맞췄다.
+- workspace check 2026-10-27T05:33Z(하네스 setup 42 전역 룰 5절, `context-engineering`의 `references/workspace-check.md`): records state·handoff `docs/work-handoff-latest.md` 「상위 세션 인계」, plan·status `docs/roadmap.md` 우선 작업 표, ledger(지금도 따르는 지시) 같은 문서 2, decisions `roadmap.md` 결정 기록, archive `docs/history/`, 작업별 상세 `docs/<작업ID>-<날짜>.md`(`AGENTS.md` ‘기록’ 절이 이 체계를 적고 있어 지도 줄을 더하지 않음). 규칙 파일은 `AGENTS.md` 85줄 14,111바이트·`CLAUDE.md` 7줄로 한도 안이다. 발견 둘: 이 문서 67,713바이트(목표 16 KB의 약 네 배), `roadmap.md` 74,786바이트(같은 크기를 넘는 계획 파일). 최상위 항목 40개와 `docs/` 바로 밑의 날짜 붙은 검토 문서 넷은 앱 설정 파일과 `AGENTS.md`가 가리키는 문서라 발견으로 치지 않았다. 두 파일 줄이기를 사용자에게 제안했고 답을 기다린다.
 
 ## 작업별 절
 
