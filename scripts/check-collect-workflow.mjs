@@ -41,7 +41,7 @@ assert(called&&called[1]!=='yukemuri-catalog-updates'&&called[2]==='yukemuri-cat
 // Budget and pacing come from the launcher (check_collection.py compares them with the runner).
 const job=collect.slice(collect.indexOf('  collect:\n'),collect.indexOf('  snapshot:\n'));
 // C03 (2026-10-13): up to 120 pages a run (run-collection.py allows 1,380 s for them).
-assert.match(job,/^    runs-on: ubuntu-24\.04\n(?:    #.*\n)*    timeout-minutes: 26\n    outputs:\n      pages: \$\{\{ steps\.budget\.outputs\.pages \}\}\n/m,'26-minute job for a 120-page run; the page budget is a job output');
+assert.match(job,/^    runs-on: ubuntu-24\.04\n(?:    #.*\n)*    timeout-minutes: 26\n    outputs:\n      pages: \$\{\{ steps\.budget\.outputs\.pages \}\}\n      collected_on: \$\{\{ steps\.collected\.outputs\.day \}\}\n/m,'26-minute job for a 120-page run; the page budget and the day it finished are job outputs');
 assert.match(job,/run: python3 scripts\/runner\/check_collection\.py\n/);
 assert.match(job,/env:\n {10}YUKEMURI_CRAWL_ACCESS_KEY: \$\{\{ secrets\.YUKEMURI_CRAWL_ACCESS_KEY \}\}\n {10}MODE: \$\{\{ inputs\.mode \}\}\n {10}PAGES: \$\{\{ steps\.budget\.outputs\.pages \}\}\n {8}run: python3 scripts\/runner\/run-collection\.py --mode "\$MODE" --pages "\$\{PAGES:-16\}"\n/,'crawl key and the page budget through env to the launcher (16 when there is no budget)');
 // The budget step reads today's usage with the Cloudflare token (Account Analytics, as usage.yml); the
@@ -49,6 +49,8 @@ assert.match(job,/env:\n {10}YUKEMURI_CRAWL_ACCESS_KEY: \$\{\{ secrets\.YUKEMURI
 const steps=job.split(/\n(?=      - )/);
 const budgetStep=steps.find(t=>/id: budget\n/.test(t))??'';
 const collectorStep=steps.find(t=>/run-collection\.py --mode/.test(t))??'';
+// C07 plan 2: the UTC day the collector finished, taken right after it, for the count the snapshot deploy stores.
+assert((steps[steps.indexOf(collectorStep)+1]??'').startsWith(['      - name: Note the day the collection finished','        id: collected',"        if: inputs.mode == 'gentle'",'        run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"\n'].join('\n')),'the collection day follows the collector');
 assert.match(budgetStep,/name: Size the run within the free D1 limits\n {8}id: budget\n {8}if: inputs\.mode == 'gentle'\n {8}env:\n {10}CLOUDFLARE_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_API_TOKEN \}\}\n {10}CLOUDFLARE_ACCOUNT_ID: \$\{\{ secrets\.CLOUDFLARE_ACCOUNT_ID \}\}\n {10}OVERLAP: \$\{\{ steps\.overlap\.outputs\.overlap \}\}\n {8}run: node scripts\/collection-budget\.mjs \| tee -a "\$GITHUB_OUTPUT"\n?$/,'gentle runs size themselves with collection-budget.mjs, 0 pages when the run repeats another (C06)');
 // C06 overlap step (collection-chain.mjs --overlap, check-collection-chain.mjs): the workflow token only, before the budget.
 const overlapStep=steps.find(t=>/id: overlap\n/.test(t))??'';
@@ -59,7 +61,7 @@ assert.deepEqual([...new Set(collect.match(/secrets\.\w+/g)??[])].sort(),['secre
 assert(collect.indexOf('check_collection.py')<collect.indexOf('collection-budget.mjs')&&collect.indexOf('collection-budget.mjs')<collect.indexOf('run-collection.py --mode'),'offline checks, then the budget, then the key is used');
 // The snapshot job, then the C06 chain job (check-collection-chain.mjs) as the last one.
 assert.equal(collect.slice(collect.indexOf('  snapshot:\n'),collect.indexOf('  # C06: ')),[
- '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
+ '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets: inherit',''].join('\n'),
  'a successful gentle run that collected refreshes the snapshot through deploy.yml at the same commit');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
 
