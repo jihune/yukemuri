@@ -4,12 +4,13 @@
 // source gives the same files, and rebuilding is idempotent.
 // Usage: node scripts/check-search-snapshot-worker.mjs
 import assert from 'node:assert/strict';
-import {createRequire} from 'node:module';
-import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync,mkdirSync,writeFileSync} from 'node:fs';
+import {createRequire,syncBuiltinESMExports} from 'node:module';
+import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,existsSync,mkdirSync,writeFileSync,statSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
-import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE,compileLib} from './build-search-snapshot.mjs';
+import {createServer} from 'node:http';
+import {buildSnapshot,readOnly,remoteSource,retryWait,MAX_RETRY_WAIT,HEADERS_RULE,compileLib,snapshotInputs,publishedSnapshot} from './build-search-snapshot.mjs';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const KEY='snapshot-check-only';
@@ -351,6 +352,61 @@ try{
  assert.equal(readFileSync(join(local,'_headers'),'utf8').split(HEADERS_RULE).length,2);
  assert(existsSync(join(local,'snapshot','manifest.json')));
  assert.equal(pageOf().split('data-first-page=').length,2,'rebuild renders one first page');
+ // C07 plan 3: a push deploy publishes the site's snapshot again, unread from D1 but for the
+ // preparation keys, when this commit makes it from the same inputs (snapshotInputs).
+ {
+  const inputs=snapshotInputs(),geocode=async list=>list.map(()=>null),unchanged=await fingerprint();
+  // Compiled once for the builds below; the site's build compiles and hashes as deploy.yml's does.
+  const lib=createRequire(import.meta.url)(compileLib(mkdtempSync(join(temp,'reuse-lib-')))),same={builder:lib,inputs:inputs.hash};
+  let made=0;
+  // page: an index.html for the build to render the first page into (the site and its copy only).
+  const folder=(page=false)=>{const dir=join(temp,'reuse-'+made++);mkdirSync(dir);if(page)writeFileSync(join(dir,'index.html'),'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');return dir};
+  const tree=dir=>Object.fromEntries(readdirSync(dir,{recursive:true}).filter(f=>statSync(join(dir,f)).isFile()).map(f=>[f,readFileSync(join(dir,f),'utf8')]));
+  assert.equal(built.manifest.inputs,null,'map points missing (no geocoder): no inputs hash, never published again');
+  // The site's build, as deploy.yml's (lib compiled, inputs hashed), with every repository file it
+  // reads noted: fs reads and the arguments of the commands it starts.
+  const fs=createRequire(import.meta.url)('node:fs'),cp=createRequire(import.meta.url)('node:child_process'),root=resolve('.')+'/',seen=new Set(),saved=[];
+  const wrap=(mod,name,paths)=>{const f=mod[name];saved.push([mod,name,f]);mod[name]=function(...a){for(const p of paths(a))if(typeof p==='string'&&p.startsWith(root))seen.add(p.slice(root.length));return f.apply(this,a)}};
+  for(const name of ['readFileSync','readdirSync','existsSync','statSync','openSync'])wrap(fs,name,a=>[a[0]]);
+  for(const name of ['spawnSync','spawn','execFileSync'])wrap(cp,name,a=>[a[0],...(Array.isArray(a[1])?a[1]:[])]);
+  syncBuiltinESMExports();
+  const site=folder(true);let served;
+  try{served=await buildSnapshot({db,out:site,now:new Date('2026-10-12T00:00:00Z'),geocode})}
+  finally{for(const [mod,name,f] of saved)mod[name]=f;syncBuiltinESMExports()}
+  assert.equal(served.manifest.inputs,inputs.hash,'the manifest carries the inputs hash');
+  // Each read is among those inputs, outside node_modules and dist (the built Worker the page is
+  // rendered with).
+  const outside=list=>[...seen].filter(f=>!/^(node_modules|dist)\//.test(f)&&existsSync(f)&&statSync(f).isFile()&&!list.includes(f)).sort();
+  assert(seen.has('data/wikidata-trip-hotels.json')&&seen.has('lib/search-snapshot-build.ts'),'the build\'s reads were seen');
+  assert.deepEqual(outside(inputs.files),[],'a snapshot build read repository files outside snapshotInputs()');
+  // The check can fail: with the Wikidata file left out of the list, that read is reported.
+  assert.deepEqual(outside(inputs.files.filter(f=>f!=='data/wikidata-trip-hotels.json')),['data/wikidata-trip-hotels.json']);
+  // The site: that folder over HTTP; a path in changed answers its body instead (null: 404).
+  const changed=new Map(),server=createServer((req,res)=>{
+   const file=join(site,req.url),body=changed.has(req.url)?changed.get(req.url):existsSync(file)&&statSync(file).isFile()?readFileSync(file):null;
+   res.writeHead(body===null?404:200);res.end(body??'');
+  });
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const origin='http://127.0.0.1:'+server.address().port;
+  try{
+   const out=folder(true),reused=await buildSnapshot({db,out,now:new Date('2026-10-13T05:00:00Z'),reuse:origin,...same});
+   assert.deepEqual([reused.reused,reused.reuseSkipped,reused.unprepared,reused.progress],[served.manifest.id,null,[],null]);
+   assert.deepEqual(tree(out),tree(site),'the files, manifest, _headers and first page of the site\'s snapshot');
+   assert(reused.rowsRead>0&&reused.rowsRead<served.rowsRead/100,`only the preparation keys are read: ${reused.rowsRead} rows, ${served.rowsRead} for a build`);
+   assert.deepEqual(await fingerprint(),unchanged,'publishing again changed D1');
+   // Anything else is refused with its reason, and the build runs afresh (the site's snapshot
+   // again, from the same D1).
+   const refused=async(why,options={})=>{await assert.rejects(publishedSnapshot({origin,fetchImpl:fetch,format:served.manifest.format,inputs:inputs.hash,...options}),why);changed.clear()};
+   await refused(/snapshot inputs changed/,{inputs:'0'.repeat(64)});
+   changed.set('/snapshot/manifest.json',JSON.stringify({...served.manifest,format:served.manifest.format+1}));await refused(/format/);
+   changed.set('/snapshot/manifest.json',JSON.stringify({...served.manifest,inputs:null}));await refused(/no inputs hash/);
+   changed.set(`/snapshot/v/${served.manifest.id}/cards.json`,'[]');await refused(/do not hash/);
+   changed.set('/snapshot/manifest.json',null);await refused(/HTTP 404/);
+   const fresh=await buildSnapshot({db,out:folder(),now:new Date('2026-10-12T00:00:00Z'),geocode,reuse:origin,...same,builder:{...lib,catalogPreparation:async()=>['seed']}});
+   assert.deepEqual([fresh.reused,fresh.manifest.id],[null,served.manifest.id],'a catalogue not prepared builds afresh');assert.match(fresh.reuseSkipped,/not prepared/);
+   await assert.rejects(buildSnapshot({db,out:folder(),reuse:origin,progressDay:'2026-10-12',...same}),/needs a fresh build/);
+  }finally{server.close()}
+ }
  // CLI on an unprepared catalogue (migrations only): --require-prepared fails and
  // leaves no report, so deploy.yml never reads an id for that snapshot.
  {
@@ -366,7 +422,10 @@ try{
   r=cli([]);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: no --geocoder-db given/);
   // A dictionary that is not there: the snapshot is still built, the reason printed.
   r=cli(['--geocoder-db',join(temp,'no-dictionary')]);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: no installed dictionary/);
-  r=cli(['--geocoder-skip','dictionary download failed']);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: dictionary download failed/);
+  // With --reuse (C07 plan 3) too: a site that does not answer means a fresh build, said so.
+  r=cli(['--geocoder-skip','dictionary download failed','--reuse','http://127.0.0.1:9']);assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/geocoder skipped, snapshot built without its points: dictionary download failed/);
+  assert.match(r.stdout,/built afresh, not published again: /);
+  assert.deepEqual(Object.entries(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8'))).filter(([k])=>k.startsWith('reuse')).map(([k,v])=>[k,typeof v]),[['reused','object'],['reuseSkipped','string']]);
   assert(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).unprepared.length>0,'without the flag the report lists the unprepared steps');
   assert.equal(JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).progress,null,'no collection count without --progress-day');
   // C07 plan 2: a collection day puts the count in the report; anything but YYYY-MM-DD fails.
@@ -374,6 +433,8 @@ try{
   const progress=JSON.parse(readFileSync(join(temp,'cli-report.json'),'utf8')).progress;
   assert.deepEqual([Object.keys(progress),progress.day],[['day','counts','jobs','counter','sequence'],'2026-10-12']);
   for(const bad of ['','2026-10-1','yesterday'])assert.notEqual(cli(['--progress-day',bad]).status,0,`--progress-day '${bad}' fails`);
+  // C07 plan 3: --reuse takes an origin, and never with a collection's count.
+  for(const bad of [['--reuse','yukemuri'],['--reuse','http://127.0.0.1:9','--progress-day','2026-10-12']])assert.notEqual(cli(bad).status,0,bad.join(' ')+' fails');
  }
  // C07 plan 2: with the day a collection finished, the build also makes the count the queue GET
  // made at the end of each run until then (every hotels row, merged records included) and shows
