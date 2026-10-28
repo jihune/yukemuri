@@ -46,6 +46,14 @@ export const crawlUpdate=z.object({url:crawlJobUrl,claimToken:z.string().uuid().
   :u.localeNames.length||u.links.some(l=>l.kind==='names'||LOCALE_LIST.test(l.url)))ctx.addIssue({code:'custom',message:'Locale names belong to a Jalan locale list page'});
 });
 
+// C07 plan 2: the counts the snapshot build after a collection hands to the
+// Worker (scripts/record-coverage.mjs, lib/hotel-repository.ts recordCoverage).
+const count=z.number().int().min(0).max(10_000_000);
+export const coverageRecord=z.object({action:z.literal('record-coverage'),day:z.string().regex(/^20\d\d-[01]\d-[0-3]\d$/),
+ counts:z.object({records:count,prefectures:count}).strict(),
+ jobs:z.array(z.object({provider:z.enum(['jalan','trip']),discovered:count,completed:count,details:count,pending:count,failed:count,updated:z.string().max(40).nullable()}).strict()).max(2),
+ counter:z.string().regex(/^\d{1,8}$/).nullable(),sequence:z.string().regex(/^\d{1,12}$/).nullable()}).strict();
+
 // Page retries cannot pause the provider without an access response, a clear
 // bot challenge, or an explicit source Retry-After reported by the updater.
 // robots_http_: an updater from before C08 (2026-10-21), which read robots.txt.

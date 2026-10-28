@@ -49,6 +49,7 @@ jobs:
     timeout-minutes: 26
     outputs:
       pages: ${{ steps.budget.outputs.pages }}
+      collected_on: ${{ steps.collected.outputs.day }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -88,6 +89,12 @@ jobs:
           MODE: ${{ inputs.mode }}
           PAGES: ${{ steps.budget.outputs.pages }}
         run: python3 scripts/runner/run-collection.py --mode "$MODE" --pages "${PAGES:-16}"
+      # C07 plan 2: the UTC day the collector finished. The snapshot deploy stores
+      # the run's count with it; its build starts minutes later, past midnight at times.
+      - name: Note the day the collection finished
+        id: collected
+        if: inputs.mode == 'gentle'
+        run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
   # No snapshot when the run collected nothing (budget 0): it would only read.
   snapshot:
     needs: collect
@@ -95,6 +102,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       after_collection: true
+      collected_on: ${{ needs.collect.outputs.collected_on }}
     secrets: inherit
   # C06: GitHub drops most of the runner's hourly dispatches, so a run that
   # collected and deployed starts the wait for the next one (collect-chain.yml,

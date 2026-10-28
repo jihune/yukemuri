@@ -19,6 +19,7 @@ import {GENTLE_TITLE,WORKFLOW} from './check-collection-freshness.mjs';
 export const FAIL=0.9; // user, 10-19: the collection budget stays at 85%, leaving room for deploys
 export const JOB_MINUTES=26; // timeout-minutes of the collect job in collect.yml
 export const COLLECT_JOB='collect';
+export const SNAPSHOT_JOB='snapshot / deploy'; // collect.yml job snapshot calling deploy.yml job deploy
 export const BUDGET_STEP='##[group]Run node scripts/collection-budget.mjs';
 // The reason= of a run that repeated another gentle run in flight (C06, collection-budget.mjs).
 export const OVERLAP=/^overlap: /;
@@ -69,7 +70,9 @@ export function parseLog(text){
   let o;
   try{o=JSON.parse(line)}catch{continue}
   if(typeof o?.url==='string'&&typeof o.status==='string'&&!o.sourceDiagnostic)counts[o.status]=(counts[o.status]??0)+1;
-  if(Number.isInteger(o?.processed)&&o.coverage){processed=o.processed;pending=o.coverage.pending??null;completed=o.coverage.completedDetailPages??null}
+  if(Number.isInteger(o?.processed)){processed=o.processed;if(o.coverage){pending=o.coverage.pending??null;completed=o.coverage.completedDetailPages??null}}
+  // C07 plan 2: the collector no longer counts at the end of its run; the snapshot deploy stores the count (record-coverage.mjs).
+  if(o?.recordedCoverage){pending=o.recordedCoverage.pending??null;completed=o.recordedCoverage.completedDetailPages??null}
  }
  return {pages,reason,processed,counts,pending,completed};
 }
@@ -119,9 +122,15 @@ export async function gentleRuns({fetch=globalThis.fetch,token,api='https://api.
  const runs=all.filter(r=>r.display_title===GENTLE_TITLE&&String(r.created_at).startsWith(date)).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at));
  const out=[];
  for(const r of runs){
-  const job=((await gh(ctx,`/repos/${repo}/actions/runs/${r.id}/jobs?per_page=100`)).jobs??[]).find(j=>j.name===COLLECT_JOB)??null;
+  const jobs=(await gh(ctx,`/repos/${repo}/actions/runs/${r.id}/jobs?per_page=100`)).jobs??[];
+  const job=jobs.find(j=>j.name===COLLECT_JOB)??null,snapshot=jobs.find(j=>j.name===SNAPSHOT_JOB)??null;
   const step=job?.steps?.find(s=>s.name===COLLECTOR_STEP)??null;
   const log=job?.status==='completed'?parseLog(await gh(ctx,`/repos/${repo}/actions/jobs/${job.id}/logs`,true)):parseLog('');
+  // The pages pending and done after the run: from the collector's last line before C07 plan 2, else from the snapshot deploy.
+  if(log.processed!==null&&log.pending===null&&snapshot?.status==='completed'&&snapshot.conclusion!=='skipped'){
+   const stored=parseLog(await gh(ctx,`/repos/${repo}/actions/jobs/${snapshot.id}/logs`,true));
+   log.pending=stored.pending;log.completed=stored.completed;
+  }
   out.push({id:r.id,createdAt:r.created_at,status:r.status,conclusion:r.conclusion,
    jobSeconds:seconds(job?.started_at,job?.completed_at),stepSeconds:seconds(step?.started_at,step?.completed_at),...log});
  }

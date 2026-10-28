@@ -4,6 +4,11 @@
 //   node scripts/build-search-snapshot.mjs --sqlite <file> [--out dist/client] [--report file]
 //   node scripts/build-search-snapshot.mjs --remote [--out dist/client] [--report file]
 //   [--geocoder-db <installed jageocoder dictionary> | --geocoder-skip <reason>]
+//   [--progress-day <YYYY-MM-DD>]
+// --progress-day (the snapshot deploy after a collection, deploy.yml): the UTC
+// day the collection finished. The build also makes the collector's former
+// end-of-run count and puts it in the report as progress, for
+// scripts/record-coverage.mjs to store through the Worker (C07 plan 2).
 // Map positions (geo.json, D06): payload coordinates, then Wikidata, then the
 // geocoder, then Overture for approximate points (scripts/snapshot-geo.mjs).
 // Without the geocoder the snapshot is still built, without those points; the
@@ -121,7 +126,8 @@ export function compileLib(temp,entry='lib/search-snapshot-build.ts',more=[]){
 // null with skipReason. wikidata: Trip id -> point (loadWikidata by default).
 // overture: hotel id -> point (loadOverture by default).
 // usage: today's Cloudflare usage for the data status screen (usageToday), when given.
-export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata,overture,usage}){
+// progressDay: as --progress-day.
+export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,skipReason,wikidata,overture,usage,progressDay}){
  const temp=mkdtempSync(join(tmpdir(),'yukemuri-snapshot-'));
  try{
   const guarded=readOnly(db);
@@ -129,7 +135,8 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
   const started=performance.now();
   const {buildSearchSnapshot,addFillGeo,SNAPSHOT_FORMAT}=builder??createRequire(import.meta.url)(compileLib(temp));
   if(!Number.isInteger(SNAPSHOT_FORMAT))throw new Error('The snapshot builder exports no SNAPSHOT_FORMAT');
-  const data=await buildSearchSnapshot(now);
+  if(progressDay!==undefined&&!/^\d{4}-\d\d-\d\d$/.test(progressDay))throw new Error('--progress-day must be YYYY-MM-DD');
+  const data=await buildSearchSnapshot(now,progressDay);
   let points=wikidata,wikidataError=null;
   if(!points)try{points=loadWikidata()}catch(error){points=new Map();wikidataError=String(error.message).slice(0,200)}
   let places=overture,overtureError=null;
@@ -159,7 +166,7 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
   }
   const headers=join(out,'_headers'),current=existsSync(headers)?readFileSync(headers,'utf8'):'';
   if(!current.includes(HEADERS_RULE))writeFileSync(headers,current+(current&&!current.endsWith('\n')?'\n':'')+HEADERS_RULE);
-  return{manifest,sizes,data,geo,unprepared:data.unprepared,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
+  return{manifest,sizes,data,geo,unprepared:data.unprepared,progress:data.progress,rowsRead:guarded.stats.rowsRead,queries:guarded.stats.queries,ms:Math.round(performance.now()-started)};
  }finally{delete globalThis.__SNAPSHOT_ENV;rmSync(temp,{recursive:true,force:true})}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
@@ -170,19 +177,20 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   const config=JSON.parse(readFileSync(join(ROOT,'cloudflare-deploy.json'),'utf8'));
   db=remoteSource({token:process.env.CLOUDFLARE_API_TOKEN,account:process.env.CLOUDFLARE_ACCOUNT_ID,database:config.databaseId});
  }else if(arg('--sqlite')){const s=await sqliteSource(resolve(arg('--sqlite')));db=s;close=s.close}
- else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file] [--require-prepared] [--geocoder-db dir | --geocoder-skip reason]');
+ else throw new Error('Usage: build-search-snapshot.mjs --sqlite <file> | --remote [--out dir] [--report file] [--require-prepared] [--geocoder-db dir | --geocoder-skip reason] [--progress-day YYYY-MM-DD]');
  try{
   const dbDir=arg('--geocoder-db'),installed=dbDir&&existsSync(join(resolve(dbDir),'README.md'));
   const geocode=installed?dictionaryGeocoder({dbDir:resolve(dbDir),python:process.env.GEOCODER_PYTHON||'python3'}):null;
   const skipReason=dbDir&&!installed?'no installed dictionary in '+dbDir:arg('--geocoder-skip')||'no --geocoder-db given';
   // Read with the token --remote uses; a --sqlite build never asks Cloudflare and says so on the screen.
   const usage=await usageToday({env:argv.includes('--remote')?process.env:{},config:join(ROOT,'cloudflare-deploy.json')});
-  const result=await buildSnapshot({db,out,geocode,skipReason,usage});
+  const result=await buildSnapshot({db,out,geocode,skipReason,usage,progressDay:arg('--progress-day')??undefined});
   const kb=n=>(n/1024).toFixed(1)+'KiB';
   console.log(`Search snapshot ${result.manifest.id}: ${result.manifest.hotels} hotels, ${result.queries} queries, ${result.rowsRead||'unreported'} rows read, ${result.ms}ms`);
   for(const [name,s] of Object.entries(result.sizes))console.log(`  ${name}: ${kb(s.raw)} raw, ${kb(s.gzip)} gzip, ${kb(s.brotli)} brotli`);
   console.log(`  Cloudflare usage today: ${usage.account?'read':'not read (the screen says so)'}`);
   console.log(geoSummary(result.geo)+(result.geo.wikidataError?'\n  Wikidata points not used: '+result.geo.wikidataError:'')+(result.geo.overtureError?'\n  Overture points not used: '+result.geo.overtureError:''));
+  if(result.progress)console.log(`  collection count for ${result.progress.day}: ${result.progress.counts.records} records (record-coverage.mjs stores it)`);
   console.log(result.unprepared.length?`  catalogue not prepared for this release: ${result.unprepared.join(', ')}`:'  catalogue prepared for this release');
   // Refuse before writing the report: a report is what deploy.yml reads the
   // snapshot id from, and an unprepared snapshot must not get one.

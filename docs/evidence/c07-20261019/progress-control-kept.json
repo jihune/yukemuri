@@ -1,0 +1,91 @@
+{
+ "measuredAt": "2026-10-26T13:26:07.663Z",
+ "oldRef": "5bccf54",
+ "control": "kept",
+ "end": "2026-10-19T21:20:00Z",
+ "build": "2026-10-19T21:29:00Z",
+ "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
+ "target": {
+  "jobs": {
+   "jalan detail done": 1907,
+   "jalan detail pending": 21679,
+   "trip detail done": 1707,
+   "trip detail pending": 456,
+   "trip detail failed": 1,
+   "jalan list done": 4100,
+   "trip list done": 1300,
+   "jalan names done": 250,
+   "jalan names pending": 250
+  },
+  "hotels": 25225,
+  "merged": 47
+ },
+ "pairSaves": {
+  "200": 45,
+  "409": 2
+ },
+ "merged": 45,
+ "shaped": {
+  "jobs": {
+   "jalan detail done": 1997,
+   "jalan detail pending": 21589,
+   "jalan list done": 4100,
+   "jalan names done": 250,
+   "jalan names pending": 250,
+   "trip detail done": 1707,
+   "trip detail failed": 1,
+   "trip detail pending": 486,
+   "trip list done": 1300
+  },
+  "hotels": 24557,
+  "counter": "24527"
+ },
+ "result": {
+  "stored": {
+   "hotel-records": {
+    "old": "24557",
+    "new": "24512"
+   },
+   "coverage-sequence": {
+    "old": "3",
+    "new": "3"
+   },
+   "daily-progress:2026-10-19": {
+    "old": "{\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}}",
+    "new": "{\"seq\":3,\"records\":24512,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}}"
+   }
+  },
+  "snapshot": {
+   "old": "8e6a433642cc81b5",
+   "new": "f9abed08bf2c4dd9",
+   "hotels": 24512
+  },
+  "rowsRead": {
+   "oldGet": 80807,
+   "oldBuild": 115766,
+   "newBuild": 115770,
+   "newRecord": 10,
+   "saved": 80793
+  },
+  "rowsWritten": {
+   "oldGet": 4,
+   "newRecord": 4
+  },
+  "progress": {
+   "day": "2026-10-19",
+   "counts": {
+    "records": 24512,
+    "prefectures": 47
+   },
+   "jobs": 2,
+   "counter": "24527",
+   "sequence": "2"
+  },
+  "failures": [
+   "catalog_meta hotel-records: old 24557 / new 24512",
+   "catalog_meta coverage-snapshot: old {\"seq\":3,\"coverage\":{\"updatedAt\":\"2026-10-19T21:15:00Z\",\"records\":24557,\"crawledRecords\":24537,\"curatedRecords\":20,\"prefectures\":47,\"discoveredDetailUrls\":25780 / new {\"seq\":3,\"coverage\":{\"updatedAt\":\"2026-10-19T21:15:00Z\",\"records\":24512,\"crawledRecords\":24492,\"curatedRecords\":20,\"prefectures\":47,\"discoveredDetailUrls\":25780",
+   "catalog_meta daily-progress:2026-10-19: old {\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}} / new {\"seq\":3,\"records\":24512,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}}",
+   "snapshot 8e6a433642cc81b5 / f9abed08bf2c4dd9"
+  ]
+ }
+}
