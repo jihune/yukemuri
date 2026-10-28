@@ -11,7 +11,7 @@ import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {ENDPOINT,LIMITS} from './cloudflare-usage.mjs';
 import {GENTLE_TITLE} from './check-collection-freshness.mjs';
-import {FAIL,JOB_MINUTES,COLLECT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,TIMEOUT_MS,checkDate,usageFailures,parseLog,budgetLeft,runFailures,dayFailures,dailyCheck,CheckError} from './daily-check.mjs';
+import {FAIL,JOB_MINUTES,COLLECT_JOB,SNAPSHOT_JOB,BUDGET_STEP,COLLECTOR_STEP,CONTROLS,CONTROL_TOKEN,TIMEOUT_MS,checkDate,usageFailures,parseLog,budgetLeft,runFailures,dayFailures,dailyCheck,CheckError} from './daily-check.mjs';
 
 // usage.yml: the check is a second step behind the boolean input, with the workflow token for Actions reads.
 const usage=readFileSync('.github/workflows/usage.yml','utf8');
@@ -35,7 +35,10 @@ const budget=readFileSync('scripts/collection-budget.mjs','utf8');
 assert(budget.includes("console.log('pages='+pages);")&&budget.includes("console.log('reason='+"),'budget prints pages= and reason=');
 assert(budget.includes('writes allow ${byWrites} pages, reads ${byReads}'),'the reason line carries the pages each share allows (the 0-page rule reads them)');
 const site=readFileSync('scripts/crawler/update-site.py','utf8');
-assert(site.includes("print(json.dumps(dict(url=url,status=payload['status']")&&site.includes('print(json.dumps(dict(processed=completed,readbackId=first_written,coverage=final))'),'collector prints page states and the final coverage');
+assert(site.includes("print(json.dumps(dict(url=url,status=payload['status']")&&site.includes('print(json.dumps(dict(processed=completed,readbackId=first_written)),'),'collector prints page states and the pages it processed');
+// C07 plan 2: the count after the run comes from the snapshot deploy the collect job calls.
+assert(/\n  snapshot:\n    needs: collect\n(?:    .+\n)*    uses: \.\/\.github\/workflows\/deploy\.yml\n/.test(collect)&&readFileSync('.github/workflows/deploy.yml','utf8').includes('\njobs:\n  deploy:\n')&&SNAPSHOT_JOB==='snapshot / deploy','the snapshot job name the check reads');
+assert(readFileSync('scripts/record-coverage.mjs','utf8').includes('console.log(JSON.stringify({recordedCoverage:{day:progress.day,records:c.records,pending:c.pending,completedDetailPages:c.completedDetailPages}}));'),'the snapshot deploy prints the stored count');
 assert(site.includes("print(json.dumps(dict(providerPaused=provider,reason='http_503',consecutive=unavailable[provider],at=now())),flush=True)"),'collector prints the provider it paused and the 503s in a row (C09)');
 
 // Day: empty is yesterday in UTC; impossible dates fail.
@@ -60,7 +63,8 @@ assert.deepEqual(usageFailures({...acc(),exceeded:1}),['exceededResources 1건(1
 
 // Log: the budget lines of the budget step only, page states without diagnostics, the final coverage.
 const stamp=s=>s.split('\n').map((l,i)=>`2026-10-17T05:0${Math.min(i,9)}:00.000000${i%10}Z ${l}`).join('\n');
-const logText=(pages,{collected=pages,states={done:pages},allow=pages,paused=[]}={})=>stamp([
+// stored: the collector's last line after C07 plan 2 (no coverage; the snapshot deploy has it).
+const logText=(pages,{collected=pages,states={done:pages},allow=pages,stored=false,paused=[]}={})=>stamp([
  '##[group]Run python3 scripts/runner/check_collection.py','pages=999','##[endgroup]',
  BUDGET_STEP+' | tee -a "$GITHUB_OUTPUT"','\u001b[36;1mnode scripts/collection-budget.mjs | tee -a "$GITHUB_OUTPUT"\u001b[0m','env:','  CLOUDFLARE_API_TOKEN: ***','##[endgroup]',
  `pages=${pages}`,`reason=today 120 rows written, 3000 read; writes allow ${allow} pages, reads 400, cap 120`,
@@ -69,14 +73,18 @@ const logText=(pages,{collected=pages,states={done:pages},allow=pages,paused=[]}
  ...Object.entries(states).flatMap(([s,n])=>Array.from({length:n},(_,i)=>JSON.stringify({url:`https://example.invalid/${s}/${i}`,status:s,reason:null,accepted:1,records:10}))),
  JSON.stringify({sourceDiagnostic:true,url:'https://example.invalid/d',status:'done'}),
  ...paused.map(([provider,consecutive])=>JSON.stringify({providerPaused:provider,reason:'http_503',consecutive,at:'2026-10-17T05:03:00+00:00'})),
- ...(pages?[JSON.stringify({processed:collected,readbackId:'x',coverage:{pending:20947,completedDetailPages:2962}}),'{"state": "finished"}']:[]),
+ ...(pages?[JSON.stringify({processed:collected,readbackId:'x',...(stored?{}:{coverage:{pending:20947,completedDetailPages:2962}})}),'{"state": "finished"}']:[]),
  'pages=555'].join('\n'));
+const snapshotLog=(pending,done)=>stamp(['##[group]Run node scripts/record-coverage.mjs "$ORIGIN" snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"','##[endgroup]',
+ JSON.stringify({recordedCoverage:{day:'2026-10-17',records:25225,pending,completedDetailPages:done}})].join('\n'));
 assert.deepEqual(parseLog(logText(79)),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},paused:[],pending:20947,completed:2962},'pages= of the budget step, not of other steps');
 assert.deepEqual(parseLog(logText(3,{states:{done:1,retry:1,failed:1}})).counts,{done:1,retry:1,failed:1});
 assert.deepEqual(parseLog(logText(5,{states:{done:2,retry:3},paused:[['jalan',3]]})).paused,[{provider:'jalan',consecutive:3}],'a paused provider (C09)');
 assert.deepEqual(parseLog(logText(0)),{pages:0,reason:'today 120 rows written, 3000 read; writes allow 0 pages, reads 400, cap 120',processed:null,counts:{},paused:[],pending:null,completed:null});
 assert.equal(parseLog('').pages,null);assert.equal(parseLog(stamp('pages=120')).pages,null,'pages= outside the budget step does not count');
 assert.equal(parseLog(logText(120).replace(/\n/g,'\r\n')).pages,120,'CRLF logs');
+assert.deepEqual(parseLog(logText(79,{stored:true})),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},paused:[],pending:null,completed:null},'C07 plan 2: processed without coverage');
+assert.deepEqual([parseLog(snapshotLog(20900,3010)).pending,parseLog(snapshotLog(20900,3010)).completed],[20900,3010],'the count the snapshot deploy stored');
 
 // Runs: 0 pages, 26 minutes, not success, pages unreadable fail; so does a run not finished yet,
 // because the next day's check looks at another day (PR #131 Codex review).
@@ -152,13 +160,14 @@ const env={CLOUDFLARE_API_TOKEN:CF_TOKEN,CLOUDFLARE_ACCOUNT_ID:ACCOUNT,GH_TOKEN,
 const now=new Date('2026-10-18T01:30:00Z');
 const check=(extra={})=>dailyCheck({env:{...env,...extra},fetch,now,config});
 let id=0;
-function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,paused}={}){
+function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,stored=false,snapshot='success',paused}={}){
  const run=++id,job=1000+run;
  runs.push({id:run,display_title:title,created_at:created,run_started_at:created,status,conclusion});
  const at=m=>new Date(Date.parse(created)+m*60000).toISOString().replace('.000','');
  jobs[run]=[{id:job,name:COLLECT_JOB,status,conclusion,started_at:at(0),completed_at:status==='completed'?at(jobMinutes):null,
-  steps:[{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)}]},{id:job+500,name:'snapshot / deploy',status,conclusion}];
- if(log)logs[job]=logText(pages,{states,allow,paused});
+  steps:[{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)}]},{id:job+500,name:SNAPSHOT_JOB,status,conclusion:snapshot}];
+ if(log)logs[job]=logText(pages,{states,allow,stored,paused});
+ if(log&&stored&&snapshot!=='skipped')logs[job+500]=snapshotLog(20900,3010+run);
  return run;
 }
 try{
@@ -179,6 +188,13 @@ try{
  assert.match(ghCalls.find(c=>c.url.includes('/workflows/'))?.url??'',/\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\?created=2026-10-17T00%3A00%3A00Z\.\.2026-10-17T23%3A59%3A59Z&per_page=100$/);
  assert(ghCalls.filter(c=>!c.url.startsWith('/blob/')).every(c=>c.auth==='Bearer '+GH_TOKEN),'workflow token on API calls');
  assert(!text.includes(CF_TOKEN)&&!text.includes(GH_TOKEN)&&!text.includes('example.invalid'),'no token and no source address in the report');
+ // C07 plan 2: a collector line without a count reads it from the run's snapshot deploy; a skipped one has no log to read.
+ const stored=addRun(120,{created:'2026-10-17T08:00:00Z',stored:true}),unstored=addRun(120,{created:'2026-10-17T09:00:00Z',stored:true,snapshot:'skipped'});
+ result=await check();assert.deepEqual(result.failures,[],result.lines.join('\n'));
+ assert.match(result.lines.join('\n'),new RegExp(`^\\| ${stored} \\| 08:00Z \\| success \\| 120 \\|.*\\| 120 \\| done 120 \\| 20,900·${(3010+stored).toLocaleString('en-US')} \\| 통과 \\|$`,'m'));
+ assert.match(result.lines.join('\n'),new RegExp(`^\\| ${unstored} \\| 09:00Z \\| success \\| 120 \\|.*\\| 120 \\| done 120 \\| -·- \\| 통과 \\|$`,'m'));
+ assert(!ghCalls.some(c=>c.url.includes(`/jobs/${1500+unstored}/logs`)),'no log read for a skipped snapshot job');
+ runs=runs.filter(r=>![stored,unstored].includes(r.id));
 
  // Each control fails the same normal day.
  for(const [control,pattern] of [['over-90',/계정 D1 쓰기 90,000행 = 무료 한도의 90\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['many-failed',/^gentle run 2: 처리한 120쪽 가운데 retry·failed가 120쪽으로 절반을 넘는다$/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){

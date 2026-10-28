@@ -210,5 +210,6 @@ if first_written:
  readback=api('/api/hotels/'+urllib.parse.quote(first_written))
  assert readback['id']==first_written
 print(json.dumps(dict(rounds=rounds,claims=claims,**({'pausedProviders':paused} if paused else {}))),flush=True)
-final=api('/api/crawl?provider=jalan&kind=list&limit=1')['coverage']
-print(json.dumps(dict(processed=completed,readbackId=first_written,coverage=final)),flush=True)
+# C07 plan 2: no full count at the end of the run (about 90,000 rows read); the
+# snapshot deploy after a gentle run stores it from its own build (record-coverage.mjs).
+print(json.dumps(dict(processed=completed,readbackId=first_written)),flush=True)

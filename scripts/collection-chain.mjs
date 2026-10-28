@@ -16,10 +16,10 @@ import {GENTLE_TITLE,WORKFLOW} from './check-collection-freshness.mjs';
 export const CHAIN=Object.freeze({
  intervalMinutes:60, // C05: hourly, counted from the creation of the run before
  maxRunsPerDay:24,   // C05: at most one gentle run an hour in a UTC day, the runner's own included
- minPages:16         // 2026-10-19: the run size before C03 (fallbackPages). A run reads about 220,000
-                     // rows whatever its size (its last queue read about 89,000, its snapshot about
-                     // 132,000) and a page 1,900-2,500 on 10-19 (4,467 in one 10-18 interval), so
-                     // below 16 pages at least three quarters of a run's reads are those fixed reads.
+ minPages:16         // 2026-10-19: the run size before C03 (fallbackPages). A run reads about 143,000
+                     // rows whatever its size (its snapshot; its last queue read, about 89,000, is gone
+                     // since C07 plan 2) and a page 1,900-2,500 on 10-19 (4,467 in one 10-18 interval),
+                     // so below 16 pages at least three quarters of a run's reads are those fixed reads.
                      // Skipping such a run itself is the C04 follow-up, not this.
 });
 

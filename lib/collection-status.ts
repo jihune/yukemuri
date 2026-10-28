@@ -32,9 +32,10 @@ export type FillScopeKey='all'|'jalan'|'trip';
 // staleTranslations: places whose only translation is of an earlier source text (in descKo empty).
 export type FillScope={records:number;rows:Record<FillRowKey,FillCounts>;geo:number[];staleTranslations:number};
 export type PageCounts={done:number;pending:number;retry:number;failed:number};
-// trend: the last 30 UTC days' rows that the collector's end-of-run read keeps, one a day
-// (DAILY_PROGRESS_KEY): places and detail pages done and found per provider, as at the day's
-// last run. usage: the whole account's Cloudflare usage today (the free limits are per account),
+// trend: the last 30 UTC days' rows that each collection's count keeps, one a day
+// (DAILY_PROGRESS_KEY; the snapshot deploy after a run stores it since C07 plan 2, the
+// collector's end-of-run read before): places and detail pages done and found per provider,
+// as at the day's last run. usage: the whole account's Cloudflare usage today (the free limits are per account),
 // read once when the snapshot is built; account is null when it could not be read. Both are
 // absent from snapshots built before them.
 export type TrendDay={date:string;records:number;pages:Record<CollectionProvider,{done:number;total:number}>};

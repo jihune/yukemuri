@@ -100,7 +100,7 @@ const deploy=readFileSync('.github/workflows/deploy.yml','utf8');
 // Steps as blocks with their condition and body (comments dropped).
 const stepBlocks=deploy.slice(deploy.indexOf('    steps:\n')).split(/\n(?= {6}- )/).slice(1).map(text=>({text:text.replace(/^\s*#.*$/gm,''),cond:text.match(/^ {6}- if: (.*)$/m)?.[1]??text.match(/^ {8}if: (.*)$/m)?.[1]??null}));
 const stepOf=needle=>{const i=stepBlocks.findIndex(b=>b.text.includes(needle));assert(i>=0,'deploy.yml has no step with '+needle);return i};
-const WRITES=[/migrations apply/,/cloudflare-deploy-worker\.sh(?! --dry-run)/,/cloudflare-prepare\.mjs/,/cloudflare-smoke\.mjs/,/\bsecret\b(?!s\.)/,/d1 execute(?![^\n]*--command "SELECT )/];
+const WRITES=[/migrations apply/,/cloudflare-deploy-worker\.sh(?! --dry-run)/,/cloudflare-prepare\.mjs/,/cloudflare-smoke\.mjs/,/record-coverage\.mjs/,/\bsecret\b(?!s\.)/,/d1 execute(?![^\n]*--command "SELECT )/];
 // Order of a deploy: gate, time travel, migrations, snapshot, deploy, smoke.
 const order=['cloudflare-deploy-gate.mjs','d1 time-travel info yukemuri','d1 migrations apply yukemuri --remote','build-search-snapshot.mjs --remote --report','bash scripts/cloudflare-deploy-worker.sh |','cloudflare-smoke.mjs'].map(stepOf);
 assert(order.every((v,i)=>i===0||v>order[i-1]),'deploy order: gate, time travel, migrations, search snapshot, deploy, smoke');
@@ -156,7 +156,7 @@ assert.match(deploy,/echo "prepared=.*unprepared\.length===0/,'the snapshot step
  assert(stepBlocks.filter(b=>/scripts\/geo\/|jageocoder/.test(b.text)&&!/build-search-snapshot/.test(b.text)).every(b=>/^ {8}continue-on-error: true$/m.test(b.text)),'every geocoder step is optional');
  assert(stepOf('actions/cache@')<stepOf('scripts/geo/prepare.sh')&&stepOf('scripts/geo/prepare.sh')<stepOf('build-search-snapshot.mjs --remote --report'),'cache, prepare, then the snapshot');
  for(const b of stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text))){
-  assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" | tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');
+  assert(b.text.includes('GEO_DB: ${{ steps.geo.outputs.db }}')&&b.text.includes('if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi')&&b.text.includes('"${geo[@]}" "${progress[@]}" | tee -a "$GITHUB_STEP_SUMMARY"'),'snapshot step passes the geocoder or the reason it is missing');
  }
  const installs=readFileSync('scripts/geo/prepare.sh','utf8').split('\n').filter(l=>/\bpip"? install\b/.test(l)&&!/^\s*(#|step=)/.test(l));
  assert(installs.length===1&&installs.every(l=>/--require-hashes --only-binary=:all: --no-deps -r scripts\/geo\/requirements\.txt$/.test(l)),'Python packages only hash-pinned wheels');
@@ -165,6 +165,25 @@ assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^  workflow_call:$/m,'th
 // C3: a snapshot deploy after a collection builds without the full checks only
 // when this commit passed them on a main push (checked-commit.mjs).
 assert.equal(stepBlocks[stepOf('checked-commit.mjs')].cond,"steps.gate.outputs.mode == 'deploy' && inputs.after_collection");
+// C07 plan 2: only the deploy a collection calls builds with the day the collection finished, and
+// its last step stores that build's count through the new Worker; a push, manual or lifecycle
+// deploy never does. lifecycle.yml also calls with after_collection (the lock, checked-commit.mjs)
+// but without a day, so the day itself decides (Claude review on PR #246).
+assert.match(deploy.match(/^on:\n((?:[ #].*\n)+)/m)[1],/^      collected_on:\n        description: .+\n        type: string\n        default: ''\n/m,'the collection day is a workflow_call input');
+const callers=Object.fromEntries(workflows.map(f=>[f,readFileSync('.github/workflows/'+f,'utf8')]).filter(([,t])=>t.includes('uses: ./.github/workflows/deploy.yml')).map(([f,t])=>[f,t.match(/uses: \.\/\.github\/workflows\/deploy\.yml\n {4}with:\n((?: {6}.+\n)+)/)?.[1]??null]));
+assert.deepEqual(callers,{'collect.yml':'      after_collection: true\n      collected_on: ${{ needs.collect.outputs.collected_on }}\n','lifecycle.yml':'      after_collection: true\n'},'every caller of deploy.yml and its inputs: only the collection passes a day');
+const builds=stepBlocks.filter(b=>/build-search-snapshot\.mjs --remote/.test(b.text));
+assert.equal(builds.length,2);
+for(const b of builds)assert(b.text.includes('COLLECTED_ON: ${{ inputs.collected_on }}\n')&&!b.text.includes('AFTER_COLLECTION')&&b.text.includes(`progress=(); if [[ -n "$COLLECTED_ON" ]]; then progress=(--progress-day "$COLLECTED_ON"); fi`),'the collection day reaches the build only from the collection');
+// The line as the step runs it: no day (lifecycle, push, manual), no argument.
+const progressLine=builds[0].text.match(/^ +(progress=\(\); if .+; fi)$/m)[1];
+for(const [day,shown] of [['','0'],['2026-10-26','2 --progress-day 2026-10-26']]){
+ const r=spawnSync('bash',['-c',progressLine+'; echo ${#progress[@]} "${progress[@]}"'],{env:{...process.env,COLLECTED_ON:day},encoding:'utf8'});
+ assert.equal(r.stdout.trim(),shown,`COLLECTED_ON='${day}'`);
+}
+assert.equal(stepOf('record-coverage.mjs'),stepBlocks.length-1,'the count is stored last, after every deploy and smoke');
+assert.equal(stepBlocks.at(-1).cond,"steps.gate.outputs.mode == 'deploy' && inputs.collected_on != ''");
+assert(stepBlocks.at(-1).text.includes('YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}\n          ORIGIN: ${{ steps.gate.outputs.public_origin }}\n        run: node scripts/record-coverage.mjs "$ORIGIN" snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"'),'the record step reads the last build\'s report');
 assert.equal(stepBlocks[stepOf('cloud-check.py --full')].cond,"steps.gate.outputs.mode == 'deploy' && steps.checked.outputs.checked != 'true'");
 assert.equal(stepBlocks[stepOf('run-framework.mjs build')].cond,"steps.gate.outputs.mode == 'preflight' || steps.checked.outputs.checked == 'true'");
 assert(stepOf('run-framework.mjs build')<stepOf('d1 time-travel info'),'built before any wrangler command');

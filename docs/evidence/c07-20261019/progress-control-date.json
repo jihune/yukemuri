@@ -1,0 +1,90 @@
+{
+ "measuredAt": "2026-10-26T13:24:44.297Z",
+ "oldRef": "5bccf54",
+ "control": "date",
+ "end": "2026-10-19T23:58:00Z",
+ "build": "2026-10-20T00:07:00Z",
+ "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
+ "target": {
+  "jobs": {
+   "jalan detail done": 1907,
+   "jalan detail pending": 21679,
+   "trip detail done": 1707,
+   "trip detail pending": 456,
+   "trip detail failed": 1,
+   "jalan list done": 4100,
+   "trip list done": 1300,
+   "jalan names done": 250,
+   "jalan names pending": 250
+  },
+  "hotels": 25225,
+  "merged": 47
+ },
+ "pairSaves": {
+  "200": 45,
+  "409": 2
+ },
+ "merged": 45,
+ "shaped": {
+  "jobs": {
+   "jalan detail done": 1997,
+   "jalan detail pending": 21589,
+   "jalan list done": 4100,
+   "jalan names done": 250,
+   "jalan names pending": 250,
+   "trip detail done": 1707,
+   "trip detail failed": 1,
+   "trip detail pending": 486,
+   "trip list done": 1300
+  },
+  "hotels": 24557,
+  "counter": "24527"
+ },
+ "result": {
+  "stored": {
+   "hotel-records": {
+    "old": "24557",
+    "new": "24557"
+   },
+   "coverage-sequence": {
+    "old": "3",
+    "new": "3"
+   },
+   "daily-progress:2026-10-19": {
+    "old": "{\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}}",
+    "new": "{\"seq\":2,\"records\":24527,\"pages\":{\"jalan\":{\"done\":1907,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2164}}}"
+   }
+  },
+  "snapshot": {
+   "old": "88b6d5b9a80c7daf",
+   "new": "fdbf44e0de66300e",
+   "hotels": 24512
+  },
+  "rowsRead": {
+   "oldGet": 80807,
+   "oldBuild": 115766,
+   "newBuild": 115770,
+   "newRecord": 9,
+   "saved": 80794
+  },
+  "rowsWritten": {
+   "oldGet": 4,
+   "newRecord": 5
+  },
+  "progress": {
+   "day": "2026-10-20",
+   "counts": {
+    "records": 24557,
+    "prefectures": 47
+   },
+   "jobs": 2,
+   "counter": "24527",
+   "sequence": "2"
+  },
+  "failures": [
+   "catalog_meta daily-progress:2026-10-19: old {\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}} / new {\"seq\":2,\"records\":24527,\"pages\":{\"jalan\":{\"done\":1907,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2164}}}",
+   "catalog_meta daily-progress:2026-10-20: old undefined / new {\"seq\":3,\"records\":24557,\"pages\":{\"jalan\":{\"done\":1997,\"total\":23586},\"trip\":{\"done\":1707,\"total\":2194}}}",
+   "snapshot 88b6d5b9a80c7daf / fdbf44e0de66300e"
+  ]
+ }
+}

@@ -58,14 +58,14 @@ const now=Date.parse('2026-10-21T12:40:00Z'),at=m=>new Date(now-m*60_000).toISOS
 const run=(id,minutesAgo,extra={})=>({id,display_title:GENTLE_TITLE,path:'.github/workflows/collect.yml',head_branch:'main',status:'completed',conclusion:'success',created_at:at(minutesAgo),...extra});
 // Budgets as collection-budget.mjs words them: a reading, and both fallbacks.
 const after=run(100,62),budget=pagesFor({rowsRead:1_500_000,rowsWritten:20_000});
-assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 read; writes allow 351 pages, reads 538, cap 120'});
+assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 read; writes allow 351 pages, reads 561, cap 120'});
 const base={after,runs:[run(90,120),after],budget,now};
 const CASES={
  'not-gentle-main':[{after:{...after,head_branch:'feature'}},{after:{...after,display_title:'Yukemuri collection (check-access)'}},{after:{...after,path:'.github/workflows/deploy.yml'}}],
  'newer-run':[{runs:[after,run(101,30)]},{runs:[after,run(101,30,{status:'completed',conclusion:'failure'})]},{runs:[after,run(101,5,{status:'queued',conclusion:null})]},{runs:[after,{...after,id:101}]}],
  'day-limit':[{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i))]},{runs:[after,...Array.from({length:23},(_,i)=>run(200+i,63+i,{head_branch:'feature'}))]}],
  'usage-unreadable':[{budget:pagesFor(null)},{budget:pagesFor({rowsRead:'x',rowsWritten:0})}],
- 'small-budget':[{budget:pagesFor({rowsRead:3_960_000,rowsWritten:0})},{budget:pagesFor({rowsRead:5_000_000,rowsWritten:0})}]
+ 'small-budget':[{budget:pagesFor({rowsRead:4_060_000,rowsWritten:0})},{budget:pagesFor({rowsRead:5_000_000,rowsWritten:0})}]
 };
 const check=(decide,label)=>{
  assert.deepEqual(decide(base),{dispatch:true,rule:'dispatch',reason:'the next run gets 120 pages ('+budget.reason+')'},label+': a gentle run on main, nothing newer, budget left');
