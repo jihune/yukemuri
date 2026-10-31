@@ -1,7 +1,8 @@
 // daily-check.mjs and usage.yml (check: true) without an account: the 90%
 // boundary of each free limit, exceededResources, gentle runs read from a local
 // stand-in for the GitHub API (runs, jobs, a log behind a 302 like the real
-// endpoint), the four control inputs, and failures to read that never pass.
+// endpoint), the half boundary of retry and failed pages with paused providers
+// (C09), the five control inputs, and failures to read that never pass.
 import {readFileSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
@@ -38,6 +39,7 @@ assert(site.includes("print(json.dumps(dict(url=url,status=payload['status']")&&
 // C07 plan 2: the count after the run comes from the snapshot deploy the collect job calls.
 assert(/\n  snapshot:\n    needs: collect\n(?:    .+\n)*    uses: \.\/\.github\/workflows\/deploy\.yml\n/.test(collect)&&readFileSync('.github/workflows/deploy.yml','utf8').includes('\njobs:\n  deploy:\n')&&SNAPSHOT_JOB==='snapshot / deploy','the snapshot job name the check reads');
 assert(readFileSync('scripts/record-coverage.mjs','utf8').includes('console.log(JSON.stringify({recordedCoverage:{day:progress.day,records:c.records,pending:c.pending,completedDetailPages:c.completedDetailPages}}));'),'the snapshot deploy prints the stored count');
+assert(site.includes("print(json.dumps(dict(providerPaused=provider,reason='http_503',consecutive=unavailable[provider],at=now())),flush=True)"),'collector prints the provider it paused and the 503s in a row (C09)');
 
 // Day: empty is yesterday in UTC; impossible dates fail.
 assert.equal(checkDate('',new Date('2026-10-18T01:30:00Z')),'2026-10-17');
@@ -62,7 +64,7 @@ assert.deepEqual(usageFailures({...acc(),exceeded:1}),['exceededResources 1건(1
 // Log: the budget lines of the budget step only, page states without diagnostics, the final coverage.
 const stamp=s=>s.split('\n').map((l,i)=>`2026-10-17T05:0${Math.min(i,9)}:00.000000${i%10}Z ${l}`).join('\n');
 // stored: the collector's last line after C07 plan 2 (no coverage; the snapshot deploy has it).
-const logText=(pages,{collected=pages,states={done:pages},allow=pages,stored=false}={})=>stamp([
+const logText=(pages,{collected=pages,states={done:pages},allow=pages,stored=false,paused=[]}={})=>stamp([
  '##[group]Run python3 scripts/runner/check_collection.py','pages=999','##[endgroup]',
  BUDGET_STEP+' | tee -a "$GITHUB_OUTPUT"','\u001b[36;1mnode scripts/collection-budget.mjs | tee -a "$GITHUB_OUTPUT"\u001b[0m','env:','  CLOUDFLARE_API_TOKEN: ***','##[endgroup]',
  `pages=${pages}`,`reason=today 120 rows written, 3000 read; writes allow ${allow} pages, reads 400, cap 120`,
@@ -70,21 +72,23 @@ const logText=(pages,{collected=pages,states={done:pages},allow=pages,stored=fal
  pages?JSON.stringify({mode:'gentle',target:'https://example.invalid',pages}):JSON.stringify({mode:'gentle',state:'skipped',pages:0}),
  ...Object.entries(states).flatMap(([s,n])=>Array.from({length:n},(_,i)=>JSON.stringify({url:`https://example.invalid/${s}/${i}`,status:s,reason:null,accepted:1,records:10}))),
  JSON.stringify({sourceDiagnostic:true,url:'https://example.invalid/d',status:'done'}),
+ ...paused.map(([provider,consecutive])=>JSON.stringify({providerPaused:provider,reason:'http_503',consecutive,at:'2026-10-17T05:03:00+00:00'})),
  ...(pages?[JSON.stringify({processed:collected,readbackId:'x',...(stored?{}:{coverage:{pending:20947,completedDetailPages:2962}})}),'{"state": "finished"}']:[]),
  'pages=555'].join('\n'));
 const snapshotLog=(pending,done)=>stamp(['##[group]Run node scripts/record-coverage.mjs "$ORIGIN" snapshot-report.json | tee -a "$GITHUB_STEP_SUMMARY"','##[endgroup]',
  JSON.stringify({recordedCoverage:{day:'2026-10-17',records:25225,pending,completedDetailPages:done}})].join('\n'));
-assert.deepEqual(parseLog(logText(79)),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},pending:20947,completed:2962},'pages= of the budget step, not of other steps');
+assert.deepEqual(parseLog(logText(79)),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},paused:[],pending:20947,completed:2962},'pages= of the budget step, not of other steps');
 assert.deepEqual(parseLog(logText(3,{states:{done:1,retry:1,failed:1}})).counts,{done:1,retry:1,failed:1});
-assert.deepEqual(parseLog(logText(0)),{pages:0,reason:'today 120 rows written, 3000 read; writes allow 0 pages, reads 400, cap 120',processed:null,counts:{},pending:null,completed:null});
+assert.deepEqual(parseLog(logText(5,{states:{done:2,retry:3},paused:[['jalan',3]]})).paused,[{provider:'jalan',consecutive:3}],'a paused provider (C09)');
+assert.deepEqual(parseLog(logText(0)),{pages:0,reason:'today 120 rows written, 3000 read; writes allow 0 pages, reads 400, cap 120',processed:null,counts:{},paused:[],pending:null,completed:null});
 assert.equal(parseLog('').pages,null);assert.equal(parseLog(stamp('pages=120')).pages,null,'pages= outside the budget step does not count');
 assert.equal(parseLog(logText(120).replace(/\n/g,'\r\n')).pages,120,'CRLF logs');
-assert.deepEqual(parseLog(logText(79,{stored:true})),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},pending:null,completed:null},'C07 plan 2: processed without coverage');
+assert.deepEqual(parseLog(logText(79,{stored:true})),{pages:79,reason:'today 120 rows written, 3000 read; writes allow 79 pages, reads 400, cap 120',processed:79,counts:{done:79},paused:[],pending:null,completed:null},'C07 plan 2: processed without coverage');
 assert.deepEqual([parseLog(snapshotLog(20900,3010)).pending,parseLog(snapshotLog(20900,3010)).completed],[20900,3010],'the count the snapshot deploy stored');
 
 // Runs: 0 pages, 26 minutes, not success, pages unreadable fail; so does a run not finished yet,
 // because the next day's check looks at another day (PR #131 Codex review).
-const done={status:'completed',conclusion:'success',jobSeconds:20*60,pages:120};
+const done={status:'completed',conclusion:'success',jobSeconds:20*60,pages:120,counts:{done:120},paused:[]};
 assert.deepEqual(runFailures(done),[]);
 assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60-1}),[]);
 assert.deepEqual(runFailures({...done,jobSeconds:JOB_MINUTES*60,conclusion:'cancelled'}),['결과 cancelled','collect job 26분(26분 이상)']);
@@ -103,6 +107,22 @@ assert.deepEqual(dayFailures([]),[]);assert.deepEqual(dayFailures([{...done,page
 assert.deepEqual(dayFailures([{...done,pages:0},{...done,pages:0}]),['그날 gentle 실행 2회가 모두 0쪽이다(수집 없음)']);
 assert.deepEqual(runFailures({...done,pages:null}),['로그에서 pages= 줄을 읽지 못함']);
 assert.deepEqual(runFailures({...done,conclusion:'failure',jobSeconds:null,pages:null}),['결과 failure','로그에서 pages= 줄을 읽지 못함']);
+// C09: retry and failed on more than half the pages reported fail; exactly half passes. 0-page and
+// overlapping runs report no pages. The 503s that paused a provider are not counted, so a pause alone passes.
+const many=`처리한 10쪽 가운데 retry·failed가 6쪽으로 절반을 넘는다`;
+assert.deepEqual(runFailures({...done,counts:{done:5,retry:3,failed:2}}),[],'exactly half');
+assert.deepEqual(runFailures({...done,counts:{done:4,retry:3,failed:3}}),[many]);
+assert.deepEqual(runFailures({...done,counts:{done:4,skipped:1,retry:5}}),[],'skipped is a page reported, not a failure');
+assert.deepEqual(runFailures({...done,counts:{done:2,retry:1,failed:2}}),['처리한 5쪽 가운데 retry·failed가 3쪽으로 절반을 넘는다']);
+assert.deepEqual(runFailures({...done,counts:{done:3,failed:2}}),[]);
+assert.deepEqual(runFailures({...done,pages:0,reason:spent(0,400),counts:{failed:3}}),[],'0-page run');
+assert.deepEqual(runFailures({...done,pages:0,reason:'overlap: run 1 (completed) was queued or running when run 2 was made and carries the chain',counts:{failed:3}}),[],'overlapping run');
+const jalan=[{provider:'jalan',consecutive:3}];
+assert.deepEqual(runFailures({...done,counts:{done:2,retry:3},paused:jalan}),[],'a pause alone');
+assert.deepEqual(runFailures({...done,counts:{done:2,retry:3}}),['처리한 5쪽 가운데 retry·failed가 3쪽으로 절반을 넘는다'],'the same pages without the pause');
+assert.deepEqual(runFailures({...done,counts:{done:1,retry:3,failed:4},paused:jalan}),[],'half of the pages without the pausing 503s');
+assert.deepEqual(runFailures({...done,counts:{done:1,retry:3,failed:5},paused:jalan}),['처리한 9쪽 가운데 retry·failed가 5쪽으로 절반을 넘는다(공급자를 쉬게 한 503 3쪽은 세지 않음)']);
+assert.deepEqual(runFailures({...done,counts:{done:1,retry:6,failed:1},paused:[...jalan,{provider:'trip',consecutive:3}]}),[],'two providers paused');
 for(const status of ['in_progress','queued'])
  assert.deepEqual(runFailures({...done,status,conclusion:null,pages:null}),[`끝나지 않음(${status}): 다음 점검은 이 실행을 다시 보지 않는다`]);
 
@@ -140,13 +160,13 @@ const env={CLOUDFLARE_API_TOKEN:CF_TOKEN,CLOUDFLARE_ACCOUNT_ID:ACCOUNT,GH_TOKEN,
 const now=new Date('2026-10-18T01:30:00Z');
 const check=(extra={})=>dailyCheck({env:{...env,...extra},fetch,now,config});
 let id=0;
-function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,stored=false,snapshot='success'}={}){
+function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,stored=false,snapshot='success',paused}={}){
  const run=++id,job=1000+run;
  runs.push({id:run,display_title:title,created_at:created,run_started_at:created,status,conclusion});
  const at=m=>new Date(Date.parse(created)+m*60000).toISOString().replace('.000','');
  jobs[run]=[{id:job,name:COLLECT_JOB,status,conclusion,started_at:at(0),completed_at:status==='completed'?at(jobMinutes):null,
   steps:[{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)}]},{id:job+500,name:SNAPSHOT_JOB,status,conclusion:snapshot}];
- if(log)logs[job]=logText(pages,{states,allow,stored});
+ if(log)logs[job]=logText(pages,{states,allow,stored,paused});
  if(log&&stored&&snapshot!=='skipped')logs[job+500]=snapshotLog(20900,3010+run);
  return run;
 }
@@ -177,7 +197,7 @@ try{
  runs=runs.filter(r=>![stored,unstored].includes(r.id));
 
  // Each control fails the same normal day.
- for(const [control,pattern] of [['over-90',/계정 D1 쓰기 90,000행 = 무료 한도의 90\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
+ for(const [control,pattern] of [['over-90',/계정 D1 쓰기 90,000행 = 무료 한도의 90\.0%/],['exceeded',/exceededResources 1건/],['zero-pages',/gentle run 2: 0쪽 실행인데 그날 예산이 남아 있었다\(writes allow 120, reads 400\)/],['many-failed',/^gentle run 2: 처리한 120쪽 가운데 retry·failed가 120쪽으로 절반을 넘는다$/],['no-permission',/Cloudflare 사용량을 읽지 못함\(0으로 보지 않는다\): API 토큰에 Account > Account Analytics > Read 권한이 없다/]]){
   result=await check({CHECK_CONTROL:control});
   assert.equal(result.failures.length,1,control+': '+result.failures.join(' / '));assert.match(result.failures[0],pattern,control);
   assert.match(result.lines.join('\n'),new RegExp(`> 대조 입력 \`${control}\``),control+' is labelled');
@@ -211,13 +231,16 @@ try{
  const failed=addRun(120,{created:'2026-10-17T15:00:00Z',conclusion:'failure',log:false});
  jobs[failed]=[]; // failed before the collect job had a log
  const running=addRun(120,{created:'2026-10-17T23:58:00Z',status:'in_progress',conclusion:null,log:false});
+ const flaky=addRun(10,{created:'2026-10-17T10:00:00Z',states:{done:4,retry:3,failed:3}}); // C09: more than half retry or failed
+ const rested=addRun(5,{created:'2026-10-17T11:00:00Z',states:{done:2,retry:3},paused:[['jalan',3]]}); // C09: a pause alone passes
  result=await check();
- assert.deepEqual(result.failures,[`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${roomy}: 0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
+ assert.deepEqual(result.failures,[`gentle run ${flaky}: 처리한 10쪽 가운데 retry·failed가 6쪽으로 절반을 넘는다`,`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${roomy}: 0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| \\*\\*실패\\*\\* \\|$`,'m'));
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${zero} \\| 19:35Z \\| success \\| 0 \\|.*\\| 통과\\(예산 소진\\) \\|$`,'m'),'a 0-page run after the share is used passes');
- runs=runs.filter(r=>![roomy,slow,failed,running].includes(r.id));
+ assert.match(result.lines.join('\n'),new RegExp(`\\| ${rested} \\| 11:00Z \\| success \\| 5 \\|.*\\| 5 \\| done 2, retry 3; 쉼: jalan\\(503 3번 잇달아\\) \\|.*\\| 통과 \\|$`,'m'),'the paused provider in the table');
+ runs=runs.filter(r=>![roomy,slow,failed,running,flaky,rested].includes(r.id));
  result=await check();assert.deepEqual(result.failures,[]);
- assert.ok(result.lines.includes('**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
+ assert.ok(result.lines.includes('**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음, 절반 넘게 retry·failed)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
  runs=runs.filter(r=>r.id!==zero);
  // GitHub errors and missing settings fail; the usage table stays.
  for(const [fail,pattern] of [[{path:'/workflows/',status:403},/GitHub API 403 \(\/repos\/jihune\/yukemuri\/actions\/workflows\/collect\.yml\/runs\)/],[{path:'/logs',status:410},/GitHub API 410/],[{path:'/blob/',status:404},/GitHub API 404/]]){
@@ -242,6 +265,7 @@ try{
  const saved=runs;runs=[];
  result=await check();assert.deepEqual(result.failures,[]);assert.match(result.lines.join('\n'),/gentle 실행 0회/);
  assert.match((await check({CHECK_CONTROL:'zero-pages'})).failures[0],/zero-pages를 적용하지 못함/);
+ assert.match((await check({CHECK_CONTROL:'many-failed'})).failures[0],/many-failed를 적용하지 못함/);
  // Every run of the day took 0 pages: nothing was collected, even with each share used.
  addRun(0,{created:'2026-10-17T06:00:00Z',jobMinutes:1,stepMinutes:0});addRun(0,{created:'2026-10-17T07:00:00Z',jobMinutes:1,stepMinutes:0});
  result=await check();assert.deepEqual(result.failures,['그날 gentle 실행 2회가 모두 0쪽이다(수집 없음)']);
@@ -255,7 +279,7 @@ try{
  assert.match(readFileSync(summary,'utf8'),/^# 매일 점검\(O03\) — 2026-10-17\(UTC\)\n\n\*\*실패 1건\*\*/);
  assert.match(readFileSync(summary,'utf8'),/\| 통과 \|/,'the gentle table is in the summary');
  ran=await exec({CHECK_CONTROL:'nope'});
- assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-90, exceeded, zero-pages, no-permission/);
+ assert.equal(ran.code,1);assert.match(ran.out,/::error::control must be one of none, over-90, exceeded, zero-pages, many-failed, no-permission/);
  assert(!ran.out.includes(GH_TOKEN),'token never printed');
 }finally{server.closeAllConnections();server.close();rmSync(folder,{recursive:true,force:true})}
-console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 5 controls), the collect.yml job, budget step and collector lines it reads, 90% of each free limit (just under and 85% pass), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used or after repeating a run in flight passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the four controls each failing a normal day.`);
+console.log(`Daily check passed: usage.yml check step (no cron, actions: read, 6 controls), the collect.yml job, budget step and collector lines it reads, 90% of each free limit (just under and 85% pass), exceededResources, days without records, unreadable usage (permission, network, missing token), gentle runs from a local GitHub stand-in (0 pages with budget left or an unreadable budget line, a day of only 0-page runs, 0 pages after the share is used or after repeating a run in flight passing, ${JOB_MINUTES} minutes, not success, no pages= line, not finished, retry and failed on more than half the pages (exactly half and a provider paused for 503s in a row passing), other days and check-access left out), GitHub errors, requests that hang cut off without stopping the other half, and the five controls each failing a normal day.`);
