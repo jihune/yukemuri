@@ -68,7 +68,9 @@
 날짜·버전·검사 범위·미확인 사항을 남긴다. 과거 수집 집계를 현재값으로 가정하지 않는다.
 과거 문서 날짜를 현재 날짜로 고치지 않는다. 중요한 중단 지점과 다음 행동을 기록한다.
 
-작업 기록은 이 체계 하나만 사용한다. `docs/work-handoff-latest.md`는 현재 작업 하나의 인수인계다. `docs/roadmap.md`는 작업 상태, 작업별 상세 문서는 `docs/<작업ID>-<날짜>.md`, 근거는 `docs/evidence/`에 둔다. 새 작업의 인수인계를 쓰기 전에 이전 내용을 `docs/history/work-handoff-<작업ID>-<날짜>.md`로 옮긴다. `agents_work/`·`STATE.md` 같은 별도 기록 폴더를 만들지 않는다.
+작업 기록은 이 체계 하나만 사용한다. `docs/work-handoff-latest.md`는 현재 작업 하나의 인수인계다. `docs/roadmap.md`는 작업 상태, 작업별 상세 문서는 `docs/<작업ID>-<날짜>.md`, 근거는 `docs/evidence/`에 둔다. 새 작업의 인수인계를 쓰기 전에 이전 내용을 `docs/history/work-handoff-<시각>.md`로 옮긴다. `agents_work/`·`STATE.md` 같은 별도 기록 폴더를 만들지 않는다.
+
+기록 파일 크기 상한은 `docs/work-handoff-latest.md` 81,000바이트, `docs/roadmap.md` 56,000바이트다(`wc -c`로 잰다). 하네스 기본값 16 KB는 두 파일이 지금 상태만 남겨도 넘어서 파일마다 정했다. 2026-11-02에 잰 크기(인계 문서는 그날 지금 상태만 남긴 뒤 60,716바이트, `roadmap.md`는 10-27에 줄인 뒤 41,687바이트)의 약 4/3이다(사용자 결정 ‘기록 파일 줄이기’ 2026-10-27T05:3xZ의 범위, 하네스 `docs/update.md` 1절 D-025). 상한을 넘으면 줄을 잘라 맞추지 않는다. 다시 쓰기 전 판을 `docs/history/work-handoff-<시각>.md`·`docs/history/roadmap-<시각>.md`(예: `work-handoff-20261102T1224Z.md`, `roadmap-20261027T0537Z.md`)에 바꾸지 않고 옮기고, 지금 상태와 지금도 따르는 것만 남겨 상한의 4분의 3쯤(60,750바이트·42,000바이트)으로 다시 쓴다. 지금 상태만 남겨도 4분의 3을 넘으면 상한을 다시 정한다.
 
 대용량 공개 seed·이미지·검사 fixture·원래 Git bundle은 `source-assets/`에 해시와 gzip/base64 조각으로 보존한다. `bash scripts/cloud-setup.sh`가 원래 경로와 바이트를 복원한다. 이것은 전송 중단 후 재개를 위한 소스 저장 형식이며 개인 대화·DB 백업이 아니다. 복원된 자료를 수정하면 `python3 scripts/materialize-source-assets.py --pack` 후 `source-assets/` 변경도 같은 PR에 포함한다. 원래 Git 이력만 필요하면 의존성 설치 없이 `python3 scripts/materialize-source-assets.py`를 실행한다.
 
