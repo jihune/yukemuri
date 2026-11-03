@@ -35,27 +35,25 @@ import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync,writeFileSync,c
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFileSync} from 'node:child_process';
-import {isDeepStrictEqual} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const require=createRequire(realpathSync('node_modules/wrangler/package.json'));
 const {Miniflare}=require('miniflare');
 const argv=process.argv.slice(2),arg=(k,d)=>argv.includes(k)?argv[argv.indexOf(k)+1]:d;
-const oldRef=arg('--old-ref','origin/main'),PAGES=arg('--pages','120'),out=arg('--out',null),control=argv.includes('--control'),staleLease=argv.includes('--stale-lease');
-const [listsJalan,listsTrip]=arg('--lists','4100,1300').split(',').map(Number),[dueJalan,dueTrip]=arg('--due','3,5').split(',').map(Number);
+const PAGES='120',out=arg('--out',null);
 const here=dirname(fileURLToPath(import.meta.url));
 const KEY='c07-measure-only-key',START=Date.parse('2026-10-19T12:00:00Z'),DAY=86400e3;
-// Production on 2026-10-19T11:32Z (public status.json of snapshot b3d3b67da3da916a): queue
-// detail jobs by status and hotels. List and names jobs are not public: estimated from
-// the ratio of the checked-in queue (data/crawl-jobs.json, 499 Jalan and 49 Trip.com
-// list jobs for 2,876 and 81 detail jobs) and D07 (about 250 locale list pages a language).
-const TARGET={jobs:{'jalan detail done':1907,'jalan detail pending':21679,'trip detail done':1707,'trip detail pending':456,'trip detail failed':1,
- 'jalan list done':listsJalan,'trip list done':listsTrip,'jalan names done':250,'jalan names pending':250},hotels:25225};
-// Due refresh pages. 3,5: the refresh groups give pages in the first rounds and then run
-// empty, as in run 39242973283 (11:12Z); 20,20: they give a page every round, as in
-// run 39234821810 (10:04Z).
-const DUE={jalan:dueJalan,trip:dueTrip};
-const temp=mkdtempSync(join(tmpdir(),'yukemuri-c07-claims-'));
+// List and locale list jobs as plan 1 estimated them (not public).
+const LISTS={'jalan list done':4100,'trip list done':1300,'jalan names done':250,'jalan names pending':250};
+const SHAPES={
+ A:{'jalan detail done':2427,'jalan detail pending':21241,'trip detail done':2058,'trip detail pending':108},
+ B:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1},
+ C:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0},
+ B2:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1,candidates:25},
+};
+const DUE={jalan:3,trip:5};
+const PRODUCTION_SPAN=4284.5;
+const temp=mkdtempSync(join(tmpdir(),'yukemuri-c07-groups-'));
 const server=join(temp,'server');cpSync('dist/server',server,{recursive:true});
 // Test-only entry: the clock the request names (X-Compare-Now) and the rows each request read and wrote.
 writeFileSync(join(server,'__c07.js'),`import app from './index.js';
@@ -83,6 +81,7 @@ const numbers=n=>{assert(n>0,'a target below the checked-in rows');return `WITH 
 // Rows of one kind of synthetic detail job and its hotel (a list-only row for a pending
 // page, a detail row for a done one), copied from a checked-in hotel of that provider.
 async function addDetails(db,provider,status,count,first,fetched){
+ if(count<=0)return;
  const url=provider==='jalan'?`'https://www.jalan.net/yad'||(${first}+i)||'/'`:`'https://www.trip.com/hotels/hakone-hotel-detail-'||(${first}+i)||'/fujiya-hotel/'`;
  const id=`'${provider}-'||(${first}+i)`,done=status==='done';
  const template=(await db.prepare(`SELECT id FROM hotels WHERE id GLOB '${provider}-[0-9]*' ORDER BY id LIMIT 1`).first()).id;
@@ -94,33 +93,28 @@ async function addDetails(db,provider,status,count,first,fetched){
  await db.prepare(`${numbers(count)} INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,error,fetched_at) SELECT ${url},'${provider}','detail','pref-kanagawa',10+(i%9)*10,'${status}',${status==='failed'?3:done?1:0},${status==='failed'?`${(START+7*DAY)/1000}`:'0'},${status==='failed'?"'http_404'":'NULL'},${done?`'${fetched}'`:'NULL'} FROM n`).run();
 }
 const counts=async db=>Object.fromEntries((await db.prepare("SELECT provider||' '||kind||' '||status AS k,COUNT(*) AS n FROM crawl_jobs GROUP BY 1 ORDER BY 1").all()).results.map(r=>[r.k,r.n]));
-const report={measuredAt:new Date().toISOString(),oldRef,environment:'Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.',target:TARGET,due:DUE};
-let failures=[];
+// Done Jalan detail jobs whose hotel the baths claim would take (BATHS_CANDIDATE's hotel
+// half; lib/crawl-queue.ts), to report how many candidates each shape holds.
+const candidatesInDone=async db=>(await db.prepare("SELECT COUNT(*) AS n FROM crawl_jobs j JOIN hotels h ON h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) WHERE j.provider='jalan' AND j.kind='detail' AND j.status='done' AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NOT 'v3'").first()).n;
+const report={measuredAt:new Date().toISOString(),environment:'Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.',lists:LISTS,due:DUE,shapes:SHAPES,runs:{}};
 try{
- // The collectors: main's update-site.py beside this branch's other crawler files, and this branch's.
- const crawlers={old:join(temp,'old/scripts/crawler'),new:join(temp,'new/scripts/crawler')};
- for(const [name,dir] of Object.entries(crawlers)){cpSync('scripts/crawler',dir,{recursive:true});cpSync('data',join(dir,'../../data'),{recursive:true})}
- writeFileSync(join(crawlers.old,'update-site.py'),execFileSync('git',['show',`${oldRef}:scripts/crawler/update-site.py`],{encoding:'utf8'}));
- if(control){const p=join(crawlers.new,'update-site.py'),s=readFileSync(p,'utf8'),line="  if args.gentle and not batch and answer.get('exhausted') is True:\n";assert.equal(s.split(line).length,2,'control line');writeFileSync(p,s.replace(line,"  if args.gentle and (not batch and answer.get('exhausted') is True or completed==7):\n"))}
- report.collectors={old:oldRef,new:control?'this branch, with the control change':'this branch'};
- // The base D1: migrations, the checked-in catalogue and queue, then production's shape.
- const base=join(temp,'base');let mf=start(base);const db=await mf.getD1Database('DB');
- await migrate(db);
- for(let i=0;;i++){const r=await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY,'X-Compare-Now':String(START-DAY)}});assert.equal(r.status,200);if((await r.json()).done)break;assert(i<60)}
- report.seeded=await counts(db);
- // Lists are all done in production (no list pages in the 10-19 runs): finish the
- // checked-in ones; nothing below is due before the run except the DUE pages.
- const recent=iso(START-2*DAY);
- await db.prepare("UPDATE crawl_jobs SET status='done',attempts=1,next_at=0,error=NULL,fetched_at=? WHERE kind='list' OR status='done'").bind(recent).run();
- await db.prepare("UPDATE crawl_jobs SET status='done',attempts=1,next_at=0,error=NULL,fetched_at=? WHERE status IN ('retry','failed')").bind(recent).run();
- const have=await counts(db),need=k=>TARGET.jobs[k]-(have[k]??0);
- await addDetails(db,'jalan','done',need('jalan detail done')-DUE.jalan,2000000,recent);
- await addDetails(db,'jalan','done',DUE.jalan,2900000,iso(START-60*DAY));
- await addDetails(db,'jalan','pending',need('jalan detail pending'),3000000,null);
- await addDetails(db,'trip','done',need('trip detail done')-DUE.trip,4000000,recent);
- await addDetails(db,'trip','done',DUE.trip,4900000,iso(START-60*DAY));
- await addDetails(db,'trip','pending',need('trip detail pending'),5000000,null);
- await addDetails(db,'trip','failed',need('trip detail failed'),5900000,recent);
+ const crawler=join(temp,'crawler/scripts/crawler');
+ cpSync('scripts/crawler',crawler,{recursive:true});cpSync('data',join(crawler,'../../data'),{recursive:true});
+ for(const [name,shape] of Object.entries(SHAPES)){
+  const mf=start(join(temp,'db-'+name)),db=await mf.getD1Database('DB');
+  try{
+   await migrate(db);
+   for(let i=0;;i++){const r=await mf.dispatchFetch('http://localhost/api/crawl-prepare',{method:'POST',headers:{'X-Yukemuri-Crawl-Key':KEY,'X-Compare-Now':String(START-DAY)}});assert.equal(r.status,200);if((await r.json()).done)break;assert(i<60)}
+   const recent=iso(START-2*DAY);
+   await db.prepare("UPDATE crawl_jobs SET status='done',attempts=1,next_at=0,error=NULL,fetched_at=? WHERE kind='list' OR status='done'").bind(recent).run();
+   await db.prepare("UPDATE crawl_jobs SET status='done',attempts=1,next_at=0,error=NULL,fetched_at=? WHERE status IN ('retry','failed')").bind(recent).run();
+   const target={...LISTS,...shape},have=await counts(db),need=k=>(target[k]??0)-(have[k]??0);
+   await addDetails(db,'jalan','done',need('jalan detail done')-DUE.jalan,2000000,recent);
+   await addDetails(db,'jalan','done',DUE.jalan,2900000,iso(START-60*DAY));
+   await addDetails(db,'jalan','pending',need('jalan detail pending'),3000000,null);
+   await addDetails(db,'trip','done',need('trip detail done')-DUE.trip,4000000,recent);
+   await addDetails(db,'trip','done',DUE.trip,4900000,iso(START-60*DAY));
+   await addDetails(db,'trip','pending',need('trip detail pending'),5000000,null);
  if(need('jalan list done')>0)await db.prepare(`${numbers(need('jalan list done'))} INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.jalan.net/990000/LRG_'||i||'/','jalan','list','pref-kanagawa',10+(i%9)*10,'done',1,0,? FROM n`).bind(recent).run();
  if(need('trip list done')>0)await db.prepare(`${numbers(need('trip list done'))} INSERT INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.trip.com/hotels/qa'||i||'-hotels-list-'||i||'/','trip','list','pref-kanagawa',10+(i%9)*10,'done',1,0,? FROM n`).bind(recent).run();
  // Locale list pages: kenCd 01-47 and page numbers, both languages; done ones fetched lately.
@@ -129,43 +123,45 @@ try{
   await db.prepare(`${numbers(n)} INSERT OR IGNORE INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.jalan.net/ui/uip1400/uiw1402.do?langCd='||l||'&kenCd='||printf('%02d',1+i%47)||'0000&stayCount=1&roomCount=1&distCd=01&crcyCd='||c||'&activeSort=1&screenId=UIW1402&idx='||(${offset}+1+i/94)||'&pageNum='||(${offset}+1+i/94),'jalan','names',NULL,95,?,?,0,? FROM n,(SELECT 'en_US' AS l,'USD' AS c UNION ALL SELECT 'ko_KR','KRW') WHERE (i/47)%2=(CASE l WHEN 'en_US' THEN 0 ELSE 1 END)`).bind(status,status==='done'?1:0,status==='done'?recent:null).run();
  }
  await db.prepare("INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,missing_count,missing_at) SELECT id,'2026-10-01T00:00:00Z','2026-10-01T00:00:00Z',0,NULL FROM hotels WHERE 1 ON CONFLICT DO NOTHING").run();
- if(staleLease)await db.prepare("UPDATE crawl_jobs SET lease_token='00000000-0000-4000-8000-000000000000',lease_until=? WHERE url=(SELECT MAX(url) FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='pending')").bind((START+95e3)/1000).run();
- report.staleLease=staleLease;
- report.shaped={jobs:await counts(db),hotels:(await db.prepare("SELECT substr(id,1,instr(id,'-')-1) AS p,COUNT(*) AS n FROM hotels GROUP BY 1").all()).results};
- const tables=(await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND name NOT LIKE 'd1_%' ORDER BY name").all()).results.map(r=>r.name);
- await mf.dispose();
- const runs={};
- for(const name of ['old','new']){
-  const dir=join(temp,'db-'+name);cpSync(base,dir,{recursive:true});
-  mf=start(dir);const origin=(await mf.ready).origin,logFile=join(temp,name+'.json');
-  try{
-   execFileSync('python3',[join(here,'drive-collector.py'),crawlers[name],origin,PAGES,String(START),logFile],{stdio:['ignore','inherit','inherit']});
+   const run=report.runs[name]={candidatesBefore:await candidatesInDone(db)};
+   if(shape.candidates){
+    // Spread evenly over the order the priority lane reads done jobs in.
+    const done=(await db.prepare("SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status='done' ORDER BY priority,COALESCE(unixepoch(fetched_at),0),attempts,url").all()).results.map(r=>r.url);
+    const step=Math.floor(done.length/shape.candidates),pick=done.filter((_,i)=>i%step===Math.floor(step/2)).slice(0,shape.candidates);
+    for(const url of pick)await db.prepare("UPDATE hotels SET payload=json_remove(payload,'$.sources[0].bathDataVersion') WHERE json_extract(payload,'$.links[0].url')=?").bind(url).run();
+   }
+   run.candidates=await candidatesInDone(db);
+   run.shaped=await counts(db);
+   run.hotels=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
+   const origin=(await mf.ready).origin,logFile=join(temp,name+'.json');
+   await (await fetch(origin+'/__meter')).json();
+   execFileSync('python3',[join(here,'drive-collector.py'),crawler,origin,PAGES,String(START),logFile],{stdio:['ignore','inherit','inherit']});
    const log=JSON.parse(readFileSync(logFile,'utf8')),meter=await (await fetch(origin+'/__meter')).json();
    const claimRows=meter.filter(r=>r.method==='POST'&&r.path==='/api/crawl');
    assert.equal(claimRows.length,log.claims.length,'every claim was metered');
-   const d=await mf.getD1Database('DB'),dump={};
-   for(const t of tables)dump[t]=(await d.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all()).results;
-   runs[name]={log,claims:log.claims.map((c,i)=>({...c,read:claimRows[i].read,written:claimRows[i].written,statements:claimRows[i].statements})),meter,dump};
+   const claims=log.claims.map((c,i)=>({...c,read:claimRows[i].read,statements:claimRows[i].statements}));
+   const groups={};
+   for(const c of claims){const e=groups[c.provider+'/'+c.phase]??={claims:0,pages:0,emptyClaims:0,read:0,pageRead:0};e.claims++;e.read+=c.read;if(c.url){e.pages++;e.pageRead+=c.read}else e.emptyClaims++}
+   for(const e of Object.values(groups)){e.perClaim=Math.round(e.read/e.claims);e.perPageClaim=e.pages?Math.round(e.pageRead/e.pages):null}
+   const requests={};
+   for(const m of meter){const k=m.method+' '+(m.path.startsWith('/api/hotels/')?'/api/hotels/<id>':m.path),e=requests[k]??={requests:0,read:0};e.requests++;e.read+=m.read}
+   Object.assign(run,{pages:log.saves.length,claims:claims.length,rounds:log.lines.find(l=>'rounds' in l)?.rounds??null,claimRead:claims.reduce((n,c)=>n+c.read,0),groups,requests,
+    bathsStatements:claims.find(c=>c.provider==='jalan'&&c.phase==='baths')?.statements??null});
+   run.claimReadPerPage=Math.round(run.claimRead/run.pages);
+   console.log(`${name}: ${run.pages} pages, ${run.claims} claims, claims read ${run.claimRead} rows (${run.claimReadPerPage} a page); done Jalan candidates ${run.candidates}; hotels ${run.hotels}`);
+   for(const [g,e] of Object.entries(groups))console.log(`  ${g}: ${e.claims} claims (${e.pages} pages, ${e.emptyClaims} empty), ${e.read} rows, ${e.perClaim} a claim`);
   }finally{await mf.dispose()}
  }
- const [a,b]=[runs.old,runs.new];
- const pages=r=>r.log.saves.map(s=>s.url);
- if(!isDeepStrictEqual(pages(a),pages(b)))failures.push(`pages differ (${pages(a).length} / ${pages(b).length})`);
- if(!isDeepStrictEqual(a.log.saves.map(s=>s.response),b.log.saves.map(s=>s.response)))failures.push('save responses differ');
- const given=r=>r.claims.filter(c=>c.url).map(c=>[c.provider,c.phase,c.lane,c.url]);
- if(!isDeepStrictEqual(given(a),given(b)))failures.push('the claims that gave a page differ');
- for(const t of tables)if(!isDeepStrictEqual(a.dump[t],b.dump[t])){const i=a.dump[t].findIndex((r,k)=>!isDeepStrictEqual(r,b.dump[t][k]));failures.push(`${t}: stored rows differ (${a.dump[t].length} / ${b.dump[t].length}, first at ${i})`)}
- const sum=(rows,f='read')=>rows.reduce((n,r)=>n+r[f],0);
- const byGroup=r=>{const g={};for(const c of r.claims){const k=c.provider+'/'+c.phase,e=g[k]??={claims:0,pages:0,emptyClaims:0,read:0,emptyRead:0};e.claims++;e.read+=c.read;if(c.url)e.pages++;else{e.emptyClaims++;e.emptyRead+=c.read}}return g};
- const kinds=r=>{const k={};for(const m of r.meter){const key=m.method+' '+(m.path.startsWith('/api/hotels/')?'/api/hotels/<id>':m.path);const e=k[key]??={requests:0,read:0,written:0};e.requests++;e.read+=m.read;e.written+=m.written}return k};
- for(const [name,r] of Object.entries(runs))report[name]={pages:r.log.saves.length,claims:r.claims.length,rounds:r.log.lines.find(l=>'rounds' in l)?.rounds??null,claimRead:sum(r.claims),claimWritten:sum(r.claims,'written'),emptyClaimWritten:sum(r.claims.filter(c=>!c.url),'written'),requests:kinds(r),groups:byGroup(r),emptyGroups:r.log.lines.filter(l=>l.emptyGroup)};
- // One claim of each group and outcome on main's run, statement by statement: where the rows are read.
- report.statements={};for(const c of runs.old.claims){const k=`${c.provider}/${c.phase} ${c.lane} ${c.url?'page':'empty'}`;report.statements[k]??=c.statements}
- report.saved={claimRead:report.old.claimRead-report.new.claimRead,claims:report.old.claims-report.new.claims};
- report.failures=failures;
- for(const name of ['old','new']){const r=report[name];console.log(`${name}: ${r.pages} pages, ${r.claims} claims (${r.rounds??'-'} rounds), claims read ${r.claimRead} rows, wrote ${r.claimWritten} (empty claims wrote ${r.emptyClaimWritten})`);for(const [g,e] of Object.entries(r.groups))console.log(`  ${g.padEnd(17)} claims ${String(e.claims).padStart(3)} pages ${String(e.pages).padStart(3)} read ${String(e.read).padStart(7)} (empty ${e.emptyClaims} claims, ${e.emptyRead} rows)`)}
- console.log(`claims ${report.old.claims} -> ${report.new.claims}, rows read by claims ${report.old.claimRead} -> ${report.new.claimRead} (${report.saved.claimRead} fewer)`);
+ const {A,B,C,B2}=report.runs,baths=r=>r.groups['jalan/baths']?.perClaim??0;
+ const trip=A.groups['trip/detail']?.perPageClaim;
+ const v={R0:trip!=null&&trip>=600&&trip<=2400?'OK':'ERROR'};
+ v.R1=(B.groups['jalan/baths']?.read??0)>=B.claimRead/2?'BATHS_DOMINANT':'BATHS_MINOR';
+ const growth=baths(A)?baths(C)/baths(A):null;
+ v.R2=growth==null?'NONE':growth>=2?'GROWS':growth<=1.2?'FLAT':'PARTLY';
+ v.R3=B.claimReadPerPage>=PRODUCTION_SPAN/2?'MOSTLY':'PARTLY';
+ const sensitivity=baths(B)?baths(B2)/baths(B):null;
+ v.R4=sensitivity==null?'NONE':sensitivity<=0.5?'CANDIDATE_SENSITIVE':'CANDIDATE_ROBUST';
+ report.verdicts={...v,tripDetailPageClaim:trip,bathsGrowthCoverA:growth,bathsB2overB:sensitivity,bathsShareB:(B.groups['jalan/baths']?.read??0)/B.claimRead,claimReadPerPageB:B.claimReadPerPage};
  if(out)writeFileSync(out,JSON.stringify(report,null,1)+'\n');
- console.log(failures.length?`Claim rounds comparison FAIL ${failures.length}: ${failures.join('; ')}`:`Claim rounds comparison PASS: ${report.new.pages} pages, every save response and ${tables.length} tables identical`);
- if(failures.length)process.exitCode=1;
+ console.log(`VERDICT ${v.R0} ${v.R1} ${v.R2} ${v.R3} ${v.R4}`);
 }finally{rmSync(temp,{recursive:true,force:true})}
