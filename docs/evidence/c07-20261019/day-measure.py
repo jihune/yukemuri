@@ -35,8 +35,10 @@
 #      the span's sum is not changed by it except at its two ends.
 #    - LOWER when every measured day's span gives fewer than 2,245.5 rows per page,
 #      NOT_LOWER when every day gives 2,245.5 or more, MIXED otherwise.
-#    - intervals: the same subtraction between neighbouring Size lines, each
-#      listed with its Trip.com pages. C4-trip: TRIP_NOT_CAUSE when the median of
+#    - intervals: the same subtraction for each run that collected pages, from
+#      its Size line to the first Size line after its snapshot job completed (a
+#      0-page run that starts while it collects does not split it), each listed
+#      with its Trip.com pages. C4-trip: TRIP_NOT_CAUSE when the median of
 #      intervals with no Trip.com page is 2,245.5 or more rows per page,
 #      TRIP_POSSIBLE when it is below and the median of intervals with Trip.com
 #      pages is 2,245.5 or more, UNDECIDED otherwise (fewer than 3 intervals in
