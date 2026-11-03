@@ -2,7 +2,7 @@
 
 2026-10-09. 운영 DB는 기존 Sites D1이다. 실행기는 `jihune/yukemuri-script-runner`의 `maintenance/catalog-backup/`에 있다. 읽기 전용 백업 실행기와 v49/0012 복원 스키마를 별도로 관리한다. `site/` 과거 사본이나 전체 앱의 개발 기준이 아니다.
 
-- 매일 19:23 UTC / 다음 날 04:23 KST에 기존 `YUKEMURI_ACCESS_JSON` Secret으로 `/api/catalog-export`를 읽는다. 새 LLM 작업이나 유료 API를 쓰지 않는다. GitHub 예약은 지연될 수 있다.
+- 매일 00:13 UTC / 09:13 KST에 기존 `YUKEMURI_ACCESS_JSON` Secret으로 `/api/catalog-export`를 읽는다. UTC 하루가 시작될 때 돌아 전날 마지막 상태를 담고, 그 읽기가 그날 수집 예산에 먼저 잡힌다(실행기 #19, 2026-11-03 병합, 그 전에는 19:23 UTC). 실행기의 예약 Worker `yukemuri-scheduler`가 제시각에 부르고, 2–4시간 늦게 올 수 있는 GitHub 예약은 예비로 남아 이미 백업한 날을 건너뛴다(O04). 새 LLM 작업이나 유료 API를 쓰지 않는다.
 - 전체 영속 테이블 13개를 내보낸 뒤 새 임시 SQLite에 복원하여 스키마·해시·행 수·무결성을 확인한다. 운영 DB에 쓰지 않는다. 검사가 성공한 파일만 private Actions artifact에 보관한다.
 - 일일 보관 14일, 매주 월요일 UTC 백업은 추가로 90일 보관한다. 수동 실행도 가능하다. 저장 한도와 자동 삭제는 GitHub 정책·계정 한도에 따른다. 추가 요금 한도는 변경하지 않는다.
 - 백업은 `checkpoint.jsonl.gz`, SQL, 복원 스크립트, 해시 목록, 검사 보고서를 포함한다. 복원 SQLite 파일은 업로드하지 않는다. 개인 즐겨찾기를 포함하므로 Git에 커밋하지 않는다.
