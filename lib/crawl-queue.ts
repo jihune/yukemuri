@@ -62,7 +62,11 @@ export async function claimCrawlJob(claim:CrawlClaim){
  // and one that failed three times once its wait is over (as refresh does for list and detail pages).
  const extra=claim.phase==='localnames'?`AND (j.status<>'done' OR COALESCE(unixepoch(j.fetched_at),0)+${LOCALE_REFRESH_DAYS*86400}<=${now}) AND (j.status<>'failed' OR j.next_at>0)`:claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?'AND '+BATHS_CANDIDATE:'';
  const extraArgs=claim.phase==='baths'?[JSON.stringify(verifiedHotels.map(h=>h.id))]:[];
- const statuses=claim.phase==='refresh'?['done','failed']:claim.phase==='localnames'?['done','pending','retry','failed']:['names','baths'].includes(claim.phase)?['done','pending','retry']:['pending','retry'];
+ // C07: the baths phase revisits done Jalan details an older parser saved; the
+ // detail phase takes pending ones in the same order. Taking pending ones here too
+ // made every round walk every done Jalan detail (2.5 rows each) for a page the
+ // detail phase would take next, and an empty phase never ended a run's asking.
+ const statuses=claim.phase==='refresh'?['done','failed']:claim.phase==='localnames'?['done','pending','retry','failed']:claim.phase==='baths'?['done']:claim.phase==='names'?['done','pending','retry']:['pending','retry'];
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  // Complete the complementary source of verified properties first within a
  // region: Trip for review/photo evidence, Jalan for property/room facts.

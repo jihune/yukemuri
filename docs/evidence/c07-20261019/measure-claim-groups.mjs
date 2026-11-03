@@ -54,7 +54,8 @@ const SHAPES={
 const DUE={jalan:3,trip:5};
 const PRODUCTION_SPAN=4284.5;
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-c07-groups-'));
-const server=join(temp,'server');cpSync('dist/server',server,{recursive:true});
+// --server: the Worker build to run (dist/server by default; the baths fix compares two).
+const server=join(temp,'server');cpSync(arg('--server','dist/server'),server,{recursive:true});
 // Test-only entry: the clock the request names (X-Compare-Now) and the rows each request read and wrote.
 writeFileSync(join(server,'__c07.js'),`import app from './index.js';
 import {env} from 'cloudflare:workers';
@@ -133,6 +134,7 @@ try{
    run.candidates=await candidatesInDone(db);
    run.shaped=await counts(db);
    run.hotels=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
+   const pendingJalan=new Set((await db.prepare("SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status IN ('pending','retry')").all()).results.map(r=>r.url));
    const origin=(await mf.ready).origin,logFile=join(temp,name+'.json');
    await (await fetch(origin+'/__meter')).json();
    execFileSync('python3',[join(here,'drive-collector.py'),crawler,origin,PAGES,String(START),logFile],{stdio:['ignore','inherit','inherit']});
@@ -148,6 +150,11 @@ try{
    Object.assign(run,{pages:log.saves.length,claims:claims.length,rounds:log.lines.find(l=>'rounds' in l)?.rounds??null,claimRead:claims.reduce((n,c)=>n+c.read,0),groups,requests,
     bathsStatements:claims.find(c=>c.provider==='jalan'&&c.phase==='baths')?.statements??null});
    run.claimReadPerPage=Math.round(run.claimRead/run.pages);
+   // The pages in save order, the pending Jalan detail pages among them, what all requests wrote,
+   // and the done candidates the run left.
+   run.saved=log.saves.map(s=>s.url);run.savedJalanPending=run.saved.filter(u=>pendingJalan.has(u));
+   run.written=meter.reduce((n,m)=>n+m.written,0);run.writtenPerPage=Math.round(run.written/run.pages*10)/10;
+   run.candidatesAfter=await candidatesInDone(db);
    console.log(`${name}: ${run.pages} pages, ${run.claims} claims, claims read ${run.claimRead} rows (${run.claimReadPerPage} a page); done Jalan candidates ${run.candidates}; hotels ${run.hotels}`);
    for(const [g,e] of Object.entries(groups))console.log(`  ${g}: ${e.claims} claims (${e.pages} pages, ${e.emptyClaims} empty), ${e.read} rows, ${e.perClaim} a claim`);
   }finally{await mf.dispose()}

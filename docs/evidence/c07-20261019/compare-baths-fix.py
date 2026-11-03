@@ -25,3 +25,51 @@
 # V5 control: with <control.json>, its shape B2 leaves more done candidates than the
 #    fix does: CONTROL_FAILS (V4 can fail); otherwise CONTROL_PASSES (V4 proves
 #    nothing). Without it: NO_CONTROL.
+import json
+import sys
+from pathlib import Path
+
+
+def runs(path):
+    return json.loads(Path(path).read_text(encoding='utf-8'))['runs']
+
+
+before, after = runs(sys.argv[1]), runs(sys.argv[2])
+control = runs(sys.argv[3]) if len(sys.argv) > 3 else None
+SHAPES = ['A', 'B', 'C', 'B2']
+rows = {}
+for s in SHAPES:
+    b, a = before[s], after[s]
+    rows[s] = {
+        'claimReadPerPage': [b['claimReadPerPage'], a['claimReadPerPage']],
+        'bathsClaims': [b['groups'].get('jalan/baths', {}).get('claims', 0), a['groups'].get('jalan/baths', {}).get('claims', 0)],
+        'bathsRead': [b['groups'].get('jalan/baths', {}).get('read', 0), a['groups'].get('jalan/baths', {}).get('read', 0)],
+        'jalanPendingSaved': [len(b['savedJalanPending']), len(a['savedJalanPending'])],
+        'writtenPerPage': [b['writtenPerPage'], a['writtenPerPage']],
+        'candidatesAfter': [b['candidatesAfter'], a['candidatesAfter']],
+        'pages': [b['pages'], a['pages']],
+    }
+    print(s, json.dumps(rows[s]))
+ratio = after['C']['claimReadPerPage'] / before['C']['claimReadPerPage']
+v1 = 'CUT' if ratio <= 0.5 else 'NOT_CUT'
+differences = []
+for s in SHAPES:
+    b, a = before[s]['savedJalanPending'], after[s]['savedJalanPending']
+    n = min(len(b), len(a))
+    if b[:n] != a[:n]:
+        i = next(k for k in range(n) if b[k] != a[k])
+        differences.append(f'{s}: #{i} {b[i]} / {a[i]}')
+v2 = 'DIFFERENT' if differences else 'SAME_ORDER'
+writes = {s: after[s]['writtenPerPage'] / before[s]['writtenPerPage'] for s in SHAPES}
+v3 = 'OK' if all(w <= 1.1 for w in writes.values()) else 'UP'
+v4 = 'KEEPS' if after['B2']['candidatesAfter'] <= before['B2']['candidatesAfter'] else 'LOSES'
+if control is None:
+    v5 = 'NO_CONTROL'
+else:
+    v5 = 'CONTROL_FAILS' if control['B2']['candidatesAfter'] > after['B2']['candidatesAfter'] else 'CONTROL_PASSES'
+    print('control B2 candidatesAfter', control['B2']['candidatesAfter'])
+print('C claim reads per page after/before', round(ratio, 3))
+print('writes per page after/before', {s: round(w, 3) for s, w in writes.items()})
+for d in differences:
+    print('order difference', d)
+print(f'VERDICT {v1} {v2} {v3} {v4} {v5}')

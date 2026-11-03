@@ -5,7 +5,8 @@
 // condition follows the current Jalan parser version (v3 since D05) and also
 // looks at a curated group's Jalan observation (hotel_source_observations), and
 // that a group whose own hotel is one of its provider records (D08 PR 5) names
-// no missing linked detail.
+// no missing linked detail, and that the baths phase takes done jobs only (C07:
+// the detail phase takes the pending ones in the same order).
 import {createRequire} from 'node:module';
 import {readFileSync,realpathSync,readdirSync,mkdtempSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
@@ -21,7 +22,7 @@ function formerSelection(claim,now){
  const kindWhere=kind==='any'?"j.kind IN ('list','detail')":'j.kind=?';
  const kinds=kind==='any'?[]:[kind];
  const extra=claim.phase==='names'?"AND EXISTS (SELECT 1 FROM hotels h WHERE h.id='trip-'||substr(j.url,instr(j.url,'-hotel-detail-')+14,instr(substr(j.url,instr(j.url,'-hotel-detail-')+14),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].nameLocaleUrl') IS NULL)":claim.phase==='baths'?"AND (EXISTS (SELECT 1 FROM hotels h WHERE h.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(h.payload,'$.links[0].url')=j.url AND json_extract(h.payload,'$.sources[0].bathDataVersion') IS NOT 'v3' AND h.id NOT IN (SELECT value FROM json_each(?))) OR EXISTS (SELECT 1 FROM hotel_source_observations o WHERE o.id='jalan-'||substr(j.url,26,instr(substr(j.url,26),'/')-1) AND json_extract(o.payload,'$.links[0].url')=j.url AND json_extract(o.payload,'$.sources[0].bathDataVersion') IS NOT 'v3'))":'';
- const statuses=claim.phase==='refresh'?"('done','failed')":['names','baths'].includes(claim.phase)?"('done','pending','retry')":"('pending','retry')";
+ const statuses=claim.phase==='refresh'?"('done','failed')":claim.phase==='baths'?"('done')":claim.phase==='names'?"('done','pending','retry')":"('pending','retry')";
  const refresh=claim.phase==='refresh'?`AND ((j.status='done' AND COALESCE(unixepoch(j.fetched_at),0)+(${refreshIntervalSql})<=${now}) OR (j.status='failed' AND j.next_at>0))`:'';
  const missingLinkedDetail="CASE WHEN j.kind='detail' AND EXISTS (SELECT 1 FROM hotel_source_groups g LEFT JOIN hotels h ON h.id=CASE WHEN j.provider='trip' THEN g.trip_hotel_id ELSE g.jalan_hotel_id END WHERE g.hotel_id<>COALESCE(g.jalan_hotel_id,'') AND g.hotel_id<>COALESCE(g.trip_hotel_id,'') AND (j.provider='trip' AND instr(j.url,'-hotel-detail-'||substr(g.trip_hotel_id,6)||'/')>0 OR j.provider='jalan' AND j.url='https://www.jalan.net/yad'||substr(g.jalan_hotel_id,7)||'/') AND (h.id IS NULL OR json_extract(h.payload,'$.sources[0].label') NOT LIKE '%상세%')) THEN 0 ELSE 1 END";
  const order=claim.lane==='national'?"CASE WHEN j.status='retry' THEN 0 ELSE 1 END,COALESCE(unixepoch(j.fetched_at),0),j.next_at,j.attempts,j.url":'j.priority,'+missingLinkedDetail+',COALESCE(unixepoch(j.fetched_at),0),j.attempts,j.url';
