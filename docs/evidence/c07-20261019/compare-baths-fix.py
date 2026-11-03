@@ -37,6 +37,24 @@
 # V6 exactness (run separately, not printed here): scripts/check-claim-order-worker.mjs,
 #    left as it is, passes against the fix (1,441 claims over 60 random queue states
 #    pick what the former single selection query picked). Fails: NOT_EXACT.
+#
+# Attempt 2 passed V1-V4 and V6 with V5 CONTROL_PASSES (baths-fix2-compare.txt), but
+# its shapes spread done Jalan pages evenly over the priorities. In production the
+# collector takes pending pages in priority order, so most done pages likely share
+# the first pending page's priority (10), where attempt 2 still reads them all.
+# Attempt 3, rules added 2026-11-03 before it was built or run: on the priority lane a
+# done row of the same priority as the first job of the other branches can only come
+# first when that job is from a regular branch and the row's fetched time is not
+# after it, so the done branch also reads only those (still every row when no other
+# branch has a job). Two more shapes, run with every attempt:
+#   C10  C's counts; every done Jalan page at priority 10, pending ones spread over
+#        10-90 as before (pending priority-10 pages remain)
+#   C20  as C10, but no pending Jalan page at priority 10 (they are all done)
+# V7 on C10, the rule of V1 (rows all claims read per page, after over before, 0.5 or
+#    less): CUT10, otherwise NOT_CUT10.
+# V8 on C20, reported without a pass mark: an exact fix must still read the done
+#    priority-10 rows there, since one of them could come before every pending page.
+# V1-V6 apply unchanged to attempt 3; V2 and V3 cover C10 and C20 as well.
 import json
 import sys
 from pathlib import Path
