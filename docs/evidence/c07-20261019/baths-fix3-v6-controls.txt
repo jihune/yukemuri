@@ -1,0 +1,10 @@
+# V6 controls for baths attempt 3 (c0783d7), 2026-11-03T01:42:46Z-01:46:53Z
+# Each control edits one line of lib/crawl-queue.ts in place, builds (node scripts/run-framework.mjs build),
+# runs node scripts/check-claim-order-worker.mjs, then restores the source (sha256 checked) and dist/server.
+# The edited text is the same-priority range of the priority lane:
+#   `AND j.priority=(SELECT priority FROM best) AND (SELECT missing FROM best)=1 AND ${fetched}<=(SELECT fetched FROM best)`
+# k1: that range replaced by `AND 0` (done rows of the same priority never read)
+# k2: ${fetched}<=(SELECT ...) narrowed to ${fetched}<(SELECT ...)
+k1: state 10 {"provider":"jalan","phase":"baths","lane":"priority"}
+k2: state 31 {"provider":"jalan","phase":"baths","lane":"priority"}
+unchanged check after restore: Claim order checks passed: 1441 claims over 60 random queue states picked the former selection (1107 jobs, 102 by a miss
