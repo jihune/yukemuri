@@ -25,6 +25,18 @@
 # V5 control: with <control.json>, its shape B2 leaves more done candidates than the
 #    fix does: CONTROL_FAILS (V4 can fail); otherwise CONTROL_PASSES (V4 proves
 #    nothing). Without it: NO_CONTROL.
+#
+# Attempt 1 (baths takes done jobs only) failed V1 and V2 (baths-fix1-compare.txt).
+# Attempt 2, rules added 2026-11-03 before it was built or run: the claim picks the
+# same job; only the done branch of the baths and names phases reads less. Each phase
+# takes the first job of every branch and then the first of those; a done row whose
+# first order key (priority on the priority lane, fetched time on the national lane)
+# is after the first of the other branches cannot be that job, so the done branch
+# reads only the rows up to it (all of them when no other branch has a job).
+# The rules V1-V5 above apply unchanged, and:
+# V6 exactness (run separately, not printed here): scripts/check-claim-order-worker.mjs,
+#    left as it is, passes against the fix (1,441 claims over 60 random queue states
+#    pick what the former single selection query picked). Fails: NOT_EXACT.
 import json
 import sys
 from pathlib import Path
