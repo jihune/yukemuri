@@ -6,7 +6,7 @@
 // Usage (repository root, after a build):
 //   node docs/evidence/c07-20261019/measure-claim-groups.mjs [--out report.json]
 // Shapes, detail jobs by provider and status, from the public snapshot e78482d0cc7ddfcf
-// (status.json providers and its 30-day trend, fetched 2026-11-03T00:4xZ):
+// (status.json providers and its 30-day trend, fetched just before the run on 2026-11-03):
 //   A 10-21  Jalan done 2,427, pending 21,241; Trip.com done 2,058, pending 108
 //   B 10-28  Jalan done 5,516, pending 18,286; Trip.com done 2,232, pending 1
 //   C 11-02  Jalan done 7,802, pending 16,194; Trip.com done 2,278, pending 0
