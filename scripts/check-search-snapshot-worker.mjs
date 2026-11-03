@@ -379,11 +379,19 @@ try{
   const outside=list=>[...seen].filter(f=>!/^(node_modules|dist)\//.test(f)&&existsSync(f)&&statSync(f).isFile()&&!list.includes(f)).sort();
   assert(seen.has('data/wikidata-trip-hotels.json')&&seen.has('lib/search-snapshot-build.ts'),'the build\'s reads were seen');
   assert.deepEqual(outside(inputs.files),[],'a snapshot build read repository files outside snapshotInputs()');
+  // The inputs no build reads, so the trace above cannot see them: every migration (a deploy
+  // that applies one builds afresh) and the lockfile. The check can fail: without them, all
+  // are reported.
+  const unread=[...readdirSync('drizzle',{recursive:true}).map(f=>join('drizzle',String(f))).filter(f=>statSync(f).isFile()),'pnpm-lock.yaml'].sort();
+  const missing=list=>unread.filter(f=>!list.includes(f));
+  assert.deepEqual(missing(inputs.files),[],'snapshotInputs() lists every migration and the lockfile');
+  assert.deepEqual(missing(inputs.files.filter(f=>!f.startsWith('drizzle/')&&f!=='pnpm-lock.yaml')),unread);
   // The check can fail: with the Wikidata file left out of the list, that read is reported.
   assert.deepEqual(outside(inputs.files.filter(f=>f!=='data/wikidata-trip-hotels.json')),['data/wikidata-trip-hotels.json']);
   // The site: that folder over HTTP; a path in changed answers its body instead (null: 404).
+  let siteDir=site;
   const changed=new Map(),server=createServer((req,res)=>{
-   const file=join(site,req.url),body=changed.has(req.url)?changed.get(req.url):existsSync(file)&&statSync(file).isFile()?readFileSync(file):null;
+   const file=join(siteDir,req.url),body=changed.has(req.url)?changed.get(req.url):existsSync(file)&&statSync(file).isFile()?readFileSync(file):null;
    res.writeHead(body===null?404:200);res.end(body??'');
   });
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -404,6 +412,12 @@ try{
    changed.set('/snapshot/manifest.json',null);await refused(/HTTP 404/);
    const fresh=await buildSnapshot({db,out:folder(),now:new Date('2026-10-12T00:00:00Z'),geocode,reuse:origin,...same,builder:{...lib,catalogPreparation:async()=>['seed']}});
    assert.deepEqual([fresh.reused,fresh.manifest.id],[null,served.manifest.id],'a catalogue not prepared builds afresh');assert.match(fresh.reuseSkipped,/not prepared/);
+   // A snapshot built before the catalogue was prepared (deploy.yml's first build, before
+   // cloudflare-prepare.mjs) has no inputs hash, so once the catalogue is prepared a push
+   // deploy does not publish it again in place of the build after preparation.
+   const early=folder(true),before=await buildSnapshot({db,out:early,now:new Date('2026-10-12T00:00:00Z'),geocode,...same,builder:{...lib,buildSearchSnapshot:async(...a)=>({...await lib.buildSearchSnapshot(...a),unprepared:['seed']})}});
+   assert.equal(before.manifest.inputs,null,'a snapshot built before the catalogue was prepared carries no inputs hash');
+   siteDir=early;await refused(/no inputs hash/);siteDir=site;
    await assert.rejects(buildSnapshot({db,out:folder(),reuse:origin,progressDay:'2026-10-12',...same}),/needs a fresh build/);
   }finally{server.close()}
  }
