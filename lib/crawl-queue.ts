@@ -81,8 +81,18 @@ export async function claimCrawlJob(claim:CrawlClaim){
  // verified link) and win over the other jobs of their priority, as before.
  const eligible=`j.next_at<=? AND j.lease_until<=? ${extra} ${refresh} ${claim.url?'AND j.url=?':''}`,eligibleArgs=[now,now,...extraArgs,...(claim.url?[claim.url]:[])];
  const columns=`j.url,j.status,j.priority,${fetched} AS fetched,j.next_at,j.attempts`;
- const branches:{sql:string;args:unknown[]}[]=[];
- for(const k of kinds)for(const status of statuses)branches.push({sql:`SELECT * FROM (SELECT ${columns},1 AS missing FROM crawl_jobs j INDEXED BY ${national?'idx_crawl_jobs_claim_national':'idx_crawl_jobs_claim_priority'} WHERE j.provider=? AND j.kind=? AND j.status=? AND ${eligible} ORDER BY ${national?`${fetched},j.next_at`:`j.priority,${fetched}`},j.attempts,j.url LIMIT 1)`,args:[claim.provider,k,status,...eligibleArgs]});
+ // C07: the done branch of the names and baths phases tests every done detail of
+ // the provider against a hotel condition (2.5 rows each for Jalan baths). Its row
+ // can only be taken when its first order key (priority on the priority lane; on
+ // the national lane done rows tie on the retry key, so the fetched time) is not
+ // after the first job of the other branches (best), so it reads only up to there,
+ // and all of them when no other branch has a job.
+ const bounded=['names','baths'].includes(claim.phase),firstKey=national?fetched:'j.priority',bestKey=national?'fetched':'priority';
+ const branches:{sql:string;args:unknown[];done?:boolean}[]=[];
+ for(const k of kinds)for(const status of statuses){
+  const done=bounded&&status==='done';
+  branches.push({done,sql:`SELECT * FROM (SELECT ${columns},1 AS missing FROM crawl_jobs j INDEXED BY ${national?'idx_crawl_jobs_claim_national':'idx_crawl_jobs_claim_priority'} WHERE j.provider=? AND j.kind=? AND j.status=? AND ${eligible} ${done?`AND ${firstKey}<=COALESCE((SELECT ${bestKey} FROM best),1e18)`:''} ORDER BY ${national?`${fetched},j.next_at`:`j.priority,${fetched}`},j.attempts,j.url LIMIT 1)`,args:[claim.provider,k,status,...eligibleArgs]});
+ }
  if(!national&&kinds.includes('detail')){
   // Only jobs a verified group can name are tested against the full condition:
   // for Jalan the URL the group names, for Trip a URL whose only detail id is a
@@ -91,13 +101,17 @@ export async function claimCrawlJob(claim:CrawlClaim){
   const [jobs,named]=claim.provider==='jalan'?["hotel_source_groups linked CROSS JOIN crawl_jobs j ON linked.hotel_id<>linked.jalan_hotel_id AND linked.hotel_id<>COALESCE(linked.trip_hotel_id,'') AND j.url='https://www.jalan.net/yad'||substr(linked.jalan_hotel_id,7)||'/'",'']:['crawl_jobs j',`AND (instr(${after},'-hotel-detail-')>0 OR substr(${after},1,instr(${after},'/')-1) IN (SELECT substr(trip_hotel_id,6) FROM hotel_source_groups WHERE trip_hotel_id IS NOT NULL AND hotel_id<>trip_hotel_id AND hotel_id<>COALESCE(jalan_hotel_id,'')))`];
   branches.push({sql:`SELECT * FROM (SELECT ${columns},0 AS missing FROM ${jobs} WHERE j.provider=? AND j.kind='detail' AND j.status IN (${statuses.map(()=>'?').join(',')}) AND ${eligible} ${named} AND (${missingLinkedDetail})=0 ORDER BY j.priority,${fetched},j.attempts,j.url LIMIT 1)`,args:[claim.provider,...statuses,...eligibleArgs]});
  }
+ const doneBranches=branches.filter(b=>b.done),others=branches.filter(b=>!b.done);
+ const selection=doneBranches.length&&others.length
+  ?{sql:`WITH best AS (SELECT * FROM (${others.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1) SELECT url FROM (SELECT * FROM best UNION ALL ${doneBranches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1`,args:[...others.flatMap(b=>b.args),...doneBranches.flatMap(b=>b.args)]}
+  :{sql:`SELECT url FROM (${branches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1`,args:branches.flatMap(b=>b.args)};
  // C07: in the same transaction and at the same clock, whether the provider waits
  // (pacing, a cooldown) or holds another claim: the two guards of the UPDATE. An
  // empty claim with neither found no due page in its phase (exhausted).
  const [result,wait]=await db.batch([db.prepare(`UPDATE crawl_jobs SET lease_token=?,lease_until=?
-  WHERE url=(SELECT url FROM (${branches.map(b=>b.sql).join(' UNION ALL ')}) ORDER BY ${order} LIMIT 1)
+  WHERE url=(${selection.sql})
   AND lease_until<=? AND COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)<=? AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)
-  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...branches.flatMap(b=>b.args),now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now),
+  RETURNING *`).bind(claim.token,now+LEASE_SECONDS,...selection.args,now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now),
   db.prepare("SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_meta WHERE key=?),0)>? OR EXISTS (SELECT 1 FROM crawl_jobs WHERE provider=? AND lease_until>?) AS waiting").bind('crawl-provider-ready:'+claim.provider,now,claim.provider,now)]);
  if(result.results.length)return{jobs:result.results,exhausted:false};
  // Concurrent retries of the same POST may arrive before either SELECT sees
