@@ -5,7 +5,8 @@ name: Cloudflare usage
 # instead of reporting zero (docs/cloudflare-deploy.md).
 # check: the O03 daily check (scripts/daily-check.mjs) of one day instead: it
 # fails on 90% of a free limit, exceededResources and a 0-page, 26-minute or
-# unsuccessful gentle collection. No cron here (a public repository's schedule
+# unsuccessful gentle collection, or one with retry and failed on more than half
+# its pages. No cron here (a public repository's schedule
 # turns off after 60 days without activity): the private runner repository
 # dispatches it once a day, as it dispatches collect.yml.
 run-name: Cloudflare usage${{ inputs.check && format(' (daily check{0})', inputs.control != 'none' && format(', control {0}', inputs.control) || '') || '' }}
@@ -37,6 +38,7 @@ on:
           - over-90
           - exceeded
           - zero-pages
+          - many-failed
           - no-permission
 # actions: read for the daily check, which reads this repository's collect.yml runs.
 permissions:
