@@ -66,7 +66,7 @@ def runs(path):
 
 before, after = runs(sys.argv[1]), runs(sys.argv[2])
 control = runs(sys.argv[3]) if len(sys.argv) > 3 else None
-SHAPES = ['A', 'B', 'C', 'B2']
+SHAPES = [s for s in ['A', 'B', 'C', 'B2', 'C10', 'C20'] if s in before and s in after]
 rows = {}
 for s in SHAPES:
     b, a = before[s], after[s]
@@ -102,4 +102,11 @@ print('C claim reads per page after/before', round(ratio, 3))
 print('writes per page after/before', {s: round(w, 3) for s, w in writes.items()})
 for d in differences:
     print('order difference', d)
-print(f'VERDICT {v1} {v2} {v3} {v4} {v5}')
+v7 = v8 = 'NONE'
+if 'C10' in SHAPES:
+    r10 = after['C10']['claimReadPerPage'] / before['C10']['claimReadPerPage']
+    v7 = 'CUT10' if r10 <= 0.5 else 'NOT_CUT10'
+    print('C10 claim reads per page after/before', round(r10, 3))
+if 'C20' in SHAPES:
+    v8 = f"C20={after['C20']['claimReadPerPage'] / before['C20']['claimReadPerPage']:.3f}"
+print(f'VERDICT {v1} {v2} {v3} {v4} {v5} {v7} {v8}')

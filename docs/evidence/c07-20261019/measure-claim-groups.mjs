@@ -50,6 +50,10 @@ const SHAPES={
  B:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1},
  C:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0},
  B2:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1,candidates:25},
+ // Done Jalan pages at priority 10, as a collector that takes pending pages in priority
+ // order leaves them; C20 also has no pending Jalan page at priority 10 left.
+ C10:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0,doneAt10:true},
+ C20:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0,doneAt10:true,noPendingAt10:true},
 };
 const DUE={jalan:3,trip:5};
 const PRODUCTION_SPAN=4284.5;
@@ -124,6 +128,8 @@ try{
   await db.prepare(`${numbers(n)} INSERT OR IGNORE INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.jalan.net/ui/uip1400/uiw1402.do?langCd='||l||'&kenCd='||printf('%02d',1+i%47)||'0000&stayCount=1&roomCount=1&distCd=01&crcyCd='||c||'&activeSort=1&screenId=UIW1402&idx='||(${offset}+1+i/94)||'&pageNum='||(${offset}+1+i/94),'jalan','names',NULL,95,?,?,0,? FROM n,(SELECT 'en_US' AS l,'USD' AS c UNION ALL SELECT 'ko_KR','KRW') WHERE (i/47)%2=(CASE l WHEN 'en_US' THEN 0 ELSE 1 END)`).bind(status,status==='done'?1:0,status==='done'?recent:null).run();
  }
  await db.prepare("INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,missing_count,missing_at) SELECT id,'2026-10-01T00:00:00Z','2026-10-01T00:00:00Z',0,NULL FROM hotels WHERE 1 ON CONFLICT DO NOTHING").run();
+   if(shape.doneAt10)await db.prepare("UPDATE crawl_jobs SET priority=10 WHERE provider='jalan' AND kind='detail' AND status='done'").run();
+   if(shape.noPendingAt10)await db.prepare("UPDATE crawl_jobs SET priority=20 WHERE provider='jalan' AND kind='detail' AND status IN ('pending','retry') AND priority<=10").run();
    const run=report.runs[name]={candidatesBefore:await candidatesInDone(db)};
    if(shape.candidates){
     // Spread evenly over the order the priority lane reads done jobs in.

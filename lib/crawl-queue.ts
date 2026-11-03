@@ -83,15 +83,19 @@ export async function claimCrawlJob(claim:CrawlClaim){
  const columns=`j.url,j.status,j.priority,${fetched} AS fetched,j.next_at,j.attempts`;
  // C07: the done branch of the names and baths phases tests every done detail of
  // the provider against a hotel condition (2.5 rows each for Jalan baths). Its row
- // can only be taken when its first order key (priority on the priority lane; on
- // the national lane done rows tie on the retry key, so the fetched time) is not
- // after the first job of the other branches (best), so it reads only up to there,
- // and all of them when no other branch has a job.
- const bounded=['names','baths'].includes(claim.phase),firstKey=national?fetched:'j.priority',bestKey=national?'fetched':'priority';
+ // can only be taken when it comes before the first job of the other branches
+ // (best), so it reads only the index ranges that can: on the priority lane a
+ // lower priority, or the same priority with a fetched time not after best's when
+ // best is from a regular branch (missing=1); on the national lane, where done rows
+ // tie on the retry key, a fetched time not after best's. Every row when no other
+ // branch has a job.
+ const bounded=['names','baths'].includes(claim.phase);
+ const ranges=national?[`AND ${fetched}<=COALESCE((SELECT fetched FROM best),1e18)`]
+  :['AND j.priority<COALESCE((SELECT priority FROM best),1e18)',`AND j.priority=(SELECT priority FROM best) AND (SELECT missing FROM best)=1 AND ${fetched}<=(SELECT fetched FROM best)`];
  const branches:{sql:string;args:unknown[];done?:boolean}[]=[];
  for(const k of kinds)for(const status of statuses){
   const done=bounded&&status==='done';
-  branches.push({done,sql:`SELECT * FROM (SELECT ${columns},1 AS missing FROM crawl_jobs j INDEXED BY ${national?'idx_crawl_jobs_claim_national':'idx_crawl_jobs_claim_priority'} WHERE j.provider=? AND j.kind=? AND j.status=? AND ${eligible} ${done?`AND ${firstKey}<=COALESCE((SELECT ${bestKey} FROM best),1e18)`:''} ORDER BY ${national?`${fetched},j.next_at`:`j.priority,${fetched}`},j.attempts,j.url LIMIT 1)`,args:[claim.provider,k,status,...eligibleArgs]});
+  for(const range of done?ranges:[''])branches.push({done,sql:`SELECT * FROM (SELECT ${columns},1 AS missing FROM crawl_jobs j INDEXED BY ${national?'idx_crawl_jobs_claim_national':'idx_crawl_jobs_claim_priority'} WHERE j.provider=? AND j.kind=? AND j.status=? AND ${eligible} ${range} ORDER BY ${national?`${fetched},j.next_at`:`j.priority,${fetched}`},j.attempts,j.url LIMIT 1)`,args:[claim.provider,k,status,...eligibleArgs]});
  }
  if(!national&&kinds.includes('detail')){
   // Only jobs a verified group can name are tested against the full condition:
