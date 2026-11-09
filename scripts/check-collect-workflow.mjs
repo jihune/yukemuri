@@ -79,6 +79,7 @@ assert.match(watch,/GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/
 // it must fail for that part (controls below, in the form of check-collection-chain.mjs).
 const spare=read('collect-spare.yml');
 const SPARE_STEP=['      - env:','          GH_TOKEN: ${{ github.token }}','        run: gh workflow run collect.yml --repo "$GITHUB_REPOSITORY" --ref main -f mode=gentle',''].join('\n');
+const SPARE_JOB=['jobs:','  dispatch:','    runs-on: ubuntu-24.04','    timeout-minutes: 3','    permissions:','      contents: read','      actions: write','    steps:',''].join('\n')+SPARE_STEP;
 function spareProblems(text){
  const out=[],body=text.replace(/^[ \t]*#.*\n/gm,''),job=body.slice(body.indexOf('\njobs:\n')+1);
  if(block(body,'on')!=="  schedule:\n    - cron: '37 * * * *'\n  workflow_dispatch:\n")out.push('on: is not the hourly cron \'37 * * * *\' plus workflow_dispatch without inputs');
@@ -89,6 +90,9 @@ function spareProblems(text){
  if((body.match(/actions: write/g)??[]).length!==1)out.push('actions: write outside the job');
  if(!job.endsWith('    steps:\n'+SPARE_STEP))out.push('the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token');
  if(/\buses:|secrets\.|vars\./.test(body))out.push('a checkout, an action, a secret or a variable: the spare needs none');
+ // PR #291 review P2-1: the lines above look for a line anywhere, so a job-level if:, strategy: or needs: slipped
+ // through. The job as a whole is the text below and nothing else.
+ if(job!==SPARE_JOB)out.push('the job is not exactly the dispatch job (runs-on, timeout-minutes, permissions and the one step, nothing else): an if:, strategy:, needs: or container: would change whether or how often it dispatches');
  return out;
 }
 assert.equal(spareProblems(spare).length,0,'collect-spare.yml: '+spareProblems(spare).join('; '));
@@ -122,7 +126,12 @@ for(const [label,edit,problem] of [
  ['a variable',t=>t.replace('ubuntu-24.04\n','ubuntu-24.04\n    if: vars.YUKEMURI_SPARE != \'off\'\n'),'variable'],
  ['a second job',t=>t+'  later:\n    runs-on: ubuntu-24.04\n','one job'],
  ['a 30-minute job',t=>t.replace('timeout-minutes: 3','timeout-minutes: 30'),'3-minute'],
- ['write at the top for the whole run',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: write\n# bash'),'read-only']
+ ['write at the top for the whole run',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: write\n# bash'),'read-only'],
+ // PR #291 review P2-1: the four copies that passed the first version of this check.
+ ['job if: false (never dispatches)',t=>t.replace('    runs-on: ubuntu-24.04\n','    if: false\n    runs-on: ubuntu-24.04\n'),'exactly the dispatch job'],
+ ['job if: manual start only',t=>t.replace('    runs-on: ubuntu-24.04\n',"    if: github.event_name == 'workflow_dispatch'\n    runs-on: ubuntu-24.04\n"),'exactly the dispatch job'],
+ ['job strategy matrix (dispatches twice)',t=>t.replace('    runs-on: ubuntu-24.04\n','    strategy:\n      matrix:\n        n: [1, 2]\n    runs-on: ubuntu-24.04\n'),'exactly the dispatch job'],
+ ['job if: false after timeout-minutes',t=>t.replace('    timeout-minutes: 3\n','    timeout-minutes: 3\n    if: false\n'),'exactly the dispatch job']
 ]){
  const copy=edit(spare);
  assert.notEqual(copy,spare,'control '+label+' changed nothing');

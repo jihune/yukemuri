@@ -20,6 +20,11 @@ CASES = [
     ('mode check-access', 'collect-spare.yml', 'mode=gentle', 'mode=check-access', 'one dispatch'),
     ('another ref', 'collect-spare.yml', '--ref main', '--ref feature', 'one dispatch'),
     ('a checkout added', 'collect-spare.yml', '    steps:\n', '    steps:\n      - uses: actions/checkout@v7\n', 'checkout'),
+    # PR #291 review P2-1: these four passed the first version of the check.
+    ('job if: false', 'collect-spare.yml', '    runs-on: ubuntu-24.04\n', '    if: false\n    runs-on: ubuntu-24.04\n', 'exactly the dispatch job'),
+    ('job if: manual start only', 'collect-spare.yml', '    runs-on: ubuntu-24.04\n', "    if: github.event_name == 'workflow_dispatch'\n    runs-on: ubuntu-24.04\n", 'exactly the dispatch job'),
+    ('job strategy matrix', 'collect-spare.yml', '    runs-on: ubuntu-24.04\n', '    strategy:\n      matrix:\n        n: [1, 2]\n    runs-on: ubuntu-24.04\n', 'exactly the dispatch job'),
+    ('job if: false after timeout', 'collect-spare.yml', '    timeout-minutes: 3\n', '    timeout-minutes: 3\n    if: false\n', 'exactly the dispatch job'),
     ('a schedule in collect.yml', 'collect.yml', '\non:\n', '\non:\n  schedule:\n' + CRON, 'no schedule'),
     ('a cron in deploy.yml', 'deploy.yml', '\non:\n', '\non:\n  schedule:\n' + CRON, 'only the watch and the spare have a schedule'),
 ]
