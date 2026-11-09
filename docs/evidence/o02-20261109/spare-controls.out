@@ -1,0 +1,11 @@
+PASS untouched copy               rc=0 Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates wi
+PASS cron missing                 rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: on: is not the hourly cron '37 * * * *' plus workflow_dispatch without inputs
+PASS actions: write missing       rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the job needs actions: write, and only that, to dispatch; actions: write outside the job
+PASS calls collect-chain.yml      rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token
+PASS calls deploy.yml             rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token
+PASS mode check-access            rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token
+PASS another ref                  rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token
+PASS a checkout added             rc=1 AssertionError [ERR_ASSERTION]: collect-spare.yml: the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token; a 
+PASS a schedule in collect.yml    rc=1 AssertionError [ERR_ASSERTION]: collect.yml: workflow_dispatch with mode check-access|gentle only, no schedule
+PASS a cron in deploy.yml         rc=1 AssertionError [ERR_ASSERTION]: deploy.yml: only the watch and the spare have a schedule
+VERDICT PASS 10 of 10 as expected (the untouched copy passes, 9 broken copies fail for the named reason)

@@ -1,7 +1,8 @@
 // H01 step 6 collection workflows without an account: collect.yml (dispatch
-// only, catalogue lock, snapshot deploy at the end) and collect-watch.yml
-// (12-hour freshness), plus the freshness rule against fixture runs and a
-// local stand-in for the GitHub API.
+// only, catalogue lock, snapshot deploy at the end), collect-watch.yml
+// (12-hour freshness) and collect-spare.yml (O02: the hourly dispatch of
+// collect.yml, with controls), plus the freshness rule against fixture runs and
+// a local stand-in for the GitHub API.
 import {readFileSync,readdirSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
@@ -71,9 +72,65 @@ assert.equal(block(watch,'on'),"  schedule:\n    - cron: '41 */6 * * *'\n  workf
 assert.match(watch,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'watch token reads Actions runs only');
 assert(!/secrets\./.test(watch),'watch uses the workflow token only');
 assert.match(watch,/GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/check-collection-freshness\.mjs\n/);
-// No other cron in this public repository: collection starts only from the runner's dispatch.
+// O02 (user 2026-11-03): the hourly spare that restarts a broken chain is this public repository's
+// schedule, not the private runner's. It starts nothing but collect.yml in mode gentle, with the
+// workflow token, so the run it makes goes through collect.yml's overlap and budget steps (C06, C03;
+// check-collection-chain.mjs): it adds no second collector. Every part is checked, and a copy without
+// it must fail for that part (controls below, in the form of check-collection-chain.mjs).
+const spare=read('collect-spare.yml');
+const SPARE_STEP=['      - env:','          GH_TOKEN: ${{ github.token }}','        run: gh workflow run collect.yml --repo "$GITHUB_REPOSITORY" --ref main -f mode=gentle',''].join('\n');
+function spareProblems(text){
+ const out=[],body=text.replace(/^[ \t]*#.*\n/gm,''),job=body.slice(body.indexOf('\njobs:\n')+1);
+ if(block(body,'on')!=="  schedule:\n    - cron: '37 * * * *'\n  workflow_dispatch:\n")out.push('on: is not the hourly cron \'37 * * * *\' plus workflow_dispatch without inputs');
+ if(!/^permissions:\n  contents: read\n(?! )/m.test(body))out.push('the top-level token is not read-only (contents: read)');
+ if(!/^jobs:\n  dispatch:\n/m.test(body)||/\n  \w[\w-]*:\n/.test(job.slice(job.indexOf('  dispatch:\n')+12)))out.push('the one job is not named dispatch');
+ if(!/^    runs-on: ubuntu-24\.04\n    timeout-minutes: 3\n/m.test(job))out.push('the job is not a 3-minute ubuntu-24.04 job');
+ if(!/^    permissions:\n      contents: read\n      actions: write\n    steps:\n/m.test(job))out.push('the job needs actions: write, and only that, to dispatch');
+ if((body.match(/actions: write/g)??[]).length!==1)out.push('actions: write outside the job');
+ if(!job.endsWith('    steps:\n'+SPARE_STEP))out.push('the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token');
+ if(/\buses:|secrets\.|vars\./.test(body))out.push('a checkout, an action, a secret or a variable: the spare needs none');
+ return out;
+}
+assert.equal(spareProblems(spare).length,0,'collect-spare.yml: '+spareProblems(spare).join('; '));
+// collect.yml, the workflow the spare dispatches, has no schedule of its own (the 60-day rule above).
+const hasSchedule=text=>/^\s+schedule:/m.test(text);
+assert(!hasSchedule(collect),'collect.yml has no schedule of its own');
+// Only the watch and the spare have a cron in this public repository (they turn off after 60 days without repository
+// activity, comments in both; the outer scheduler's daily first run starts the chain again).
 for(const file of readdirSync('.github/workflows').filter(f=>/\.ya?ml$/.test(f)))
- assert.equal(/^\s+schedule:/m.test(read(file)),file==='collect-watch.yml',file+': only the watch has a schedule');
+ assert.equal(hasSchedule(read(file)),['collect-watch.yml','collect-spare.yml'].includes(file),file+': only the watch and the spare have a schedule');
+let spareControls=0;
+for(const [label,edit,problem] of [
+ ['no cron',t=>t.replace("    - cron: '37 * * * *'\n",''),'hourly cron'],
+ ['no schedule',t=>t.replace("  schedule:\n    - cron: '37 * * * *'\n",''),'hourly cron'],
+ ['another minute',t=>t.replace("'37 * * * *'","'0 * * * *'"),'hourly cron'],
+ ['every 15 minutes',t=>t.replace("'37 * * * *'","'*/15 * * * *'"),'hourly cron'],
+ ['a second cron',t=>t.replace("    - cron: '37 * * * *'\n","    - cron: '37 * * * *'\n    - cron: '7 */6 * * *'\n"),'hourly cron'],
+ ['no manual start',t=>t.replace('  workflow_dispatch:\n',''),'hourly cron'],
+ ['an input',t=>t.replace('  workflow_dispatch:\n','  workflow_dispatch:\n    inputs:\n      mode:\n        type: string\n'),'hourly cron'],
+ ['no actions: write',t=>t.replace('      actions: write\n',''),'actions: write'],
+ ['actions: write at the top',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: read\n  actions: write\n# bash'),'outside the job'],
+ ['write-all',t=>t.replace('      contents: read\n      actions: write\n','      contents: write\n      actions: write\n'),'actions: write, and only that'],
+ ['calls the chain',t=>t.replace('gh workflow run collect.yml','gh workflow run collect-chain.yml'),'one dispatch'],
+ ['calls the deploy',t=>t.replace('gh workflow run collect.yml','gh workflow run deploy.yml'),'one dispatch'],
+ ['mode check-access',t=>t.replace('mode=gentle','mode=check-access'),'one dispatch'],
+ ['no mode',t=>t.replace(' -f mode=gentle',''),'one dispatch'],
+ ['another ref',t=>t.replace('--ref main','--ref feature'),'one dispatch'],
+ ['no ref',t=>t.replace(' --ref main',''),'one dispatch'],
+ ['another token',t=>t.replace('${{ github.token }}','${{ secrets.YUKEMURI_SPARE_TOKEN }}'),'one dispatch'],
+ ['a checkout',t=>t.replace('    steps:\n','    steps:\n      - uses: actions/checkout@v7\n'),'checkout'],
+ ['a variable',t=>t.replace('ubuntu-24.04\n','ubuntu-24.04\n    if: vars.YUKEMURI_SPARE != \'off\'\n'),'variable'],
+ ['a second job',t=>t+'  later:\n    runs-on: ubuntu-24.04\n','one job'],
+ ['a 30-minute job',t=>t.replace('timeout-minutes: 3','timeout-minutes: 30'),'3-minute'],
+ ['write at the top for the whole run',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: write\n# bash'),'read-only']
+]){
+ const copy=edit(spare);
+ assert.notEqual(copy,spare,'control '+label+' changed nothing');
+ assert(spareProblems(copy).some(p=>p.includes(problem)),`control "${label}" is not reported as ${problem}: ${JSON.stringify(spareProblems(copy))}`);spareControls++;
+}
+// A schedule added to collect.yml, or a cron in any other workflow, is what the two checks above report.
+assert(hasSchedule(collect.replace('on:\n','on:\n  schedule:\n    - cron: \'37 * * * *\'\n')),'control: a schedule in collect.yml is seen');spareControls++;
+assert(hasSchedule(read('deploy.yml').replace('on:\n','on:\n  schedule:\n    - cron: \'37 * * * *\'\n')),'control: a schedule in deploy.yml is seen');spareControls++;
 
 // Freshness rule: successful gentle runs only; none passes; over 12 hours fails.
 const now=Date.parse('2026-10-12T12:00:00Z'),at=h=>new Date(now-h*3600000).toISOString();
@@ -118,4 +175,4 @@ try{
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
 
 const committed=JSON.parse(readFileSync('cloudflare-deploy.json','utf8'));
-console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);
+console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs, spare at minute 37 of every hour dispatching only collect.yml on main in mode gentle (controls: ${spareControls} of ${spareControls} fail) (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);

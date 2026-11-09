@@ -1,0 +1,22 @@
+day	dispatchers	tie order at the same minute	runs	collect	repeat (0 pages)	two collect at once	shortest gap between collecting runs (min)
+same minute	before O02 (runner + chain)	runner > chain	24	24	0	0	60
+same minute	before O02 (runner + chain)	chain > runner	36	24	12	0	60
+same minute	O02 (spare + chain)	spare > chain	24	24	0	0	60
+same minute	O02 (spare + chain)	chain > spare	36	24	12	0	60
+same minute	both crons (spare + runner + chain)	spare > runner > chain	48	24	24	0	60
+same minute	both crons (spare + runner + chain)	spare > chain > runner	48	24	24	0	60
+same minute	both crons (spare + runner + chain)	runner > spare > chain	48	24	24	0	60
+same minute	both crons (spare + runner + chain)	runner > chain > spare	48	24	24	0	60
+same minute	both crons (spare + runner + chain)	chain > spare > runner	56	24	32	0	60
+same minute	both crons (spare + runner + chain)	chain > runner > spare	56	24	32	0	60
+late 0-28 minutes, uneven	before O02 (runner + chain)	runner > chain	35	26	9	0	26
+late 0-28 minutes, uneven	before O02 (runner + chain)	chain > runner	35	26	9	0	26
+late 0-28 minutes, uneven	O02 (spare + chain)	spare > chain	35	26	9	0	26
+late 0-28 minutes, uneven	O02 (spare + chain)	chain > spare	35	26	9	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	spare > runner > chain	54	25	29	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	spare > chain > runner	54	25	29	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	runner > spare > chain	54	25	29	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	runner > chain > spare	54	25	29	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	chain > spare > runner	54	25	29	0	26
+late 0-28 minutes, uneven	both crons (spare + runner + chain)	chain > runner > spare	54	25	29	0	26
+VERDICT PASS: no two runs collected at once in any case
