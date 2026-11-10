@@ -1,0 +1,54 @@
+$ python3 docs/evidence/v01-20261110/v01-1-parse-exceptions.py
+OK        control: well-formed detail: observations=1 reviewReason=None
+UNCAUGHT  address is a list of PostalAddress: AttributeError: 'list' object has no attribute 'get'
+UNCAUGHT  geo is a list: AttributeError: 'list' object has no attribute 'get'
+UNCAUGHT  url is null: TypeError: argument of type 'NoneType' is not iterable
+UNCAUGHT  url is a number: TypeError: argument of type 'int' is not iterable
+OK        image is a list of dicts: observations=1 reviewReason=None
+OK        aggregateRating is a list: observations=1 reviewReason=None
+OK        addressCountry is a list: observations=0 reviewReason=no_valid_hotel_observation
+OK        name is a dict: observations=1 reviewReason=None
+IncompleteRead caught by handler: False
+LookupError caught by handler: False
+unknown charset raises LookupError | caught: False
+uncaught_cases=4 of 9
+exit=0
+
+$ python3 docs/evidence/v01-20261110/v01-1-run-ends-on-one-page.py
+control (three good pages): [{'crashed': None, 'claimed': ['https://www.jalan.net/yad399999/', 'https://www.jalan.net/yad400001/', 'https://www.jalan.net/yad400002/'], 'saved': [('https://www.jalan.net/yad399999/', 'done', None), ('https://www.jalan.net/yad400001/', 'done', None), ('https://www.jalan.net/yad400002/', 'done', None)]}]
+address list (AttributeError):
+  run 1 {'crashed': 'AttributeError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 2 {'crashed': 'AttributeError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 3 {'crashed': 'AttributeError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  queue after three runs: ['https://www.jalan.net/yad399999/', 'https://www.jalan.net/yad400001/', 'https://www.jalan.net/yad400002/']
+truncated chunked body (IncompleteRead):
+  run 1 {'crashed': 'IncompleteRead', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 2 {'crashed': 'IncompleteRead', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 3 {'crashed': 'IncompleteRead', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  queue after three runs: ['https://www.jalan.net/yad399999/', 'https://www.jalan.net/yad400001/', 'https://www.jalan.net/yad400002/']
+unknown charset (LookupError):
+  run 1 {'crashed': 'LookupError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 2 {'crashed': 'LookupError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  run 3 {'crashed': 'LookupError', 'claimed': ['https://www.jalan.net/yad399999/'], 'saved': []}
+  queue after three runs: ['https://www.jalan.net/yad399999/', 'https://www.jalan.net/yad400001/', 'https://www.jalan.net/yad400002/']
+exit=0
+
+$ python3 docs/evidence/v01-20261110/v01-1-contract-payloads.py <tmp>/payloads.json && node docs/evidence/v01-20261110/v01-1-contract-put.mjs <tmp>/payloads.json
+control: python observations=1 links=0 reviewReason=None
+name of 401 characters: python observations=1 links=0 reviewReason=None
+street address of 1001 characters: python observations=1 links=0 reviewReason=None
+address whose maps link passes 2000 characters: python observations=1 links=0 reviewReason=None
+image URL over 2000 characters: python observations=1 links=0 reviewReason=None
+outdoor bath row of 3001 characters: python observations=1 links=0 reviewReason=None
+list page of 81 hotels: python observations=81 links=81 reviewReason=None
+list page of 601 links: python observations=1 links=602 reviewReason=None
+control: claim jobs=1 PUT 200 accepted=1 | job after: status=done attempts=1 leased=0
+name of 401 characters: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+street address of 1001 characters: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+address whose maps link passes 2000 characters: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+image URL over 2000 characters: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+outdoor bath row of 3001 characters: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+list page of 81 hotels: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+list page of 601 links: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
+refused=7 of 8
+exit=0
