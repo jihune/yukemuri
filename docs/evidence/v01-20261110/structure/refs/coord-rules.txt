@@ -1,0 +1,9 @@
+collect.py line: if not (20 < lat < 46.5 and 122 < lng < 154):
+snapshot-geo.mjs line: const inJapan=(lat,lng)=>Number.isFinite(lat)&&Number.isFinite(lng)&&lat>=20&&lat<=46.5&&lng>=122&&lng<=154;
+lat=35 lng=139	collect.py=kept	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
+lat=20 lng=139	collect.py=dropped	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
+lat=46.5 lng=139	collect.py=dropped	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
+lat=35 lng=122	collect.py=dropped	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
+lat=35 lng=154	collect.py=dropped	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
+lat=19.99 lng=139	collect.py=dropped	crawl-contract.ts=rejected	snapshot-geo.mjs=outside
+lat=22 lng=139	collect.py=kept	crawl-contract.ts=accepted	snapshot-geo.mjs=inJapan
