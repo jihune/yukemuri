@@ -162,6 +162,10 @@ jobs:
           GEO_DIR: ${{ runner.temp }}/jageocoder
         run: bash scripts/geo/prepare.sh | tee -a "$GITHUB_STEP_SUMMARY"
       # The search snapshot (static assets) from the migrated D1: reads only.
+      # C07 plan 3: a push deploy publishes the site's snapshot again, reading
+      # only the preparation keys from D1, when this commit makes it from the
+      # same inputs (build-search-snapshot.mjs --reuse); otherwise, and in every
+      # other deploy (after a collection, lifecycle, manual), it builds afresh.
       - if: steps.gate.outputs.mode != 'skip'
         id: snapshot
         env:
@@ -171,10 +175,12 @@ jobs:
           GEOCODER_PYTHON: ${{ steps.geo.outputs.python }}
           GEO_REASON: ${{ steps.geo.outputs.reason || 'geocoder preparation failed' }}
           COLLECTED_ON: ${{ inputs.collected_on }}
+          REUSE_FROM: ${{ github.event_name == 'push' && !inputs.after_collection && steps.gate.outputs.public_origin || '' }}
         run: |
           if [[ -n "$GEO_DB" ]]; then geo=(--geocoder-db "$GEO_DB"); else geo=(--geocoder-skip "$GEO_REASON"); fi
           progress=(); if [[ -n "$COLLECTED_ON" ]]; then progress=(--progress-day "$COLLECTED_ON"); fi
-          node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json "${geo[@]}" "${progress[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          reuse=(); if [[ -n "$REUSE_FROM" ]]; then reuse=(--reuse "$REUSE_FROM"); fi
+          node scripts/build-search-snapshot.mjs --remote --report snapshot-report.json "${geo[@]}" "${progress[@]}" "${reuse[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           id=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("snapshot-report.json","utf8")).manifest.id)')
           [[ "$id" =~ ^[0-9a-f]{16}$ ]] || { echo "No snapshot id in the report"; exit 1; }
           echo "id=$id" >> "$GITHUB_OUTPUT"
