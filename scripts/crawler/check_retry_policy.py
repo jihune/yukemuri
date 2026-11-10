@@ -7,6 +7,7 @@ assert retry_after({'Retry-After':'7200'},stamp)==7200
 assert retry_after({'Retry-After':format_datetime(datetime.fromtimestamp(stamp+900,timezone.utc))},stamp)==900
 assert retry_after({'Retry-After':'invalid'},stamp)==0
 assert retry_after({'Retry-After':'nan'},stamp)==0
+assert retry_after({'Retry-After':'9999999'},stamp)==604800,'A source wait is capped at seven days, the longest the Site accepts'
 def error(code,headers=None):return HTTPError('https://example.com',code,'test',headers or {},None)
 p=source_failure(error(429,{'Retry-After':'7200'}),0,stamp,jitter=0)
 assert p['retryAfterSeconds']==21600 and p['providerCooldownSeconds']==21600 and p['status']=='retry'
@@ -24,4 +25,4 @@ assert source_failure(error(408),1,stamp,jitter=0)['retryAfterSeconds']<source_f
 assert source_failure(error(503),0,stamp,jitter=0)['providerCooldownSeconds']==0
 assert source_failure(ValueError(),0,stamp,jitter=0)['providerCooldownSeconds']==0
 assert source_failure(error(503,{'Retry-After':'900'}),0,stamp)['providerWaitReason']=='retry_after'
-print('Retry-policy checks passed: seconds/date Retry-After, invalid values, 403/429 floors and ordinary page retries, longer provider waits, permanent errors, provider pause and bounded jitter.')
+print('Retry-policy checks passed: seconds/date Retry-After, invalid values, the seven-day cap, 403/429 floors and ordinary page retries, longer provider waits, permanent errors, provider pause and bounded jitter.')
