@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "deploy.yml: migrations apply also runs in preflight mode",
+ "edits": [
+  {
+   "file": ".github/workflows/deploy.yml",
+   "old": "      - if: steps.gate.outputs.mode == 'deploy'\n        env:\n          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}\n          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}\n          CI: 'true'\n        run: node \"$WRANGLER\" d1 migrations apply",
+   "new": "      - if: steps.gate.outputs.mode != 'skip'\n        env:\n          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}\n          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}\n          CI: 'true'\n        run: node \"$WRANGLER\" d1 migrations apply"
+  }
+ ]
+}

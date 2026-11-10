@@ -1,0 +1,13 @@
+V01-23: scripts/cloud-check.py --full on a copy of the repository with these three changes together:
+-  if(update.observations.some(h=>!h.id.startsWith(job.provider+'-')||h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&s.nameLocaleUrl.replace('https://kr.trip.com/','https://www.trip.com/')!==update.url))||job.kind==='detail'&&update.status==='done'&&!update.observations.length)return Response.json({error:'Observation does not match crawl job'},{status:400});
++  if(update.observations.some(h=>h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&s.nameLocaleUrl.replace('https://kr.trip.com/','https://www.trip.com/')!==update.url)))return Response.json({error:'Observation does not match crawl job'},{status:400});
+-  const result=await db.prepare("INSERT INTO hotel_source_observations(id,payload,observed_at) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,observed_at=excluded.observed_at WHERE julianday(excluded.observed_at)>=julianday(hotel_source_observations.observed_at) AND (json_extract(hotel_source_observations.payload,'$.sources[0].label') NOT LIKE '%상세%' OR json_extract(excluded.payload,'$.sou
++  const result=await db.prepare("INSERT INTO hotel_source_observations(id,payload,observed_at) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,observed_at=excluded.observed_at").bind(h.id,JSON.stringify(h),at).run();
+
+Counts of the three rules in dist/server (minified): changed build 0, 0, 0; unmodified build 1, 1, 1 (grep patterns: startsWith(X.provider+`-`), status===`done`&&!X.observations.length, julianday(excluded.observed_at)>=julianday(hotel_source_observations.observed_at))
+
+Result:
+commands run: 55
+Cloud checks passed. Browser/mobile checks and production deployment are separate.
+cloud_check_exit=0
+2026-11-10T03:18:42Z

@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: Retry-After is ignored in the delay",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "delay=max(60,math.ceil(base*(0.5+0.5*fraction)),hint)",
+   "new": "delay=max(60,math.ceil(base*(0.5+0.5*fraction)))"
+  }
+ ]
+}

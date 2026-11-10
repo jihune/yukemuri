@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker: PUT no longer compares a detail observation's id with the id in the job URL",
+ "edits": [{"file": "app/api/crawl/route.ts",
+  "old": "if(job.kind==='detail'&&update.observations.some(h=>h.id!==jobIdentity(update.url)))return Response.json({error:'Detail observation identity does not match requested property'},{status:400});",
+  "new": ""}]}

@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "checked-commit: a successful run of any workflow counts as checked",
+ "edits": [
+  {
+   "file": "scripts/checked-commit.mjs",
+   "old": "&&r.conclusion==='success'&&CHECK_WORKFLOWS.includes(r.path));",
+   "new": "&&r.conclusion==='success');"
+  }
+ ]
+}

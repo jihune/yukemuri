@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "deploy.yml: a snapshot deploy after a collection never runs the full checks",
+ "edits": [
+  {
+   "file": ".github/workflows/deploy.yml",
+   "old": "      - if: steps.gate.outputs.mode == 'deploy' && steps.checked.outputs.checked != 'true'\n        env:\n          YUKEMURI_SITE_ORIGIN",
+   "new": "      - if: steps.gate.outputs.mode == 'deploy' && !inputs.after_collection\n        env:\n          YUKEMURI_SITE_ORIGIN"
+  }
+ ]
+}

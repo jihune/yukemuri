@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: a provider with a cooldown is still asked in the same run",
+ "edits": [
+  {
+   "file": "scripts/crawler/update-site.py",
+   "old": "=cooldown\n     blocked_hosts.add(provider)",
+   "new": "=cooldown"
+  }
+ ]
+}

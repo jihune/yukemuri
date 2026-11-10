@@ -1,0 +1,17 @@
+{
+ "build": false,
+ "note": "budget: the snapshot and run reads are not reserved",
+ "edits": [
+  {
+   "file": "scripts/collection-budget.mjs",
+   "old": "-read-budget.snapshotReads-budget.runReads)/budget.readsPerPage);",
+   "new": "-read)/budget.readsPerPage);"
+  }
+ ],
+ "targets": [
+  [
+   "node",
+   "scripts/check-collection-budget.mjs"
+  ]
+ ]
+}

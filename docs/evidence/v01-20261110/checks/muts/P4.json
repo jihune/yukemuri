@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: 403/429 without Retry-After set no provider cooldown",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "providerCooldownSeconds=delay if code in [403,429] or hint else 0,",
+   "new": "providerCooldownSeconds=delay if hint else 0,"
+  }
+ ]
+}

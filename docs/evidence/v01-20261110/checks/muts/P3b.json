@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: 429 floor of six hours removed",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "        delay=max(21600,delay)",
+   "new": "        delay=max(60,delay)"
+  }
+ ]
+}

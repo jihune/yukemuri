@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker contract: an observation's id no longer has to appear in its own property link URL",
+ "edits": [{"file": "lib/crawl-contract.ts",
+  "old": "if(!property||!publicUrl.safeParse(property.url).success||!(provider==='jalan'?property.url.includes('/yad'+id+'/'):property.url.includes('hotel-detail-'+id+'/')))ctx.addIssue(",
+  "new": "if(!property||!publicUrl.safeParse(property.url).success)ctx.addIssue("}]}

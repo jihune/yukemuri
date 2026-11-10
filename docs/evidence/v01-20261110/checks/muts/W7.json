@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a PUT replay with the same token is not recognised",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "if(update.claimToken&&job.last_token===update.claimToken)return Response.json({accepted:0,replayed:true,coverage:await readCachedCoverage(true)});",
+   "new": ""
+  }
+ ]
+}

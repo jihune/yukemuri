@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: 503s in a row never pause (99)",
+ "edits": [
+  {
+   "file": "scripts/crawler/update-site.py",
+   "old": "UNAVAILABLE_IN_A_ROW=3",
+   "new": "UNAVAILABLE_IN_A_ROW=99"
+  }
+ ]
+}

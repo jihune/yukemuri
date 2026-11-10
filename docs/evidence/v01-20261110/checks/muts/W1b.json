@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker: 403/429/bot challenge no longer set a provider-wide cooldown (providerCooldown returns 0)",
+ "edits": [{"file": "lib/crawl-contract.ts",
+  "old": "if(code||update.error==='source_access_bot_challenge')return Math.max(code==='429'?21600:86400,update.providerCooldownSeconds??0,update.retryAfterSeconds??0);",
+  "new": "if(code||update.error==='source_access_bot_challenge')return 0;"}]}

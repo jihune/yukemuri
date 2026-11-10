@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: the claim token is not sent with the result",
+ "edits": [
+  {
+   "file": "scripts/crawler/update-site.py",
+   "old": "   payload['claimToken']=job['lease_token']",
+   "new": "   pass"
+  }
+ ]
+}

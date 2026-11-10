@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: 403 floor of one day removed",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "        delay=max(86400,delay)",
+   "new": "        delay=max(60,delay)"
+  }
+ ]
+}

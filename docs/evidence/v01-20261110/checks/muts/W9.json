@@ -1,0 +1,12 @@
+{
+ "build": true,
+ "note": "Worker: a repeated claim POST with the same token no longer finds its own lease",
+ "edits": [
+  {
+   "file": "lib/crawl-queue.ts",
+   "old": "AND (?='any' OR kind=?) AND lease_token=? AND lease_until>?\")",
+   "new": "AND (?='any' OR kind=?) AND lease_token<>? AND lease_until>?\")",
+   "count": 2
+  }
+ ]
+}

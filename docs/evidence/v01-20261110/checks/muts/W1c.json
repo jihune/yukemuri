@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: 403/429 use the fixed floor only; a longer Retry-After or reported cooldown is ignored",
+ "edits": [
+  {
+   "file": "lib/crawl-contract.ts",
+   "old": "return Math.max(code==='429'?21600:86400,update.providerCooldownSeconds??0,update.retryAfterSeconds??0);",
+   "new": "return code==='429'?21600:86400;"
+  }
+ ]
+}
