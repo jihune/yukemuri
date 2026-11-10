@@ -161,6 +161,8 @@
 11-10T00:15Z까지의 기록은 `docs/history/work-handoff-20261110T0015Z.md` 「상위 세션 인계」 8(11-03T03:3xZ–11-10T00:1xZ 열아홉 번째: 인계 받기, 실행기 붙이기, 주간 사용량 초기화 뒤로 미루기와 11-09 재개, O02 측정·결정과 두 PR의 1회차, 커넥터 판정, 계정 Actions 예상)과 그 문단이 가리키는 더 앞 history 파일들에 있다. 그 가운데 지금도 걸린 것은 위 2·3·4에 옮겼다.
 
 - 11-10T00:15:12Z #275(C07 방안 3)를 예약 `trig_01Vm6HpnTZZermexekxCN7pd`에서 병합했다(merge `6e0028b`, head `c49d4d3`, 병합 뒤 PR `head.sha` 같음). 확인: 마지막 검토 `754f291`에 main을 합친 트리와 head의 차이는 `docs/C07-20261019.md`·`docs/evidence/c07-20261019/day-measure.json`·`day-measure.py`뿐, `merge-tree` rc 0, `checks`·GitGuardian success, 해결 안 된 스레드 0, 7일 창 0.21. 병합 전 C07에 push 멈춤과 head를 알렸고, 병합 뒤 C07(후속 PR)·C04(#285 main 합치기)·O03(미룬 날짜)·O02 앱(main 합치기 push)에 알렸다. 11-12 O02 병합 예약 `trig_019ECWcRWwgpdFymeiXBT7MC`를 새로 걸었다.
+- 11-10T00:27Z #275 push 배포 run 42726876129 success(Worker `14f10097`, 마이그레이션 없음, 스냅숏 `84e70ccb3a3e1f74` 26,287곳, 요약 ‘built afresh, not published again: the site's snapshot has no inputs hash’로 예상대로 새로 만듦, `deployments.md` 11-10 줄). 다음 push 배포에서 ‘published again from’이 나오는지 본다(위 4의 1의 하루 하나 규칙 다시 보기).
+- 11-10T00:2xZ C07이 #275 후속 PR #292(head `3802c14`, 등급 2)를 열었다. 상위 세션이 같은 head에 1회차 Claude 검토 세션 `session_01Up3F2114cYjywEoZ5FeWyo`를 열었고, Codex 1회차는 한도 안내(댓글 6755363837)로 끝나 그 검토로 갈음한다. 병합은 #291 뒤(11-13 이후). C04는 #285에 main을 합쳤고(head `03def8a`, CI success), O02 앱은 #291에 main을 합쳤다(head `09b69d9`, CI success).
 - 11-10T00:2xZ 인계 문서(80,239바이트, 상한 81,000바이트에 닿기 직전)를 `docs/history/work-handoff-20261110T0015Z.md`로 바꾸지 않고 옮기고(`cmp` 같음), 3·4·7·8을 지금 상태만 남겨 다시 썼다(앱 `AGENTS.md` ‘기록’ 절).
 
 ## 작업별 절
