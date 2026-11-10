@@ -150,7 +150,7 @@
 | `session_01Up3F21Xbu4ao2sZvDnhVUG` | O02 앱: 매시간 수집 부르기 예비를 public 예약으로(브랜치 `claude/o02-actions-minutes`, 하위 모델, 11-09T12:04Z 열림, 작업 문서 `docs/O02-20261109.md`) | 일함. #291(head `09b69d9`) 1회차 끝, 11-12 병합 대기(실행기 #20보다 먼저) |
 | `session_01Up3F23GXLiJ5U3xLy3Kssm` | V01 재검증: 앱 구조·수집기·스냅숏 빌드·검사(브랜치 `claude/v01-fable-review`, Heavy, 11-10T01:15:11Z 열림, 사용자가 05:20Z 전에 평소 상위 모델로 바꿈, brief `docs/V01-20261110.md`) | 일함. 찾기는 끝났고 #305(11-15 병합) 뒤 보관, 고침 2는 새 Sonnet 세션(위 4의 2) |
 | `session_01Up3F215nsUifG7RyEkWYBP` | O02 실행기: `yukemuri-catalog.yml` cron 없애고 `site-checks` push를 main으로(실행기 브랜치 `claude/o02-actions-minutes`, 하위 모델, 11-09T12:05Z 열림) | 일함. 실행기 #20(head `b1d867e`) 병합은 11-12 앱 #291 뒤 |
-| `session_01Up3F1z4oJwNUYt8F3cnhHc` | 하네스 관리 세션(`jihune/agent-harness`, 11-10T11:46:28Z setup 62를 알림, 곧 ‘하네스 관리 세션 (setup 62)’에 넘긴다고 함, 그 앞은 `session_01Up3F21mhDc2a687jmh8ViE`·`session_01Up3F23KQUydp3HvgE81XFc`). 곧 다시 넘어갈 수 있으니 보낼 때는 제목이 「하네스 관리 세션」으로 시작하는 보관되지 않은 가장 새 세션을 `list_sessions`로 찾는다 | 다른 저장소 |
+| `session_01Up3F21fUQscFT27nrxRsM3` | 하네스 관리 세션 (setup 62)(`jihune/agent-harness`, 11-10T11:51:41Z 시작, 그 앞은 setup 62를 알린 `session_01Up3F1z4oJwNUYt8F3cnhHc`(인계함)·`session_01Up3F21mhDc2a687jmh8ViE`). 곧 다시 넘어갈 수 있으니 보낼 때는 제목이 「하네스 관리 세션」으로 시작하는 보관되지 않은 가장 새 세션을 `list_sessions`로 찾는다 | 다른 저장소 |
 | `session_01MALVa9n1yT47zFCALbhRPf` | 다른 프로젝트 | 건드리지 않는다 |
 
 ### 7. 인계 결과(다음 상위 세션이 적는다)
@@ -173,7 +173,8 @@
 
 11-10T11:56Z까지의 기록은 `docs/history/work-handoff-20261110T1156Z.md` 「상위 세션 인계」 8(스물한 번째: 인계 문서 다시 쓰기 #307, roadmap 네 줄, 열아홉 번째에 쓴 사용자 글, V01 예약 id, setup 62 알림과 보내는 쪽 대조)과 그 앞 history 파일들에 있다. 그 가운데 지금도 걸린 것은 위 2·3·4에 옮겼다. 스물한 번째의 교훈은 `docs/history/lessons-parent21-20261110.md`, 스무 번째의 교훈은 `docs/history/lessons-parent20-20261110.md`, V02의 교훈은 `docs/V02-20261110.md` 「교훈」이다.
 
-- 11-10T11:56Z 인계 문서(80,023바이트)를 `docs/history/work-handoff-20261110T1156Z.md`로 바꾸지 않고 옮기고(`cmp` 같음), 앱 `AGENTS.md` ‘기록’ 절대로 지금 상태만 남겨 다시 썼다(1의 1 목록을 setup 62로, 2의 ‘이번 주 한정 상위 모델 쓰기’와 ‘모델’의 경위, 4의 8 (나)를 줄이고 3·6·7·8을 지금 상태로).
+- 11-10T11:56Z 인계 문서(80,023바이트)를 `docs/history/work-handoff-20261110T1156Z.md`로 바꾸지 않고 옮기고(`cmp` 같음), 앱 `AGENTS.md` ‘기록’ 절대로 지금 상태만 남겨 다시 썼다(1의 1 목록을 setup 62로, 2의 ‘이번 주 한정 상위 모델 쓰기’와 ‘모델’의 경위, 4의 8 (나)를 줄이고 3·6·7·8을 지금 상태로). 다시 쓴 뒤 69,048바이트로 4분의 3(60,750바이트)을 넘었다. 남은 것이 지금 상태와 지금도 따르는 지시라 더 자르지 않았고, ‘기록’ 절의 ‘지금 상태만 남겨도 4분의 3을 넘으면 상한을 다시 정한다’를 사용자에게 물었다(스물두 번째의 판단). 기록 PR #309(head `95bbfed`, merge `00b5baa`)로 병합했다.
+- 11-10T12:1xZ 교훈 둘(받는 점검 `extract`의 `early_forward` FAIL, 실행기 저장소 `add_repo`가 같은 방법으로 연 세션끼리 다르게 막힘)을 하네스 관리 세션 (setup 62) `session_01Up3F21fUQscFT27nrxRsM3`에 `send_message`(priority later, 그 세션이 일하는 중)로 보냈다(`delivered`).
 
 ## 작업별 절
 
