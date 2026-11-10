@@ -1,0 +1,1644 @@
+{
+ "runs": [
+  {
+   "id": 40621670124,
+   "created": "2026-10-28T02:33:51Z",
+   "pages": 120,
+   "trip": 27,
+   "status": {
+    "done": 119,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T02:34:06.3777817",
+    "written": 0,
+    "read": 146376
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 31,
+    "claims": 126
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-28T03:05:38.0884605",
+     "startedAt": "2026-10-28T03:01:33.486460",
+     "id": "cb30d02f31e3fcee",
+     "rows": 146402,
+     "workflow": "collect.yml",
+     "run": 40621670124
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25843,
+     "pending": 18684,
+     "completedDetailPages": 7276
+    }
+   ],
+   "collectEnd": "2026-10-28T02:52:40Z",
+   "snapshotEnd": "2026-10-28T03:06:02Z",
+   "recordStep": "success",
+   "reason": "reason=today 0 rows written, 146376 read; writes allow 459 pages, reads 855, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40627404629,
+   "created": "2026-10-28T03:33:53Z",
+   "pages": 108,
+   "trip": 0,
+   "status": {
+    "done": 108
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T03:34:04.6246751",
+    "written": 1596,
+    "read": 704461
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-28T04:09:03.2990722",
+     "startedAt": "2026-10-28T04:05:15.820072",
+     "id": "3743662453e9083e",
+     "rows": 146479,
+     "workflow": "collect.yml",
+     "run": 40627404629
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25857,
+     "pending": 18626,
+     "completedDetailPages": 7348
+    }
+   ],
+   "collectEnd": "2026-10-28T03:57:07Z",
+   "snapshotEnd": "2026-10-28T04:09:29Z",
+   "recordStep": "success",
+   "reason": "reason=today 1596 rows written, 704461 read; writes allow 450 pages, reads 734, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40633033802,
+   "created": "2026-10-28T04:33:54Z",
+   "pages": 112,
+   "trip": 0,
+   "status": {
+    "done": 112
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T04:34:05.4034033",
+    "written": 3119,
+    "read": 1245076
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-28T05:08:49.1232276",
+     "startedAt": "2026-10-28T05:05:11.728227",
+     "id": "e1a4853085878527",
+     "rows": 146534,
+     "workflow": "collect.yml",
+     "run": 40633033802
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25864,
+     "pending": 18529,
+     "completedDetailPages": 7452
+    }
+   ],
+   "collectEnd": "2026-10-28T04:57:08Z",
+   "snapshotEnd": "2026-10-28T05:09:13Z",
+   "recordStep": "success",
+   "reason": "reason=today 3119 rows written, 1245076 read; writes allow 442 pages, reads 616, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40638726075,
+   "created": "2026-10-28T05:33:55Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 119,
+    "failed": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T05:34:10.2228397",
+    "written": 4572,
+    "read": 1933300
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-28T06:03:05.5522467",
+     "startedAt": "2026-10-28T05:59:23.237246",
+     "id": "98600fc1c2f95624",
+     "rows": 146617,
+     "workflow": "collect.yml",
+     "run": 40638726075
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25880,
+     "pending": 18484,
+     "completedDetailPages": 7512
+    }
+   ],
+   "collectEnd": "2026-10-28T05:53:03Z",
+   "snapshotEnd": "2026-10-28T06:03:30Z",
+   "recordStep": "success",
+   "reason": "reason=today 4572 rows written, 1933300 read; writes allow 434 pages, reads 467, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40644627636,
+   "created": "2026-10-28T06:33:57Z",
+   "pages": 120,
+   "trip": 17,
+   "status": {
+    "done": 120
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T06:34:08.7104170",
+    "written": 6305,
+    "read": 2491479
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 47,
+    "claims": 127
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-28T07:03:22.8920164",
+     "startedAt": "2026-10-28T07:00:10.324016",
+     "id": "856ab03266170f47",
+     "rows": 146686,
+     "workflow": "collect.yml",
+     "run": 40644627636
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25892,
+     "pending": 18403,
+     "completedDetailPages": 7605
+    }
+   ],
+   "collectEnd": "2026-10-28T06:54:39Z",
+   "snapshotEnd": "2026-10-28T07:03:44Z",
+   "recordStep": "success",
+   "reason": "reason=today 6305 rows written, 2491479 read; writes allow 425 pages, reads 345, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40650899081,
+   "created": "2026-10-28T07:33:59Z",
+   "pages": 110,
+   "trip": 0,
+   "status": {
+    "done": 110
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-28T07:34:10.7456977",
+    "written": 8041,
+    "read": 3182560
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-28T08:06:37.5740956",
+     "startedAt": "2026-10-28T08:03:13.722095",
+     "id": "27c53a987c05b749",
+     "rows": 146698,
+     "workflow": "collect.yml",
+     "run": 40650899081
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25893,
+     "pending": 18293,
+     "completedDetailPages": 7715
+    }
+   ],
+   "collectEnd": "2026-10-28T07:57:13Z",
+   "snapshotEnd": "2026-10-28T08:06:58Z",
+   "recordStep": "success",
+   "reason": "reason=today 8041 rows written, 3182560 read; writes allow 415 pages, reads 195, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40657714639,
+   "created": "2026-10-28T08:34:02Z",
+   "pages": 34,
+   "trip": 0,
+   "status": {
+    "done": 33,
+    "retry": 1
+   },
+   "budget": 34,
+   "size": {
+    "at": "2026-10-28T08:34:14.4411344",
+    "written": 9268,
+    "read": 3922552
+   },
+   "processed": 34,
+   "coverage": false,
+   "rounds": {
+    "rounds": 17,
+    "claims": 41
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-28T08:52:10.2773986",
+     "startedAt": "2026-10-28T08:48:54.849398",
+     "id": "89c89e25f3d4a8ea",
+     "rows": 146701,
+     "workflow": "collect.yml",
+     "run": 40657714639
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-28",
+     "records": 25893,
+     "pending": 18260,
+     "completedDetailPages": 7748
+    }
+   ],
+   "collectEnd": "2026-10-28T08:41:22Z",
+   "snapshotEnd": "2026-10-28T08:52:31Z",
+   "recordStep": "success",
+   "reason": "reason=today 9268 rows written, 3922552 read; writes allow 409 pages, reads 34, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40660562424,
+   "created": "2026-10-28T08:57:43Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-28T08:57:55.3251125",
+    "written": 9646,
+    "read": 4274442
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-28T08:57:57Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 9646 rows written, 4274442 read; writes allow 407 pages, reads -42, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40724144957,
+   "created": "2026-10-28T16:15:19Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-28T16:15:34.7803488",
+    "written": 9646,
+    "read": 4274442
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-28T16:15:37Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 9646 rows written, 4274442 read; writes allow 407 pages, reads -42, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40770798070,
+   "created": "2026-10-28T21:18:08Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-28T21:18:19.0907488",
+    "written": 9646,
+    "read": 4597420
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-28T21:18:21Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 9646 rows written, 4597420 read; writes allow 407 pages, reads -113, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40798988430,
+   "created": "2026-10-29T01:12:28Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 119,
+    "failed": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T01:12:37.5524553",
+    "written": 0,
+    "read": 0
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T01:41:58.4841227",
+     "startedAt": "2026-10-29T01:38:22.732122",
+     "id": "d1a6b516cad0a300",
+     "rows": 146710,
+     "workflow": "collect.yml",
+     "run": 40798988430
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 25894,
+     "pending": 18201,
+     "completedDetailPages": 7809
+    }
+   ],
+   "collectEnd": "2026-10-29T01:31:39Z",
+   "snapshotEnd": "2026-10-29T01:42:22Z",
+   "recordStep": "success",
+   "reason": "reason=today 0 rows written, 0 read; writes allow 459 pages, reads 887, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40804981098,
+   "created": "2026-10-29T02:12:30Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 119,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T02:12:39.6386013",
+    "written": 1424,
+    "read": 562721
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T02:44:35.2615673",
+     "startedAt": "2026-10-29T02:40:26.371567",
+     "id": "17832b48945d56bb",
+     "rows": 146842,
+     "workflow": "collect.yml",
+     "run": 40804981098
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 25920,
+     "pending": 18166,
+     "completedDetailPages": 7869
+    }
+   ],
+   "collectEnd": "2026-10-29T02:31:41Z",
+   "snapshotEnd": "2026-10-29T02:45:00Z",
+   "recordStep": "success",
+   "reason": "reason=today 1424 rows written, 562721 read; writes allow 451 pages, reads 765, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40810834624,
+   "created": "2026-10-29T03:12:37Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 120
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T03:12:53.3545624",
+    "written": 3162,
+    "read": 1129737
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T03:43:48.1412230",
+     "startedAt": "2026-10-29T03:39:41.746223",
+     "id": "4ffdd190b30fa531",
+     "rows": 146925,
+     "workflow": "collect.yml",
+     "run": 40810834624
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 25936,
+     "pending": 18122,
+     "completedDetailPages": 7929
+    }
+   ],
+   "collectEnd": "2026-10-29T03:31:03Z",
+   "snapshotEnd": "2026-10-29T03:44:18Z",
+   "recordStep": "success",
+   "reason": "reason=today 3162 rows written, 1129737 read; writes allow 442 pages, reads 641, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40816456313,
+   "created": "2026-10-29T04:12:38Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 119,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T04:12:51.2504084",
+    "written": 4833,
+    "read": 1702737
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T04:44:17.6063871",
+     "startedAt": "2026-10-29T04:40:28.804387",
+     "id": "22ec2cac74f8a8ea",
+     "rows": 146963,
+     "workflow": "collect.yml",
+     "run": 40816456313
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 25943,
+     "pending": 18069,
+     "completedDetailPages": 7988
+    }
+   ],
+   "collectEnd": "2026-10-29T04:31:52Z",
+   "snapshotEnd": "2026-10-29T04:44:41Z",
+   "recordStep": "success",
+   "reason": "reason=today 4833 rows written, 1702737 read; writes allow 433 pages, reads 517, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40822060376,
+   "created": "2026-10-29T05:12:40Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 119,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T05:12:54.4588277",
+    "written": 6479,
+    "read": 2284170
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T05:42:51.4005868",
+     "startedAt": "2026-10-29T05:39:07.722586",
+     "id": "5eaa4f3a862c864b",
+     "rows": 147283,
+     "workflow": "collect.yml",
+     "run": 40822060376
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 26006,
+     "pending": 18070,
+     "completedDetailPages": 8048
+    }
+   ],
+   "collectEnd": "2026-10-29T05:31:40Z",
+   "snapshotEnd": "2026-10-29T05:43:13Z",
+   "recordStep": "success",
+   "reason": "reason=today 6479 rows written, 2284170 read; writes allow 424 pages, reads 390, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40827844733,
+   "created": "2026-10-29T06:12:42Z",
+   "pages": 120,
+   "trip": 8,
+   "status": {
+    "done": 120
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-29T06:12:52.2421312",
+    "written": 9185,
+    "read": 2904778
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 43,
+    "claims": 127
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-29T06:47:39.9456514",
+     "startedAt": "2026-10-29T06:43:31.755651",
+     "id": "847f2c40257f9ce3",
+     "rows": 147760,
+     "workflow": "collect.yml",
+     "run": 40827844733
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 26100,
+     "pending": 18079,
+     "completedDetailPages": 8133
+    }
+   ],
+   "collectEnd": "2026-10-29T06:35:03Z",
+   "snapshotEnd": "2026-10-29T06:48:03Z",
+   "recordStep": "success",
+   "reason": "reason=today 9185 rows written, 2904778 read; writes allow 409 pages, reads 255, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40833973600,
+   "created": "2026-10-29T07:12:44Z",
+   "pages": 97,
+   "trip": 0,
+   "status": {
+    "done": 93,
+    "failed": 3,
+    "retry": 1
+   },
+   "budget": 103,
+   "size": {
+    "at": "2026-10-29T07:12:54.9947035",
+    "written": 12032,
+    "read": 3606132
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-29T07:43:50.2669231",
+     "startedAt": "2026-10-29T07:40:00.687923",
+     "id": "c87ea3dc48aa9c7c",
+     "rows": 147773,
+     "workflow": "collect.yml",
+     "run": 40833973600
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-29",
+     "records": 26100,
+     "pending": 17983,
+     "completedDetailPages": 8226
+    }
+   ],
+   "collectEnd": "2026-10-29T07:32:51Z",
+   "snapshotEnd": "2026-10-29T07:44:13Z",
+   "recordStep": "success",
+   "reason": "reason=today 12032 rows written, 3606132 read; writes allow 394 pages, reads 103, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40836818655,
+   "created": "2026-10-29T07:39:17Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": null,
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-29T07:44:34Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "actor": "jihune"
+  },
+  {
+   "id": 40902267989,
+   "created": "2026-10-29T15:30:31Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-29T15:30:46.1954558",
+    "written": 13116,
+    "read": 4332682
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-29T15:30:48Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 13116 rows written, 4332682 read; writes allow 388 pages, reads -55, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40949885715,
+   "created": "2026-10-29T20:32:07Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-29T20:32:22.1370975",
+    "written": 13116,
+    "read": 4658385
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-29T20:32:25Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 13116 rows written, 4658385 read; writes allow 388 pages, reads -126, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40978710681,
+   "created": "2026-10-30T00:17:04Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 115,
+    "failed": 5
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-30T00:17:16.4734987",
+    "written": 0,
+    "read": 0
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-30T00:45:27.7436914",
+     "startedAt": "2026-10-30T00:42:05.644691",
+     "id": "01b5c7eb73d3c36a",
+     "rows": 147791,
+     "workflow": "collect.yml",
+     "run": 40978710681
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17925,
+     "completedDetailPages": 8287
+    }
+   ],
+   "collectEnd": "2026-10-30T00:35:04Z",
+   "snapshotEnd": "2026-10-30T00:45:51Z",
+   "recordStep": "success",
+   "reason": "reason=today 0 rows written, 0 read; writes allow 459 pages, reads 887, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 40984912385,
+   "created": "2026-10-30T01:17:07Z",
+   "pages": 120,
+   "trip": 30,
+   "status": {
+    "done": 117,
+    "retry": 3
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-30T01:17:17.6044605",
+    "written": 1468,
+    "read": 605546
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 30,
+    "claims": 125
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-30T01:48:52.1559552",
+     "startedAt": "2026-10-30T01:45:11.029955",
+     "id": "9506d45298e40d04",
+     "rows": 147795,
+     "workflow": "collect.yml",
+     "run": 40984912385
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17868,
+     "completedDetailPages": 8344
+    }
+   ],
+   "collectEnd": "2026-10-30T01:36:23Z",
+   "snapshotEnd": "2026-10-30T01:49:17Z",
+   "recordStep": "success",
+   "reason": "reason=today 1468 rows written, 605546 read; writes allow 451 pages, reads 755, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40990787820,
+   "created": "2026-10-30T02:17:09Z",
+   "pages": 120,
+   "trip": 15,
+   "status": {
+    "done": 118,
+    "failed": 1,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-30T02:17:18.6186686",
+    "written": 2788,
+    "read": 1236800
+   },
+   "processed": 120,
+   "coverage": false,
+   "rounds": {
+    "rounds": 35,
+    "claims": 126
+   },
+   "state": "finished",
+   "snapshots": [
+    {
+     "at": "2026-10-30T02:52:07.0520738",
+     "startedAt": "2026-10-30T02:48:08.306073",
+     "id": "60bac5a4465d61ed",
+     "rows": 147803,
+     "workflow": "collect.yml",
+     "run": 40990787820
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17799,
+     "completedDetailPages": 8413
+    }
+   ],
+   "collectEnd": "2026-10-30T02:39:25Z",
+   "snapshotEnd": "2026-10-30T02:52:31Z",
+   "recordStep": "success",
+   "reason": "reason=today 2788 rows written, 1236800 read; writes allow 444 pages, reads 618, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 40996512654,
+   "created": "2026-10-30T03:17:11Z",
+   "pages": 113,
+   "trip": 0,
+   "status": {
+    "done": 113
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-30T03:17:23.8834017",
+    "written": 4120,
+    "read": 1902899
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-30T03:53:09.1333035",
+     "startedAt": "2026-10-30T03:49:13.862303",
+     "id": "421ad0c13ccd5f38",
+     "rows": 147814,
+     "workflow": "collect.yml",
+     "run": 40996512654
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17699,
+     "completedDetailPages": 8513
+    }
+   ],
+   "collectEnd": "2026-10-30T03:40:26Z",
+   "snapshotEnd": "2026-10-30T03:53:32Z",
+   "recordStep": "success",
+   "reason": "reason=today 4120 rows written, 1902899 read; writes allow 437 pages, reads 473, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 41002046416,
+   "created": "2026-10-30T04:17:14Z",
+   "pages": 118,
+   "trip": 0,
+   "status": {
+    "done": 117,
+    "retry": 1
+   },
+   "budget": 120,
+   "size": {
+    "at": "2026-10-30T04:17:24.3312181",
+    "written": 5382,
+    "read": 2690454
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-30T04:53:18.8506051",
+     "startedAt": "2026-10-30T04:49:10.756605",
+     "id": "d1329ed6796c18e6",
+     "rows": 147827,
+     "workflow": "collect.yml",
+     "run": 41002046416
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17582,
+     "completedDetailPages": 8630
+    }
+   ],
+   "collectEnd": "2026-10-30T04:40:28Z",
+   "snapshotEnd": "2026-10-30T04:53:42Z",
+   "recordStep": "success",
+   "reason": "reason=today 5382 rows written, 2690454 read; writes allow 430 pages, reads 302, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 41007586764,
+   "created": "2026-10-30T05:17:16Z",
+   "pages": 97,
+   "trip": 1,
+   "status": {
+    "done": 96,
+    "retry": 1
+   },
+   "budget": 106,
+   "size": {
+    "at": "2026-10-30T05:17:25.9729246",
+    "written": 6694,
+    "read": 3592225
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "budget_reached",
+   "snapshots": [
+    {
+     "at": "2026-10-30T05:50:14.5396711",
+     "startedAt": "2026-10-30T05:46:19.759671",
+     "id": "db926327149b2e38",
+     "rows": 147837,
+     "workflow": "collect.yml",
+     "run": 41007586764
+    }
+   ],
+   "recorded": [
+    {
+     "day": "2026-10-30",
+     "records": 26102,
+     "pending": 17487,
+     "completedDetailPages": 8725
+    }
+   ],
+   "collectEnd": "2026-10-30T05:37:53Z",
+   "snapshotEnd": "2026-10-30T05:50:42Z",
+   "recordStep": "success",
+   "reason": "reason=today 6694 rows written, 3592225 read; writes allow 423 pages, reads 106, cap 120",
+   "actor": "github-actions[bot]"
+  },
+  {
+   "id": 41013795302,
+   "created": "2026-10-30T06:23:27Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-30T06:23:38.6990401",
+    "written": 7772,
+    "read": 4354883
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-30T06:23:41Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 7772 rows written, 4354883 read; writes allow 417 pages, reads -60, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 41063751289,
+   "created": "2026-10-30T13:30:02Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-30T13:30:14.2623200",
+    "written": 7772,
+    "read": 4354883
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-30T13:30:18Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 7772 rows written, 4354883 read; writes allow 417 pages, reads -60, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 41110109436,
+   "created": "2026-10-30T18:49:01Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-30T18:49:13.6906714",
+    "written": 7772,
+    "read": 4354883
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-30T18:49:16Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 7772 rows written, 4354883 read; writes allow 417 pages, reads -60, cap 120",
+   "actor": "jihune"
+  },
+  {
+   "id": 41142875768,
+   "created": "2026-10-30T23:10:49Z",
+   "pages": 0,
+   "trip": 0,
+   "status": {},
+   "budget": 0,
+   "size": {
+    "at": "2026-10-30T23:11:00.2857004",
+    "written": 7772,
+    "read": 4680937
+   },
+   "processed": null,
+   "coverage": false,
+   "rounds": null,
+   "state": "skipped",
+   "snapshots": [],
+   "recorded": [],
+   "collectEnd": "2026-10-30T23:11:02Z",
+   "snapshotEnd": null,
+   "recordStep": null,
+   "reason": "reason=today 7772 rows written, 4680937 read; writes allow 417 pages, reads -131, cap 120",
+   "actor": "jihune"
+  }
+ ],
+ "days": {
+  "2026-10-28": {
+   "runs": 10,
+   "pagedRuns": 7,
+   "pages": 724,
+   "pagesBudgeted": 754,
+   "pageStatus": {
+    "done": 721,
+    "retry": 2,
+    "failed": 1
+   },
+   "tripPages": 74,
+   "snapshots": 8,
+   "snapshotRows": 1172451,
+   "collectSnapshots": 7,
+   "collectSnapshotRows": 1026117,
+   "otherSnapshots": [
+    {
+     "at": "2026-10-28T00:27:24.3849328",
+     "startedAt": "2026-10-28T00:23:34.448932",
+     "id": "6ccdb572f3177ba9",
+     "rows": 146334,
+     "workflow": "deploy.yml",
+     "run": 40607507393
+    }
+   ],
+   "accountRead": 4597420,
+   "accountWritten": 9646,
+   "checkVerdict": "실패 1건",
+   "snapshotShareOfReads": 0.255,
+   "snapshotShareOfLimit": 0.2345,
+   "readsPerPage": 6350.0,
+   "lastBudgetRead": 3922552,
+   "outside": 322978,
+   "span": {
+    "from": "2026-10-28T02:34:06.3777817",
+    "to": "2026-10-28T08:57:55.3251125",
+    "runs": 7,
+    "pages": 724,
+    "reads": 3101949,
+    "perPage": 4284.5
+   },
+   "pendingFirstLast": [
+    18684,
+    18260
+   ],
+   "firstPagedRunActor": "jihune"
+  },
+  "2026-10-29": {
+   "runs": 9,
+   "pagedRuns": 7,
+   "pages": 817,
+   "pagesBudgeted": 823,
+   "pageStatus": {
+    "done": 809,
+    "retry": 4,
+    "failed": 4
+   },
+   "tripPages": 158,
+   "snapshots": 7,
+   "snapshotRows": 1030256,
+   "collectSnapshots": 7,
+   "collectSnapshotRows": 1030256,
+   "otherSnapshots": [],
+   "accountRead": 4658385,
+   "accountWritten": 13116,
+   "checkVerdict": "실패 1건",
+   "snapshotShareOfReads": 0.2212,
+   "snapshotShareOfLimit": 0.2061,
+   "readsPerPage": 5701.8,
+   "lastBudgetRead": 3606132,
+   "outside": 325703,
+   "span": {
+    "from": "2026-10-29T01:12:37.5524553",
+    "to": "2026-10-29T15:30:46.1954558",
+    "runs": 7,
+    "pages": 817,
+    "reads": 3302426,
+    "perPage": 4042.1
+   },
+   "pendingFirstLast": [
+    18201,
+    17983
+   ],
+   "firstPagedRunActor": "jihune"
+  },
+  "2026-10-30": {
+   "runs": 10,
+   "pagedRuns": 6,
+   "pages": 688,
+   "pagesBudgeted": 706,
+   "pageStatus": {
+    "done": 676,
+    "retry": 6,
+    "failed": 6
+   },
+   "tripPages": 76,
+   "snapshots": 6,
+   "snapshotRows": 886867,
+   "collectSnapshots": 6,
+   "collectSnapshotRows": 886867,
+   "otherSnapshots": [],
+   "accountRead": 4680937,
+   "accountWritten": 7772,
+   "checkVerdict": "실패 1건",
+   "snapshotShareOfReads": 0.1895,
+   "snapshotShareOfLimit": 0.1774,
+   "readsPerPage": 6803.7,
+   "lastBudgetRead": 3592225,
+   "outside": 326054,
+   "span": {
+    "from": "2026-10-30T00:17:16.4734987",
+    "to": "2026-10-30T06:23:38.6990401",
+    "runs": 6,
+    "pages": 688,
+    "reads": 3468016,
+    "perPage": 5040.7
+   },
+   "pendingFirstLast": [
+    17925,
+    17487
+   ],
+   "firstPagedRunActor": "jihune"
+  }
+ },
+ "intervals": [
+  {
+   "day": "2026-10-28",
+   "run": 40621670124,
+   "from": "2026-10-28T02:34:06.3777817",
+   "to": "2026-10-28T03:34:04.6246751",
+   "pages": 120,
+   "trip": 27,
+   "reads": 411683,
+   "perPage": 3430.7,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40627404629,
+   "from": "2026-10-28T03:34:04.6246751",
+   "to": "2026-10-28T04:34:05.4034033",
+   "pages": 108,
+   "trip": 0,
+   "reads": 394136,
+   "perPage": 3649.4,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40633033802,
+   "from": "2026-10-28T04:34:05.4034033",
+   "to": "2026-10-28T05:34:10.2228397",
+   "pages": 112,
+   "trip": 0,
+   "reads": 541690,
+   "perPage": 4836.5,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40638726075,
+   "from": "2026-10-28T05:34:10.2228397",
+   "to": "2026-10-28T06:34:08.7104170",
+   "pages": 120,
+   "trip": 30,
+   "reads": 411562,
+   "perPage": 3429.7,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40644627636,
+   "from": "2026-10-28T06:34:08.7104170",
+   "to": "2026-10-28T07:34:10.7456977",
+   "pages": 120,
+   "trip": 17,
+   "reads": 544395,
+   "perPage": 4536.6,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40650899081,
+   "from": "2026-10-28T07:34:10.7456977",
+   "to": "2026-10-28T08:34:14.4411344",
+   "pages": 110,
+   "trip": 0,
+   "reads": 593294,
+   "perPage": 5393.6,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-28",
+   "run": 40657714639,
+   "from": "2026-10-28T08:34:14.4411344",
+   "to": "2026-10-28T08:57:55.3251125",
+   "pages": 34,
+   "trip": 0,
+   "reads": 205189,
+   "perPage": 6035.0,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40798988430,
+   "from": "2026-10-29T01:12:37.5524553",
+   "to": "2026-10-29T02:12:39.6386013",
+   "pages": 120,
+   "trip": 30,
+   "reads": 416011,
+   "perPage": 3466.8,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40804981098,
+   "from": "2026-10-29T02:12:39.6386013",
+   "to": "2026-10-29T03:12:53.3545624",
+   "pages": 120,
+   "trip": 30,
+   "reads": 420174,
+   "perPage": 3501.4,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40810834624,
+   "from": "2026-10-29T03:12:53.3545624",
+   "to": "2026-10-29T04:12:51.2504084",
+   "pages": 120,
+   "trip": 30,
+   "reads": 426075,
+   "perPage": 3550.6,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40816456313,
+   "from": "2026-10-29T04:12:51.2504084",
+   "to": "2026-10-29T05:12:54.4588277",
+   "pages": 120,
+   "trip": 30,
+   "reads": 434470,
+   "perPage": 3620.6,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40822060376,
+   "from": "2026-10-29T05:12:54.4588277",
+   "to": "2026-10-29T06:12:52.2421312",
+   "pages": 120,
+   "trip": 30,
+   "reads": 473325,
+   "perPage": 3944.4,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40827844733,
+   "from": "2026-10-29T06:12:52.2421312",
+   "to": "2026-10-29T07:12:54.9947035",
+   "pages": 120,
+   "trip": 8,
+   "reads": 553594,
+   "perPage": 4613.3,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-29",
+   "run": 40833973600,
+   "from": "2026-10-29T07:12:54.9947035",
+   "to": "2026-10-29T15:30:46.1954558",
+   "pages": 97,
+   "trip": 0,
+   "reads": 578777,
+   "perPage": 5966.8,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 40978710681,
+   "from": "2026-10-30T00:17:16.4734987",
+   "to": "2026-10-30T01:17:17.6044605",
+   "pages": 120,
+   "trip": 30,
+   "reads": 457755,
+   "perPage": 3814.6,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 40984912385,
+   "from": "2026-10-30T01:17:17.6044605",
+   "to": "2026-10-30T02:17:18.6186686",
+   "pages": 120,
+   "trip": 30,
+   "reads": 483459,
+   "perPage": 4028.8,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 40990787820,
+   "from": "2026-10-30T02:17:18.6186686",
+   "to": "2026-10-30T03:17:23.8834017",
+   "pages": 120,
+   "trip": 15,
+   "reads": 518296,
+   "perPage": 4319.1,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 40996512654,
+   "from": "2026-10-30T03:17:23.8834017",
+   "to": "2026-10-30T04:17:24.3312181",
+   "pages": 113,
+   "trip": 0,
+   "reads": 639741,
+   "perPage": 5661.4,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 41002046416,
+   "from": "2026-10-30T04:17:24.3312181",
+   "to": "2026-10-30T05:17:25.9729246",
+   "pages": 118,
+   "trip": 0,
+   "reads": 753944,
+   "perPage": 6389.4,
+   "mayHoldBackup": false
+  },
+  {
+   "day": "2026-10-30",
+   "run": 41007586764,
+   "from": "2026-10-30T05:17:25.9729246",
+   "to": "2026-10-30T06:23:38.6990401",
+   "pages": 97,
+   "trip": 1,
+   "reads": 614821,
+   "perPage": 6338.4,
+   "mayHoldBackup": false
+  }
+ ],
+ "verdicts": {
+  "C1": "PASS",
+  "C2": "PASS",
+  "C2bad": [],
+  "C4": "NOT_LOWER",
+  "C4medians": {
+   "noTrip": 5661.4,
+   "nNoTrip": 7,
+   "trip": 3814.6,
+   "nTrip": 13
+  },
+  "C4trip": "TRIP_NOT_CAUSE",
+  "C4lag": "LAG_NOT_CAUSE",
+  "C5": "OVER",
+  "C5maxOutside": 326054,
+  "P5": "WORTH_ASKING",
+  "P5grid": [
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 6,
+    "every3Pages": 261,
+    "chainEndPages": 261,
+    "every3Share": 0.379
+   },
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 7,
+    "every3Pages": 261,
+    "chainEndPages": 326,
+    "every3Share": 0.379
+   },
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 6,
+    "every3Pages": 145,
+    "chainEndPages": 145,
+    "every3Share": 0.211
+   },
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 7,
+    "every3Pages": 145,
+    "chainEndPages": 181,
+    "every3Share": 0.211
+   },
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 6,
+    "every3Pages": 116,
+    "chainEndPages": 116,
+    "every3Share": 0.169
+   },
+   {
+    "rowsPerSnapshot": 146500,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 7,
+    "every3Pages": 116,
+    "chainEndPages": 145,
+    "every3Share": 0.169
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 6,
+    "every3Pages": 285,
+    "chainEndPages": 285,
+    "every3Share": 0.414
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 7,
+    "every3Pages": 285,
+    "chainEndPages": 356,
+    "every3Share": 0.414
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 6,
+    "every3Pages": 158,
+    "chainEndPages": 158,
+    "every3Share": 0.23
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 7,
+    "every3Pages": 158,
+    "chainEndPages": 198,
+    "every3Share": 0.23
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 6,
+    "every3Pages": 127,
+    "chainEndPages": 127,
+    "every3Share": 0.185
+   },
+   {
+    "rowsPerSnapshot": 160000,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 7,
+    "every3Pages": 127,
+    "chainEndPages": 159,
+    "every3Share": 0.185
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 6,
+    "every3Pages": 321,
+    "chainEndPages": 321,
+    "every3Share": 0.466
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 2245.5,
+    "snapshotsADay": 7,
+    "every3Pages": 321,
+    "chainEndPages": 401,
+    "every3Share": 0.466
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 6,
+    "every3Pages": 178,
+    "chainEndPages": 178,
+    "every3Share": 0.259
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 4042.1,
+    "snapshotsADay": 7,
+    "every3Pages": 178,
+    "chainEndPages": 223,
+    "every3Share": 0.259
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 6,
+    "every3Pages": 143,
+    "chainEndPages": 143,
+    "every3Share": 0.208
+   },
+   {
+    "rowsPerSnapshot": 180000,
+    "rowsPerPage": 5040.7,
+    "snapshotsADay": 7,
+    "every3Pages": 143,
+    "chainEndPages": 179,
+    "every3Share": 0.208
+   }
+  ],
+  "P5lowestDayPages": 688
+ }
+}
