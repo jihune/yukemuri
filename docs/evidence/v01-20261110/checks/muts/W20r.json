@@ -1,0 +1,53 @@
+{
+ "build": false,
+ "note": "Worker: linked (curated) observations lose the chronology and detail-over-list guards (the ten base checks the first run did not reach; no build needed, they do not read dist)",
+ "edits": [
+  {
+   "file": "lib/hotel-source-groups.ts",
+   "old": " WHERE julianday(excluded.observed_at)>=julianday(hotel_source_observations.observed_at) AND (json_extract(hotel_source_observations.payload,'$.sources[0].label') NOT LIKE '%상세%' OR json_extract(excluded.payload,'$.sources[0].label') LIKE '%상세%')\").bind(h.id,JSON.stringify(h),at).run();",
+   "new": "\").bind(h.id,JSON.stringify(h),at).run();"
+  }
+ ],
+ "targets": [
+  [
+   "node",
+   "scripts/check-map-groups.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-comparison-differences.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-hotel-names.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-source-policy.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-snapshot-geo.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-wikidata-names.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-jta-registration.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-oita-permits.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-commons-photos.mjs"
+  ],
+  [
+   "node",
+   "scripts/check-description-ui.cjs"
+  ]
+ ]
+}

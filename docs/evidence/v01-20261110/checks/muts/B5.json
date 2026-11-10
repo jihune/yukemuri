@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "budget: an overlapping run is not forced to 0 pages",
+ "edits": [
+  {
+   "file": "scripts/collection-budget.mjs",
+   "old": "const {pages,reason}=overlap?{pages:0,reason:'overlap: '+overlap}:await budgetToday();",
+   "new": "const {pages,reason}=await budgetToday();"
+  }
+ ]
+}

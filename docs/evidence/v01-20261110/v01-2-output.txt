@@ -1,0 +1,4 @@
+control, real path, no token (the check runs and fails): Freshness check failed: GITHUB_REPOSITORY and GH_TOKEN are required exit=1 
+symlinked checkout path: exit=0 
+folder name with a space: exit=0 
+scripts with this guard: scripts/check-collection-freshness.mjs scripts/checked-commit.mjs scripts/cloudflare-deploy-gate.mjs scripts/cloudflare-workers-subdomain.mjs scripts/lifecycle-push.mjs scripts/preflight-report.mjs 

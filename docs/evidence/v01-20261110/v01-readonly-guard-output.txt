@@ -1,0 +1,8 @@
+PASSED   rows 3->3 | control read | "SELECT v FROM t"
+REFUSED  rows 3->3 | control write | "DELETE FROM t"
+REFUSED  rows 3->3 | control write behind a CTE | "WITH x AS (SELECT 1) DELETE FROM t"
+REFUSED  rows 3->3 | control write behind a real comment | "SELECT 1 -- x\n; DELETE FROM t"
+PASSED   rows 3->0 | variable suffix holding a comment marker | "WITH x AS (SELECT $a(--)) DELETE FROM t"
+PASSED   rows 3->0 | variable suffixes holding quotes | "WITH x AS (SELECT $a(')) DELETE FROM t WHERE $b(') IS NULL"
+PASSED   rows 3->0 | variable suffix holding a block comment marker | "WITH x AS (SELECT $a(/*)) DELETE FROM t WHERE $b(*/) IS NULL"
+writes that passed the guard: 3

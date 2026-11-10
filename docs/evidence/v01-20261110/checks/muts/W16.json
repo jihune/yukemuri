@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a PUT with any token takes over an active lease",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "WHERE url=? AND ((lease_token=? AND lease_until>?) OR",
+   "new": "WHERE url=? AND ((?<>'' AND lease_until>?) OR"
+  }
+ ]
+}

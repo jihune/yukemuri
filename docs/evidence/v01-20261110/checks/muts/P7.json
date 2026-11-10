@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: jitter multiplies the delay up to 50x (not bounded)",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "math.ceil(base*(0.5+0.5*fraction))",
+   "new": "math.ceil(base*(0.5+50*fraction))"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "guard: no host spacing at all",
+ "edits": [
+  {
+   "file": "scripts/crawler/source_safety.py",
+   "old": "finally:self.next_at[host]=self.clock()+self.interval+random.uniform(0,self.jitter)",
+   "new": "finally:pass"
+  }
+ ]
+}

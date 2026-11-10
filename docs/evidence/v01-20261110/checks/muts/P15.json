@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "guard: a redirect with Retry-After is still followed",
+ "edits": [
+  {
+   "file": "scripts/crawler/source_safety.py",
+   "old": "  if hint:self.safe=False",
+   "new": "  pass"
+  }
+ ]
+}

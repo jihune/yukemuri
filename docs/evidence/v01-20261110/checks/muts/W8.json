@@ -1,0 +1,16 @@
+{
+ "build": true,
+ "note": "Worker: a claim no longer checks for another active claim of the provider",
+ "edits": [
+  {
+   "file": "lib/crawl-queue.ts",
+   "old": " AND NOT EXISTS (SELECT 1 FROM crawl_jobs active WHERE active.provider=? AND active.lease_until>?)",
+   "new": ""
+  },
+  {
+   "file": "lib/crawl-queue.ts",
+   "old": "now,'crawl-provider-ready:'+claim.provider,now,claim.provider,now),",
+   "new": "now,'crawl-provider-ready:'+claim.provider,now),"
+  }
+ ]
+}

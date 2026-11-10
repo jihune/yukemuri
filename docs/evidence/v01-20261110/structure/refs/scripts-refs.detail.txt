@@ -1,0 +1,1362 @@
+scripts/audit-catalog.py
+  doc	docs/catalog-operations.md
+  olddoc	docs/D01-20261010.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-D01-20261010.md
+scripts/audit-region-labels.mjs
+  olddoc	docs/D01-20261010.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-D01-20261010.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+scripts/audit-trip-addresses.mjs
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+scripts/build-collector-release.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/run-framework.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/build-search-snapshot.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/build-static-page.mjs
+  scr	scripts/check-commons-photos.mjs
+  scr	scripts/check-d08-jta-browser.mjs
+  scr	scripts/check-d08-merged-browser.mjs
+  scr	scripts/check-d08-oita-browser.mjs
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/check-hotel-names.mjs
+  scr	scripts/check-jta-registration.mjs
+  scr	scripts/check-locale-names-worker.mjs
+  scr	scripts/check-oita-permits.mjs
+  scr	scripts/check-public-reads-worker.mjs
+  scr	scripts/check-reviewed-groups-worker.mjs
+  scr	scripts/check-search-snapshot-worker.mjs
+  scr	scripts/check-snapshot-geo.mjs
+  scr	scripts/check-u05-detail-browser.mjs
+  scr	scripts/check-u05-list-browser.mjs
+  scr	scripts/check-u07-browser.mjs
+  scr	scripts/check-u07-map-browser.mjs
+  scr	scripts/check-u07-names-browser.mjs
+  scr	scripts/check-u07-region-browser.mjs
+  scr	scripts/check-u07-translate-browser.mjs
+  scr	scripts/check-wikidata-names.mjs
+  scr	scripts/cloudflare-usage.mjs
+  scr	scripts/compare-snapshot-builds.mjs
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/former-search-api.mjs
+  scr	scripts/geo/geocode.py
+  scr	scripts/geo/measure-public.mjs
+  scr	scripts/link-oita-rows.mjs
+  scr	scripts/measure-search-snapshot.mjs
+  scr	scripts/preflight-report.mjs
+  scr	scripts/prepare-local-site.mjs
+  scr	scripts/site-search-node.mjs
+  code	lib/search-snapshot-build.ts
+  code	lib/search-snapshot.ts
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/evidence/c07-20261019/compare-progress.mjs
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/evidence/c07-20261019/snapshot-inputs.mjs
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+  olddoc	docs/evidence/d07-20261018/tools/deploy-sim.mjs
+  olddoc	docs/evidence/d07-20261018/tools/measure-locale-snapshot-reads.mjs
+  olddoc	docs/evidence/d08-20261019/pr6/controls.py
+  olddoc	docs/evidence/d08-20261019/tools/commons-reach.mjs
+  olddoc	docs/evidence/d08-jta-20261019/measure.mjs
+  olddoc	docs/evidence/d08-oita-20261019/measure.mjs
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261102T1224Z.md
+scripts/build-static-page.mjs
+  scr	scripts/build-search-snapshot.mjs
+  scr	scripts/compare-snapshot-builds.mjs
+  scr	scripts/run-framework.mjs
+  code	app/page.tsx
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U05-20261013.md
+  olddoc	docs/V01-20261110.md
+scripts/build-verified.sh
+  scr	scripts/run-framework.mjs
+scripts/catalog-checkpoint.py
+  scr	scripts/check-checkpoint.py
+  doc	docs/catalog-operations.md
+  doc	docs/db-backups.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+  olddoc	docs/history/work-handoff-20261019T1147Z.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/check-api-client.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/ui-u01-20261008.md
+scripts/check-booking-links.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-catalog-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/history/work-handoff-U02-20261011.md
+scripts/check-catalog.mjs
+  code	lib/catalog-core.ts
+  olddoc	docs/P01-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-chat-export.py
+  cc	scripts/cloud-check.py
+scripts/check-checkpoint.py
+  cc	scripts/cloud-check.py
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-claim-order-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261103T0328Z.md
+scripts/check-cloudflare-smoke.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-cloudflare-usage.mjs
+  cc	scripts/cloud-check.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-collect-workflow.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/run-actionlint.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261110T0015Z.md
+scripts/check-collection-budget.mjs
+  cc	scripts/cloud-check.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+scripts/check-collection-chain.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/check-collect-workflow.mjs
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+  olddoc	docs/history/work-handoff-20261026T1345Z.md
+  olddoc	docs/history/work-handoff-20261026T1729Z.md
+  olddoc	docs/history/work-handoff-20261026T2157Z.md
+  olddoc	docs/history/work-handoff-20261027T0520Z.md
+  olddoc	docs/history/work-handoff-20261027T0537Z.md
+scripts/check-collection-freshness.mjs
+  wf	.github/workflows/collect-watch.yml
+  scr	scripts/check-collect-workflow.mjs
+  scr	scripts/check-collection-chain.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/collection-chain.mjs
+  scr	scripts/daily-check.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-collection-status-worker.mjs
+  cc	scripts/cloud-check.py
+  doc	README.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/checkpoint-20261008.md
+  olddoc	docs/collection-status-20261007.md
+scripts/check-collector-release-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+scripts/check-commons-photo-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-20261019/README.md
+scripts/check-commons-photos.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D08-20261019.md
+scripts/check-comparison-differences.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U03-20261011.md
+scripts/check-comparison-worker.mjs
+  cc	scripts/cloud-check.py
+  doc	README.md
+  olddoc	docs/checkpoint-20261008.md
+scripts/check-crawl-queue-worker.mjs
+  cc	scripts/cloud-check.py
+  doc	README.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/P01-20261011.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/collection-status-20261007.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-d08-jta-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+scripts/check-d08-merged-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-20261019/pr6/controls.py
+scripts/check-d08-oita-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+scripts/check-d08-overture-browser.mjs
+  olddoc	docs/D08-20261019.md
+scripts/check-daily-check.mjs
+  cc	scripts/cloud-check.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/V01-20261110.md
+scripts/check-deploy-config.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/cloudflare-deploy-worker.sh
+  scr	scripts/run-actionlint.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+scripts/check-description-ui.cjs
+  cc	scripts/cloud-check.py
+  doc	docs/deployments.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/u07-20261019/pr5-description-ui-control.txt
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+scripts/check-edge-guard-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+scripts/check-facility-links.cjs
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-hotel-names.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U07-20261019.md
+scripts/check-jta-registration.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/check-search-snapshot-worker.mjs
+  code	lib/jta-attribution.ts
+scripts/check-lifecycle-official.mjs
+  wf	.github/workflows/lifecycle.yml
+  cc	scripts/cloud-check.py
+  scr	scripts/runner/check_lifecycle.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-lifecycle-worker.mjs
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-listing-query.mjs
+  cc	scripts/cloud-check.py
+  doc	README.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+scripts/check-local-search.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D01-20261010.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-D01-20261010.md
+scripts/check-locale-names-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+scripts/check-map-area-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U02-20261010.md
+scripts/check-map-bounds.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U02-20261010.md
+scripts/check-map-groups.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-oita-permits.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/check-search-snapshot-worker.mjs
+  code	lib/oita-attribution.ts
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c08-20261021/controls.py
+scripts/check-p03-followups-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/P03-20261012.md
+scripts/check-public-access.py
+  scr	scripts/check-public-worker.mjs
+  olddoc	docs/P03-20261012.md
+scripts/check-public-reads-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/P03-20261012.md
+scripts/check-public-worker.mjs
+  scr	scripts/run-runtime-check.py
+  olddoc	docs/P03-20261012.md
+scripts/check-reviewed-groups-worker.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-20261019/pr5/controls.py
+scripts/check-rollback-workflow.mjs
+  cc	scripts/cloud-check.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-runtime.py
+  scr	scripts/run-runtime-check.py
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+scripts/check-search-snapshot-worker.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/build-search-snapshot.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/evidence/c07-20261019/compare-progress.mjs
+  olddoc	docs/evidence/d08-20261019/pr6/controls.py
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261019T1827Z.md
+scripts/check-snapshot-geo.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/geo/check_overture.py
+  code	lib/geo-attribution.ts
+  doc	docs/deployments.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-20261019/pr4/controls.py
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+  olddoc	docs/history/work-handoff-20261020T0812Z.md
+scripts/check-source-groups-worker.mjs
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/checkpoint-20261008.md
+scripts/check-source-policy.mjs
+  cc	scripts/cloud-check.py
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-source-safety.py
+  cc	scripts/cloud-check.py
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/evidence/c08-20261021/controls.py
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u01-browser.mjs
+  doc	docs/cloud-development.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/ui-u01-20261010.md
+scripts/check-u01-dom.cjs
+  doc	docs/cloud-development.md
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/ui-u01-20261008.md
+scripts/check-u02-browser.mjs
+  scr	scripts/check-u02-map-browser.mjs
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/evidence/u07-20261019/pr5-seeded-check-u02-old-route-crash.log
+  olddoc	docs/history/work-handoff-U02-20261011.md
+scripts/check-u02-map-browser.mjs
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/U03-20261011.md
+scripts/check-u03-comparison-browser.mjs
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+scripts/check-u03-desktop-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+scripts/check-u04-browser.mjs
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-comparison-browser.mjs
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-detail-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-favorites-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-filter-browser.mjs
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-foundation-browser.mjs
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-list-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u05-map-browser.mjs
+  code	components/stay-map.tsx
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/check-u06-status-browser.mjs
+  scr	scripts/check-u01-browser.mjs
+  scr	scripts/check-u05-list-browser.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/evidence/u07-20261019/pr4-review2-check-u06-status-timeout.log
+  olddoc	docs/evidence/u07-20261019/pr5-seeded-check-u06-old-timeout.log
+scripts/check-u07-browser.mjs
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/history/work-handoff-20261018.md
+scripts/check-u07-map-browser.mjs
+  olddoc	docs/U07-20261019.md
+scripts/check-u07-names-browser.mjs
+  olddoc	docs/U07-20261019.md
+scripts/check-u07-region-browser.mjs
+  olddoc	docs/U07-20261019.md
+scripts/check-u07-translate-browser.mjs
+  scr	scripts/check-description-ui.cjs
+  olddoc	docs/U07-20261019.md
+scripts/check-wikidata-names.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/check-search-snapshot-worker.mjs
+  code	lib/search-snapshot.ts
+  doc	docs/deployments.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/history/lessons-parent5-20261018.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+  olddoc	docs/history/work-handoff-20261019T1147Z.md
+scripts/checked-commit.mjs
+  wf	.github/workflows/collect.yml
+  wf	.github/workflows/deploy.yml
+  wf	.github/workflows/lifecycle.yml
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/check-lifecycle-official.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-parent-20261013T2226Z.md
+scripts/cloud-check.py
+  wf	.github/workflows/deploy.yml
+  wf	.github/workflows/web-checks.yml
+  cs	scripts/cloud-setup.sh
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/checked-commit.mjs
+  doc	AGENTS.md
+  doc	README.md
+  doc	START_HERE.md
+  doc	docs/cloud-development.md
+  doc	docs/cloudflare-deploy.md
+  doc	skills/yukemuri-maintenance/SKILL.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/D01-20261010.md
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/P01-20261011.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/U03-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/history/roadmap-20261027T0537Z.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261019T1827Z.md
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+  olddoc	docs/history/work-handoff-20261026T1345Z.md
+  olddoc	docs/history/work-handoff-20261027T0520Z.md
+  olddoc	docs/history/work-handoff-20261028T0030Z.md
+  olddoc	docs/history/work-handoff-D01-20261010.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+  olddoc	docs/history/work-handoff-U01-20261010.md
+  olddoc	docs/history/work-handoff-U02-20261011.md
+  olddoc	docs/history/work-handoff-U02-map-keyboard-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+  olddoc	docs/history/work-handoff-migration-20261010.md
+  olddoc	docs/history/work-handoff-parent-20261013T1022Z.md
+  olddoc	docs/history/work-handoff-parent-20261013T2226Z.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/cloud-setup.sh
+  wf	.github/workflows/d1-setup.yml
+  wf	.github/workflows/deploy.yml
+  wf	.github/workflows/lifecycle.yml
+  wf	.github/workflows/rollback.yml
+  wf	.github/workflows/web-checks.yml
+  scr	scripts/check-lifecycle-official.mjs
+  code	.gitignore
+  doc	AGENTS.md
+  doc	README.md
+  doc	START_HERE.md
+  doc	docs/cloud-development.md
+  doc	docs/cloudflare-deploy.md
+  doc	docs/legacy-history.md
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/evidence/c07-20261019/compare-progress.mjs
+  olddoc	docs/evidence/u06-20261015/mockup-status.html
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-D01-20261010.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+  olddoc	docs/history/work-handoff-U01-20261010.md
+  olddoc	docs/history/work-handoff-U02-20261011.md
+  olddoc	docs/history/work-handoff-U02-map-keyboard-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+  olddoc	docs/history/work-handoff-migration-20261010.md
+  olddoc	docs/history/work-handoff-parent-20261013T2226Z.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/cloudflare-d1-setup.mjs
+  wf	.github/workflows/d1-setup.yml
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/H01-20261011.md
+scripts/cloudflare-deploy-gate.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/runner/run-collection.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/L01-20261013.md
+scripts/cloudflare-deploy-worker.sh
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+scripts/cloudflare-prepare.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/cloudflare-rollback.mjs
+  wf	.github/workflows/rollback.yml
+  scr	scripts/check-rollback-workflow.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/cloudflare-smoke.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-cloudflare-smoke.mjs
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/V01-20261110.md
+scripts/cloudflare-usage.mjs
+  wf	.github/workflows/usage.yml
+  scr	scripts/build-search-snapshot.mjs
+  scr	scripts/check-cloudflare-usage.mjs
+  scr	scripts/check-collection-budget.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/collection-budget.mjs
+  scr	scripts/compare-snapshot-builds.mjs
+  scr	scripts/daily-check.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/O04-20261026.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/cloudflare-workers-subdomain.mjs
+  wf	.github/workflows/d1-setup.yml
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/H01-20261011.md
+scripts/collection-budget.mjs
+  wf	.github/workflows/collect.yml
+  scr	scripts/check-collect-workflow.mjs
+  scr	scripts/check-collection-budget.mjs
+  scr	scripts/check-collection-chain.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/collection-chain.mjs
+  scr	scripts/daily-check.mjs
+  scr	scripts/measure-d1-writes.mjs
+  scr	scripts/runner/check_collection.py
+  scr	scripts/runner/run-collection.py
+  doc	docs/cloudflare-deploy.md
+  doc	docs/deployments.md
+  doc	docs/roadmap.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/O04-20261026.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/evidence/d04-20261019/without-years-variant.py
+  olddoc	docs/history/roadmap-20261027T0537Z.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+  olddoc	docs/history/work-handoff-20261019T1147Z.md
+  olddoc	docs/history/work-handoff-20261019T1352Z.md
+  olddoc	docs/history/work-handoff-20261019T1827Z.md
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+  olddoc	docs/history/work-handoff-20261020T0812Z.md
+  olddoc	docs/history/work-handoff-parent-20261013T1022Z.md
+scripts/collection-chain.mjs
+  wf	.github/workflows/collect-chain.yml
+  wf	.github/workflows/collect.yml
+  scr	scripts/check-collect-workflow.mjs
+  scr	scripts/check-collection-chain.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+  olddoc	docs/history/work-handoff-20261102T1224Z.md
+scripts/compare-snapshot-builds.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+scripts/compare-static-search.mjs
+  code	lib/static-search.ts
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U07-20261019.md
+scripts/compare-write-builds.mjs
+  scr	scripts/collection-budget.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/history/work-handoff-20261018.md
+scripts/connector-preview/connector-preview-session.mjs
+  scr	scripts/connector-preview/host-binding.mjs
+scripts/connector-preview/host-binding.mjs
+  scr	scripts/connector-preview/connector-preview-session.mjs
+scripts/connector-preview/protocol.mjs
+  scr	scripts/connector-preview/connector-preview-session.mjs
+  scr	scripts/connector-preview/host-binding.mjs
+scripts/crawler/check.py
+  cc	scripts/cloud-check.py
+  scr	scripts/serve-former-worker.mjs
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/evidence/d07-20261018/tools/locale-limit-controls.py
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+scripts/crawler/check_diagnostics.py
+  cc	scripts/cloud-check.py
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+scripts/crawler/check_gentle_claims.py
+  cc	scripts/cloud-check.py
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/evidence/c07-20261019/equivalence.py
+scripts/crawler/check_retry_policy.py
+  cc	scripts/cloud-check.py
+  doc	README.md
+  olddoc	docs/checkpoint-20261008.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+scripts/crawler/check_site_access.py
+  cc	scripts/cloud-check.py
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/crawler/collect.py
+  scr	scripts/build-collector-release.mjs
+  scr	scripts/check-locale-names-worker.mjs
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/crawler/check.py
+  scr	scripts/crawler/update-site.py
+  scr	scripts/measure-d1-writes.mjs
+  scr	scripts/runner/bootstrap.py
+  code	lib/jalan-locale-names.ts
+  code	lib/japan-place-labels.ts
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/d04-20261015/measure-writes.mjs
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+  olddoc	docs/evidence/d05-20261013/measure-writes.mjs
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+  olddoc	docs/evidence/d07-20261018/tools/locale-limit-controls.py
+  olddoc	docs/evidence/l01-labels-20261015/measure-writes.mjs
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-D01-trip-address-20261011.md
+  olddoc	docs/requirements-review-20261011.md
+  manifest	data/collector-release.generated.json
+scripts/crawler/fixtures/jalan-detail.html
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/crawler/check.py
+  scr	scripts/crawler/check_diagnostics.py
+  scr	scripts/measure-d1-writes.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/c07-20261019/drive-collector.py
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/fixtures/jalan-list.html
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/crawler/check.py
+  scr	scripts/crawler/check_diagnostics.py
+  scr	scripts/measure-d1-writes.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/fixtures/jalan-locale-en.html
+  olddoc	docs/evidence/c07-20261019/drive-collector.py
+scripts/crawler/fixtures/jalan-locale-kr.html
+  olddoc	docs/evidence/c07-20261019/drive-collector.py
+scripts/crawler/fixtures/jalan-price-14.html
+  scr	scripts/check-booking-links.mjs
+scripts/crawler/fixtures/jalan-rooms-greenplaza.html
+  scr	scripts/check-crawl-queue-worker.mjs
+  scr	scripts/crawler/check.py
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+  olddoc	docs/evidence/d05-20261013/measure-writes.mjs
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+scripts/crawler/fixtures/jalan-rooms-hanayu.html
+  scr	scripts/crawler/check.py
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+scripts/crawler/fixtures/jalan-rooms-shinanoki.html
+  scr	scripts/crawler/check.py
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/fixtures/jalan-sozankyo-baths.html
+  scr	scripts/crawler/check.py
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+  olddoc	docs/requirements-review-20261011.md
+scripts/crawler/fixtures/trip-detail-names.html
+  scr	scripts/crawler/check.py
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/fixtures/trip-detail-rooms.html
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/crawler/check.py
+  scr	scripts/measure-d1-writes.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/evidence/c07-20261019/drive-collector.py
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/fixtures/trip-detail-years.html
+  scr	scripts/check-crawl-queue-worker.mjs
+  scr	scripts/crawler/check.py
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/evidence/d04-20261015/measure-writes.mjs
+  olddoc	docs/evidence/l01-labels-20261015/measure-writes.mjs
+scripts/crawler/fixtures/trip-list.html
+  scr	scripts/crawler/check.py
+  olddoc	docs/D01-20261011.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+scripts/crawler/retry_policy.py
+  scr	scripts/build-collector-release.mjs
+  scr	scripts/check-source-safety.py
+  scr	scripts/crawler/check_retry_policy.py
+  scr	scripts/crawler/collect.py
+  scr	scripts/crawler/source_safety.py
+  scr	scripts/crawler/update-site.py
+  scr	scripts/runner/bootstrap.py
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/evidence/d05-20261013/compare-collectors.py
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+  manifest	data/collector-release.generated.json
+scripts/crawler/source_safety.py
+  scr	scripts/build-collector-release.mjs
+  scr	scripts/check-source-safety.py
+  scr	scripts/crawler/check_diagnostics.py
+  scr	scripts/crawler/check_site_access.py
+  scr	scripts/crawler/update-descriptions.py
+  scr	scripts/crawler/update-lifecycle.py
+  scr	scripts/crawler/update-names.py
+  scr	scripts/crawler/update-site.py
+  scr	scripts/crawler/update-source-groups.py
+  scr	scripts/runner/bootstrap.py
+  scr	scripts/update-jta-registered.py
+  scr	scripts/update-oita-permits.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/evidence/c08-20261021/controls.py
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/hosting-review-20261011.md
+  manifest	data/collector-release.generated.json
+scripts/crawler/update-descriptions.py
+  scr	scripts/crawler/check_site_access.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/hosting-review-20261011.md
+  olddoc	docs/requirements-review-20261011.md
+scripts/crawler/update-lifecycle.py
+  scr	scripts/crawler/check_site_access.py
+  scr	scripts/runner/apply-lifecycle.py
+  scr	scripts/runner/check_lifecycle.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-parent-20261013T1022Z.md
+  olddoc	docs/hosting-review-20261011.md
+  olddoc	docs/onsen-first-plan-20261005.md
+  olddoc	docs/requirements-review-20261011.md
+scripts/crawler/update-names.py
+  scr	scripts/crawler/check_site_access.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/crawler/update-site.py
+  scr	scripts/build-collector-release.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/collection-budget.mjs
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/crawler/check_diagnostics.py
+  scr	scripts/crawler/check_gentle_claims.py
+  scr	scripts/crawler/check_site_access.py
+  scr	scripts/daily-check.mjs
+  scr	scripts/measure-d1-reads.mjs
+  scr	scripts/measure-d1-writes.mjs
+  scr	scripts/runner/bootstrap.py
+  scr	scripts/runner/check_collection.py
+  scr	scripts/runner/run-collection.py
+  doc	docs/catalog-operations.md
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/P01-20261011.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/evidence/c07-20261019/drive-collector.py
+  olddoc	docs/evidence/c07-20261019/equivalence.py
+  olddoc	docs/evidence/c07-20261019/measure-claim-rounds.mjs
+  olddoc	docs/evidence/d07-20261018/tools/count-gentle-rounds.py
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/hosting-review-20261011.md
+  olddoc	docs/onsen-first-plan-20261005.md
+  manifest	data/collector-release.generated.json
+scripts/crawler/update-source-groups.py
+  scr	scripts/crawler/check_site_access.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/hosting-review-20261011.md
+  olddoc	docs/source-priorities-20261005.md
+scripts/daily-check.mjs
+  wf	.github/workflows/usage.yml
+  scr	scripts/check-collection-chain.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/record-coverage.mjs
+  doc	docs/cloudflare-deploy.md
+  doc	docs/deployments.md
+  doc	docs/roadmap.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/O04-20261026.md
+  olddoc	docs/V01-20261110.md
+  olddoc	docs/history/lessons-parent9-20261020.md
+  olddoc	docs/history/roadmap-20261027T0537Z.md
+  olddoc	docs/history/work-handoff-20261018.md
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+  olddoc	docs/history/work-handoff-20261019T1147Z.md
+  olddoc	docs/history/work-handoff-20261019T1352Z.md
+  olddoc	docs/history/work-handoff-20261019T1827Z.md
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+  olddoc	docs/history/work-handoff-20261020T0812Z.md
+  olddoc	docs/history/work-handoff-20261026T1246Z.md
+  olddoc	docs/history/work-handoff-20261026T1345Z.md
+  olddoc	docs/history/work-handoff-20261026T1729Z.md
+  olddoc	docs/history/work-handoff-20261026T2157Z.md
+  olddoc	docs/history/work-handoff-20261027T0520Z.md
+  olddoc	docs/history/work-handoff-20261027T0537Z.md
+  olddoc	docs/history/work-handoff-20261028T0030Z.md
+  olddoc	docs/history/work-handoff-20261102T1224Z.md
+  olddoc	docs/history/work-handoff-20261103T0328Z.md
+  olddoc	docs/history/work-handoff-20261110T0015Z.md
+scripts/execution-profile.mjs
+  cs	scripts/cloud-setup.sh
+  scr	scripts/install-ci.mjs
+  scr	scripts/run-framework.mjs
+  code	vite.config.ts
+scripts/former-search-api.mjs
+  scr	scripts/check-catalog-worker.mjs
+  scr	scripts/check-lifecycle-worker.mjs
+  scr	scripts/check-map-area-worker.mjs
+  scr	scripts/check-source-groups-worker.mjs
+  scr	scripts/compare-static-search.mjs
+  scr	scripts/serve-former-worker.mjs
+  olddoc	docs/P03-20261012.md
+scripts/geo/check_geocode.py
+  scr	scripts/check-snapshot-geo.mjs
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/geo/check_overture.py
+  scr	scripts/check-snapshot-geo.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/dictionary.py
+  scr	scripts/geo/check_geocode.py
+  scr	scripts/geo/prepare.sh
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/geocode.py
+  scr	scripts/geo/check_geocode.py
+  scr	scripts/snapshot-geo.mjs
+  code	lib/japan-place-labels.ts
+  code	lib/search-snapshot.ts
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/measure-public.mjs
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/pins.json
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/geo/check_geocode.py
+  scr	scripts/geo/dictionary.py
+  scr	scripts/geo/prepare.sh
+  scr	scripts/snapshot-geo.mjs
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/prepare.sh
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/geo/requirements.txt
+  wf	.github/workflows/deploy.yml
+  scr	scripts/geo/check_geocode.py
+  scr	scripts/geo/prepare.sh
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/geo/update-overture.py
+  scr	scripts/geo/check_overture.py
+  scr	scripts/snapshot-geo.mjs
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/evidence/d08-20261019/pr4/controls.py
+  olddoc	docs/evidence/d08-20261019/pr5/pairs.py
+  olddoc	docs/evidence/d08-20261019/pr5/verify.py
+scripts/geo/update-wikidata.mjs
+  scr	scripts/check-snapshot-geo.mjs
+  scr	scripts/update-wikidata-names.mjs
+  olddoc	docs/D06-20261013.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+scripts/import-chat-export.py
+  scr	scripts/check-chat-export.py
+  olddoc	docs/migration-20261009.md
+  olddoc	docs/requirements-review-20261011.md
+scripts/install-ci.mjs
+scripts/install-ci.sh
+  scr	scripts/install-ci.mjs
+scripts/install-pnpm.sh
+  pkg	package.json
+scripts/lifecycle-push.mjs
+  wf	.github/workflows/deploy.yml
+  wf	.github/workflows/lifecycle.yml
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/check-lifecycle-official.mjs
+  scr	scripts/cloudflare-deploy-gate.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/lifecycle-survey.py
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/link-oita-rows.mjs
+  scr	scripts/update-oita-permits.py
+  olddoc	docs/D08-20261019.md
+scripts/materialize-source-assets.py
+  cc	scripts/cloud-check.py
+  cs	scripts/cloud-setup.sh
+  doc	AGENTS.md
+  doc	docs/cloud-development.md
+  doc	docs/legacy-history.md
+scripts/measure-d1-reads.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/compare-snapshot-builds.mjs
+  scr	scripts/compare-write-builds.mjs
+  scr	scripts/measure-d1-writes.mjs
+  scr	scripts/measure-route-cpu.mjs
+  scr	scripts/measure-search-snapshot.mjs
+  scr	scripts/preflight-report.mjs
+  code	lib/collection-priorities.ts
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/P01-20261011.md
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U06-20261015.md
+  olddoc	docs/evidence/d04-20261015/measure-writes.mjs
+  olddoc	docs/evidence/d05-20261013/measure-writes.mjs
+  olddoc	docs/evidence/d08-20261019/pr5/measure-claims.mjs
+  olddoc	docs/evidence/d08-20261019/pr5/measure-writes.mjs
+  olddoc	docs/evidence/l01-labels-20261015/measure-writes.mjs
+  olddoc	docs/history/roadmap-20261027T0537Z.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/measure-d1-writes.mjs
+  cc	scripts/cloud-check.py
+  scr	scripts/collection-budget.mjs
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/D04-20261015.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/evidence/d04-20261019/without-years-variant.py
+  olddoc	docs/history/work-handoff-20261018T1250Z.md
+scripts/measure-first-view.mjs
+  olddoc	docs/P03-20261012.md
+scripts/measure-route-cpu.mjs
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/measure-search-snapshot.mjs
+  scr	scripts/measure-snapshot-client.mjs
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U06-20261015.md
+scripts/measure-snapshot-client.mjs
+  olddoc	docs/P03-20261012.md
+scripts/npm-install.mjs
+  scr	scripts/install-ci.mjs
+  scr	scripts/install-ci.sh
+scripts/pnpm-install.mjs
+  scr	scripts/install-pnpm.sh
+scripts/preflight-report.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/check-deploy-config.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/prepare-local-site.mjs
+  scr	scripts/check-commons-photo-browser.mjs
+  scr	scripts/check-d08-jta-browser.mjs
+  scr	scripts/check-d08-merged-browser.mjs
+  scr	scripts/check-d08-oita-browser.mjs
+  scr	scripts/check-d08-overture-browser.mjs
+  scr	scripts/check-p03-followups-browser.mjs
+  scr	scripts/check-u02-browser.mjs
+  scr	scripts/check-u02-map-browser.mjs
+  scr	scripts/check-u05-comparison-browser.mjs
+  scr	scripts/check-u05-detail-browser.mjs
+  scr	scripts/check-u05-favorites-browser.mjs
+  scr	scripts/check-u05-filter-browser.mjs
+  scr	scripts/check-u05-foundation-browser.mjs
+  scr	scripts/check-u05-list-browser.mjs
+  scr	scripts/check-u05-map-browser.mjs
+  scr	scripts/check-u06-status-browser.mjs
+  scr	scripts/check-u07-browser.mjs
+  scr	scripts/check-u07-map-browser.mjs
+  scr	scripts/check-u07-names-browser.mjs
+  scr	scripts/check-u07-region-browser.mjs
+  scr	scripts/check-u07-translate-browser.mjs
+  scr	scripts/measure-first-view.mjs
+  code	.gitignore
+  olddoc	docs/D05-20261013.md
+  olddoc	docs/D07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/H02-20261013.md
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U07-20261019.md
+  olddoc	docs/evidence/d05-20261013/check-view-bath-card.mjs
+  olddoc	docs/evidence/d05-20261013/prepare-view-bath-site.mjs
+  olddoc	docs/evidence/d07-20261018/tools/local-d1-at-migration.mjs
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/evidence/u05-20261013/tools/views.mjs
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+  olddoc	docs/history/work-handoff-20261019T0238Z.md
+  olddoc	docs/history/work-handoff-20261019T1147Z.md
+scripts/priority-plan-diff.py
+  scr	scripts/update-oita-permits.py
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/evidence/d08-jta-20261019/measure.mjs
+  olddoc	docs/evidence/d08-oita-20261019/measure.mjs
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/record-coverage.mjs
+  wf	.github/workflows/deploy.yml
+  scr	scripts/build-search-snapshot.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/crawler/update-site.py
+  scr	scripts/daily-check.mjs
+  code	app/api/crawl/route.ts
+  code	lib/crawl-contract.ts
+  code	lib/hotel-repository.ts
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/evidence/c07-20261019/day-measure.py
+  manifest	data/collector-release.generated.json
+scripts/run-actionlint.py
+  cc	scripts/cloud-check.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C05-20261018.md
+  olddoc	docs/O03-20261019.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/run-framework.mjs
+  pkg	package.json
+  wf	.github/workflows/d1-setup.yml
+  wf	.github/workflows/deploy.yml
+  cc	scripts/cloud-check.py
+  scr	scripts/build-static-page.mjs
+  scr	scripts/check-deploy-config.mjs
+  scr	scripts/check-locale-names-worker.mjs
+  olddoc	docs/P02-20261011.md
+  olddoc	docs/U02-20261010.md
+  olddoc	docs/evidence/d08-20261019/pr5/controls.py
+  olddoc	docs/evidence/d08-20261019/pr6/controls.py
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-U02-map-keyboard-20261011.md
+  olddoc	docs/history/work-handoff-U03-20261011.md
+  olddoc	docs/hosting-review-20261011.md
+  olddoc	docs/ui-u01-20261010.md
+scripts/run-runtime-check.py
+  olddoc	docs/P03-20261012.md
+  olddoc	docs/U04-20261011.md
+  olddoc	docs/history/README-before-checkpoint-20261007.md
+scripts/runner/apply-lifecycle.py
+  wf	.github/workflows/lifecycle.yml
+  scr	scripts/check-lifecycle-official.mjs
+  scr	scripts/runner/check_lifecycle.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/runner/bootstrap.py
+  scr	scripts/runner/check_bootstrap.py
+  doc	docs/cloudflare-deploy.md
+  doc	docs/collector-runner-migration.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/history/imported/02-work-handoff-latest.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-c02-20261008.md
+  olddoc	docs/hosting-review-20261011.md
+scripts/runner/check_bootstrap.py
+  cc	scripts/cloud-check.py
+  doc	docs/deployments.md
+  olddoc	docs/H01-20261011.md
+  olddoc	docs/history/START_HERE-sites-v49-20261009.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/runner/check_collection.py
+  wf	.github/workflows/collect.yml
+  cc	scripts/cloud-check.py
+  scr	scripts/check-collect-workflow.mjs
+  scr	scripts/check-daily-check.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/runner/check_lifecycle.py
+  wf	.github/workflows/lifecycle.yml
+  cc	scripts/cloud-check.py
+  scr	scripts/check-lifecycle-official.mjs
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+scripts/runner/run-collection.py
+  wf	.github/workflows/collect.yml
+  scr	scripts/check-collect-workflow.mjs
+  scr	scripts/check-daily-check.mjs
+  scr	scripts/runner/apply-lifecycle.py
+  scr	scripts/runner/check_collection.py
+  doc	docs/cloudflare-deploy.md
+  olddoc	docs/C04-20261019.md
+  olddoc	docs/C06-20261019.md
+  olddoc	docs/C09-20261026.md
+  olddoc	docs/L01-20261013.md
+  olddoc	docs/history/work-handoff-20261017.md
+  olddoc	docs/history/work-handoff-20261018T1702Z.md
+scripts/serve-former-worker.mjs
+  scr	scripts/check-public-worker.mjs
+  scr	scripts/run-runtime-check.py
+scripts/site-search-node.mjs
+  scr	scripts/check-d08-jta-browser.mjs
+  scr	scripts/check-d08-oita-browser.mjs
+  scr	scripts/check-p03-followups-browser.mjs
+  scr	scripts/check-u02-browser.mjs
+  scr	scripts/check-u02-map-browser.mjs
+  scr	scripts/check-u05-detail-browser.mjs
+  scr	scripts/check-u05-favorites-browser.mjs
+  scr	scripts/check-u05-filter-browser.mjs
+  scr	scripts/check-u05-list-browser.mjs
+  scr	scripts/check-u05-map-browser.mjs
+  scr	scripts/check-u07-browser.mjs
+  scr	scripts/check-u07-map-browser.mjs
+  scr	scripts/check-u07-names-browser.mjs
+  scr	scripts/check-u07-region-browser.mjs
+  olddoc	docs/P03-20261012.md
+scripts/sites-env.mjs
+  pkg	package.json
+  scr	scripts/check-d08-merged-browser.mjs
+  scr	scripts/install-ci.mjs
+  scr	scripts/run-runtime-check.py
+scripts/sites-env.sh
+  scr	scripts/build-verified.sh
+  scr	scripts/install-ci.sh
+  scr	scripts/install-pnpm.sh
+scripts/snapshot-geo.mjs
+  scr	scripts/build-search-snapshot.mjs
+  scr	scripts/check-snapshot-geo.mjs
+  scr	scripts/compare-snapshot-builds.mjs
+  scr	scripts/geo/measure-public.mjs
+  scr	scripts/geo/update-overture.py
+  code	lib/search-snapshot.ts
+  olddoc	docs/C07-20261019.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c07-20261019/push-estimate.json
+  olddoc	docs/evidence/d08-20261019/pr4/controls.py
+  olddoc	docs/evidence/d08-20261019/pr4/replay-public-geo.mjs
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+scripts/update-commons-photos.mjs
+  scr	scripts/check-commons-photos.mjs
+  code	lib/commons-photos.ts
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/d08-20261019/README.md
+  olddoc	docs/history/work-handoff-20261019T1352Z.md
+scripts/update-jta-registered.py
+  scr	scripts/check-jta-registration.mjs
+  scr	scripts/check-oita-permits.mjs
+  code	lib/jta-registration.ts
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c08-20261021/controls.py
+  olddoc	docs/evidence/d08-jta-20261019/README.md
+  olddoc	docs/history/work-handoff-20261019T1827Z.md
+scripts/update-oita-permits.py
+  scr	scripts/check-oita-permits.mjs
+  scr	scripts/link-oita-rows.mjs
+  code	lib/oita-permits.ts
+  olddoc	docs/C08-20261021.md
+  olddoc	docs/D08-20261019.md
+  olddoc	docs/evidence/c08-20261021/controls.py
+  olddoc	docs/evidence/d08-oita-20261019/README.md
+  olddoc	docs/history/work-handoff-20261020T0627Z.md
+scripts/update-wikidata-names.mjs
+  scr	scripts/check-wikidata-names.mjs
+  scr	scripts/update-commons-photos.mjs
+  code	lib/wikidata-names.ts
+  olddoc	docs/D07-20261019.md

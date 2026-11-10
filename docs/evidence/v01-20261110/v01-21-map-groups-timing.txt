@@ -1,0 +1,17 @@
+V01-21: scripts/check-map-groups.mjs under CPU load (this container: 4 CPUs).
+Lines 98-99 of the check:
+  assert.ok(per<25,`grouping 13,000 stays took ${per.toFixed(1)}ms`);
+  assert.ok(slowest<25,`the slowest screen-sized view took ${slowest.toFixed(1)}ms`);
+
+2026-11-10T01:25Z, nothing else running: passed inside python3 scripts/cloud-check.py --full (55 commands, exit 0).
+
+2026-11-10T02:35:37Z, while two other check runs used the CPUs (load average 11.00, 10.27, 9.98), node scripts/check-map-groups.mjs:
+  run 1 exit=1  AssertionError: the slowest screen-sized view took 28.8ms
+  run 2 exit=0
+  run 3 exit=1  AssertionError: the slowest screen-sized view took 27.0ms
+with 8 more busy shell loops (load average 13.07):
+  run 4 exit=1  AssertionError: the slowest screen-sized view took 87.3ms
+  run 5 exit=0
+  run 6 exit=0
+
+The checks subagent met the same failure once (2026-11-10T01:54:36Z, 28.9ms) while it ran three check suites side by side.

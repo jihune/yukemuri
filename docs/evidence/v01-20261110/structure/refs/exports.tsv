@@ -1,0 +1,420 @@
+file	name	kind	own_mentions	other_files	first_others
+app/api/catalog-export/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/collection-status/route.ts,app/api/collector-release/route.ts,app/api/crawl/route.ts
+app/api/collection-status/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collector-release/route.ts,app/api/crawl/route.ts
+app/api/collector-release/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/crawl/route.ts
+app/api/crawl-prepare/route.ts	POST	function	1	36	app/api/crawl/route.ts,build/connector-preview-plugin.mjs,build/sites-vite-plugin.ts,examples/d1/app/api/notes/route.ts
+app/api/crawl-seeds/route.ts	PUT	function	1	38	app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts,app/api/hotel-lifecycle/route.ts
+app/api/crawl/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/crawl/route.ts	POST	function	1	36	app/api/crawl-prepare/route.ts,build/connector-preview-plugin.mjs,build/sites-vite-plugin.ts,examples/d1/app/api/notes/route.ts
+app/api/crawl/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts,app/api/hotel-lifecycle/route.ts
+app/api/favorites/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/favorites/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/hotel-descriptions/route.ts,app/api/hotel-lifecycle/route.ts
+app/api/hotel-comparison/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotel-descriptions/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotel-descriptions/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-lifecycle/route.ts
+app/api/hotel-lifecycle/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotel-lifecycle/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts
+app/api/hotel-names/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotel-names/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts
+app/api/hotel-source-groups/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotel-source-groups/route.ts	PUT	function	1	38	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts
+app/api/hotel-source-groups/route.ts	DELETE	function	2	13	app/api/favorites/route.ts,scripts/build-search-snapshot.mjs,scripts/check-claim-order-worker.mjs,scripts/check-collection-status-worker.mjs
+app/api/hotels/[id]/google/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/hotels/[id]/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/photo-credits/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/api/prices/route.ts	GET	function	1	52	.github/workflows/deploy.yml,app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts
+app/chatgpt-auth.ts	ChatGPTUser	type	3	0	
+app/chatgpt-auth.ts	getChatGPTUser	function	2	0	
+app/chatgpt-auth.ts	requireChatGPTUser	function	1	0	
+app/chatgpt-auth.ts	chatGPTSignInPath	function	2	0	
+app/chatgpt-auth.ts	chatGPTSignOutPath	function	1	0	
+app/layout.tsx	metadata	const	1	10	db/schema.ts,lib/connector-contract.mts,lib/read-collection-status.ts,scripts/check-chat-export.py
+app/layout.tsx	RootLayout	function (default)	1	0	
+app/page.tsx	Home	function (default)	1	1	components/collection-status-sheet.tsx
+db/index.ts	getDb	function	1	1	examples/d1/app/api/notes/route.ts
+db/schema.ts	favorites	const	3	47	app/api/collector-release/route.ts,app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts
+db/schema.ts	visitorFavorites	const	1	0	
+db/schema.ts	hotels	const	6	125	.github/workflows/deploy.yml,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-comparison/route.ts
+db/schema.ts	catalogMeta	const	1	0	
+db/schema.ts	hotelNames	const	1	7	lib/hotel-names.ts,lib/hotel-repository.ts,lib/hotel-search-index.ts,lib/hotel-search.ts
+db/schema.ts	crawlJobs	const	1	0	
+db/schema.ts	priceQuotes	const	1	0	
+db/schema.ts	hotelNameLocalizations	const	1	0	
+db/schema.ts	hotelLocaleNames	const	1	0	
+db/schema.ts	hotelDescriptionTranslations	const	1	0	
+db/schema.ts	hotelDescriptionRequests	const	1	0	
+db/schema.ts	hotelResultSessions	const	1	0	
+db/schema.ts	hotelLifecycle	const	1	0	
+db/schema.ts	hotelLifecycleEvents	const	1	0	
+db/schema.ts	hotelSourceGroups	const	1	0	
+db/schema.ts	hotelSourceObservations	const	1	0	
+hooks/use-mobile.ts	useIsMobile	function	1	1	components/ui/sidebar.tsx
+lib/api-client.ts	ApiError	class	11	2	components/hotel-explorer.tsx,scripts/check-api-client.mjs
+lib/api-client.ts	readApiJson	function	2	1	scripts/check-api-client.mjs
+lib/api-client.ts	apiJson	function	1	4	components/hotel-comparison.tsx,components/hotel-explorer.tsx,scripts/check-api-client.mjs,scripts/check-u01-dom.cjs
+lib/bath-columns.ts	BATH_COLUMNS	const	3	1	components/bath-cells.tsx
+lib/bath-columns.ts	BathColumnId	type	1	0	
+lib/bath-columns.ts	BathState	type	3	0	
+lib/bath-columns.ts	BATH_STATE_LABEL	const	1	1	components/bath-cells.tsx
+lib/bath-columns.ts	bathColumn	function	1	1	components/bath-cells.tsx
+lib/booking-query.ts	BookingQuery	type	9	3	components/booking-fields.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx
+lib/booking-query.ts	DEFAULT_BOOKING	const	3	1	components/hotel-explorer.tsx
+lib/booking-query.ts	japanToday	const	3	1	components/booking-fields.tsx
+lib/booking-query.ts	nights	function	5	1	scripts/check-u04-browser.mjs
+lib/booking-query.ts	bookingError	function	2	2	components/hotel-detail.tsx,scripts/check-booking-links.mjs
+lib/booking-query.ts	parseBookingQuery	function	1	2	components/hotel-explorer.tsx,scripts/check-booking-links.mjs
+lib/booking-query.ts	jalanPlanUrl	function	2	1	scripts/check-booking-links.mjs
+lib/booking-query.ts	datedLink	function	1	2	components/hotel-detail.tsx,scripts/check-booking-links.mjs
+lib/booking-query.ts	nextBookingDay	function	2	2	components/booking-fields.tsx,scripts/check-listing-query.mjs
+lib/booking-query.ts	changeCheckIn	function	1	2	components/booking-fields.tsx,scripts/check-listing-query.mjs
+lib/catalog-core.ts	curatedHotels	const	2	1	lib/hotel-catalog.ts
+lib/catalog-core.ts	curatedCatalogHotels	const	1	2	app/api/crawl/route.ts,scripts/check-catalog.mjs
+lib/catalog-core.ts	catalogCoverage	const	1	2	lib/hotel-catalog.ts,lib/hotel-repository.ts
+lib/catalog-core.ts	catalogVersion	const	1	2	lib/hotel-catalog.ts,lib/hotel-repository.ts
+lib/catalog-export.ts	EXPORT_TABLES	const	4	2	app/api/catalog-export/route.ts,scripts/check-checkpoint.py
+lib/catalog-export.ts	ExportTable	type	2	1	app/api/catalog-export/route.ts
+lib/catalog-export.ts	exportManifest	function	1	3	app/api/catalog-export/route.ts,scripts/measure-d1-reads.mjs,scripts/measure-route-cpu.mjs
+lib/catalog-export.ts	exportTablePage	function	1	1	app/api/catalog-export/route.ts
+lib/collection-priorities.ts	collectionPlan	export list	1	2	components/hotel-explorer.tsx,lib/crawl-queue.ts
+lib/collection-priorities.ts	collectionPriority	function	3	3	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,scripts/priority-plan-diff.py
+lib/collection-priorities.ts	refreshDays	function	11	1	scripts/check-claim-order-worker.mjs
+lib/collection-priorities.ts	refreshIntervalSql	const	1	2	lib/crawl-queue.ts,scripts/check-claim-order-worker.mjs
+lib/collection-priorities.ts	prepareCollectionPriorities	function	1	2	lib/hotel-repository.ts,scripts/priority-plan-diff.py
+lib/collection-status.ts	CollectionProvider	type	4	1	lib/read-collection-status.ts
+lib/collection-status.ts	CollectionIssue	type	3	1	lib/read-collection-status.ts
+lib/collection-status.ts	ProviderCollectionStatus	type	2	1	lib/read-collection-status.ts
+lib/collection-status.ts	CollectionStatus	type	1	3	components/collection-status-sheet.tsx,lib/read-collection-status.ts,lib/snapshot-client.ts
+lib/collection-status.ts	FillRowKey	type	3	0	
+lib/collection-status.ts	FillCounts	type	2	0	
+lib/collection-status.ts	FillScopeKey	type	2	2	components/collection-status-sheet.tsx,lib/search-snapshot-build.ts
+lib/collection-status.ts	FillScope	type	2	1	lib/search-snapshot-build.ts
+lib/collection-status.ts	PageCounts	type	3	1	lib/search-snapshot-build.ts
+lib/collection-status.ts	TrendDay	type	2	2	components/collection-status-sheet.tsx,lib/search-snapshot-build.ts
+lib/collection-status.ts	UsageCounts	type	2	0	
+lib/collection-status.ts	UsageToday	type	2	0	
+lib/collection-status.ts	CollectionFill	type	2	1	lib/search-snapshot-build.ts
+lib/collection-status.ts	DAILY_PROGRESS_KEY	const	2	2	lib/hotel-repository.ts,lib/search-snapshot-build.ts
+lib/collection-status.ts	FILL_ROWS	const	1	2	components/collection-status-sheet.tsx,lib/search-snapshot-build.ts
+lib/collection-status.ts	GEO_GROUPS	const	1	1	components/collection-status-sheet.tsx
+lib/collection-status.ts	COLLECTION_PROVIDER_LABELS	const	1	1	components/collection-status-sheet.tsx
+lib/collection-status.ts	COLLECTION_ISSUE_LABELS	const	1	1	components/collection-status-sheet.tsx
+lib/collection-status.ts	formatCollectionTime	function	1	2	components/collection-status-sheet.tsx,components/hotel-comparison.tsx
+lib/commons-photos.ts	CommonsPhoto	type	1	1	lib/hotel-types.ts
+lib/commons-photos.ts	withCommonsPhoto	function	1	3	app/api/photo-credits/route.ts,lib/hotel-repository.ts,scripts/check-commons-photos.mjs
+lib/comparison-differences.ts	ComparisonValue	type	6	1	components/hotel-comparison.tsx
+lib/comparison-differences.ts	ComparisonRowState	type	2	0	
+lib/comparison-differences.ts	comparisonRowState	function	1	2	components/hotel-comparison.tsx,scripts/check-comparison-differences.mjs
+lib/comparison-differences.ts	featureComparisonValue	function	1	2	components/hotel-comparison.tsx,scripts/check-comparison-differences.mjs
+lib/connector-context.ts	runWithConnectorBinding	function	1	1	build/sites-worker.ts
+lib/connector-context.ts	getConnectorBinding	function	1	1	lib/connectors.ts
+lib/connector-contract.mts	Json	type	8	1	lib/connectors.ts
+lib/connector-contract.mts	ConnectorFailureStatus	type	2	1	lib/connectors.ts
+lib/connector-contract.mts	ConnectorContent	type	3	0	
+lib/connector-contract.mts	ConnectorResult	type	3	1	lib/connectors.ts
+lib/connector-contract.mts	ConnectorBinding	type	2	3	build/sites-worker.ts,lib/connector-context.ts,lib/connector-preview.d.ts
+lib/connector-contract.mts	ConnectorContext	type	3	1	lib/connectors.ts
+lib/connector-contract.mts	createConnectors	function	1	1	lib/connectors.ts
+lib/connector-errors.mts	connectorResponse	function	1	0	
+lib/connector-errors.mts	connectorErrorRecovery	function	1	1	components/connector-error.tsx
+lib/connectors.ts	connectorsForRequest	function	1	0	
+lib/connectors.ts	ConnectorContext	re-export	1	1	lib/connector-contract.mts
+lib/connectors.ts	ConnectorResult	re-export	1	1	lib/connector-contract.mts
+lib/connectors.ts	ConnectorFailureStatus	re-export	1	1	lib/connector-contract.mts
+lib/connectors.ts	Json	re-export	1	1	lib/connector-contract.mts
+lib/crawl-access.ts	hasCrawlAccess	function	1	12	app/api/catalog-export/route.ts,app/api/collection-status/route.ts,app/api/collector-release/route.ts,app/api/crawl-prepare/route.ts
+lib/crawl-contract.ts	publicUrl	const	4	2	app/api/crawl-seeds/route.ts,lib/crawl-queue.ts
+lib/crawl-contract.ts	LOCALE_LIST	const	5	3	app/api/crawl/route.ts,lib/jalan-locale-names.ts,scripts/crawler/collect.py
+lib/crawl-contract.ts	localeListUrl	const	2	2	lib/jalan-locale-names.ts,scripts/crawler/collect.py
+lib/crawl-contract.ts	crawlJobUrl	const	3	1	lib/crawl-queue.ts
+lib/crawl-contract.ts	observedHotel	const	2	0	
+lib/crawl-contract.ts	crawlUpdate	const	2	1	app/api/crawl/route.ts
+lib/crawl-contract.ts	coverageRecord	const	1	1	app/api/crawl/route.ts
+lib/crawl-contract.ts	providerCooldown	function	1	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	crawlClaim	const	2	3	app/api/crawl/route.ts,scripts/measure-d1-reads.mjs,scripts/measure-route-cpu.mjs
+lib/crawl-queue.ts	CrawlClaim	type	2	0	
+lib/crawl-queue.ts	LEASE_SECONDS	const	2	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	LOCALE_REFRESH_DAYS	const	3	0	
+lib/crawl-queue.ts	legacyRedirectRepair	const	2	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	reviewedRedirectRepair	const	2	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	releaseReviewedRedirect	function	1	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	isolateLegacyRedirect	function	1	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	jobIdentity	function	1	2	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts
+lib/crawl-queue.ts	BATHS_CANDIDATE	const	2	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	claimCrawlJob	function	1	1	app/api/crawl/route.ts
+lib/crawl-queue.ts	crawlHealth	function	1	1	app/api/crawl/route.ts
+lib/description-contract.ts	descriptionUpdates	const	2	1	app/api/hotel-descriptions/route.ts
+lib/description-contract.ts	DescriptionPatch	type	1	1	lib/hotel-repository.ts
+lib/edge-guard.ts	isAutomatedAgent	function	2	0	
+lib/edge-guard.ts	guardRequest	function	1	1	build/sites-worker.ts
+lib/favorites-db.ts	favoritesDb	function	1	19	app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/favorites/route.ts,app/api/hotel-descriptions/route.ts
+lib/geo-attribution.ts	GEO_ATTRIBUTION	const	1	3	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	GEO_NOTE	const	1	3	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	GEO_LINKS	const	1	3	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	OVERTURE_SOURCES	const	2	1	scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	OVERTURE_ATTRIBUTION	const	1	3	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	OVERTURE_NOTE	const	1	4	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-d08-overture-browser.mjs,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	OVERTURE_LINKS	const	1	4	components/collection-status-sheet.tsx,components/hotel-explorer.tsx,scripts/check-d08-overture-browser.mjs,scripts/check-snapshot-geo.mjs
+lib/geo-attribution.ts	OVERTURE_MAP_CREDIT	const	1	2	components/stay-map.tsx,scripts/check-snapshot-geo.mjs
+lib/google-places.ts	GooglePlaceData	type	3	3	components/google-place-rating.tsx,components/hotel-detail.tsx,components/hotel-photo.tsx
+lib/google-places.ts	GooglePlaceError	class	5	1	app/api/hotels/[id]/google/route.ts
+lib/google-places.ts	GOOGLE_FIELDS	const	2	1	scripts/check-source-policy.mjs
+lib/google-places.ts	readGooglePlace	function	1	2	app/api/hotels/[id]/google/route.ts,scripts/check-source-policy.mjs
+lib/history-events.ts	POPSTATE	const	3	1	components/hotel-explorer.tsx
+lib/history-events.ts	POPSTATE_SCRIPT	const	1	1	app/layout.tsx
+lib/hotel-alternatives.ts	rankHotelAlternatives	function	1	1	lib/static-search.ts
+lib/hotel-bath-facts.ts	FEATURE_KEYS	const	3	5	lib/hotel-alternatives.ts,lib/source-policy.ts,lib/static-search.ts,scripts/audit-catalog.py
+lib/hotel-bath-facts.ts	BATH_FEATURE_MASK	const	1	4	lib/crawl-queue.ts,lib/read-collection-status.ts,lib/search-snapshot-build.ts,scripts/check-search-snapshot-worker.mjs
+lib/hotel-bath-facts.ts	externalBathDescription	function	2	0	
+lib/hotel-bath-facts.ts	externalBathNote	const	4	0	
+lib/hotel-bath-facts.ts	hotelFeature	function	4	8	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-detail.tsx,lib/bath-columns.ts
+lib/hotel-bath-facts.ts	hotelFeature	function	4	8	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-detail.tsx,lib/bath-columns.ts
+lib/hotel-bath-facts.ts	hotelFeature	function	4	8	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-detail.tsx,lib/bath-columns.ts
+lib/hotel-bath-facts.ts	featureMasks	function	1	4	lib/hotel-repository.ts,lib/hotel-search-index.ts,lib/hotel-source-groups.ts,scripts/audit-catalog.py
+lib/hotel-bath-facts.ts	enrichBathFacts	function	1	2	lib/hotel-enrichment.ts,lib/hotel-source-groups.ts
+lib/hotel-catalog.ts	catalogCoverage	re-export	1	2	lib/catalog-core.ts,lib/hotel-repository.ts
+lib/hotel-catalog.ts	catalogVersion	re-export	1	2	lib/catalog-core.ts,lib/hotel-repository.ts
+lib/hotel-catalog.ts	catalogHotels	const	1	3	lib/hotel-repository.ts,lib/hotel-source-groups.ts,scripts/check-catalog.mjs
+lib/hotel-comparison.ts	COMPARISON_LIMIT	const	3	0	
+lib/hotel-comparison.ts	COMPARISON_STORAGE_KEY	const	1	1	components/hotel-explorer.tsx
+lib/hotel-comparison.ts	validComparisonIds	function	4	1	lib/hotel-repository.ts
+lib/hotel-comparison.ts	parseComparisonIds	function	1	1	app/api/hotel-comparison/route.ts
+lib/hotel-comparison.ts	storedComparisonIds	function	1	2	components/hotel-explorer.tsx,scripts/check-comparison-worker.mjs
+lib/hotel-comparison.ts	toggleComparisonId	function	1	2	components/hotel-explorer.tsx,scripts/check-comparison-worker.mjs
+lib/hotel-comparison.ts	comparisonFeatureLabel	function	1	3	components/hotel-comparison.tsx,lib/comparison-differences.ts,scripts/check-comparison-worker.mjs
+lib/hotel-comparison.ts	HotelComparisonResult	type	1	1	components/hotel-comparison.tsx
+lib/hotel-description.ts	needsKoreanDescription	function	1	8	app/api/hotel-descriptions/route.ts,components/hotel-description.tsx,lib/hotel-repository.ts,lib/search-snapshot-build.ts
+lib/hotel-description.ts	translationSource	function	1	2	components/description-translate.tsx,scripts/check-u07-translate-browser.mjs
+lib/hotel-description.ts	descriptionLang	function	1	1	components/hotel-description.tsx
+lib/hotel-enrichment.ts	verifiedHotels	const	2	4	app/api/crawl/route.ts,lib/catalog-core.ts,lib/crawl-queue.ts,lib/hotel-catalog.ts
+lib/hotel-enrichment.ts	enrichHotel	function	1	5	lib/catalog-core.ts,lib/hotel-catalog.ts,lib/hotel-repository.ts,lib/hotel-source-groups.ts
+lib/hotel-facility-link.ts	hotelFacilityUrl	function	1	3	components/hotel-comparison.tsx,components/hotel-detail.tsx,scripts/check-facility-links.cjs
+lib/hotel-images.ts	normalizeHotelImage	function	2	2	lib/hotel-enrichment.ts,lib/source-policy.ts
+lib/hotel-images.ts	hotelImageCandidates	function	1	2	components/hotel-photo.tsx,components/retry-image.tsx
+lib/hotel-lifecycle.ts	lifecyclePatch	export list	2	3	app/api/hotel-lifecycle/route.ts,lib/lifecycle-contract.ts,scripts/check-lifecycle-official.mjs
+lib/hotel-lifecycle.ts	LifecyclePatch	export list	3	2	lib/hotel-types.ts,lib/lifecycle-contract.ts
+lib/hotel-lifecycle.ts	observeHotelPresence	function	1	1	app/api/crawl/route.ts
+lib/hotel-lifecycle.ts	observeMissingSource	function	1	1	app/api/crawl/route.ts
+lib/hotel-lifecycle.ts	attachLifecycle	function	1	2	lib/hotel-repository.ts,lib/search-snapshot-build.ts
+lib/hotel-lifecycle.ts	withLifecycle	function	2	1	lib/search-snapshot-build.ts
+lib/hotel-lifecycle.ts	saveLifecyclePatch	function	1	1	app/api/hotel-lifecycle/route.ts
+lib/hotel-location.ts	hasCoordinates	function	1	4	components/hotel-detail.tsx,components/hotel-explorer.tsx,components/stay-map.tsx,lib/search-snapshot-build.ts
+lib/hotel-name-localization.ts	hotelNamePatch	const	3	0	
+lib/hotel-name-localization.ts	hotelNameUpdates	const	1	1	app/api/hotel-names/route.ts
+lib/hotel-name-localization.ts	HotelNamePatch	type	2	1	lib/hotel-repository.ts
+lib/hotel-name-localization.ts	applyNamePatch	function	1	1	lib/hotel-repository.ts
+lib/hotel-name-match.ts	NameMatch	type	3	1	lib/hotel-relevance.ts
+lib/hotel-name-match.ts	PreparedName	type	3	1	lib/hotel-relevance.ts
+lib/hotel-name-match.ts	prepareHotelName	function	2	1	lib/hotel-relevance.ts
+lib/hotel-name-match.ts	matchHotelName	function	1	0	
+lib/hotel-name-match.ts	matchPreparedHotelName	function	2	1	lib/hotel-relevance.ts
+lib/hotel-names.ts	normalizeSearch	function	4	11	components/hotel-autocomplete.tsx,lib/hotel-name-match.ts,lib/hotel-relevance.ts,lib/hotel-repository.ts
+lib/hotel-names.ts	hotelNames	function	2	7	db/schema.ts,lib/hotel-repository.ts,lib/hotel-search-index.ts,lib/hotel-search.ts
+lib/hotel-names.ts	DisplayNames	type	2	0	
+lib/hotel-names.ts	displayNames	function	1	22	app/api/photo-credits/route.ts,components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-detail.tsx
+lib/hotel-names.ts	nameLang	const	1	5	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-detail.tsx,scripts/check-hotel-names.mjs
+lib/hotel-names.ts	hotelSearchText	function	1	2	lib/hotel-repository.ts,lib/hotel-search.ts
+lib/hotel-query.ts	parseHotelQuery	function	2	4	components/hotel-explorer.tsx,scripts/check-listing-query.mjs,scripts/former-search-api.mjs,scripts/site-search-node.mjs
+lib/hotel-query.ts	hotelQueryParams	function	2	1	lib/history-events.ts
+lib/hotel-query.ts	HotelQuery	type	3	0	
+lib/hotel-query.ts	defaultHotelQuery	const	1	0	
+lib/hotel-query.ts	listingUrl	function	1	3	components/hotel-explorer.tsx,lib/history-events.ts,scripts/check-listing-query.mjs
+lib/hotel-ratings.ts	primaryRating	const	3	2	components/hotel-detail.tsx,scripts/check-catalog.mjs
+lib/hotel-ratings.ts	providerRating	const	2	10	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-explorer.tsx,components/map-stay-list.tsx
+lib/hotel-ratings.ts	displayRating	const	1	5	components/hotel-card.tsx,components/hotel-explorer.tsx,components/map-stay-list.tsx,components/stay-map.tsx
+lib/hotel-ratings.ts	orderedRatings	const	1	1	components/hotel-detail.tsx
+lib/hotel-ratings.ts	meetsVerifiedCriteria	const	1	5	components/hotel-card.tsx,components/hotel-comparison.tsx,components/hotel-explorer.tsx,lib/hotel-search.ts
+lib/hotel-region.ts	sourceRegion	function	1	3	app/api/crawl/route.ts,lib/hotel-catalog.ts,scripts/audit-region-labels.mjs
+lib/hotel-relevance.ts	HotelQueryPlan	type	3	0	
+lib/hotel-relevance.ts	prepareHotelQuery	function	1	3	lib/hotel-alternatives.ts,lib/hotel-search-index.ts,lib/hotel-search.ts
+lib/hotel-relevance.ts	RelevantMatch	type	4	0	
+lib/hotel-relevance.ts	hotelRelevance	function	1	3	lib/hotel-alternatives.ts,lib/hotel-search-index.ts,lib/hotel-search.ts
+lib/hotel-relevance.ts	prepareHotelRelevance	function	1	2	lib/hotel-search-index.ts,lib/hotel-search.ts
+lib/hotel-repository.ts	writeHotels	function	4	1	app/api/crawl/route.ts
+lib/hotel-repository.ts	CoverageCounts	type	5	0	
+lib/hotel-repository.ts	CoverageJobs	type	8	1	lib/search-snapshot-build.ts
+lib/hotel-repository.ts	coverageFrom	function	5	2	lib/search-snapshot-build.ts,lib/search-snapshot.ts
+lib/hotel-repository.ts	queryCoverage	function	5	1	lib/search-snapshot-build.ts
+lib/hotel-repository.ts	RECORD_COUNTER	const	7	2	app/api/photo-credits/route.ts,lib/search-snapshot-build.ts
+lib/hotel-repository.ts	COVERAGE_SEQUENCE	const	4	1	lib/search-snapshot-build.ts
+lib/hotel-repository.ts	trendPages	const	2	1	lib/search-snapshot-build.ts
+lib/hotel-repository.ts	readCoverage	function	2	2	app/api/crawl/route.ts,lib/search-snapshot-build.ts
+lib/hotel-repository.ts	CoverageRecord	type	2	1	lib/search-snapshot-build.ts
+lib/hotel-repository.ts	recordCoverage	function	1	4	app/api/crawl/route.ts,lib/crawl-contract.ts,lib/search-snapshot-build.ts,scripts/record-coverage.mjs
+lib/hotel-repository.ts	readCachedCoverage	function	1	1	app/api/crawl/route.ts
+lib/hotel-repository.ts	invalidateSearch	function	5	2	app/api/hotel-lifecycle/route.ts,app/api/hotel-source-groups/route.ts
+lib/hotel-repository.ts	saveDescriptionTranslations	function	1	1	app/api/hotel-descriptions/route.ts
+lib/hotel-repository.ts	saveNamePatches	function	2	1	app/api/hotel-names/route.ts
+lib/hotel-repository.ts	deferNameResearch	function	1	2	app/api/hotel-names/route.ts,lib/search-snapshot-build.ts
+lib/hotel-repository.ts	prepareOnsenCatalog	function	2	1	app/api/crawl-prepare/route.ts
+lib/hotel-repository.ts	catalogPreparation	function	1	4	lib/search-snapshot-build.ts,scripts/build-search-snapshot.mjs,scripts/check-search-snapshot-worker.mjs,scripts/measure-d1-reads.mjs
+lib/hotel-repository.ts	hotelRepository	const	1	10	app/api/catalog-export/route.ts,app/api/crawl-seeds/route.ts,app/api/crawl/route.ts,app/api/hotel-comparison/route.ts
+lib/hotel-search-index.ts	SEARCH_FEATURES	const	2	1	scripts/check-local-search.mjs
+lib/hotel-search-index.ts	SearchIndexHotel	type	3	2	lib/search-snapshot.ts,lib/static-search.ts
+lib/hotel-search-index.ts	searchIndexHotel	function	1	0	
+lib/hotel-search-index.ts	prepareSearchIndex	function	2	2	lib/static-search.ts,scripts/check-local-search.mjs
+lib/hotel-search-index.ts	PreparedSearchIndex	type	3	4	components/hotel-autocomplete.tsx,components/hotel-explorer.tsx,lib/hotel-alternatives.ts,lib/static-search.ts
+lib/hotel-search-index.ts	searchIndexMatches	function	2	1	lib/static-search.ts
+lib/hotel-search-index.ts	localHotelSuggestions	function	1	3	components/hotel-autocomplete.tsx,lib/static-search.ts,scripts/check-local-search.mjs
+lib/hotel-search.ts	SortOrder	type	2	4	components/hotel-explorer.tsx,components/use-hotel-results.ts,lib/hotel-query.ts,lib/static-search.ts
+lib/hotel-search.ts	filterHotels	function	1	1	scripts/check-catalog.mjs
+lib/hotel-source-groups.ts	sourceGroupPatch	export list	3	3	app/api/hotel-source-groups/route.ts,lib/source-group-contract.ts,scripts/check-reviewed-groups-worker.mjs
+lib/hotel-source-groups.ts	sourceGroupsFor	function	5	1	app/api/hotel-source-groups/route.ts
+lib/hotel-source-groups.ts	attachSourceGroups	function	2	2	lib/hotel-repository.ts,lib/search-snapshot-build.ts
+lib/hotel-source-groups.ts	writeLinkedSourceObservations	function	1	1	app/api/crawl/route.ts
+lib/hotel-source-groups.ts	refreshSourceGroupIndexes	function	4	2	app/api/hotel-source-groups/route.ts,lib/hotel-repository.ts
+lib/hotel-source-groups.ts	importVerifiedSourceGroups	function	1	1	lib/hotel-repository.ts
+lib/hotel-source-groups.ts	saveSourceGroup	function	3	1	app/api/hotel-source-groups/route.ts
+lib/hotel-source-groups.ts	importReviewedSourceGroups	function	1	1	lib/hotel-repository.ts
+lib/hotel-suggestions.ts	HotelSuggestion	type	2	3	components/hotel-autocomplete.tsx,lib/hotel-search-index.ts,lib/static-search.ts
+lib/hotel-suggestions.ts	SuggestionsResponse	type	1	0	
+lib/hotel-types.ts	PREFECTURES	const	2	5	app/api/crawl-seeds/route.ts,lib/crawl-contract.ts,lib/jalan-locale-names.ts,lib/japan-place-labels.ts
+lib/hotel-types.ts	CORE_FEATURE_LABELS	const	3	2	lib/crawl-contract.ts,scripts/check-u05-detail-browser.mjs
+lib/hotel-types.ts	EXTRA_FEATURE_LABELS	const	3	0	
+lib/hotel-types.ts	FEATURE_LABELS	const	2	13	components/hotel-comparison.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx,components/hotel-filters.tsx
+lib/hotel-types.ts	FEATURE_GROUPS	const	1	1	components/hotel-comparison.tsx
+lib/hotel-types.ts	CoreFeatureKey	type	2	1	lib/hotel-repository.ts
+lib/hotel-types.ts	ExtraFeatureKey	type	2	0	
+lib/hotel-types.ts	FeatureKey	type	2	13	components/hotel-comparison.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx,components/hotel-filters.tsx
+lib/hotel-types.ts	REGIONS	const	1	8	components/hotel-explorer.tsx,lib/hotel-alternatives.ts,lib/hotel-names.ts,lib/hotel-query.ts
+lib/hotel-types.ts	RegionId	type	3	2	components/hotel-explorer.tsx,lib/hotels.seed.ts
+lib/hotel-types.ts	Provenance	type	2	1	lib/jalan-locale-names.ts
+lib/hotel-types.ts	FeatureFact	type	3	4	lib/bath-columns.ts,lib/hotel-bath-facts.ts,lib/hotel-comparison.ts,lib/search-snapshot.ts
+lib/hotel-types.ts	RoomCount	type	2	1	lib/room-kinds.ts
+lib/hotel-types.ts	FacilityYears	type	2	0	
+lib/hotel-types.ts	RoomTypeSet	type	2	0	
+lib/hotel-types.ts	ExternalLink	type	2	2	components/hotel-detail.tsx,lib/booking-query.ts
+lib/hotel-types.ts	HotelLifecycle	type	2	1	lib/hotel-lifecycle.ts
+lib/hotel-types.ts	Hotel	type	1	57	app/api/crawl/route.ts,app/api/hotel-descriptions/route.ts,app/api/hotel-source-groups/route.ts,app/api/hotels/[id]/route.ts
+lib/hotel-types.ts	RatingProvider	type	2	3	components/hotel-card.tsx,components/map-stay-list.tsx,lib/hotel-ratings.ts
+lib/hotel-types.ts	HotelFilters	type	3	10	components/hotel-autocomplete.tsx,components/hotel-explorer.tsx,components/hotel-filters.tsx,components/use-hotel-results.ts
+lib/hotel-types.ts	DEFAULT_FILTERS	const	1	11	components/hotel-explorer.tsx,components/hotel-filters.tsx,components/use-hotel-results.ts,lib/history-events.ts
+lib/hotel-types.ts	isVerifiedCriteria	const	1	2	components/hotel-explorer.tsx,components/hotel-filters.tsx
+lib/hotels.real.ts	CATALOG_VERIFIED_AT	const	1	0	
+lib/hotels.real.ts	realHotels	const	1	1	scripts/check-catalog.mjs
+lib/hotels.seed.ts	seedHotels	const	1	0	
+lib/jalan-locale-names.ts	LOCALE_PRIORITY	const	2	1	app/api/crawl/route.ts
+lib/jalan-locale-names.ts	LocaleLang	type	4	0	
+lib/jalan-locale-names.ts	LocaleNameRow	type	4	2	app/api/photo-credits/route.ts,lib/search-snapshot-build.ts
+lib/jalan-locale-names.ts	localeListUrl	function	2	2	lib/crawl-contract.ts,scripts/crawler/collect.py
+lib/jalan-locale-names.ts	prepareLocaleLists	function	1	1	lib/hotel-repository.ts
+lib/jalan-locale-names.ts	saveLocaleNames	function	1	1	app/api/crawl/route.ts
+lib/jalan-locale-names.ts	localeNamesFor	function	1	1	lib/hotel-repository.ts
+lib/jalan-locale-names.ts	withJalanLocaleNames	function	1	3	app/api/photo-credits/route.ts,lib/hotel-repository.ts,lib/search-snapshot-build.ts
+lib/japan-place-labels.ts	PlaceInput	type	6	0	
+lib/japan-place-labels.ts	formatHotelLocation	function	5	6	lib/hotel-enrichment.ts,lib/hotel-search-index.ts,lib/search-snapshot-build.ts,scripts/audit-region-labels.mjs
+lib/japan-place-labels.ts	hotelPlaceSearchText	function	1	6	lib/hotel-search-index.ts,lib/hotel-search.ts,lib/search-snapshot-build.ts,scripts/check-local-search.mjs
+lib/japan-place-labels.ts	geocodeInput	function	1	4	lib/search-snapshot-build.ts,lib/search-snapshot.ts,scripts/check-snapshot-geo.mjs,scripts/geo/measure-public.mjs
+lib/jta-attribution.ts	jtaKind	const	1	3	components/hotel-card.tsx,components/hotel-detail.tsx,scripts/check-d08-jta-browser.mjs
+lib/jta-attribution.ts	JTA_LABEL	const	1	3	components/hotel-card.tsx,components/hotel-detail.tsx,scripts/check-d08-jta-browser.mjs
+lib/jta-attribution.ts	JTA_MEANING	const	1	2	components/hotel-detail.tsx,scripts/check-d08-jta-browser.mjs
+lib/jta-attribution.ts	JTA_NOTE	const	1	3	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx
+lib/jta-attribution.ts	JTA_ATTRIBUTION	const	1	3	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx
+lib/jta-attribution.ts	JTA_LINKS	const	1	5	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx,scripts/check-d08-jta-browser.mjs
+lib/jta-registration.ts	nameParts	re-export	1	1	lib/lodging-lists.ts
+lib/jta-registration.ts	addressParts	re-export	1	3	lib/lodging-lists.ts,scripts/check-jta-registration.mjs,scripts/check-oita-permits.mjs
+lib/jta-registration.ts	JtaRegistration	type	2	0	
+lib/jta-registration.ts	JtaCandidate	type	3	1	lib/search-snapshot-build.ts
+lib/jta-registration.ts	jtaCandidates	function	1	3	lib/search-snapshot-build.ts,scripts/check-jta-registration.mjs,scripts/check-search-snapshot-worker.mjs
+lib/jta-registration.ts	resolveJtaLinks	function	1	3	lib/search-snapshot-build.ts,scripts/check-jta-registration.mjs,scripts/check-search-snapshot-worker.mjs
+lib/lifecycle-contract.ts	lifecyclePatch	const	2	3	app/api/hotel-lifecycle/route.ts,lib/hotel-lifecycle.ts,scripts/check-lifecycle-official.mjs
+lib/lifecycle-contract.ts	LifecyclePatch	type	1	2	lib/hotel-lifecycle.ts,lib/hotel-types.ts
+lib/lodging-lists.ts	nameParts	function	3	1	lib/jta-registration.ts
+lib/lodging-lists.ts	addressParts	function	4	3	lib/jta-registration.ts,scripts/check-jta-registration.mjs,scripts/check-oita-permits.mjs
+lib/lodging-lists.ts	ListCandidate	type	3	2	lib/oita-permits.ts,lib/search-snapshot-build.ts
+lib/lodging-lists.ts	ListStay	type	2	2	lib/jta-registration.ts,lib/oita-permits.ts
+lib/lodging-lists.ts	lodgingList	function	1	3	lib/jta-registration.ts,lib/oita-permits.ts,scripts/link-oita-rows.mjs
+lib/map-bounds.ts	mapSearchBounds	function	1	2	components/use-map-area.ts,scripts/check-map-bounds.mjs
+lib/map-groups.ts	PositionColumns	type	3	0	
+lib/map-groups.ts	ResultPositions	type	4	2	components/stay-map.tsx,components/use-result-map.ts
+lib/map-groups.ts	MapView	type	2	0	
+lib/map-groups.ts	StayMarker	type	2	0	
+lib/map-groups.ts	GroupMarker	type	2	0	
+lib/map-groups.ts	MapMarker	type	4	0	
+lib/map-groups.ts	ViewGroups	type	2	2	components/hotel-explorer.tsx,components/stay-map.tsx
+lib/map-groups.ts	GROUP_CELL_PX	const	2	1	scripts/check-map-groups.mjs
+lib/map-groups.ts	MARKER_PX	const	3	1	scripts/check-map-groups.mjs
+lib/map-groups.ts	mercatorPoint	const	2	1	scripts/check-map-groups.mjs
+lib/map-groups.ts	resultPositions	function	1	4	components/use-result-map.ts,scripts/check-map-groups.mjs,scripts/check-u05-map-browser.mjs,scripts/check-u07-map-browser.mjs
+lib/map-groups.ts	viewGroups	function	1	3	components/stay-map.tsx,scripts/check-map-groups.mjs,scripts/check-u07-map-browser.mjs
+lib/map-groups.ts	nearestMean	function	1	2	lib/static-search.ts,scripts/check-map-groups.mjs
+lib/map-groups.ts	spotGroups	function	1	2	components/stay-map.tsx,scripts/check-map-groups.mjs
+lib/map-groups.ts	markerCount	const	1	1	scripts/check-map-groups.mjs
+lib/oita-attribution.ts	OITA_LABEL	const	1	2	components/hotel-detail.tsx,scripts/check-d08-oita-browser.mjs
+lib/oita-attribution.ts	OITA_LIMIT	const	1	2	components/hotel-detail.tsx,scripts/check-d08-oita-browser.mjs
+lib/oita-attribution.ts	oitaAsOf	const	1	3	components/hotel-detail.tsx,scripts/check-d08-oita-browser.mjs,scripts/check-oita-permits.mjs
+lib/oita-attribution.ts	OITA_NOTE	const	1	3	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx
+lib/oita-attribution.ts	OITA_ATTRIBUTION	const	1	5	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx,scripts/check-d08-oita-browser.mjs
+lib/oita-attribution.ts	OITA_LINKS	const	1	5	components/collection-status-sheet.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx,scripts/check-d08-oita-browser.mjs
+lib/oita-permits.ts	OitaPermit	type	2	1	lib/search-snapshot.ts
+lib/oita-permits.ts	oitaCandidates	const	1	3	lib/search-snapshot-build.ts,scripts/check-oita-permits.mjs,scripts/check-search-snapshot-worker.mjs
+lib/oita-permits.ts	resolveOitaPermits	function	1	3	lib/search-snapshot-build.ts,scripts/check-oita-permits.mjs,scripts/check-search-snapshot-worker.mjs
+lib/read-collection-status.ts	ProviderRow	type	3	1	lib/search-snapshot-build.ts
+lib/read-collection-status.ts	CollectionStatusRows	type	2	0	
+lib/read-collection-status.ts	collectionStatusSideRows	function	2	1	lib/search-snapshot-build.ts
+lib/read-collection-status.ts	readCollectionStatus	function	1	2	app/api/collection-status/route.ts,lib/search-snapshot-build.ts
+lib/read-collection-status.ts	collectionStatusFrom	function	2	1	lib/search-snapshot-build.ts
+lib/room-kinds.ts	roomKindsText	function	1	2	components/hotel-comparison.tsx,components/hotel-detail.tsx
+lib/search-snapshot-build.ts	SNAPSHOT_FORMAT	re-export	1	5	lib/search-snapshot.ts,lib/snapshot-client.ts,scripts/build-search-snapshot.mjs,scripts/check-search-snapshot-worker.mjs
+lib/search-snapshot-build.ts	catalogPreparation	export list	3	4	lib/hotel-repository.ts,scripts/build-search-snapshot.mjs,scripts/check-search-snapshot-worker.mjs,scripts/measure-d1-reads.mjs
+lib/search-snapshot-build.ts	addFillGeo	function	2	1	scripts/build-search-snapshot.mjs
+lib/search-snapshot-build.ts	buildSearchSnapshot	function	1	1	scripts/build-search-snapshot.mjs
+lib/search-snapshot-build.ts	firstPage	function	2	5	app/page.tsx,components/hotel-explorer.tsx,scripts/build-search-snapshot.mjs,scripts/build-static-page.mjs
+lib/search-snapshot.ts	SNAPSHOT_FORMAT	const	7	5	lib/search-snapshot-build.ts,lib/snapshot-client.ts,scripts/build-search-snapshot.mjs,scripts/check-search-snapshot-worker.mjs
+lib/search-snapshot.ts	SNAPSHOT_MANIFEST	const	1	3	lib/snapshot-client.ts,scripts/check-cloudflare-smoke.mjs,scripts/cloudflare-smoke.mjs
+lib/search-snapshot.ts	HotelSummary	type	3	11	components/bath-cells.tsx,components/hotel-card.tsx,components/hotel-detail.tsx,components/hotel-explorer.tsx
+lib/search-snapshot.ts	hotelSummary	function	1	2	lib/search-snapshot-build.ts,scripts/compare-static-search.mjs
+lib/search-snapshot.ts	SnapshotCore	type	1	3	lib/search-snapshot-build.ts,lib/snapshot-client.ts,lib/static-search.ts
+lib/search-snapshot.ts	SnapshotText	type	1	3	lib/search-snapshot-build.ts,lib/snapshot-client.ts,lib/static-search.ts
+lib/search-snapshot.ts	SnapshotCoverage	type	2	2	components/use-hotel-results.ts,lib/static-search.ts
+lib/search-snapshot.ts	GEO_GRADE	const	4	8	lib/collection-status.ts,lib/map-groups.ts,lib/search-snapshot-build.ts,lib/static-search.ts
+lib/search-snapshot.ts	GeoGrade	type	2	0	
+lib/search-snapshot.ts	SnapshotGeo	type	1	3	components/use-result-map.ts,lib/search-snapshot-build.ts,lib/snapshot-client.ts
+lib/search-snapshot.ts	GeocodeInput	type	1	2	lib/japan-place-labels.ts,lib/search-snapshot-build.ts
+lib/search-snapshot.ts	SnapshotManifest	type	1	3	components/use-search-snapshot.ts,lib/snapshot-client.ts,lib/static-search.ts
+lib/snapshot-client.ts	SnapshotError	class	16	1	components/use-search-snapshot.ts
+lib/snapshot-client.ts	loadSnapshot	function	1	3	components/hotel-explorer.tsx,components/use-search-snapshot.ts,scripts/check-u01-dom.cjs
+lib/snapshot-client.ts	loadSnapshotText	function	1	4	components/hotel-explorer.tsx,components/use-map-area.ts,components/use-search-snapshot.ts,scripts/check-u01-dom.cjs
+lib/snapshot-client.ts	loadSnapshotStatus	function	1	2	components/hotel-explorer.tsx,scripts/check-u01-dom.cjs
+lib/snapshot-client.ts	loadSnapshotGeo	function	1	2	components/use-result-map.ts,scripts/check-u01-dom.cjs
+lib/source-group-contract.ts	sourceGroupPatch	const	2	3	app/api/hotel-source-groups/route.ts,lib/hotel-source-groups.ts,scripts/check-reviewed-groups-worker.mjs
+lib/source-group-contract.ts	SourceGroupPatch	type	1	1	lib/hotel-source-groups.ts
+lib/source-policy.ts	SOURCE_POLICY	const	8	0	
+lib/source-policy.ts	PhotoCandidate	type	4	3	components/hotel-photo.tsx,lib/hotel-types.ts,lib/search-snapshot.ts
+lib/source-policy.ts	photoProvider	function	2	1	components/hotel-photo.tsx
+lib/source-policy.ts	preferredPhotos	function	2	0	
+lib/source-policy.ts	composePreferredHotel	function	1	3	lib/hotel-source-groups.ts,lib/search-snapshot-build.ts,scripts/check-source-policy.mjs
+lib/static-search.ts	PAGE_SIZE	const	5	2	components/hotel-explorer.tsx,components/use-hotel-results.ts
+lib/static-search.ts	MAP_POINT_LIMIT	const	3	0	
+lib/static-search.ts	SearchSnapshot	type	11	2	components/use-search-snapshot.ts,lib/snapshot-client.ts
+lib/static-search.ts	HotelAlternative	type	4	0	
+lib/static-search.ts	SearchResult	type	4	1	components/use-hotel-results.ts
+lib/static-search.ts	SearchResponse	type	3	3	components/hotel-filters.tsx,components/use-hotel-results.ts,lib/search-snapshot-build.ts
+lib/static-search.ts	FirstPage	type	1	3	app/page.tsx,components/hotel-explorer.tsx,components/use-hotel-results.ts
+lib/static-search.ts	MapBounds	type	2	3	components/stay-map.tsx,components/use-map-area.ts,lib/map-bounds.ts
+lib/static-search.ts	MapPoint	type	2	1	components/stay-map.tsx
+lib/static-search.ts	GeoColumns	type	2	2	components/hotel-explorer.tsx,components/use-map-area.ts
+lib/static-search.ts	MapCell	type	2	1	components/stay-map.tsx
+lib/static-search.ts	MapAreaResponse	type	3	1	components/use-map-area.ts
+lib/static-search.ts	compareText	function	2	0	
+lib/static-search.ts	openSnapshot	function	1	6	lib/search-snapshot-build.ts,lib/snapshot-client.ts,scripts/check-search-snapshot-worker.mjs,scripts/former-search-api.mjs
+lib/static-search.ts	addSnapshotText	function	1	5	lib/snapshot-client.ts,scripts/check-search-snapshot-worker.mjs,scripts/former-search-api.mjs,scripts/measure-snapshot-client.mjs
+lib/static-search.ts	needsText	const	1	3	components/hotel-explorer.tsx,components/use-hotel-results.ts,components/use-map-area.ts
+lib/static-search.ts	searchSnapshot	function	1	7	components/hotel-explorer.tsx,components/use-hotel-results.ts,lib/search-snapshot-build.ts,scripts/check-search-snapshot-worker.mjs
+lib/static-search.ts	mayNeedAlternatives	const	1	1	components/use-hotel-results.ts
+lib/static-search.ts	pageSimilar	const	2	1	components/use-hotel-results.ts
+lib/static-search.ts	resultPage	function	1	5	components/use-hotel-results.ts,lib/search-snapshot-build.ts,scripts/former-search-api.mjs,scripts/measure-snapshot-client.mjs
+lib/static-search.ts	mapArea	function	1	7	components/hotel-explorer.tsx,components/use-map-area.ts,lib/map-groups.ts,scripts/check-u07-names-browser.mjs
+lib/static-search.ts	suggestions	function	2	15	components/hotel-autocomplete.tsx,lib/hotel-search-index.ts,lib/hotel-suggestions.ts,scripts/check-catalog-worker.mjs
+lib/stay-detail-navigation.ts	ListingPosition	type	2	1	components/hotel-explorer.tsx
+lib/stay-detail-navigation.ts	openStayHistory	function	1	1	components/hotel-explorer.tsx
+lib/stay-detail-navigation.ts	closeStayHistory	function	1	1	components/hotel-explorer.tsx
+lib/stay-detail-navigation.ts	openStatusHistory	function	1	1	components/hotel-explorer.tsx
+lib/stay-detail-navigation.ts	closeStatusHistory	function	1	1	components/hotel-explorer.tsx
+lib/stay-detail-navigation.ts	restoreListingPosition	function	1	1	components/hotel-explorer.tsx
+lib/utils.ts	cn	function	1	57	components/ui/accordion.tsx,components/ui/alert-dialog.tsx,components/ui/alert.tsx,components/ui/attachment.tsx
+lib/visitor-favorites.ts	visitorKey	function	2	2	app/api/favorites/route.ts,db/schema.ts
+lib/visitor-favorites.ts	visitorFavoriteIds	function	1	1	app/api/favorites/route.ts
+lib/wikidata-names.ts	english	const	3	9	lib/hotel-names.ts,lib/jalan-locale-names.ts,lib/japan-place-labels.ts,scripts/audit-region-labels.mjs
+lib/wikidata-names.ts	words	const	5	16	app/globals.css,components/connector-error.tsx,components/hotel-filters.tsx,components/ui/breadcrumb.tsx
+lib/wikidata-names.ts	wikidataItem	function	1	1	lib/commons-photos.ts
+lib/wikidata-names.ts	withWikidataNames	function	1	5	app/api/photo-credits/route.ts,lib/hotel-repository.ts,lib/search-snapshot-build.ts,scripts/check-search-snapshot-worker.mjs

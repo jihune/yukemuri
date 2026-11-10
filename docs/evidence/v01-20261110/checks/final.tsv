@@ -1,0 +1,52 @@
+W1b	SURVIVED		Worker: 403/429/bot challenge no longer set a provider-wide cooldown (providerCooldown returns 0)	W1b: 54 checks run, 0 failed	
+P1	CAUGHT	check_gentle_claims.py:163	collector: provider cooldown is not sent to the queue	P1: 38 checks run, 1 failed	
+W2	CAUGHT	check-crawl-queue-worker.mjs:123 | AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:	Worker: writeHotels drops the chronology guard (an older observation overwrites a newer one)	W2: 16 checks run, 1 failed	
+W3	CAUGHT	check-crawl-queue-worker.mjs:128 | AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:	Worker: writeHotels drops the detail-over-list guard (a list observation overwrites a detail observation)	W3: 16 checks run, 1 failed	
+P1b	CAUGHT	check_gentle_claims.py:164 | AssertionError: Lists differ: [] != ['https://www.jalan.net/yad900001/', 'https://www.jalan.net/yad900002/']	collector: a provider with a cooldown is still asked in the same run	P1b: 4 checks run, 1 failed	
+P3	CAUGHT	check_retry_policy.py:15 | AssertionError	policy: 403 floor of one day removed	P3: 5 checks run, 1 failed	
+P3b	CAUGHT	check_retry_policy.py:12 | AssertionError	policy: 429 floor of six hours removed	P3b: 5 checks run, 1 failed	
+P4	CAUGHT	check_retry_policy.py:15 | AssertionError	policy: 403/429 without Retry-After set no provider cooldown	P4: 5 checks run, 1 failed	
+P6	CAUGHT	check_gentle_claims.py:163 | AssertionError: Tuples differ: ('http_503', 60) != ('http_503', 900)	policy: Retry-After is ignored in the delay	P6: 4 checks run, 1 failed	
+P7	CAUGHT	check_retry_policy.py:20 | AssertionError	policy: jitter multiplies the delay up to 50x (not bounded)	P7: 5 checks run, 1 failed	
+P7b	SURVIVED		policy: Retry-After cap of 7 days removed	P7b: 38 checks run, 0 failed	
+P8	CAUGHT	check-source-safety.py:39 | AssertionError: False is not true : (3, 0, [3.0, 3.0, 3.0])	guard: 8-second floor of the host interval removed	P8: 7 checks run, 1 failed	
+P8b	CAUGHT	check-source-safety.py:39 | AssertionError: False is not true : (8, 0, [0.0, 0.0, 0.0])	guard: no host spacing at all	P8b: 7 checks run, 1 failed	
+P9	SURVIVED		local pipeline: a list observation overwrites a detail observation	P9: 29 checks run, 1 failed; P9#2: 38 checks run, 0 failed	P9 stopped early by scripts/check-map-groups.mjs
+P10	CAUGHT	check.py:148 | AssertionError	collector: detail documents of another property are not filtered out	P10: 2 checks run, 1 failed	
+P12	CAUGHT	check_diagnostics.py:85	collector: the claim token is not sent with the result	P12: 3 checks run, 1 failed	
+P13	CAUGHT	check-source-safety.py:117 | AssertionError: SourcePolicyDenied not raised	guard: a bot-challenge body is not refused	P13: 7 checks run, 1 failed	
+P14	CAUGHT	check_gentle_claims.py:170 | AssertionError: Lists differ: [] != ['https://www.jalan.net/yad900003/', 'http[61 chars]05/']	collector: 503s in a row never pause (99)	P14: 4 checks run, 1 failed	
+P15	CAUGHT	check-source-safety.py:87 | AssertionError: True is not false	guard: a redirect with Retry-After is still followed	P15: 7 checks run, 1 failed	
+P18	CAUGHT	check_site_access.py:39 | AssertionError: ValueError not raised	site_api: any https host gets the maintenance key	P18: 6 checks run, 1 failed	
+P19	SURVIVED		collector: Site redirects are followed (key forwarded)	P19: 38 checks run, 0 failed	
+B2	CAUGHT	check-collection-chain.mjs:61 | AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:	budget: the 85% share is not applied to writes	B2: 14 checks run, 1 failed; B2t: 1 checks run, 1 failed	
+B3	CAUGHT	check-collection-chain.mjs:61 | AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:	budget: the snapshot and run reads are not reserved	B3: 14 checks run, 1 failed; B3t: 1 checks run, 1 failed	
+B5	CAUGHT	check-collection-chain.mjs:214 | AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:	budget: an overlapping run is not forced to 0 pages	B5: 14 checks run, 1 failed; B5t: 3 checks run, 0 failed	
+B6	CAUGHT	check-collection-chain.mjs:216 | AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:	budget: the fallback when usage is unreadable is the cap (120), not 16	B6: 14 checks run, 1 failed; B6t: 1 checks run, 1 failed	
+D3	CAUGHT	check-deploy-config.mjs:111 | AssertionError [ERR_ASSERTION]: a write outside deploy mode:         run: node "$WRANGLER" d1 migrations apply	deploy.yml: migrations apply also runs in preflight mode	D3: 47 checks run, 1 failed	
+W4	CAUGHT	check-crawl-queue-worker.mjs:20 | AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999102","observed":1,"cov	Worker: PUT no longer compares a detail observation's id with the id in the job URL	W4: 2 checks run, 1 failed	
+W6	SURVIVED		Worker: PUT no longer requires an observation's source URL to equal the job URL	W6: 54 checks run, 0 failed	
+W5	SURVIVED		Worker contract: an observation's id no longer has to appear in its own property link URL	W5: 54 checks run, 0 failed	
+W7	CAUGHT	check-crawl-queue-worker.mjs:20 | AssertionError [ERR_ASSERTION]: {"error":"Crawl claim expired or belongs to another worker; claim again"}	Worker: a PUT replay with the same token is not recognised	W7: 2 checks run, 1 failed	
+D4	CAUGHT	check-deploy-config.mjs:233 | AssertionError [ERR_ASSERTION]: secrets file removed	deploy script: the secrets file is not removed	D4: 47 checks run, 1 failed	
+W13	CAUGHT	check-crawl-queue-worker.mjs:59 | AssertionError [ERR_ASSERTION]: Shared provider pacing must persist	Worker: no 3-second provider pacing after a save	W13: 2 checks run, 1 failed	
+W19	SURVIVED		Worker: a later save shortens a stored provider cooldown (no MAX)	W19: 54 checks run, 0 failed	
+D5	CAUGHT	check-rollback-workflow.mjs:42 | AssertionError [ERR_ASSERTION]: Missing expected exception: confirm	rollback: the confirm word is not required	D5: 15 checks run, 1 failed	
+D6	CAUGHT	check-deploy-config.mjs:196 | AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:	deploy.yml: a snapshot deploy after a collection never runs the full checks	D6: 41 checks run, 1 failed; D6t: 1 checks run, 1 failed	D6 stopped early by scripts/check-claim-order-worker.mjs
+D8	CAUGHT	check-deploy-config.mjs:203 | AssertionError [ERR_ASSERTION]: {"path":".github/workflows/collect.yml"}	checked-commit: a successful run of any workflow counts as checked	D8: 47 checks run, 1 failed	
+W8	CAUGHT	check-crawl-queue-worker.mjs:40 | AssertionError [ERR_ASSERTION]: Only one worker may claim the provider	Worker: a claim no longer checks for another active claim of the provider	W8: 2 checks run, 1 failed	
+W15	CAUGHT	check-crawl-queue-worker.mjs:20 | AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999100","observed":1,"cov	Worker: a PUT without a token is accepted while a lease is active	W15: 2 checks run, 1 failed	
+W16	CAUGHT	check-crawl-queue-worker.mjs:20 | AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999100","observed":1,"cov	Worker: a PUT with any token takes over an active lease	W16: 0 checks run, 0 failed; W16b: 2 checks run, 1 failed	W16 stopped early by BUILD
+D1	SURVIVED		web-checks.yml: the workflow token also gets pull-requests: write	D1: 29 checks run, 1 failed; D1#2: 54 checks run, 0 failed	D1 stopped early by scripts/check-map-groups.mjs
+W14	SURVIVED		Worker: a page retry ignores retryAfterSeconds (always 60 s)	W14: 54 checks run, 0 failed	
+D2	SURVIVED		rollback.yml: the workflow token also gets actions: write	D2: 29 checks run, 1 failed; D2#2: 54 checks run, 0 failed	D2 stopped early by scripts/check-map-groups.mjs
+W22	SURVIVED		Worker: a retry never becomes failed after three attempts	W22: 54 checks run, 0 failed	
+W1a	SURVIVED		Worker: 403/429 floors removed (reported seconds still used)	W1a: 54 checks run, 0 failed	
+W20	SURVIVED		Worker: linked (curated) observations lose the chronology and detail-over-list guards	W20: 45 checks run, 1 failed; W20r: 10 checks run, 0 failed	W20 stopped early by scripts/check-map-groups.mjs
+W25	SURVIVED		Worker: a 404/410 on a detail page marks the property closed	W25: 54 checks run, 0 failed	
+W1c	SURVIVED		Worker: 403/429 use the fixed floor only; a longer Retry-After or reported cooldown is ignored	W1c: 54 checks run, 0 failed	
+W21	CAUGHT	check-crawl-queue-worker.mjs:100 | AssertionError [ERR_ASSERTION]: ValueError must not pause the provider	Worker: an ordinary page error with providerCooldownSeconds pauses the provider (no retry_after reason needed)	W21: 2 checks run, 1 failed	
+W26	CAUGHT	check-crawl-queue-worker.mjs:105 | AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:	Worker: a reported source Retry-After on an ordinary error no longer pauses the provider	W26: 2 checks run, 1 failed	
+W24	SURVIVED		Worker: an observation of the other provider is accepted on a job	W24: 54 checks run, 0 failed	
+W23	SURVIVED		Worker: a detail job may be marked done without any observation	W23: 54 checks run, 0 failed	
+W9	CAUGHT	check-crawl-queue-worker.mjs:40 | AssertionError [ERR_ASSERTION]: Only one worker may claim the provider	Worker: a repeated claim POST with the same token no longer finds its own lease	W9: 2 checks run, 1 failed	

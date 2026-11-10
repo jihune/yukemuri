@@ -1,0 +1,38 @@
+V01-20: scripts/cloud-check.py --full on a copy of the repository with these three changes together
+(each takes a refusal or a guard away; a run that passes with all three passes with each alone):
+
+lib/crawl-contract.ts (observedHotel superRefine: an observation's id no longer has to stand in its own property link)
+- if(!property||!publicUrl.safeParse(property.url).success||!(provider==='jalan'?property.url.includes('/yad'+id+'/'):property.url.includes('hotel-detail-'+id+'/')))ctx.addIssue(
++ if(!property||!publicUrl.safeParse(property.url).success)ctx.addIssue(
+
+app/api/crawl/route.ts (PUT: an observation's source URL no longer has to equal the job's URL)
+- h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&
++ h.sources.some(s=>s.nameLocaleUrl&&
+
+app/api/crawl/route.ts (PUT: a later save overwrites the stored provider wait instead of keeping the longer one)
+- ON CONFLICT(key) DO UPDATE SET value=CAST(MAX(CAST(catalog_meta.value AS REAL),CAST(excluded.value AS REAL)) AS TEXT)")
++ ON CONFLICT(key) DO UPDATE SET value=excluded.value")
+
+The rebuilt Worker carries all three (dist/server, minified; the unmodified build beside it):
+  changed:    sources.some(e=>e.nameLocaleUrl&&e.nameLocaleUrl.replace(...)!==g.url))
+  unmodified: sources.some(e=>e.url!==g.url||e.nameLocaleUrl&&e.nameLocaleUrl.replace(...)!==g.url))
+  changed:    safeParse(i.url).success)&&t.addIssue({code:`custom`,message:`Source ID does not match property URL
+  unmodified: safeParse(i.url).success||!(n===`jalan`?i.url.includes(`/yad`+r+`/`):i.url.includes(`hotel-detail-`+r+`/`)))&&t.addIssue(...
+  "MAX(CAST(catalog_meta.value AS REAL)" in dist/server: changed 0, unmodified 1
+
+Result:
+commands run: 55
+Cloud checks passed. Browser/mobile checks and production deployment are separate.
+cloud_check_exit=0
+2026-11-10T02:47:58Z
+
+Script-level changes, each alone, against the ten collector checks in cloud-check.py's order
+(crawler/check.py, check_diagnostics.py, check_gentle_claims.py, check_retry_policy.py, check_site_access.py,
+check-source-safety.py, build-collector-release.mjs, runner/check_bootstrap.py, check_collection.py, check_lifecycle.py), 2026-11-10T02:32:50Z:
+  control (no change): all 10 passed
+  control (retry_policy.py 403 floor 86400 -> 60): FAILED python3 scripts/crawler/check_retry_policy.py
+  control (source_safety.py site_api destination check removed): FAILED python3 scripts/crawler/check_site_access.py
+  retry_policy.py 'return min(604800,max(0,math.ceil(seconds))) if' -> 'return max(0,math.ceil(seconds)) if': all 10 passed
+  update-site.py 'site_opener=urllib.request.build_opener(NoSiteRedirect())' -> 'site_opener=urllib.request.build_opener()': all 10 passed
+default opener followed the redirect; header at the second server: placeholder-not-a-key
+with update-site.py's handler: Private Site redirected; credential was not forwarded | header at the second server: None

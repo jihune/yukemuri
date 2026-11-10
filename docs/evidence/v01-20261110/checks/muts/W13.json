@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: no 3-second provider pacing after a save",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "String(now+Math.max(3,providerCooldown(update)))",
+   "new": "String(now+Math.max(0,providerCooldown(update)))"
+  }
+ ]
+}
