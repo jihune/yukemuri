@@ -1,0 +1,35 @@
+V01-22 (가)(나)(다): scripts/cloud-check.py --full on a copy of the repository with these three changes together:
+-  const alreadyDone=job.status==='done';const attempts=update.status==='done'?1:job.attempts+(alreadyDone&&!update.claimToken?0:1),status=update.status==='retry'&&attempts>=3?'failed':update.status;
+-  const nextAt=status==='retry'?now+(update.retryAfterSeconds??60):status==='failed'?now+Math.max(7*86400,update.retryAfterSeconds??0):0;
++  const alreadyDone=job.status==='done';const attempts=update.status==='done'?1:job.attempts+(alreadyDone&&!update.claimToken?0:1),status=update.status;
++  const nextAt=status==='retry'?now+60:status==='failed'?now+Math.max(7*86400,update.retryAfterSeconds??0):0;
+- if(code||update.error==='source_access_bot_challenge')return Math.max(code==='429'?21600:86400,update.providerCooldownSeconds??0,update.retryAfterSeconds??0);
++ if(code||update.error==='source_access_bot_challenge')return Math.max(update.providerCooldownSeconds??0,update.retryAfterSeconds??0);
+
+Result:
+commands run: 55
+Cloud checks passed. Browser/mobile checks and production deployment are separate.
+cloud_check_exit=0
+2026-11-10T03:03:08Z
+
+The rebuilt Worker carried them (dist/server, minified): retry wait `retry`?h+60:` (unmodified: `retry`?h+(g.retryAfterSeconds??60):`),
+the three-strikes rule ``retry`&&j>=3?`failed` `` absent (present in the unmodified build), the floor numbers `21600:86400` absent (1 in the unmodified build).
+
+V01-22 (라): one change alone, rebuilt, 2026-11-10T03:07:23Z
+lib/hotel-lifecycle.ts observeMissingSource
+- ON CONFLICT(hotel_id) DO UPDATE SET missing_count=hotel_lifecycle.missing_count+1,missing_at=excluded.missing_at`).bind(at,at,at,id,eventId),
++ ON CONFLICT(hotel_id) DO UPDATE SET missing_count=hotel_lifecycle.missing_count+1,missing_at=excluded.missing_at,state='closed'`).bind(at,at,at,id,eventId),
+built lifecycle SQL holds state='closed': 1
+  node scripts/check-crawl-queue-worker.mjs        exit=0   (in cloud-check.py --full)
+  node scripts/check-collection-status-worker.mjs  exit=0   (in cloud-check.py --full)
+  node scripts/check-comparison-worker.mjs         exit=0   (in cloud-check.py --full)
+  node scripts/check-catalog-worker.mjs            exit=0   (in cloud-check.py --full)
+  node scripts/check-lifecycle-worker.mjs          exit=1   (in no workflow, not in cloud-check.py)
+      AssertionError at scripts/check-lifecycle-worker.mjs:65: actual 'closed', expected 'unverified'
+The checks subagent ran the whole suite on this change and no command failed.
+
+V01-22 (마): a write scope added to a workflow token, 2026-11-10T02:50:05Z
+.github/workflows/web-checks.yml permissions: "contents: read" + "pull-requests: write"
+  control, unchanged:                 node scripts/check-deploy-config.mjs exit=0
+  with pull-requests: write added:    node scripts/check-deploy-config.mjs exit=0 ("9 workflows read-only without pull_request_target"), run-actionlint.py exit=0
+  control, contents: write instead:   node scripts/check-deploy-config.mjs exit=1 (AssertionError: web-checks.yml must keep a read-only token)
