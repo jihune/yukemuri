@@ -107,8 +107,8 @@ for(const title of ['Cloudflare usage','Cloudflare usage (daily check, control m
 const script=resolve('scripts/check-collection-freshness.mjs');
 const exec=(cwd,env)=>new Promise(done=>{const child=spawn(process.execPath,[script],{cwd,env:{PATH:process.env.PATH,...env}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>done({code,out}))});
 const folder=mkdtempSync(join(tmpdir(),'collect-watch-'));
-let requests=[],runs=[],checks=[];
-const server=createServer((req,res)=>{requests.push({url:req.url,auth:req.headers.authorization});res.setHeader('content-type','application/json');res.end(JSON.stringify({workflow_runs:req.url.includes('/usage.yml/')?checks:runs}))});
+let requests=[],runs=[],checks=[],checksDown=false;
+const server=createServer((req,res)=>{requests.push({url:req.url,auth:req.headers.authorization});if(checksDown&&req.url.includes('/usage.yml/')){res.statusCode=500;return res.end('{}')}res.setHeader('content-type','application/json');res.end(JSON.stringify({workflow_runs:req.url.includes('/usage.yml/')?checks:runs}))});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const TOKEN='watch-test-token';
 const env={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,GITHUB_API_URL:`http://127.0.0.1:${server.address().port}`};
@@ -127,6 +127,8 @@ try{
  runs=[{...run(0),updated_at:new Date(Date.now()-13*3600000).toISOString()}];
  result=await exec(folder,env);
  assert.equal(result.code,1);assert.match(result.out,/::error::Last successful collection is 13 hours old/);
+ checksDown=true;const down=await exec(folder,env);checksDown=false;
+ assert.equal(down.code,1);assert.match(down.out,/::error::Last successful collection is 13 hours old/,'the collection verdict is printed before the daily check read fails');
  runs=[{...run(0),updated_at:new Date(Date.now()-3600000).toISOString()}];
  const stale=new Date(Date.now()-31*3600000).toISOString();
  checks=[{...checkRun(0),created_at:stale}];

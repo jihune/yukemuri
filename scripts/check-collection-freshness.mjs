@@ -13,9 +13,11 @@ export const CHECK_WORKFLOW='usage.yml';
 export const CHECK_TITLE='Cloudflare usage (daily check)';
 // The runner calls the daily check at 01:41 UTC (outside scheduler) and its
 // schedule spare comes 5-7.5 hours late on a day the outside call is missed, so
-// a healthy gap is 24 hours, at most about 31.5 (O04 record). The watch runs at :41 every six
-// hours: at 06:41 a missed day reads 29 hours and passes while the spare may
-// still come, at 12:41 it reads 35 and fails only when neither came.
+// a healthy gap is 24 hours, at most about 31.5 (O04 record). The watch's own
+// cron is late too: 11-01..11-10 it started 1 hour late at the median, up to
+// 6, two or three times a day. A stopped runner is then caught some 35-45
+// hours after its last check; a watch run that starts between 07:41 UTC and a
+// late spare on a missed day fails early, which is worth knowing anyway (V02-19).
 export const CHECK_LIMIT_HOURS=30;
 
 // runs: GitHub workflow runs (newest first or any order). A run counts only
@@ -52,10 +54,10 @@ async function main(){
   return (await response.json()).workflow_runs??[];
  };
  const result=freshness(await get(`${WORKFLOW}/runs?status=success&per_page=100`),Date.now());
- const check=checkFreshness(await get(`${CHECK_WORKFLOW}/runs?per_page=100`),Date.now());
  console.log(JSON.stringify(result));
  if(result.state==='none')console.log('No successful gentle collection yet; passing until the first one.');
  if(!result.ok)console.log(`::error::Last successful collection is ${result.ageHours} hours old (limit ${LIMIT_HOURS}). Check the runner schedule (YUKEMURI_ENABLED) and recent collect.yml runs.`);
+ const check=checkFreshness(await get(`${CHECK_WORKFLOW}/runs?per_page=100`),Date.now());
  console.log(JSON.stringify({dailyCheck:check}));
  if(check.state==='none')console.log('No daily check run yet; passing until the first one.');
  if(!check.ok)console.log(`::error::Last daily check run (${CHECK_WORKFLOW}) was made at ${check.lastRun}, ${check.ageHours} hours ago (limit ${CHECK_LIMIT_HOURS}). The runner's daily check and backups may have stopped: check the runner's Actions runs and minutes.`);

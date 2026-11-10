@@ -20,15 +20,25 @@ assert set(re.findall(r'\b([a-z_]+):\[', allowed)) == checkpoint.TABLES, 'API/ch
 # V02-09: every table of db/schema.ts is exported or excluded with a reason,
 # so a new table cannot silently miss the backup (the manifest schema value is
 # written by hand and did not change with migrations 0013-0015).
-excluded = (ROOT/'lib/catalog-export.ts').read_text().split('EXCLUDED_TABLES={',1)[1].split('} as const',1)[0]
-reasons = dict(re.findall(r"\b([a-z_]+):'([^']*)'", excluded))
-declared = set(re.findall(r"sqliteTable\('([a-z_]+)'", (ROOT/'db/schema.ts').read_text()))
-assert declared, 'no table found in db/schema.ts'
+export_source = (ROOT/'lib/catalog-export.ts').read_text()
+excluded = export_source.split('EXCLUDED_TABLES={',1)[1].split('} as const',1)[0]
+excluded = '\n'.join(line for line in excluded.splitlines() if not line.strip().startswith('//'))
+reasons = dict(re.findall(r"\b([a-z0-9_]+):'([^']*)'", excluded))
+assert 'excluded:Object.keys(EXCLUDED_TABLES)' in export_source, 'the manifest excluded list comes from EXCLUDED_TABLES'
+# Tables the migrations create, and tables db/schema.ts declares in any quoting
+# or line layout; either source alone could miss one.
+migrated = sqlite3.connect(':memory:')
+for path in sorted((ROOT/'drizzle').glob('*.sql')):
+    migrated.executescript(path.read_text().replace('--> statement-breakpoint',''))
+declared = {r[0] for r in migrated.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")}
+migrated.close()
+declared |= set(re.findall(r"sqliteTable\(\s*['\"`]([A-Za-z0-9_]+)['\"`]", (ROOT/'db/schema.ts').read_text()))
+assert declared, 'no table found in db/schema.ts or drizzle/'
 assert not set(reasons) & checkpoint.TABLES, 'a table is both exported and excluded'
 assert all(len(r.strip()) >= 10 for r in reasons.values()), 'every excluded table needs its reason'
 missing = declared - checkpoint.TABLES - set(reasons)
 assert not missing, 'tables neither exported nor excluded: '+', '.join(sorted(missing))
-assert not (checkpoint.TABLES | set(reasons)) - declared, 'export or exclusion names a table db/schema.ts does not have'
+assert not (checkpoint.TABLES | set(reasons)) - declared, 'export or exclusion names a table neither db/schema.ts nor drizzle/ has'
 
 with tempfile.TemporaryDirectory(prefix='yukemuri-checkpoint-test-') as temp:
     temp = Path(temp)
