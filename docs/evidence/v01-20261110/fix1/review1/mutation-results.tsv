@@ -1,0 +1,23 @@
+2026-11-10T04:35:15Z	R-W19	build_exit=0	check_exit=1	129s	AssertionError [ERR_ASSERTION]: A later save must not shorten the provider wait
+2026-11-10T04:37:18Z	R-W14	build_exit=0	check_exit=1	123s	AssertionError [ERR_ASSERTION]: A retried page waits the reported seconds: 60 s
+2026-11-10T04:39:11Z	R-W20b	build_exit=0	check_exit=1	114s	AssertionError [ERR_ASSERTION]: A list page must not replace a curated group's detail page
+2026-11-10T04:41:06Z	M-failed-1day	build_exit=0	check_exit=1	115s	AssertionError [ERR_ASSERTION]: Failure 3 waits 604800 s: 86400 s
+2026-11-10T04:43:15Z	M-default-600	build_exit=0	check_exit=1	129s	AssertionError [ERR_ASSERTION]: Failure 1 waits 60 s: 600 s
+2026-11-10T04:45:30Z	M-no-bot-pause	build_exit=0	check_exit=1	135s	AssertionError [ERR_ASSERTION]: source_access_bot_challenge reporting 3600 s pauses the provider 86400 s: 3 s
+streamA_exit=0
+2026-11-10T04:35:18Z	R-W24	build_exit=0	check_exit=1	132s	AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"trip-999191","observed":1,"coverage":{"updatedAt":"2026-11-10T04:35:17.067Z","records":1658,"crawledRecords":1638,"curate
+2026-11-10T04:37:32Z	R-W25	build_exit=0	check_exit=1	134s	AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+2026-11-10T04:39:24Z	M-429-floor-1h	build_exit=0	check_exit=1	113s	AssertionError [ERR_ASSERTION]: http_429 reporting 3600 s pauses the provider 21600 s: 3600 s
+2026-11-10T04:41:22Z	M-list-source-any	build_exit=0	check_exit=1	118s	AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999192","observed":1,"coverage":{"updatedAt":"2026-11-10T04:41:21.609Z","records":1658,"crawledRecords":1638,"curat
+2026-11-10T04:43:35Z	M-third-at-4	build_exit=0	check_exit=1	133s	AssertionError [ERR_ASSERTION]: Status and attempts after failure 3
+2026-11-10T04:45:46Z	M-linked-older-equal	build_exit=0	check_exit=1	131s	AssertionError [ERR_ASSERTION]: An older page must not replace a curated group's page
+streamB_exit=0
+2026-11-10T04:45:59Z	S-drop-cooldown-field	build_exit=0	check_exit=0	144s	(no AssertionError line)
+2026-11-10T04:48:11Z	S-failed-status-no-pause	build_exit=0	check_exit=0	132s	(no AssertionError line)
+2026-11-10T04:50:19Z	S-id-link-jalan-only	build_exit=0	check_exit=0	128s	(no AssertionError line)
+streamC_exit=0
+2026-11-10T04:57:55Z	M-cap-100000	build_exit=0	check_exit=1	124s	AssertionError [ERR_ASSERTION]: http_403 reporting 200000 s pauses the provider 200000 s: 100000 s
+2026-11-10T04:59:49Z	M-linked-never	build_exit=0	check_exit=1	114s	AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+streamD_exit=0
+2026-11-10T04:57:56Z	M-linked-no-update	build_exit=0	check_exit=1	125s	AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+streamE_exit=0
