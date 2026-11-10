@@ -1,0 +1,6 @@
+requests recorded: 2
+what urlopen was given: str (a plain address: no User-Agent of ours, urllib follows redirects)
+collect.py has "add_argument('--interval', type=float, default=3)": True
+wait stored for www.jalan.net after a request: 3 s
+SourceGuard(interval=3) keeps: 8 s; User-Agent it sends: YukemuriCatalogUpdater/1.0 (+https://yukemuri.jihune.workers.dev)
+callers of collect.main outside its own file: none (grep -rn "collect.main\|collect\.py" scripts .github package.json shows only the release file list and tests of open_db/process)
