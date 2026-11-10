@@ -51,4 +51,7 @@ outdoor bath row of 3001 characters: claim jobs=1 PUT 400 {"error":"Invalid cata
 list page of 81 hotels: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
 list page of 601 links: claim jobs=1 PUT 400 {"error":"Invalid catalogue observation"} | job after: status=pending attempts=0 leased=1
 refused=7 of 8
+run 1: claimed https://www.jalan.net/yad399002/ (the refused page: true), PUT 400
+run 2: claimed https://www.jalan.net/yad399002/ (the refused page: true), PUT 400
+run 3: claimed https://www.jalan.net/yad399002/ (the refused page: true), PUT 400
 exit=0

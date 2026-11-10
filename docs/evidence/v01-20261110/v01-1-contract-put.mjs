@@ -26,4 +26,14 @@ try{
   console.log(`${label}: claim jobs=${claim.body.jobs?.length} PUT ${put.status} ${put.status===200?'accepted='+put.body.accepted:JSON.stringify(put.body)} | job after: status=${job.status} attempts=${job.attempts} leased=${job.leased}`);
  }
  console.log(`refused=${refused} of ${Object.keys(cases).length}`);
+ // The next run: the refused page's claim has expired (the checks' way, lease_until=0), two other pages wait.
+ const again=cases['name of 401 characters'];
+ await db.prepare('DELETE FROM crawl_jobs').run();await db.prepare("DELETE FROM catalog_meta WHERE key LIKE 'crawl-provider-ready:%'").run();
+ for(const url of [again.url,'https://www.jalan.net/yad399500/','https://www.jalan.net/yad399501/'])await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-tokyo','pending',0,0)").bind(url).run();
+ for(const run of [1,2,3]){
+  const token=randomUUID(),claim=await api('/api/crawl','POST',{provider:'jalan',phase:'detail',token,lane:run===1?'national':'priority'});
+  const put=await api('/api/crawl','PUT',{...again.payload,claimToken:token});
+  console.log(`run ${run}: claimed ${claim.body.jobs[0]?.url} (the refused page: ${claim.body.jobs[0]?.url===again.url}), PUT ${put.status}`);
+  await db.prepare('UPDATE crawl_jobs SET lease_until=0').run();await db.prepare("DELETE FROM catalog_meta WHERE key LIKE 'crawl-provider-ready:%'").run();
+ }
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
