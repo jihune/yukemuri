@@ -1,0 +1,12 @@
+seed queue and priority seeds: 3508 addresses, 3508 taken unchanged by both rules
+made-up addresses: 13
+the Worker takes it, the collector would stop the run on it: 4
+   'https://WWW.JALAN.NET/yad123456/'
+   'https://www.jalan.net:443/yad123456/'
+   'https://www.jalan.net/yad1/\n'
+   'https://www.jalan.net/yad1/ '
+the collector would send it, the Worker refuses it: 4
+   'https://www.jalan.net/yad\uff11\uff12\uff13/'
+   'https://www.jalan.net/010000/LRG_010200/page\uff12.html'
+   'https://www.trip.com/hotels/tokyo-hotel-detail-\uff11\uff12\uff13/x/'
+   'https://www.trip.com/hotels/tokyo-hotel-detail-123/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
