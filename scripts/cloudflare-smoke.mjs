@@ -12,6 +12,11 @@ const expectedId=process.env.SNAPSHOT_ID;
 assert.match(expectedId??'',/^[0-9a-f]{16}$/,'SNAPSHOT_ID of this run is required');
 const built=JSON.parse(readFileSync(process.env.SNAPSHOT_MANIFEST||'dist/client/snapshot/manifest.json','utf8'));
 assert.equal(built.id,expectedId,'the built manifest is not the snapshot of this run');
+// The static page this run built (its snapshot's first page, rendered by this
+// version): served as it is once this version has spread. A deploy that
+// published the site's snapshot again keeps the snapshot id, so the id alone
+// cannot tell the new version from the old one (C07 plan 3).
+const builtPage=readFileSync(process.env.SNAPSHOT_PAGE||'dist/client/index.html','utf8');
 // The Worker refuses a client that is not a browser unless it carries the
 // maintenance key (lib/edge-guard.ts), so the public checks name a browser-style agent.
 const AGENT='Mozilla/5.0 (compatible; YukemuriSmoke/1.0; +https://github.com/jihune/yukemuri)',ROBOTS='noindex, nofollow, noarchive';
@@ -39,8 +44,9 @@ for(const [name,path] of Object.entries(manifest.body.files)){
 }
 // The static page carries the first page of this snapshot as cards; the first
 // hotel of the snapshot has a detail.
-const page=await retry('/',()=>get('/',{Accept:'text/html'}),p=>p.status===200&&String(p.body).includes(`data-first-page="${manifest.body.id}"`));
+const page=await retry('/',()=>get('/',{Accept:'text/html'}),p=>p.status===200&&p.body===builtPage);
 assert.equal(page.status,200,'/ status '+page.status);
+assert.equal(page.body,builtPage,'/ is not the static page this run built');
 const cards=(String(page.body).match(/class="card-title"/g)??[]).length;
 assert(String(page.body).includes(`data-first-page="${manifest.body.id}"`)&&cards>0,'/ has no first page of the served snapshot');
 const ids=files.core?.ids;

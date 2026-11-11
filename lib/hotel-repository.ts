@@ -123,7 +123,8 @@ export async function recordCoverage(record:CoverageRecord){
  return storeCoverage(db,sequence,coverageFrom(record.counts,record.jobs),record.day,record.jobs);
 }
 // Exact record count over the aggregate of the last full count: from this
-// isolate's memory for five minutes, else as stored by the collector's GET.
+// isolate's memory for five minutes, else as last stored by a full count (the
+// collector's GET) or by the snapshot deploy after a gentle run (recordCoverage).
 // Without a counter yet, the collector (sync) takes the full count first.
 export async function readCachedCoverage(sync=false){
  const rows=await favoritesDb().prepare('SELECT key,value FROM catalog_meta WHERE key IN (?,?)').bind(RECORD_COUNTER,COVERAGE_SNAPSHOT).all<{key:string;value:string}>();

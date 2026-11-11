@@ -1,0 +1,595 @@
+{
+ "measuredAt": "2026-11-03T00:45:20.718Z",
+ "environment": "Miniflare local D1 in the Claude Code cloud container, fixed clock per request. Not production D1; row counts as Miniflare reports them.",
+ "lists": {
+  "jalan list done": 4100,
+  "trip list done": 1300,
+  "jalan names done": 250,
+  "jalan names pending": 250
+ },
+ "due": {
+  "jalan": 3,
+  "trip": 5
+ },
+ "shapes": {
+  "A": {
+   "jalan detail done": 2427,
+   "jalan detail pending": 21241,
+   "trip detail done": 2058,
+   "trip detail pending": 108
+  },
+  "B": {
+   "jalan detail done": 5516,
+   "jalan detail pending": 18286,
+   "trip detail done": 2232,
+   "trip detail pending": 1
+  },
+  "C": {
+   "jalan detail done": 7802,
+   "jalan detail pending": 16194,
+   "trip detail done": 2278,
+   "trip detail pending": 0
+  },
+  "B2": {
+   "jalan detail done": 5516,
+   "jalan detail pending": 18286,
+   "trip detail done": 2232,
+   "trip detail pending": 1,
+   "candidates": 25
+  }
+ },
+ "runs": {
+  "A": {
+   "candidatesBefore": 21,
+   "candidates": 21,
+   "shaped": {
+    "jalan detail done": 2427,
+    "jalan detail pending": 21241,
+    "jalan list done": 4100,
+    "jalan names done": 250,
+    "jalan names pending": 250,
+    "trip detail done": 2058,
+    "trip detail pending": 108,
+    "trip list done": 1300
+   },
+   "hotels": 24529,
+   "pages": 120,
+   "claims": 124,
+   "rounds": 23,
+   "claimRead": 351765,
+   "groups": {
+    "jalan/detail": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 1024,
+     "pageRead": 1024,
+     "perClaim": 45,
+     "perPageClaim": 45
+    },
+    "jalan/baths": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 138292,
+     "pageRead": 138292,
+     "perClaim": 6013,
+     "perPageClaim": 6013
+    },
+    "trip/detail": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 66591,
+     "pageRead": 66591,
+     "perClaim": 3027,
+     "perPageClaim": 3027
+    },
+    "jalan/refresh": {
+     "claims": 4,
+     "pages": 3,
+     "emptyClaims": 1,
+     "read": 19752,
+     "pageRead": 13209,
+     "perClaim": 4938,
+     "perPageClaim": 4403
+    },
+    "trip/refresh": {
+     "claims": 6,
+     "pages": 5,
+     "emptyClaims": 1,
+     "read": 25483,
+     "pageRead": 18637,
+     "perClaim": 4247,
+     "perPageClaim": 3727
+    },
+    "jalan/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/names": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 94660,
+     "pageRead": 94660,
+     "perClaim": 4303,
+     "perPageClaim": 4303
+    },
+    "jalan/localnames": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 5951,
+     "pageRead": 5951,
+     "perClaim": 271,
+     "perPageClaim": 271
+    }
+   },
+   "requests": {
+    "POST /api/crawl-prepare": {
+     "requests": 1,
+     "read": 5
+    },
+    "POST /api/crawl": {
+     "requests": 124,
+     "read": 351765
+    },
+    "PUT /api/crawl": {
+     "requests": 120,
+     "read": 83926
+    },
+    "GET /api/hotels/<id>": {
+     "requests": 1,
+     "read": 14
+    }
+   },
+   "bathsStatements": [
+    [
+     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+     1
+    ],
+    [
+     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+     1646
+    ],
+    [
+     "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+     2
+    ]
+   ],
+   "claimReadPerPage": 2931
+  },
+  "B": {
+   "candidatesBefore": 21,
+   "candidates": 21,
+   "shaped": {
+    "jalan detail done": 5516,
+    "jalan detail pending": 18286,
+    "jalan list done": 4100,
+    "jalan names done": 250,
+    "jalan names pending": 250,
+    "trip detail done": 2232,
+    "trip detail pending": 66,
+    "trip list done": 1300
+   },
+   "hotels": 24795,
+   "pages": 120,
+   "claims": 124,
+   "rounds": 23,
+   "claimRead": 565983,
+   "groups": {
+    "jalan/detail": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 1024,
+     "pageRead": 1024,
+     "perClaim": 45,
+     "perPageClaim": 45
+    },
+    "jalan/baths": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 315418,
+     "pageRead": 315418,
+     "perClaim": 13714,
+     "perPageClaim": 13714
+    },
+    "trip/detail": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 69257,
+     "pageRead": 69257,
+     "perClaim": 3148,
+     "perPageClaim": 3148
+    },
+    "jalan/refresh": {
+     "claims": 4,
+     "pages": 3,
+     "emptyClaims": 1,
+     "read": 23873,
+     "pageRead": 14241,
+     "perClaim": 5968,
+     "perPageClaim": 4747
+    },
+    "trip/refresh": {
+     "claims": 6,
+     "pages": 5,
+     "emptyClaims": 1,
+     "read": 26319,
+     "pageRead": 19166,
+     "perClaim": 4387,
+     "perPageClaim": 3833
+    },
+    "jalan/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/names": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 124129,
+     "pageRead": 124129,
+     "perClaim": 5642,
+     "perPageClaim": 5642
+    },
+    "jalan/localnames": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 5951,
+     "pageRead": 5951,
+     "perClaim": 271,
+     "perPageClaim": 271
+    }
+   },
+   "requests": {
+    "POST /api/crawl-prepare": {
+     "requests": 1,
+     "read": 5
+    },
+    "POST /api/crawl": {
+     "requests": 124,
+     "read": 565983
+    },
+    "PUT /api/crawl": {
+     "requests": 120,
+     "read": 84726
+    },
+    "GET /api/hotels/<id>": {
+     "requests": 1,
+     "read": 14
+    }
+   },
+   "bathsStatements": [
+    [
+     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+     1
+    ],
+    [
+     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+     3710
+    ],
+    [
+     "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+     2
+    ]
+   ],
+   "claimReadPerPage": 4717
+  },
+  "C": {
+   "candidatesBefore": 21,
+   "candidates": 21,
+   "shaped": {
+    "jalan detail done": 7802,
+    "jalan detail pending": 16194,
+    "jalan list done": 4100,
+    "jalan names done": 250,
+    "jalan names pending": 250,
+    "trip detail done": 2278,
+    "trip detail pending": 66,
+    "trip list done": 1300
+   },
+   "hotels": 25035,
+   "pages": 120,
+   "claims": 124,
+   "rounds": 23,
+   "claimRead": 703140,
+   "groups": {
+    "jalan/detail": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 1024,
+     "pageRead": 1024,
+     "perClaim": 45,
+     "perPageClaim": 45
+    },
+    "jalan/baths": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 446482,
+     "pageRead": 446482,
+     "perClaim": 19412,
+     "perPageClaim": 19412
+    },
+    "trip/detail": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 70131,
+     "pageRead": 70131,
+     "perClaim": 3188,
+     "perPageClaim": 3188
+    },
+    "jalan/refresh": {
+     "claims": 4,
+     "pages": 3,
+     "emptyClaims": 1,
+     "read": 26921,
+     "pageRead": 15003,
+     "perClaim": 6730,
+     "perPageClaim": 5001
+    },
+    "trip/refresh": {
+     "claims": 6,
+     "pages": 5,
+     "emptyClaims": 1,
+     "read": 26584,
+     "pageRead": 19339,
+     "perClaim": 4431,
+     "perPageClaim": 3868
+    },
+    "jalan/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/names": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 126035,
+     "pageRead": 126035,
+     "perClaim": 5729,
+     "perPageClaim": 5729
+    },
+    "jalan/localnames": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 5951,
+     "pageRead": 5951,
+     "perClaim": 271,
+     "perPageClaim": 271
+    }
+   },
+   "requests": {
+    "POST /api/crawl-prepare": {
+     "requests": 1,
+     "read": 5
+    },
+    "POST /api/crawl": {
+     "requests": 124,
+     "read": 703140
+    },
+    "PUT /api/crawl": {
+     "requests": 120,
+     "read": 85446
+    },
+    "GET /api/hotels/<id>": {
+     "requests": 1,
+     "read": 14
+    }
+   },
+   "bathsStatements": [
+    [
+     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+     1
+    ],
+    [
+     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+     5234
+    ],
+    [
+     "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+     2
+    ]
+   ],
+   "claimReadPerPage": 5860
+  },
+  "B2": {
+   "candidatesBefore": 21,
+   "candidates": 46,
+   "shaped": {
+    "jalan detail done": 5516,
+    "jalan detail pending": 18286,
+    "jalan list done": 4100,
+    "jalan names done": 250,
+    "jalan names pending": 250,
+    "trip detail done": 2232,
+    "trip detail pending": 66,
+    "trip list done": 1300
+   },
+   "hotels": 24795,
+   "pages": 120,
+   "claims": 124,
+   "rounds": 23,
+   "claimRead": 255522,
+   "groups": {
+    "jalan/detail": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 1024,
+     "pageRead": 1024,
+     "perClaim": 45,
+     "perPageClaim": 45
+    },
+    "jalan/baths": {
+     "claims": 23,
+     "pages": 23,
+     "emptyClaims": 0,
+     "read": 4957,
+     "pageRead": 4957,
+     "perClaim": 216,
+     "perPageClaim": 216
+    },
+    "trip/detail": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 69257,
+     "pageRead": 69257,
+     "perClaim": 3148,
+     "perPageClaim": 3148
+    },
+    "jalan/refresh": {
+     "claims": 4,
+     "pages": 3,
+     "emptyClaims": 1,
+     "read": 23873,
+     "pageRead": 14241,
+     "perClaim": 5968,
+     "perPageClaim": 4747
+    },
+    "trip/refresh": {
+     "claims": 6,
+     "pages": 5,
+     "emptyClaims": 1,
+     "read": 26319,
+     "pageRead": 19166,
+     "perClaim": 4387,
+     "perPageClaim": 3833
+    },
+    "jalan/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/list": {
+     "claims": 1,
+     "pages": 0,
+     "emptyClaims": 1,
+     "read": 6,
+     "pageRead": 0,
+     "perClaim": 6,
+     "perPageClaim": null
+    },
+    "trip/names": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 124129,
+     "pageRead": 124129,
+     "perClaim": 5642,
+     "perPageClaim": 5642
+    },
+    "jalan/localnames": {
+     "claims": 22,
+     "pages": 22,
+     "emptyClaims": 0,
+     "read": 5951,
+     "pageRead": 5951,
+     "perClaim": 271,
+     "perPageClaim": 271
+    }
+   },
+   "requests": {
+    "POST /api/crawl-prepare": {
+     "requests": 1,
+     "read": 5
+    },
+    "POST /api/crawl": {
+     "requests": 124,
+     "read": 255522
+    },
+    "PUT /api/crawl": {
+     "requests": 120,
+     "read": 84726
+    },
+    "GET /api/hotels/<id>": {
+     "requests": 1,
+     "read": 14
+    }
+   },
+   "bathsStatements": [
+    [
+     "SELECT * FROM crawl_jobs WHERE provider=? AND (?='any' OR ki",
+     1
+    ],
+    [
+     "UPDATE crawl_jobs SET lease_token=?,lease_until=? WHERE url=",
+     368
+    ],
+    [
+     "SELECT COALESCE((SELECT CAST(value AS REAL) FROM catalog_met",
+     2
+    ]
+   ],
+   "claimReadPerPage": 2129
+  }
+ },
+ "verdicts": {
+  "R0": "ERROR",
+  "R1": "BATHS_DOMINANT",
+  "R2": "GROWS",
+  "R3": "MOSTLY",
+  "R4": "CANDIDATE_SENSITIVE",
+  "tripDetailPageClaim": 3027,
+  "bathsGrowthCoverA": 3.2283385997006486,
+  "bathsB2overB": 0.01575032813183608,
+  "bathsShareB": 0.5572923568375728,
+  "claimReadPerPageB": 4717
+ }
+}
