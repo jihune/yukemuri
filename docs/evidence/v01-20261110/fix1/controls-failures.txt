@@ -1,0 +1,328 @@
+== W1b: Worker: a 403, a 429 or a bot challenge pauses the whole provider
+AssertionError [ERR_ASSERTION]: http_403 reporting 3600 s pauses the provider 86400 s: 3 s
+    at about (file://<copy>/scripts/check-crawl-queue-worker.mjs:135:41)
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:141:38
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.23.4
+
+== W1a: Worker: the provider pause has a floor of a day (403, bot challenge) or six hours (429)
+AssertionError [ERR_ASSERTION]: http_403 reporting 3600 s pauses the provider 86400 s: 3600 s
+    at about (file://<copy>/scripts/check-crawl-queue-worker.mjs:135:41)
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:141:38
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.23.4
+
+== W1c: Worker: a reported wait longer than the floor is kept
+AssertionError [ERR_ASSERTION]: http_429 reporting 100000 s pauses the provider 100000 s: 21600 s
+    at about (file://<copy>/scripts/check-crawl-queue-worker.mjs:135:41)
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:141:38
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.23.4
+
+== W14: Worker: a retried page waits the reported seconds
+AssertionError [ERR_ASSERTION]: A retried page waits the reported seconds: 60 s
+    at about (file://<copy>/scripts/check-crawl-queue-worker.mjs:135:41)
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:142:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.23.4
+
+== W19: Worker: a later save keeps the longer stored provider wait
+AssertionError [ERR_ASSERTION]: A later save must not shorten the provider wait
++ actual - expected
+
++ 1794283473.707
+- 1794369870.656
+      ^
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:144:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1794283473.707,
+  expected: 1794369870.656,
+  operator: 'strictEqual',
+
+== W22: Worker: the third failure of a page makes it failed
+AssertionError [ERR_ASSERTION]: Status and attempts after failure 3
++ actual - expected
+
+  [
++   'retry',
+-   'failed',
+    3
+  ]
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:151:42
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [ 'retry', 3 ],
+
+== W5: Worker contract: a record's id stands in its own property link
+AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999100","observed":1,"coverage":{"updatedAt":"2026-11-10T03:55:33.215Z","records":1656,"crawledRecords":1636,"curatedRecords":20,"prefectures":47,"discoveredDetailUrls":2,"completedDetailPages":1,"pending":1,"failed
+
+200 !== 400
+
+    at api (file://<copy>/scripts/check-crawl-queue-worker.mjs:20:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async refused (file://<copy>/scripts/check-crawl-queue-worker.mjs:54:49)
+    at async file://<copy>/scripts/check-crawl-queue-worker.mjs:57:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 200,
+  expected: 400,
+  operator: 'strictEqual',
+  diff: 'simple'
+
+== W6: Worker: a record's source is the job's own page
+AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"jalan-999100","observed":1,"coverage":{"updatedAt":"2026-11-10T03:57:36.962Z","records":1656,"crawledRecords":1636,"curatedRecords":20,"prefectures":47,"discoveredDetailUrls":2,"completedDetailPages":1,"pending":1,"failed
+
+200 !== 400
+
+    at api (file://<copy>/scripts/check-crawl-queue-worker.mjs:20:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async refused (file://<copy>/scripts/check-crawl-queue-worker.mjs:54:49)
+    at async file://<copy>/scripts/check-crawl-queue-worker.mjs:58:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 200,
+  expected: 400,
+  operator: 'strictEqual',
+  diff: 'simple'
+
+== W23: Worker: a detail page is not done without a record
+AssertionError [ERR_ASSERTION]: {"accepted":0,"linkedAccepted":0,"readbackId":null,"observed":0,"coverage":{"updatedAt":"2026-11-10T03:59:46.249Z","records":1655,"crawledRecords":1635,"curatedRecords":20,"prefectures":47,"discoveredDetailUrls":2,"completedDetailPages":1,"pending":1,"failed":0,"inven
+
+200 !== 400
+
+    at api (file://<copy>/scripts/check-crawl-queue-worker.mjs:20:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async refused (file://<copy>/scripts/check-crawl-queue-worker.mjs:54:49)
+    at async file://<copy>/scripts/check-crawl-queue-worker.mjs:59:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 200,
+  expected: 400,
+  operator: 'strictEqual',
+  diff: 'simple'
+
+== W24: Worker: a job takes records of its own provider only
+AssertionError [ERR_ASSERTION]: {"accepted":1,"linkedAccepted":0,"readbackId":"trip-999191","observed":1,"coverage":{"updatedAt":"2026-11-10T04:02:09.796Z","records":1658,"crawledRecords":1638,"curatedRecords":20,"prefectures":47,"discoveredDetailUrls":9,"completedDetailPages":1,"pending":8,"failed"
+
+200 !== 400
+
+    at api (file://<copy>/scripts/check-crawl-queue-worker.mjs:20:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async refused (file://<copy>/scripts/check-crawl-queue-worker.mjs:54:49)
+    at async file://<copy>/scripts/check-crawl-queue-worker.mjs:227:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 200,
+  expected: 400,
+  operator: 'strictEqual',
+  diff: 'simple'
+
+== W20a: Worker: an older page does not replace a curated group's page
+AssertionError [ERR_ASSERTION]: An older page must not replace a curated group's page
++ actual - expected
+
+  [
++   1,
++   'Linked older detail'
+-   0,
+-   'Linked detail'
+  ]
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:176:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+
+== W20c: Worker: the page times of a curated group are compared as times, not as text
+AssertionError [ERR_ASSERTION]: An older page must not replace a curated group's page
++ actual - expected
+
+  [
++   1,
++   'Linked older detail'
+-   0,
+-   'Linked detail'
+  ]
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:176:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+
+== W20b: Worker: a list page does not replace a curated group's detail page
+AssertionError [ERR_ASSERTION]: A list page must not replace a curated group's detail page
++ actual - expected
+
+  [
++   1,
++   'Linked list'
+-   0,
+-   'Linked detail'
+  ]
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:177:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+
+== L31: Worker: a curated property's page is saved only while a verified group names that provider record
+AssertionError [ERR_ASSERTION]: Without a verified group the page is saved nowhere
++ actual - expected
+
+  [
++   1,
++   'Linked without a group'
+-   0,
+-   null
+  ]
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:173:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+
+== L71: Worker: a curated property's provider page does not become a hotel of its own
+AssertionError [ERR_ASSERTION]: A curated property's provider page adds no hotel
+
+1657 !== 1656
+
+    at file://<copy>/scripts/check-crawl-queue-worker.mjs:179:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1657,
+  expected: 1656,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+== W25: Worker: a 404 or 410 on a detail page is a review signal, not a closure
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'closed'
+- 'unverified'
+
+    at file://<copy>/scripts/check-lifecycle-worker.mjs:65:55
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'closed',
+  expected: 'unverified',
+  operator: 'strictEqual',
+  diff: 'simple'
+
+== P7b: collector: a source's Retry-After is capped at seven days
+AssertionError: A source wait is capped at seven days, the longest the Site accepts
+
+== P19-site: collector: update-site.py does not follow a Site redirect
+AssertionError: Lists differ: ['https://elsewhere.example/api/crawl'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'https://elsewhere.example/api/crawl'
+
+- ['https://elsewhere.example/api/crawl']
++ [] : update-site.py followed a Site redirect
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.098s
+
+FAILED (failures=1)
+
+== P19-names: collector: update-names.py does not follow a Site redirect
+AssertionError: Lists differ: ['https://elsewhere.example/api/crawl'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'https://elsewhere.example/api/crawl'
+
+- ['https://elsewhere.example/api/crawl']
++ [] : update-names.py followed a Site redirect
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.069s
+
+FAILED (failures=1)
+
+== P19-descriptions: collector: update-descriptions.py does not follow a Site redirect
+AssertionError: Lists differ: ['https://elsewhere.example/api/crawl'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'https://elsewhere.example/api/crawl'
+
+- ['https://elsewhere.example/api/crawl']
++ [] : update-descriptions.py followed a Site redirect
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.074s
+
+FAILED (failures=1)
+
+== P19-lifecycle: collector: update-lifecycle.py does not follow a Site redirect
+AssertionError: Lists differ: ['https://elsewhere.example/api/crawl'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'https://elsewhere.example/api/crawl'
+
+- ['https://elsewhere.example/api/crawl']
++ [] : update-lifecycle.py followed a Site redirect
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.065s
+
+FAILED (failures=1)
+
+== P19-groups: collector: update-source-groups.py does not follow a Site redirect
+AssertionError: Lists differ: ['https://elsewhere.example/api/crawl'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'https://elsewhere.example/api/crawl'
+
+- ['https://elsewhere.example/api/crawl']
++ [] : update-source-groups.py followed a Site redirect
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.064s
+
+FAILED (failures=1)

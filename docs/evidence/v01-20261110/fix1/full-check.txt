@@ -1,0 +1,75 @@
+The whole list, python3 scripts/cloud-check.py --full, run alone on this change (Node v22.23.4):
+  start 2026-11-10T04:06:40Z load: 1.58 3.05 2.95
+  cloud_check_exit=0 secs=673 commands=56 end 2026-11-10T04:17:53Z
+  Cloud checks passed. Browser/mobile checks and production deployment are separate.
+  the commands it ran, in order:
+    /usr/local/bin/python3 scripts/materialize-source-assets.py
+    /usr/local/bin/python3 scripts/crawler/check.py
+    /usr/local/bin/python3 scripts/crawler/check_diagnostics.py
+    /usr/local/bin/python3 scripts/crawler/check_gentle_claims.py
+    /usr/local/bin/python3 scripts/crawler/check_retry_policy.py
+    /usr/local/bin/python3 scripts/crawler/check_site_access.py
+    /usr/local/bin/python3 scripts/check-source-safety.py
+    node scripts/build-collector-release.mjs
+    /usr/local/bin/python3 scripts/runner/check_bootstrap.py
+    /usr/local/bin/python3 scripts/runner/check_collection.py
+    /usr/local/bin/python3 scripts/runner/check_lifecycle.py
+    node scripts/check-lifecycle-official.mjs
+    node scripts/check-collect-workflow.mjs
+    node scripts/check-collection-chain.mjs
+    node scripts/check-rollback-workflow.mjs
+    node scripts/check-cloudflare-usage.mjs
+    node scripts/check-daily-check.mjs
+    node scripts/check-collection-budget.mjs
+    node scripts/check-cloudflare-smoke.mjs
+    /usr/local/bin/python3 scripts/run-actionlint.py
+    /usr/local/bin/python3 scripts/check-checkpoint.py
+    /usr/local/bin/python3 scripts/check-chat-export.py
+    node node_modules/typescript/bin/tsc --noEmit
+    node scripts/check-listing-query.mjs
+    node scripts/check-booking-links.mjs
+    node scripts/check-api-client.mjs
+    node scripts/check-local-search.mjs
+    node scripts/check-map-bounds.mjs
+    node scripts/check-map-groups.mjs
+    node scripts/check-comparison-differences.mjs
+    node scripts/check-hotel-names.mjs
+    node scripts/check-source-policy.mjs
+    node scripts/check-snapshot-geo.mjs
+    node scripts/check-wikidata-names.mjs
+    node scripts/check-jta-registration.mjs
+    node scripts/check-oita-permits.mjs
+    node scripts/check-commons-photos.mjs
+    node scripts/check-description-ui.cjs
+    node scripts/run-framework.mjs build
+    node scripts/check-collector-release-worker.mjs
+    node scripts/check-crawl-queue-worker.mjs
+    node scripts/check-lifecycle-worker.mjs
+    node scripts/check-claim-order-worker.mjs
+    node scripts/check-collection-status-worker.mjs
+    node scripts/check-comparison-worker.mjs
+    node scripts/check-catalog-worker.mjs
+    node scripts/check-map-area-worker.mjs
+    node scripts/check-edge-guard-worker.mjs
+    node scripts/check-deploy-config.mjs
+    node scripts/check-search-snapshot-worker.mjs
+    node scripts/check-reviewed-groups-worker.mjs
+    node scripts/check-locale-names-worker.mjs
+    node scripts/check-snapshot-geo.mjs --built
+    node scripts/check-public-reads-worker.mjs
+    node scripts/measure-d1-reads.mjs --check
+    node scripts/measure-d1-writes.mjs --check
+
+The same list on a copy with the 404 rule broken (control W25 of controls.json: lib/hotel-lifecycle.ts observeMissingSource also sets state='closed'):
+  start 2026-11-10T04:18:01Z load: 1.53 1.55 2.09
+  cloud_check_exit=1 secs=220 commands=42 end 2026-11-10T04:21:41Z
+  last command: Running: node scripts/check-lifecycle-worker.mjs
+  its failure:
+    AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'closed'
+    - 'unverified'
+    
+        at file://<copy>/scripts/check-lifecycle-worker.mjs:65:55
+        at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
