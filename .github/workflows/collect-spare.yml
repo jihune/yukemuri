@@ -1,0 +1,43 @@
+name: Yukemuri collection spare
+# O02 (user 2026-11-03): the hourly spare that restarts a broken collection
+# chain. It used to be a cron in the private runner repository, where every
+# minute counts against the account's monthly Actions minutes. Here the
+# repository is public, so a standard runner is free, and the job only starts
+# our own collection (collect.yml, mode gentle), which the GitHub terms allow.
+# The dispatch is the one the runner made (same workflow, main, gentle) and made
+# with the workflow token as collect-chain.yml does (a workflow_dispatch made
+# with it still starts a run). A run made while another gentle run is queued or
+# running, or after the day's budget is used, takes 0 pages (collect.yml's
+# overlap step and budget step, C06 and C03), so this adds no second collector.
+# scripts/check-collection-chain.mjs shows it.
+#
+# Stop it at once: Actions, "Yukemuri collection spare", Disable workflow (or
+# `gh workflow disable collect-spare.yml`). No repository variable is read, so
+# nothing has to be created first. docs/cloudflare-deploy.md lists every switch.
+#
+# A public repository's schedule turns off after 60 days without repository
+# activity (as collect-watch.yml's). Collection goes on anyway: the outer
+# scheduler (the Cloudflare Worker) has the runner dispatch the day's first
+# gentle run at 00:47Z and that run's chain carries it on from there. Enable
+# the workflow again from the Actions tab when GitHub turned it off.
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+# bash runs with -eo pipefail: a failing command fails its step.
+defaults:
+  run:
+    shell: bash
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run collect.yml --repo "$GITHUB_REPOSITORY" --ref main -f mode=gentle
