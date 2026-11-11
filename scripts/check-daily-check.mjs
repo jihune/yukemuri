@@ -120,8 +120,14 @@ assert.deepEqual(runFailures({...done,pages:0,reason:'overlap: run 1 (completed)
 const jalan=[{provider:'jalan',consecutive:3}];
 assert.deepEqual(runFailures({...done,counts:{done:2,retry:3},paused:jalan}),[],'a pause alone');
 assert.deepEqual(runFailures({...done,counts:{done:2,retry:3}}),['처리한 5쪽 가운데 retry·failed가 3쪽으로 절반을 넘는다'],'the same pages without the pause');
-assert.deepEqual(runFailures({...done,counts:{done:1,retry:3,failed:4},paused:jalan}),[],'half of the pages without the pausing 503s');
-assert.deepEqual(runFailures({...done,counts:{done:1,retry:3,failed:5},paused:jalan}),['처리한 9쪽 가운데 retry·failed가 5쪽으로 절반을 넘는다(공급자를 쉬게 한 503 3쪽은 세지 않음)']);
+// The pausing 503s leave the pages reported too (PR #273 Claude review P2 1): 4 of the other 5 failed fails.
+assert.deepEqual(runFailures({...done,counts:{done:1,retry:3,failed:4},paused:jalan}),['처리한 5쪽 가운데 retry·failed가 4쪽으로 절반을 넘는다(공급자를 쉬게 한 503 3쪽은 빼고 셈)']);
+assert.deepEqual(runFailures({...done,counts:{done:2,retry:3,failed:2},paused:jalan}),[],'half of the other pages');
+assert.deepEqual(runFailures({...done,counts:{retry:3,failed:3},paused:jalan}),['처리한 3쪽 가운데 retry·failed가 3쪽으로 절반을 넘는다(공급자를 쉬게 한 503 3쪽은 빼고 셈)']);
+assert.deepEqual(runFailures({...done,counts:{done:57,retry:3,failed:60},paused:jalan}),['처리한 117쪽 가운데 retry·failed가 60쪽으로 절반을 넘는다(공급자를 쉬게 한 503 3쪽은 빼고 셈)']);
+assert.deepEqual(runFailures({...done,counts:{retry:3},paused:jalan}),[],'only the pausing 503s');
+// A pause line without a whole count cannot be judged (PR #273 Claude review P3).
+for(const consecutive of [undefined,null,'3',2.5])assert.deepEqual(runFailures({...done,counts:{failed:10},paused:[{provider:'jalan',consecutive}]}),['쉰 공급자 줄(`providerPaused`)에서 잇단 503 수를 읽지 못함'],String(consecutive));
 assert.deepEqual(runFailures({...done,counts:{done:1,retry:6,failed:1},paused:[...jalan,{provider:'trip',consecutive:3}]}),[],'two providers paused');
 for(const status of ['in_progress','queued'])
  assert.deepEqual(runFailures({...done,status,conclusion:null,pages:null}),[`끝나지 않음(${status}): 다음 점검은 이 실행을 다시 보지 않는다`]);
