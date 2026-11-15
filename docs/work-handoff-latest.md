@@ -182,6 +182,7 @@
 - 11-15T13:22Z 인계 문서(76,871바이트)를 `docs/history/work-handoff-20261115T1310Z.md`로 바꾸지 않고 옮기고(`cmp` 같음), 지금 상태만 남겨 다시 썼다(1의 1에 setup 63–65 줄, 2에 ‘싼 모델 세션의 계획’, 3·4·6을 11-15 상태와 새 병합 날짜로, 7·8을 스물세 번째 것으로). `roadmap.md`의 C07·O02·C09 줄 병합 날짜와 결정 기록 한 행을 함께 고쳤다.
 - 11-15T13:19:09Z 전 사용자가 ‘싼 모델 세션의 계획’에서 ‘합쳐서 적용 (권장)’을 골랐다(위 2, `roadmap.md` 결정 기록).
 - 11-15T13:21:44Z V01 후속 Sonnet 세션 `session_01Up3F22LUheV1EgmAjZ8opD`(Heavy, 브랜치 `claude/v01-followup`)를 열어 V01-1을 맡겼다(위 4의 2). brief에는 위 1의 1 하위 세션 줄과 setup 63–65 줄, 위 2의 ‘싼 모델 세션의 계획’, ‘#285 병합 뒤에만 `check_gentle_claims.py`를 고침’, ‘#305 P2 셋은 상위 세션이 알릴 때’를 넣었다.
+- 11-15T13:42Z V01 후속 세션의 중간 보고: `update-site.py` 고침 `c57f874`(브랜치 `claude/v01-followup`), `cloud-check.py --full` rc 0, 새 검사 22개 `failures=0`, 처리를 지운 사본 21개 모두 실패(`controls_held=21 of 21`), 검사 고침은 #285 병합 뒤 붙일 scratch patch. 세션이 정한 둘(연달아 3쪽을 공급자별로 셈, `queue_url_unsupported`도 그 셈에 넣음)을 상위 세션이 차이를 읽고 13:43Z에 그대로 두기로 했고, 새 error 이름을 상태 화면에서 `source_format`으로 묶는 제안(`lib/read-collection-status.ts`)은 같은 PR에 넣게 했다(그 파일을 고치는 열린 PR 없음). 그 세션의 모델은 Sonnet, 강도는 `get_session`에 나오지 않음(Heavy 환경 xhigh).
 - 스물두 번째의 교훈 다섯은 11-15T13:11Z에 하네스 관리 세션에 갔고, 하네스 관리 세션 (6)의 인계 문서 할 일 2에 들어 있다(하네스 main `7fabdc1`에서 확인). 스물세 번째가 따로 보낼 것은 없다.
 
 
