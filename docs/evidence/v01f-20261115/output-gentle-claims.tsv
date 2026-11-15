@@ -1,0 +1,23 @@
+2026-11-15T13:58:07Z	unchanged copy	PASS tests=22 failures=0 rc=0
+2026-11-15T13:58:07Z	A1	HOLDS	FAIL tests=22 failures=7, errors=1 rc=1	"a page the parser cannot read fails that page, not the run"	the page-level except takes any exception
+2026-11-15T13:58:07Z	A2	HOLDS	FAIL tests=22 failures=4 rc=1	"the log names the exception and the stage"	the log names the exception and the stage of a collector exception
+2026-11-15T13:58:08Z	A3	HOLDS	FAIL tests=22 failures=6 rc=1	"three unsupported addresses in a row end the run"	a collector exception counts toward the pages in a row
+2026-11-15T13:58:08Z	B1	HOLDS	FAIL tests=22 failures=1 rc=1	"a page the Site refuses fails that page, not the run"	a 413 is reported as a page failure
+2026-11-15T13:58:08Z	B2	HOLDS	FAIL tests=22 failures=6 rc=1	"a page the Site refuses fails that page, not the run"	a refused data PUT is reported as a page failure
+2026-11-15T13:58:09Z	B3	HOLDS	FAIL tests=22 failures=1 rc=1	"a 403 on a data PUT ends the run as before"	a 403 on the data PUT still ends the run
+2026-11-15T13:58:09Z	B4	HOLDS	FAIL tests=22 failures=1 rc=1	"the failure is reported once, not again"	a refused failure report still ends the run
+2026-11-15T13:58:10Z	C1	HOLDS	FAIL tests=22 failures=3 rc=1	"the third page ends the run"	three pages in a row end the run
+2026-11-15T13:58:10Z	C2	HOLDS	FAIL tests=22 failures=4 rc=1	"two, a good page, two is never three in a row"	two pages in a row do not end the run
+2026-11-15T13:58:10Z	C3	HOLDS	FAIL tests=22 failures=1 rc=1	"two, a good page, two is never three in a row"	a page read normally starts the count again
+2026-11-15T13:58:11Z	C4	HOLDS	FAIL tests=22 failures=3 rc=1	"two pages from each provider are not three in a row from one"	the count is per provider
+2026-11-15T13:58:11Z	D1	HOLDS	FAIL tests=22 failures=5 rc=1	"the very next request reports that page failed under the same address"	the failure name is no HTTP status name
+2026-11-15T13:58:11Z	D2	HOLDS	FAIL tests=22 failures=3 rc=1	"the collector's own failure puts no wait on the provider"	the Site-contract failure puts no wait on the provider
+2026-11-15T13:58:12Z	D3	HOLDS	FAIL tests=22 failures=2 rc=1	"the very next request reports that page failed under the same address"	the Site-contract failure follows the attempts (third is failed)
+2026-11-15T13:58:12Z	D4	HOLDS	FAIL tests=22 failures=1 rc=1	"it cannot become supported, so no retries"	an unsupported queue address is failed at once
+2026-11-15T13:58:12Z	D5	HOLDS	FAIL tests=22 failures=12 rc=1	"the collector's own failure puts no wait on the provider"	a collector exception puts no wait on the provider
+2026-11-15T13:58:13Z	E1	HOLDS	FAIL tests=22 failures=1 rc=1	"it cannot become supported, so no retries"	an unsupported queue address is reported failed
+2026-11-15T13:58:13Z	E2	HOLDS	FAIL tests=22 failures=1 rc=1	"the source is not asked for an address the collector does not support"	the source is not asked for an unsupported queue address
+2026-11-15T13:58:13Z	F1	HOLDS	FAIL tests=22 failures=2 rc=1	"is reported with the claim it holds"	the failure report carries the claim token
+2026-11-15T13:58:14Z	G1	HOLDS	FAIL tests=22 failures=2 rc=1	"a failed page reports no data"	the failure report leaves the refused data out
+2026-11-15T13:58:14Z	H1	HOLDS	FAIL tests=22 failures=1 rc=1	"the third page ends the run"	a refused data PUT counts toward the pages in a row
+SUMMARY controls_held=21 of 21; unchanged copy: PASS tests=22 failures=0 rc=0
