@@ -20,7 +20,7 @@ export const CHAIN=Object.freeze({
                      // rows whatever its size (its snapshot; its last queue read, about 89,000, is gone
                      // since C07 plan 2) and a page 1,900-2,500 on 10-19 (4,467 in one 10-18 interval),
                      // so below 16 pages at least three quarters of a run's reads are those fixed reads.
-                     // Skipping such a run itself is the C04 follow-up, not this.
+                     // collection-budget.mjs gives such a run 0 pages itself (minPages, C04 follow-up).
 });
 
 const no=(rule,reason)=>({dispatch:false,rule,reason});
@@ -62,8 +62,10 @@ export function nextRun({after,runs,budget,now},chain=CHAIN){
  return {dispatch:true,rule:'dispatch',reason:`the next run gets ${budget.pages} pages (${budget.reason})`};
 }
 
-// How long to wait before deciding: until intervalMinutes after the run before was created.
-export const waitMs=(after,now,chain=CHAIN)=>Math.max(0,Date.parse(after.created_at)+chain.intervalMinutes*60_000-now);
+// How long to wait before deciding: until intervalMinutes after the run before was created. A creation
+// time later than now counts as now: on 2026-11-01 GitHub gave the runs of 08:00-09:00Z times an hour
+// late (around the end of US daylight saving time), and a 90-minute wait ran past the job's 70 minutes.
+export const waitMs=(after,now,chain=CHAIN)=>Math.max(0,Math.min(Date.parse(after.created_at),now)+chain.intervalMinutes*60_000-now);
 
 function github(env,fetch){
  const repo=env.GITHUB_REPOSITORY,token=env.GH_TOKEN;
@@ -106,7 +108,7 @@ export async function chainAfter({env=process.env,fetch=globalThis.fetch,sleep=m
  // would find it in flight and take 0 pages (collecting), so wait for it to end first.
  while(after.status!=='completed'){await sleep(15_000);after=await gh('/actions/runs/'+id)}
  const wait=waitMs(after,clock());
- log(`Run ${after.id} was created at ${after.created_at}; waiting ${Math.round(wait/60_000)} minutes.`);
+ log(`Run ${after.id} was created at ${after.created_at}${Date.parse(after.created_at)>clock()?' (later than now, so counted from now)':''}; waiting ${Math.round(wait/60_000)} minutes.`);
  await sleep(wait);
  const now=clock(),runs=await runsSince(gh,Math.min(created(after),Date.parse(new Date(now).toISOString().slice(0,10))));
  const decision=nextRun({after,runs,budget:await budget({env,now:new Date(now)}),now});
