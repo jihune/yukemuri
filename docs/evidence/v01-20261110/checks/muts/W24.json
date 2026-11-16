@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: an observation of the other provider is accepted on a job",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "if(update.observations.some(h=>!h.id.startsWith(job.provider+'-')||h.sources.some(",
+   "new": "if(update.observations.some(h=>h.sources.some("
+  }
+ ]
+}

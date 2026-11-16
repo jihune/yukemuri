@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "site_api: any https host gets the maintenance key",
+ "edits": [
+  {
+   "file": "scripts/crawler/source_safety.py",
+   "old": "if site.scheme!='https' or not(sites or WORKER_HOST.fullmatch(host)) or site.username or site.password:",
+   "new": "if site.scheme!='https' or site.username or site.password:"
+  }
+ ]
+}

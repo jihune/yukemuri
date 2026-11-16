@@ -1,0 +1,146 @@
+sources=339 app_roots=20 app_reach=130
+
+## tracked modules outside scripts/ that the app roots (app/**/route|page|layout, build/sites-worker.ts, vite.config.ts) do not reach
+app/chatgpt-auth.ts	imported_by=0	by_scripts=no	
+build/connector-preview-worker.mjs	imported_by=0	by_scripts=no	
+cloudflare-env.d.ts	imported_by=0	by_scripts=no	
+components/connector-error.tsx	imported_by=0	by_scripts=no	
+components/ui/accordion.tsx	imported_by=0	by_scripts=no	
+components/ui/alert-dialog.tsx	imported_by=0	by_scripts=no	
+components/ui/alert.tsx	imported_by=0	by_scripts=no	
+components/ui/aspect-ratio.tsx	imported_by=0	by_scripts=no	
+components/ui/attachment.tsx	imported_by=0	by_scripts=no	
+components/ui/avatar.tsx	imported_by=0	by_scripts=no	
+components/ui/badge.tsx	imported_by=0	by_scripts=no	
+components/ui/breadcrumb.tsx	imported_by=0	by_scripts=no	
+components/ui/bubble.tsx	imported_by=0	by_scripts=no	
+components/ui/button-group.tsx	imported_by=0	by_scripts=no	
+components/ui/button.tsx	imported_by=11	by_scripts=no	components/connector-error.tsx,components/ui/alert-dialog.tsx,components/ui/attachment.tsx,components/ui/calendar.tsx,components/ui/carousel.tsx,components/ui/combobox.tsx
+components/ui/calendar.tsx	imported_by=0	by_scripts=no	
+components/ui/card.tsx	imported_by=0	by_scripts=no	
+components/ui/carousel.tsx	imported_by=0	by_scripts=no	
+components/ui/chart.tsx	imported_by=0	by_scripts=no	
+components/ui/checkbox.tsx	imported_by=0	by_scripts=no	
+components/ui/collapsible.tsx	imported_by=0	by_scripts=no	
+components/ui/combobox.tsx	imported_by=0	by_scripts=no	
+components/ui/command.tsx	imported_by=0	by_scripts=no	
+components/ui/context-menu.tsx	imported_by=0	by_scripts=no	
+components/ui/dialog.tsx	imported_by=1	by_scripts=no	components/ui/command.tsx
+components/ui/direction.tsx	imported_by=0	by_scripts=no	
+components/ui/dropdown-menu.tsx	imported_by=0	by_scripts=no	
+components/ui/empty.tsx	imported_by=0	by_scripts=no	
+components/ui/field.tsx	imported_by=0	by_scripts=no	
+components/ui/form.tsx	imported_by=0	by_scripts=no	
+components/ui/hover-card.tsx	imported_by=0	by_scripts=no	
+components/ui/input-group.tsx	imported_by=1	by_scripts=no	components/ui/combobox.tsx
+components/ui/input-otp.tsx	imported_by=0	by_scripts=no	
+components/ui/input.tsx	imported_by=2	by_scripts=no	components/ui/input-group.tsx,components/ui/sidebar.tsx
+components/ui/item.tsx	imported_by=0	by_scripts=no	
+components/ui/kbd.tsx	imported_by=0	by_scripts=no	
+components/ui/label.tsx	imported_by=2	by_scripts=no	components/ui/field.tsx,components/ui/form.tsx
+components/ui/marker.tsx	imported_by=0	by_scripts=no	
+components/ui/menubar.tsx	imported_by=0	by_scripts=no	
+components/ui/message-scroller.tsx	imported_by=0	by_scripts=no	
+components/ui/message.tsx	imported_by=0	by_scripts=no	
+components/ui/native-select.tsx	imported_by=0	by_scripts=no	
+components/ui/navigation-menu.tsx	imported_by=0	by_scripts=no	
+components/ui/pagination.tsx	imported_by=0	by_scripts=no	
+components/ui/popover.tsx	imported_by=0	by_scripts=no	
+components/ui/progress.tsx	imported_by=0	by_scripts=no	
+components/ui/radio-group.tsx	imported_by=0	by_scripts=no	
+components/ui/resizable.tsx	imported_by=0	by_scripts=no	
+components/ui/scroll-area.tsx	imported_by=0	by_scripts=no	
+components/ui/separator.tsx	imported_by=4	by_scripts=no	components/ui/button-group.tsx,components/ui/field.tsx,components/ui/item.tsx,components/ui/sidebar.tsx
+components/ui/sidebar.tsx	imported_by=0	by_scripts=no	
+components/ui/skeleton.tsx	imported_by=1	by_scripts=no	components/ui/sidebar.tsx
+components/ui/slider.tsx	imported_by=0	by_scripts=no	
+components/ui/sonner.tsx	imported_by=0	by_scripts=no	
+components/ui/spinner.tsx	imported_by=0	by_scripts=no	
+components/ui/switch.tsx	imported_by=0	by_scripts=no	
+components/ui/tabs.tsx	imported_by=0	by_scripts=no	
+components/ui/textarea.tsx	imported_by=1	by_scripts=no	components/ui/input-group.tsx
+components/ui/toggle-group.tsx	imported_by=0	by_scripts=no	
+components/ui/toggle.tsx	imported_by=1	by_scripts=no	components/ui/toggle-group.tsx
+db/index.ts	imported_by=0	by_scripts=no	
+db/schema.ts	imported_by=1	by_scripts=no	db/index.ts
+docs/evidence/c07-20261019/compare-progress.mjs	imported_by=0	by_scripts=no	
+docs/evidence/c07-20261019/measure-claim-rounds.mjs	imported_by=0	by_scripts=no	
+docs/evidence/c07-20261019/snapshot-inputs.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d04-20261015/measure-writes.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d04-20261019/sample-trip-years.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d05-20261013/check-view-bath-card.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d05-20261013/measure-writes.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d05-20261013/prepare-view-bath-site.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d07-20261018/tools/deploy-sim.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d07-20261018/tools/local-d1-at-migration.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d07-20261018/tools/measure-credit-names.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d07-20261018/tools/measure-locale-snapshot-reads.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d07-20261018/tools/measure-migration-writes.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-20261019/pr4/replay-public-geo.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-20261019/pr5/measure-claims.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-20261019/pr5/measure-writes.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-20261019/tools/commons-live.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-20261019/tools/commons-reach.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-jta-20261019/measure.mjs	imported_by=0	by_scripts=no	
+docs/evidence/d08-oita-20261019/measure.mjs	imported_by=0	by_scripts=no	
+docs/evidence/l01-labels-20261015/label-diff.cjs	imported_by=0	by_scripts=no	
+docs/evidence/l01-labels-20261015/measure-writes.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/audit.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/bench.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/map.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/measure.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/shoot.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-20261013/tools/views.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u05-filter-review-20261015/mock-a.js	imported_by=0	by_scripts=no	
+docs/evidence/u05-filter-review-20261015/mock-b.js	imported_by=0	by_scripts=no	
+docs/evidence/u05-filter-review-20261015/mock-c.js	imported_by=0	by_scripts=no	
+docs/evidence/u06-20261015/data.js	imported_by=0	by_scripts=no	
+docs/evidence/u06-20261015/tools/shoot.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u07-20261019/tools/hydration-probe.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u07-20261019/tools/map-sea-shots.mjs	imported_by=0	by_scripts=no	
+docs/evidence/u07-20261019/tools/route-race-control.mjs	imported_by=0	by_scripts=no	
+drizzle.config.ts	imported_by=0	by_scripts=no	
+eslint.config.mjs	imported_by=0	by_scripts=no	
+hooks/use-mobile.ts	imported_by=1	by_scripts=no	components/ui/sidebar.tsx
+lib/connector-errors.mts	imported_by=1	by_scripts=no	components/connector-error.tsx
+lib/connector-preview.d.ts	imported_by=0	by_scripts=no	
+lib/connectors.ts	imported_by=0	by_scripts=no	
+lib/hotels.real.ts	imported_by=0	by_scripts=no	
+lib/hotels.seed.ts	imported_by=0	by_scripts=no	
+lib/jta-registration.ts	imported_by=1	by_scripts=no	lib/search-snapshot-build.ts
+lib/search-snapshot-build.ts	imported_by=0	by_scripts=no	
+next.config.ts	imported_by=0	by_scripts=no	
+postcss.config.mjs	imported_by=0	by_scripts=no	
+
+## non-source tracked files (json, css, etc.) under lib/ data/ public/ vendor/ imported by a module
+data/collector-release.generated.json	app=yes	app/api/collector-release/route.ts
+app/globals.css	app=yes	app/layout.tsx
+data/collection-priorities.json	app=yes	components/hotel-explorer.tsx,lib/collection-priorities.ts,lib/japan-place-labels.ts,scripts/check-u05-list-browser.mjs,scripts/check-u07-region-browser.mjs,scripts/preflight-report.mjs
+.sites-runtime/u01-browser/package.json (unresolved)	app=no	docs/evidence/d04-20261019/sample-trip-years.mjs,docs/evidence/d05-20261013/check-view-bath-card.mjs,docs/evidence/d08-20261019/tools/commons-live.mjs,docs/evidence/u05-20261013/tools/audit.mjs,docs/evidence/u05-20261013/tools/bench.mjs,docs/evidence/u05-20261013/tools/map.mjs
+data/commons-trip-photos.json	app=yes	docs/evidence/d08-20261019/tools/commons-live.mjs,lib/commons-photos.ts,scripts/check-commons-photo-browser.mjs
+lib/hotels.real.json	app=yes	lib/catalog-core.ts,lib/hotels.real.ts
+data/coverage.json	app=yes	lib/catalog-core.ts,lib/search-snapshot.ts
+data/priority-source-seeds.json	app=yes	lib/collection-priorities.ts
+lib/hotels.crawled.json (untracked)	app=yes	lib/hotel-catalog.ts,scripts/check-u07-translate-browser.mjs
+lib/hotels.verified.json	app=yes	lib/hotel-enrichment.ts
+data/korean-hotel-names.json	app=yes	lib/hotel-repository.ts
+data/crawl-jobs.json (untracked)	app=yes	lib/hotel-repository.ts
+data/source-groups-reviewed.json	app=yes	lib/hotel-source-groups.ts
+data/prefectures.json	app=yes	lib/hotel-types.ts,lib/lodging-lists.ts
+public/images/credits-sample.json	app=no	lib/hotels.seed.ts
+data/jta-registered.json	app=no	lib/jta-registration.ts
+data/oita-ryokan-permits.json	app=yes	lib/oita-permits.ts
+data/wikidata-trip-names.json	app=yes	lib/wikidata-names.ts
+.sites-runtime/execution-profile.json (unresolved)	app=yes	scripts/execution-profile.mjs
+.openai/hosting.json	app=yes	vite.config.ts
+cloudflare-deploy.json	app=yes	vite.config.ts
+
+## unresolved or untracked import targets
+.sites-runtime/u01-browser/package.json (unresolved)	docs/evidence/d04-20261019/sample-trip-years.mjs,docs/evidence/d05-20261013/check-view-bath-card.mjs,docs/evidence/d08-20261019/tools/commons-live.mjs,docs/evidence/u05-20261013/tools/audit.mjs
+node_modules/.pnpm/ (unresolved)	docs/evidence/u05-20261013/tools/audit.mjs,scripts/check-u05-foundation-browser.mjs
+lib/hotels.crawled.json (untracked)	lib/hotel-catalog.ts,scripts/check-u07-translate-browser.mjs
+data/crawl-jobs.json (untracked)	lib/hotel-repository.ts
+./ (unresolved)	scripts/build-collector-release.mjs,scripts/sites-env.mjs
+.sites-runtime/execution-profile.json (unresolved)	scripts/execution-profile.mjs
+. (unresolved)	scripts/measure-route-cpu.mjs
+node_modules/vinext/dist/cli.js (untracked)	scripts/run-framework.mjs

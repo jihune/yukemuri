@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: an ordinary page error with providerCooldownSeconds pauses the provider (no retry_after reason needed)",
+ "edits": [
+  {
+   "file": "lib/crawl-contract.ts",
+   "old": "return update.providerWaitReason==='retry_after'?Math.max(update.providerCooldownSeconds??0,update.retryAfterSeconds??0):0;",
+   "new": "return Math.max(update.providerCooldownSeconds??0,update.retryAfterSeconds??0);"
+  }
+ ]
+}

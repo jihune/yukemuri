@@ -1,0 +1,80 @@
+"https://yukemuri.jihune.workers.dev"
+    run-collection.py target_origin               accept
+    source_safety.py site_api                     accept https://yukemuri.jihune.workers.dev
+    cloudflare-deploy-gate.mjs deployGate         accept
+    cloudflare-smoke.mjs assert.match             accept
+    cloudflare-prepare.mjs assert.match           accept
+    record-coverage.mjs assert.match              accept
+    build-collector-release.mjs siteOrigin        accept
+"http://yukemuri.jihune.workers.dev"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     reject
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.a-.workers.dev"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     reject
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             accept
+    cloudflare-prepare.mjs assert.match           accept
+    record-coverage.mjs assert.match              accept
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.-.workers.dev"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     reject
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             accept
+    cloudflare-prepare.mjs assert.match           accept
+    record-coverage.mjs assert.match              accept
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.aaaaaaa...(93 chars)"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     reject
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             accept
+    cloudflare-prepare.mjs assert.match           accept
+    record-coverage.mjs assert.match              accept
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.jihune.workers.dev:8443"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     accept https://yukemuri.jihune.workers.dev:8443
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.jihune.workers.dev/x?y=1"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     accept https://yukemuri.jihune.workers.dev
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        reject
+"https://YUKEMURI.jihune.workers.dev"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     accept https://YUKEMURI.jihune.workers.dev
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.jihune.workers.dev\n"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     accept https://yukemuri.jihune.workers.dev
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        reject
+"https://yukemuri.jihun7891.chatgpt.site"
+    run-collection.py target_origin               reject
+    source_safety.py site_api                     accept https://yukemuri.jihun7891.chatgpt.site
+    cloudflare-deploy-gate.mjs deployGate         reject
+    cloudflare-smoke.mjs assert.match             reject
+    cloudflare-prepare.mjs assert.match           reject
+    record-coverage.mjs assert.match              reject
+    build-collector-release.mjs siteOrigin        accept

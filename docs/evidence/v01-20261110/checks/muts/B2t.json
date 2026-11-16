@@ -1,0 +1,17 @@
+{
+ "build": false,
+ "note": "budget: the 85% share is not applied to writes",
+ "edits": [
+  {
+   "file": "scripts/collection-budget.mjs",
+   "old": "const byWrites=Math.floor((budget.share*LIMITS.rowsWritten-written)/budget.writesPerPage);",
+   "new": "const byWrites=Math.floor((LIMITS.rowsWritten-written)/budget.writesPerPage);"
+  }
+ ],
+ "targets": [
+  [
+   "node",
+   "scripts/check-collection-budget.mjs"
+  ]
+ ]
+}

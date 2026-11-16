@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "rollback: the confirm word is not required",
+ "edits": [
+  {
+   "file": "scripts/cloudflare-rollback.mjs",
+   "old": "if(confirm!==CONFIRM)throw new RollbackError(`confirm must be \"${CONFIRM}\"; nothing was changed`);",
+   "new": ""
+  }
+ ]
+}

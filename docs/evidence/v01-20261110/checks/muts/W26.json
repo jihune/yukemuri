@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a reported source Retry-After on an ordinary error no longer pauses the provider",
+ "edits": [
+  {
+   "file": "lib/crawl-contract.ts",
+   "old": "return update.providerWaitReason==='retry_after'?Math.max(update.providerCooldownSeconds??0,update.retryAfterSeconds??0):0;",
+   "new": "return 0;"
+  }
+ ]
+}

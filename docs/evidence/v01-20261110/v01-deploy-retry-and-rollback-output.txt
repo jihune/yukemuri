@@ -1,0 +1,9 @@
+A. cloudflare-deploy-worker.sh --dry-run
+  mode=ok exit=0 wrangler calls=1
+  mode=api-once exit=0 wrangler calls=2
+  mode=connection exit=1 wrangler calls=1
+B. cloudflare-rollback.mjs ACTION=worker-rollback
+  mode=ok exit=0 wrangler calls=4 (d1 time-travel info;deployments status --name;rollback --name yukemuri;deployments status --name;)
+    - `cloudflare-deploy.json`의 `autoDeploy`를 `false`로 바꾸면 배포와 함께 수집도 멈춘다(`collect.yml`이 요청 전에 실패한다). 수집 중지가 목적일 때만 쓴다.
+  mode=d1-down exit=1 wrangler calls=1 (d1 time-travel info;)
+    **실패**: wrangler d1 time-travel info failed: ✘ [ERROR] A request to the Cloudflare API (/accounts/0123456789abcdef0123456789abcdef/d1/database/x/time_travel/bookmark) failed.

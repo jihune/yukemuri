@@ -1,0 +1,88 @@
+count 87
+scripts/check-api-client.mjs	cloud-check	scripts:-	docs:docs/H01-20261011.md,docs/U04-20261011.md,docs/ui-u01-20261008.md
+scripts/check-booking-links.mjs	cloud-check	scripts:-	docs:docs/U04-20261011.md
+scripts/check-catalog-worker.mjs	cloud-check --full	scripts:-	docs:docs/D05-20261013.md,docs/U02-20261010.md
+scripts/check-catalog.mjs	-	scripts:-	docs:docs/P01-20261011.md,lib/catalog-core.ts
+scripts/check-chat-export.py	cloud-check	scripts:-	docs:-
+scripts/check-checkpoint.py	cloud-check	scripts:-	docs:docs/P02-20261011.md
+scripts/check-claim-order-worker.mjs	cloud-check --full	scripts:-	docs:docs/C07-20261019.md,docs/D05-20261013.md,docs/D08-20261019.md,docs/P02-20261011.md,docs/P03-20261012.md
+scripts/check-cloudflare-smoke.mjs	cloud-check	scripts:-	docs:docs/H02-20261013.md,docs/V01-20261110.md
+scripts/check-cloudflare-usage.mjs	cloud-check	scripts:-	docs:docs/O03-20261019.md,docs/U06-20261015.md,docs/cloudflare-deploy.md
+scripts/check-collect-workflow.mjs	cloud-check	scripts:scripts/run-actionlint.py	docs:docs/C05-20261018.md,docs/C06-20261019.md,docs/C07-20261019.md,docs/O03-20261019.md,docs/V01-20261110.md,docs/cloudflare-deploy.md
+scripts/check-collection-budget.mjs	cloud-check	scripts:-	docs:docs/C04-20261019.md,docs/C05-20261018.md,docs/C07-20261019.md,docs/D07-20261019.md,docs/O03-20261019.md,docs/cloudflare-deploy.md
+scripts/check-collection-chain.mjs	cloud-check	scripts:scripts/check-collect-workflow.mjs	docs:docs/C06-20261019.md,docs/C07-20261019.md,docs/V01-20261110.md
+scripts/check-collection-freshness.mjs	wf:collect-watch.yml	scripts:scripts/check-collect-workflow.mjs,scripts/check-collection-chain.mjs,scripts/check-daily-check.mjs,scripts/collection-chain.mjs,scripts/daily-check.mjs	docs:docs/C06-20261019.md,docs/cloudflare-deploy.md
+scripts/check-collection-status-worker.mjs	cloud-check --full	scripts:-	docs:README.md,docs/C08-20261021.md,docs/checkpoint-20261008.md,docs/collection-status-20261007.md
+scripts/check-collector-release-worker.mjs	cloud-check --full	scripts:-	docs:-
+scripts/check-commons-photo-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-commons-photos.mjs	cloud-check	scripts:-	docs:docs/D08-20261019.md
+scripts/check-comparison-differences.mjs	cloud-check	scripts:-	docs:docs/U03-20261011.md
+scripts/check-comparison-worker.mjs	cloud-check --full	scripts:-	docs:README.md,docs/checkpoint-20261008.md
+scripts/check-crawl-queue-worker.mjs	cloud-check --full	scripts:-	docs:README.md,docs/C04-20261019.md,docs/C07-20261019.md,docs/D04-20261015.md,docs/D05-20261013.md,docs/D08-20261019.md,docs/L01-20261013.md,docs/P01-20261011.md,docs/P02-20261011.md,docs/U06-20261015.md,docs/collection-status-20261007.md
+scripts/check-d08-jta-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-d08-merged-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-d08-oita-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-d08-overture-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-daily-check.mjs	cloud-check	scripts:-	docs:docs/C05-20261018.md,docs/C06-20261019.md,docs/C07-20261019.md,docs/C09-20261026.md,docs/O03-20261019.md,docs/V01-20261110.md,docs/cloudflare-deploy.md
+scripts/check-deploy-config.mjs	cloud-check --full	scripts:scripts/cloudflare-deploy-worker.sh,scripts/run-actionlint.py	docs:docs/C06-20261019.md,docs/C07-20261019.md,docs/D06-20261013.md,docs/H01-20261011.md,docs/H02-20261013.md,docs/L01-20261013.md,docs/P03-20261012.md,docs/cloudflare-deploy.md
+scripts/check-description-ui.cjs	cloud-check	scripts:-	docs:docs/U07-20261019.md,docs/deployments.md
+scripts/check-edge-guard-worker.mjs	cloud-check --full	scripts:-	docs:docs/H01-20261011.md,docs/H02-20261013.md,docs/P03-20261012.md
+scripts/check-facility-links.cjs	-	scripts:-	docs:docs/U04-20261011.md
+scripts/check-hotel-names.mjs	cloud-check	scripts:-	docs:docs/U07-20261019.md
+scripts/check-jta-registration.mjs	cloud-check	scripts:scripts/check-search-snapshot-worker.mjs	docs:lib/jta-attribution.ts
+scripts/check-lifecycle-official.mjs	cloud-check; wf:lifecycle.yml	scripts:scripts/runner/check_lifecycle.py	docs:docs/L01-20261013.md,docs/cloudflare-deploy.md
+scripts/check-lifecycle-worker.mjs	-	scripts:-	docs:docs/L01-20261013.md,docs/P03-20261012.md,docs/U04-20261011.md
+scripts/check-listing-query.mjs	cloud-check	scripts:-	docs:README.md
+scripts/check-local-search.mjs	cloud-check	scripts:-	docs:docs/D01-20261010.md,docs/L01-20261013.md,docs/U07-20261019.md
+scripts/check-locale-names-worker.mjs	cloud-check --full	scripts:-	docs:docs/D07-20261019.md
+scripts/check-map-area-worker.mjs	cloud-check --full	scripts:-	docs:docs/U02-20261010.md
+scripts/check-map-bounds.mjs	cloud-check	scripts:-	docs:docs/U02-20261010.md
+scripts/check-map-groups.mjs	cloud-check	scripts:-	docs:docs/U07-20261019.md
+scripts/check-oita-permits.mjs	cloud-check	scripts:scripts/check-search-snapshot-worker.mjs	docs:docs/C08-20261021.md,docs/D08-20261019.md,lib/oita-attribution.ts
+scripts/check-p03-followups-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md,docs/P03-20261012.md
+scripts/check-public-access.py	-	scripts:scripts/check-public-worker.mjs	docs:docs/P03-20261012.md
+scripts/check-public-reads-worker.mjs	cloud-check --full	scripts:-	docs:docs/D07-20261019.md,docs/D08-20261019.md,docs/P03-20261012.md
+scripts/check-public-worker.mjs	-	scripts:scripts/run-runtime-check.py	docs:docs/P03-20261012.md
+scripts/check-reviewed-groups-worker.mjs	cloud-check --full	scripts:-	docs:docs/D08-20261019.md
+scripts/check-rollback-workflow.mjs	cloud-check	scripts:-	docs:docs/cloudflare-deploy.md
+scripts/check-runtime.py	-	scripts:scripts/run-runtime-check.py	docs:docs/P03-20261012.md,docs/U04-20261011.md
+scripts/check-search-snapshot-worker.mjs	cloud-check --full	scripts:scripts/build-search-snapshot.mjs	docs:docs/C07-20261019.md,docs/D07-20261019.md,docs/D08-20261019.md,docs/P02-20261011.md,docs/P03-20261012.md,docs/U06-20261015.md,docs/U07-20261019.md,docs/V01-20261110.md,docs/cloudflare-deploy.md
+scripts/check-snapshot-geo.mjs	cloud-check	scripts:scripts/geo/check_overture.py	docs:docs/D08-20261019.md,docs/deployments.md,lib/geo-attribution.ts
+scripts/check-source-groups-worker.mjs	-	scripts:-	docs:docs/P03-20261012.md,docs/checkpoint-20261008.md
+scripts/check-source-policy.mjs	cloud-check	scripts:-	docs:docs/D04-20261015.md,docs/D05-20261013.md
+scripts/check-source-safety.py	cloud-check	scripts:-	docs:docs/C07-20261019.md,docs/C08-20261021.md
+scripts/check-u01-browser.mjs	-	scripts:-	docs:docs/P02-20261011.md,docs/P03-20261012.md,docs/U02-20261010.md,docs/U03-20261011.md,docs/U06-20261015.md,docs/cloud-development.md,docs/ui-u01-20261010.md
+scripts/check-u01-dom.cjs	-	scripts:-	docs:docs/U03-20261011.md,docs/U06-20261015.md,docs/cloud-development.md,docs/ui-u01-20261008.md
+scripts/check-u02-browser.mjs	-	scripts:scripts/check-u02-map-browser.mjs	docs:docs/U02-20261010.md,docs/U03-20261011.md
+scripts/check-u02-map-browser.mjs	-	scripts:-	docs:docs/U02-20261010.md,docs/U03-20261011.md
+scripts/check-u03-comparison-browser.mjs	-	scripts:-	docs:docs/U03-20261011.md
+scripts/check-u03-desktop-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md,docs/U03-20261011.md
+scripts/check-u04-browser.mjs	-	scripts:-	docs:docs/P02-20261011.md,docs/U04-20261011.md,docs/U07-20261019.md
+scripts/check-u05-comparison-browser.mjs	-	scripts:-	docs:-
+scripts/check-u05-detail-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md,docs/U07-20261019.md
+scripts/check-u05-favorites-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md
+scripts/check-u05-filter-browser.mjs	-	scripts:-	docs:-
+scripts/check-u05-foundation-browser.mjs	-	scripts:-	docs:docs/U06-20261015.md
+scripts/check-u05-list-browser.mjs	-	scripts:-	docs:docs/D08-20261019.md,docs/U06-20261015.md,docs/U07-20261019.md
+scripts/check-u05-map-browser.mjs	-	scripts:-	docs:components/stay-map.tsx
+scripts/check-u06-status-browser.mjs	-	scripts:scripts/check-u01-browser.mjs,scripts/check-u05-list-browser.mjs	docs:docs/D08-20261019.md,docs/U06-20261015.md
+scripts/check-u07-browser.mjs	-	scripts:-	docs:docs/U07-20261019.md
+scripts/check-u07-map-browser.mjs	-	scripts:-	docs:docs/U07-20261019.md
+scripts/check-u07-names-browser.mjs	-	scripts:-	docs:docs/U07-20261019.md
+scripts/check-u07-region-browser.mjs	-	scripts:-	docs:docs/U07-20261019.md
+scripts/check-u07-translate-browser.mjs	-	scripts:scripts/check-description-ui.cjs	docs:docs/U07-20261019.md
+scripts/check-wikidata-names.mjs	cloud-check	scripts:scripts/check-search-snapshot-worker.mjs	docs:docs/D07-20261019.md,docs/deployments.md,lib/search-snapshot.ts
+scripts/crawler/check.py	cloud-check; wf:deploy.yml; wf:web-checks.yml	scripts:scripts/check-deploy-config.mjs,scripts/checked-commit.mjs,scripts/cloud-setup.sh,scripts/serve-former-worker.mjs	docs:AGENTS.md,README.md,START_HERE.md,docs/C04-20261019.md,docs/C05-20261018.md,docs/C06-20261019.md,docs/C07-20261019.md,docs/C08-20261021.md,docs/C09-20261026.md,docs/D01-20261010.md,docs/D01-20261011.md,docs/D04-20261015.md,docs/D05-20261013.md,docs/D07-20261019.md,docs/D08-20261019.md,docs/H01-20261011.md,docs/L01-20261013.md,docs/O03-20261019.md,docs/P01-20261011.md,docs/P02-20261011.md,docs/P03-20261012.md,docs/U02-20261010.md,docs/U03-20261011.md,docs/U04-20261011.md,docs/U06-20261015.md,docs/U07-20261019.md,docs/V01-20261110.md,docs/cloud-development.md,docs/cloudflare-deploy.md,docs/hosting-review-20261011.md,docs/work-handoff-latest.md,skills/yukemuri-maintenance/SKILL.md
+scripts/crawler/check_diagnostics.py	cloud-check	scripts:-	docs:docs/C08-20261021.md
+scripts/crawler/check_gentle_claims.py	cloud-check	scripts:-	docs:docs/C07-20261019.md,docs/C09-20261026.md,docs/V01-20261110.md
+scripts/crawler/check_retry_policy.py	cloud-check	scripts:-	docs:README.md,docs/checkpoint-20261008.md
+scripts/crawler/check_site_access.py	cloud-check	scripts:-	docs:docs/H01-20261011.md,docs/L01-20261013.md
+scripts/geo/check_geocode.py	-	scripts:scripts/check-snapshot-geo.mjs	docs:docs/D06-20261013.md
+scripts/geo/check_overture.py	-	scripts:scripts/check-snapshot-geo.mjs	docs:docs/D08-20261019.md
+scripts/measure-d1-reads.mjs	cloud-check --full	scripts:scripts/compare-snapshot-builds.mjs,scripts/compare-write-builds.mjs,scripts/measure-d1-writes.mjs,scripts/measure-route-cpu.mjs,scripts/measure-search-snapshot.mjs,scripts/preflight-report.mjs	docs:docs/C04-20261019.md,docs/D05-20261013.md,docs/D07-20261019.md,docs/D08-20261019.md,docs/L01-20261013.md,docs/P01-20261011.md,docs/P02-20261011.md,docs/P03-20261012.md,docs/U06-20261015.md,docs/cloudflare-deploy.md,lib/collection-priorities.ts
+scripts/measure-d1-writes.mjs	cloud-check --full	scripts:scripts/collection-budget.mjs	docs:docs/C04-20261019.md,docs/D04-20261015.md,docs/D07-20261019.md
+scripts/run-actionlint.py	cloud-check	scripts:-	docs:docs/C05-20261018.md,docs/O03-20261019.md,docs/cloudflare-deploy.md
+scripts/run-runtime-check.py	-	scripts:-	docs:docs/P03-20261012.md,docs/U04-20261011.md
+scripts/runner/check_bootstrap.py	cloud-check	scripts:-	docs:docs/H01-20261011.md,docs/deployments.md
+scripts/runner/check_collection.py	cloud-check; wf:collect.yml	scripts:scripts/check-collect-workflow.mjs,scripts/check-daily-check.mjs	docs:docs/cloudflare-deploy.md
+scripts/runner/check_lifecycle.py	cloud-check; wf:lifecycle.yml	scripts:scripts/check-lifecycle-official.mjs	docs:docs/L01-20261013.md,docs/cloudflare-deploy.md

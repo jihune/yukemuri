@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "guard: 8-second floor of the host interval removed",
+ "edits": [
+  {
+   "file": "scripts/crawler/source_safety.py",
+   "old": "self.interval=max(8,interval)",
+   "new": "self.interval=max(0,interval)"
+  }
+ ]
+}
