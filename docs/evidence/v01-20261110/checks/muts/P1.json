@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: provider cooldown is not sent to the queue",
+ "edits": [
+  {
+   "file": "scripts/crawler/update-site.py",
+   "old": "     payload['providerCooldownSeconds']=cooldown",
+   "new": "     pass"
+  }
+ ]
+}

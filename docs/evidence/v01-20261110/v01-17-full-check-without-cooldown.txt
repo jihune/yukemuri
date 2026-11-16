@@ -1,0 +1,15 @@
+V01-17: scripts/cloud-check.py --full on a copy of the repository (base 03e553f plus docs) with this one change:
+- if(code||update.error==='source_access_bot_challenge')return Math.max(code==='429'?21600:86400,update.providerCooldownSeconds??0,update.retryAfterSeconds??0);
++ if(code||update.error==='source_access_bot_challenge')return 0;
+
+The rebuilt Worker carries it (dist/server, minified):
+match(/^(?:http_|robots_http_)(403|429)$/)?.[1]||e.error===`source_access_bot_challenge`?0:e.provid
+
+Result:
+commands run: 55
+190:Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment, protected health and 
+192:Claim order checks passed: 1441 claims over 60 random queue states picked the former selection (1107 jobs, 102 by a missing linked detail, 42 Trip URL with two detail markers, 7 states with an act
+194:Collection status passed: quality counts, source reason categories (with rows from before C08), bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and exist
+Cloud checks passed. Browser/mobile checks and production deployment are separate.
+cloud_check_exit=0
+2026-11-10T02:30:16Z

@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: detail documents of another property are not filtered out",
+ "edits": [
+  {
+   "file": "scripts/crawler/collect.py",
+   "old": "        docs = [d for d in docs if provider_id(canonical(d.get('url', url), url) or '') == provider_id(url)]",
+   "new": "        pass"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "local pipeline: a list observation overwrites a detail observation",
+ "edits": [
+  {
+   "file": "scripts/crawler/collect.py",
+   "old": " WHERE excluded.detail>=observations.detail",
+   "new": ""
+  }
+ ]
+}

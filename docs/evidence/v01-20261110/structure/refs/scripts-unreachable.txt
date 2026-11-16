@@ -1,0 +1,93 @@
+targets=177 reachable_from_automation=123 plus_code_mentions=127
+
+## not reachable from package.json / workflows / cloud-check.py / cloud-setup.sh (any mention counts as an edge)
+scripts/audit-catalog.py	doc=1, olddoc=4	
+    doc	docs/catalog-operations.md
+scripts/audit-region-labels.mjs	olddoc=5	
+scripts/audit-trip-addresses.mjs	olddoc=4	
+scripts/check-catalog.mjs	code=1, olddoc=3	reached only through a code mention
+    code	lib/catalog-core.ts
+scripts/check-commons-photo-browser.mjs	olddoc=2	
+scripts/check-d08-jta-browser.mjs	olddoc=3	
+scripts/check-d08-merged-browser.mjs	olddoc=2	
+scripts/check-d08-oita-browser.mjs	olddoc=2	
+scripts/check-d08-overture-browser.mjs	olddoc=1	
+scripts/check-facility-links.cjs	olddoc=2	
+scripts/check-lifecycle-worker.mjs	olddoc=5	
+scripts/check-p03-followups-browser.mjs	olddoc=2	
+scripts/check-public-access.py	olddoc=1, scr=1	
+    scr	scripts/check-public-worker.mjs
+scripts/check-public-worker.mjs	olddoc=1, scr=1	
+    scr	scripts/run-runtime-check.py
+scripts/check-runtime.py	olddoc=3, scr=1	
+    scr	scripts/run-runtime-check.py
+scripts/check-source-groups-worker.mjs	olddoc=2	
+scripts/check-u01-browser.mjs	doc=1, olddoc=6	
+    doc	docs/cloud-development.md
+scripts/check-u01-dom.cjs	doc=1, olddoc=4	
+    doc	docs/cloud-development.md
+scripts/check-u02-browser.mjs	olddoc=4, scr=1	
+    scr	scripts/check-u02-map-browser.mjs
+scripts/check-u02-map-browser.mjs	olddoc=2	
+scripts/check-u03-comparison-browser.mjs	olddoc=2	
+scripts/check-u03-desktop-browser.mjs	olddoc=3	
+scripts/check-u04-browser.mjs	olddoc=4	
+scripts/check-u05-comparison-browser.mjs	olddoc=1	
+scripts/check-u05-detail-browser.mjs	olddoc=5	
+scripts/check-u05-favorites-browser.mjs	olddoc=2	
+scripts/check-u05-filter-browser.mjs	olddoc=1	
+scripts/check-u05-foundation-browser.mjs	olddoc=2	
+scripts/check-u05-list-browser.mjs	olddoc=6	
+scripts/check-u05-map-browser.mjs	code=1, olddoc=1	reached only through a code mention
+    code	components/stay-map.tsx
+scripts/check-u06-status-browser.mjs	olddoc=5, scr=2	
+    scr	scripts/check-u01-browser.mjs
+    scr	scripts/check-u05-list-browser.mjs
+scripts/check-u07-browser.mjs	olddoc=4	
+scripts/check-u07-map-browser.mjs	olddoc=1	
+scripts/check-u07-names-browser.mjs	olddoc=1	
+scripts/check-u07-region-browser.mjs	olddoc=1	
+scripts/compare-snapshot-builds.mjs	olddoc=3	
+scripts/compare-static-search.mjs	code=1, olddoc=2	reached only through a code mention
+    code	lib/static-search.ts
+scripts/connector-preview/connector-preview-session.mjs	scr=1	
+    scr	scripts/connector-preview/host-binding.mjs
+scripts/connector-preview/host-binding.mjs	scr=1	
+    scr	scripts/connector-preview/connector-preview-session.mjs
+scripts/connector-preview/protocol.mjs	scr=2	
+    scr	scripts/connector-preview/connector-preview-session.mjs
+    scr	scripts/connector-preview/host-binding.mjs
+scripts/crawler/fixtures/jalan-locale-en.html	olddoc=1	
+scripts/crawler/fixtures/jalan-locale-kr.html	olddoc=1	
+scripts/geo/measure-public.mjs	olddoc=2	
+scripts/install-ci.mjs	no reference at all	
+scripts/install-ci.sh	scr=1	
+    scr	scripts/install-ci.mjs
+scripts/lifecycle-survey.py	olddoc=2	
+scripts/measure-first-view.mjs	olddoc=1	
+scripts/measure-route-cpu.mjs	olddoc=2	
+scripts/measure-search-snapshot.mjs	olddoc=2, scr=1	
+    scr	scripts/measure-snapshot-client.mjs
+scripts/measure-snapshot-client.mjs	olddoc=1	
+scripts/npm-install.mjs	scr=2	
+    scr	scripts/install-ci.mjs
+    scr	scripts/install-ci.sh
+scripts/run-runtime-check.py	olddoc=3	
+scripts/serve-former-worker.mjs	scr=2	
+    scr	scripts/check-public-worker.mjs
+    scr	scripts/run-runtime-check.py
+scripts/site-search-node.mjs	olddoc=1, scr=14	reached only through a code mention
+    scr	scripts/check-d08-jta-browser.mjs
+    scr	scripts/check-d08-oita-browser.mjs
+    scr	scripts/check-p03-followups-browser.mjs
+    scr	scripts/check-u02-browser.mjs
+    scr	scripts/check-u02-map-browser.mjs
+    scr	scripts/check-u05-detail-browser.mjs
+    scr	scripts/check-u05-favorites-browser.mjs
+    scr	scripts/check-u05-filter-browser.mjs
+    scr	scripts/check-u05-list-browser.mjs
+    scr	scripts/check-u05-map-browser.mjs
+    scr	scripts/check-u07-browser.mjs
+    scr	scripts/check-u07-map-browser.mjs
+    scr	scripts/check-u07-names-browser.mjs
+    scr	scripts/check-u07-region-browser.mjs

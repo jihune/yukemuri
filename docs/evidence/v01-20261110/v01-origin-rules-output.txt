@@ -1,0 +1,8 @@
+same   https://yukemuri.jihune.workers.dev -> run-collection.py target_origin: takes, cloudflare-deploy-gate.mjs: takes, source_safety.py site_api: takes, smoke, prepare, record-coverage: takes
+same   http://yukemuri.jihune.workers.dev -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: refuses, smoke, prepare, record-coverage: refuses
+SPLIT  https://yukemuri.a-.workers.dev -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: refuses, smoke, prepare, record-coverage: takes
+SPLIT  https://yukemuri.jihune.workers.dev:8443 -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: takes, smoke, prepare, record-coverage: refuses
+SPLIT  https://yukemuri.jihune.workers.dev/x?y=1 -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: takes, smoke, prepare, record-coverage: refuses
+SPLIT  https://YUKEMURI.jihune.workers.dev -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: takes, smoke, prepare, record-coverage: refuses
+SPLIT  https://yukemuri.jihun7891.chatgpt.site -> run-collection.py target_origin: refuses, cloudflare-deploy-gate.mjs: refuses, source_safety.py site_api: takes, smoke, prepare, record-coverage: refuses
+addresses the rules answer differently: 5 of 7

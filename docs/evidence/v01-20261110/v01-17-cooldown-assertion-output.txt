@@ -1,0 +1,3 @@
+http_429 with a reported wait of 7200 s: PUT 200; the next claim at once: jobs=0 exhausted=false (what the check asserts); stored provider wait: 21600 s
+http_403: PUT 200; the next claim at once: jobs=0 exhausted=false (what the check asserts); stored provider wait: 86400 s
+http_503 without Retry-After (no provider wait): PUT 200; the next claim at once: jobs=0 exhausted=false (what the check asserts); stored provider wait: 3 s

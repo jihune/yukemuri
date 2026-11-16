@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "deploy script: the secrets file is not removed",
+ "edits": [
+  {
+   "file": "scripts/cloudflare-deploy-worker.sh",
+   "old": "trap 'rm -f \"$secrets\" \"$log\"' EXIT",
+   "new": "trap 'rm -f \"$log\"' EXIT"
+  }
+ ]
+}

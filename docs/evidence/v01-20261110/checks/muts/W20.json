@@ -1,0 +1,17 @@
+{
+ "build": true,
+ "note": "Worker: linked (curated) observations lose the chronology and detail-over-list guards",
+ "edits": [
+  {
+   "file": "lib/hotel-source-groups.ts",
+   "old": " WHERE julianday(excluded.observed_at)>=julianday(hotel_source_observations.observed_at) AND (json_extract(hotel_source_observations.payload,'$.sources[0].label') NOT LIKE '%상세%' OR json_extract(excluded.payload,'$.sources[0].label') LIKE '%상세%')\").bind(h.id,JSON.stringify(h),at).run();",
+   "new": "\").bind(h.id,JSON.stringify(h),at).run();"
+  }
+ ],
+ "extra": [
+  [
+   "node",
+   "scripts/check-source-groups-worker.mjs"
+  ]
+ ]
+}

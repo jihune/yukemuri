@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a page retry ignores retryAfterSeconds (always 60 s)",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "const nextAt=status==='retry'?now+(update.retryAfterSeconds??60):",
+   "new": "const nextAt=status==='retry'?now+60:"
+  }
+ ]
+}

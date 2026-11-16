@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a retry never becomes failed after three attempts",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "status=update.status==='retry'&&attempts>=3?'failed':update.status;",
+   "new": "status=update.status;"
+  }
+ ]
+}
