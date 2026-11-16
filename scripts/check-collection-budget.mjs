@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {BUDGET,budgetToday,pagesFor} from './collection-budget.mjs';
 
 // The measured costs (2026-10-18, after C04 and P04) and the share of each free limit.
-assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,share:0.85,writesPerPage:185,readsPerPage:4600,snapshotReads:168000,runReads:100});
+assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,minPages:16,share:0.85,writesPerPage:185,readsPerPage:4600,snapshotReads:168000,runReads:100});
 
 // A fresh day: the cap. Nothing recorded yet counts as zero (an authorised query with no rows).
 assert.equal(pagesFor({rowsRead:0,rowsWritten:0}).pages,120);
@@ -36,6 +36,16 @@ assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,61);
 // 2026-10-13 05:36Z (87,579 written): over 85% of the writes, so the run skips.
 assert.equal(pagesFor({rowsRead:1_647_393,rowsWritten:87_579}).pages,0);
 assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).pages,0);
+// C04 follow-up: a run of 1-15 pages takes 0 and says why; 16 pages still run.
+// Reads: 4,250,000 - 4,008,300 - 168,100 = 73,600 rows -> 16 pages; 1 row more -> 15 -> 0.
+assert.equal(pagesFor({rowsRead:4_008_300,rowsWritten:0}).pages,16);
+assert.deepEqual(pagesFor({rowsRead:4_008_301,rowsWritten:0}),{pages:0,reason:'today 0 rows written, 4008301 read; writes allow 459 pages, reads 15, cap 120; under 16 pages: skipped'});
+// Writes: 85,000 - 82,040 = 2,960 rows -> 16 pages; 82,041 -> 15 -> 0.
+assert.equal(pagesFor({rowsRead:0,rowsWritten:82_040}).pages,16);
+assert.equal(pagesFor({rowsRead:0,rowsWritten:82_041}).pages,0);
+assert.match(pagesFor({rowsRead:0,rowsWritten:82_041}).reason,/writes allow 15 pages, reads 887, cap 120; under 16 pages: skipped$/);
+// A day already used up says nothing more.
+assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).reason,'today 0 rows written, 4200000 read; writes allow 459 pages, reads -26, cap 120');
 // Unreadable usage: the pre-C03 run size, never the cap.
 for(const bad of [null,undefined,{rowsRead:'x',rowsWritten:0},{rowsRead:0,rowsWritten:-1},{rowsRead:NaN,rowsWritten:0}])
  assert.equal(pagesFor(bad).pages,16,JSON.stringify(bad));
@@ -52,8 +62,10 @@ try{
  let result=await budgetToday({fetch:api.fetch,env,config,now});
  assert.equal(result.pages,120);assert.match(result.reason,/today 10000 rows written, 200000 read/);
  assert.equal(api.calls[0].date,'2026-10-14','today in UTC');
+ api=answer(200,{data:{viewer:{accounts:[account(0,82_000)]}}});
+ assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,16);
  api=answer(200,{data:{viewer:{accounts:[account(0,84_000)]}}});
- assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,5);
+ assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,0,'5 pages would fit: under 16, skipped');
  api=answer(200,{data:{viewer:{accounts:[account(null,null)]}}});
  assert.equal((await budgetToday({fetch:api.fetch,env,config,now})).pages,120,'no rows yet today');
  // Permission errors, server errors, an account the token cannot see, no token: fallback, never a throw.
@@ -67,4 +79,4 @@ try{
  assert.equal((await budgetToday({fetch:async()=>{throw new TypeError('network')},env,config,now})).pages,16,'network error');
  assert.equal((await budgetToday({fetch:api.fetch,env,config:join(folder,'missing.json'),now})).pages,16,'no config');
 }finally{rmSync(folder,{recursive:true,force:true})}
-console.log('Collection budget passed: 120 pages on a fresh day, fewer as writes or reads near 85% of the free limits (reads of the run itself and of its snapshot reserved), 0 when used up, 16 when usage cannot be read.');
+console.log('Collection budget passed: 120 pages on a fresh day, fewer as writes or reads near 85% of the free limits (reads of the run itself and of its snapshot reserved), 0 when used up or when fewer than 16 pages would fit, 16 when usage cannot be read.');

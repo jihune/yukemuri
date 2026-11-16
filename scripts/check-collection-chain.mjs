@@ -107,8 +107,13 @@ const checkCollecting=(collecting,label='collecting')=>{
   assert.deepEqual(collecting([{...a,conclusion},b,c]).map(r=>r.id),[1,2,3],label+': a '+conclusion+' run holds up nothing');
 };
 checkCollecting(collecting);
-// An hour after the run before was created; never negative.
-assert.equal(waitMs(run(1,0),now),3_600_000);assert.equal(waitMs(run(1,45),now),900_000);assert.equal(waitMs(run(1,90),now),0);
+// An hour after the run before was created; never negative, and never more than an hour: a creation
+// time later than now (GitHub, 2026-11-01 08:00-09:00Z, an hour late) counts as now.
+const checkWait=waitMs=>{
+ assert.equal(waitMs(run(1,0),now),3_600_000);assert.equal(waitMs(run(1,45),now),900_000);assert.equal(waitMs(run(1,90),now),0);
+ assert.equal(waitMs(run(1,-30),now),3_600_000,'created 30 minutes after now');
+};
+checkWait(waitMs);
 
 // chainAfter with a stand-in API (in process): what it reads, waits, decides and posts.
 const TOKEN='chain-test-token';
@@ -148,6 +153,14 @@ const env={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,AFTER_RUN:'100',GI
  const fetch=async(url,init)=>new URL(url).pathname.endsWith('/runs/100')&&reads++<2?Response.json({...after,status:'in_progress',conclusion:null}):api.fetch(url,init);
  const d=await chainAfter({env,fetch,sleep:async ms=>{slept.push(ms)},clock:()=>now,budget:async()=>budget,log:()=>{}});
  assert.equal(d.dispatch,true);assert.deepEqual(slept,[15_000,15_000,0],'two polls while the run before ends, then no wait (made over an hour ago)');
+}
+{
+ // 2026-11-01: GitHub gave the run before a creation time an hour late, 30 minutes after now. The wait counts
+ // from now, so it ends within the job's 70 minutes and says why.
+ const ahead={...after,created_at:at(-30)},api=stand({after:ahead,runs:[ahead]}),slept=[],lines=[];
+ const d=await chainAfter({env,fetch:api.fetch,sleep:async ms=>{slept.push(ms)},clock:()=>now,budget:async()=>budget,log:l=>lines.push(l)});
+ assert.equal(d.dispatch,true,d.reason);assert.deepEqual(slept,[3_600_000]);
+ assert.equal(lines[0],`Run 100 was created at ${at(-30)} (later than now, so counted from now); waiting 60 minutes.`);
 }
 for(const [label,opts,reason] of [['newer run',{runs:[after,run(101,30)]},'newer-run'],['small budget',{},'small-budget']]){
  const api=stand(opts);
@@ -237,12 +250,13 @@ try{
  for(const [name,from,to] of [['older-running','r.id!==after.id&&order(after,r)<0)',"r.id!==after.id&&(order(after,r)<0||r.status!=='completed'))"],['same-second','||a.id-b.id',''],
   ['no-overlap-rule','if(!out.some(q=>inFlightAt(q,created(r))))out.push(r);','out.push(r);'],
   ['repeats-block',"if(!out.some(q=>","if(!runs.filter(q=>gentle(q)&&q.head_branch==='main'&&order(q,r)<0).some(q=>"],
-  ['failed-blocks',"(q.conclusion==='success'&&Date.parse(q.updated_at)>t)","Date.parse(q.updated_at)>t"]]){
+  ['failed-blocks',"(q.conclusion==='success'&&Date.parse(q.updated_at)>t)","Date.parse(q.updated_at)>t"],
+  ['future-created','Math.min(Date.parse(after.created_at),now)','Date.parse(after.created_at)']]){
   const copySource=source.replace(from,to);
   assert.notEqual(copySource,source,name);
   const file=join(controls,name+'.mjs');writeFileSync(file,copySource);
   const copy=await import(pathToFileURL(file).href);
-  assert.throws(()=>{check(copy.nextRun,'control '+name);checkCollecting(copy.collecting,'control '+name)},undefined,'control '+name+' still passed');failed++;
+  assert.throws(()=>{check(copy.nextRun,'control '+name);checkCollecting(copy.collecting,'control '+name);checkWait(copy.waitMs)},undefined,'control '+name+' still passed');failed++;
  }
 }finally{rmSync(controls,{recursive:true,force:true})}
 const shared=wait.replace('yukemuri-collection-chain-${{ inputs.after_run }}','yukemuri-collection-chain');
@@ -259,6 +273,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+6+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+7+CONDITIONS.length+4;
 assert.equal(failed,total);
 console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer collecting gentle run on main exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
