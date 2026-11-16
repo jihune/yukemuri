@@ -29,7 +29,8 @@ class CollectorRun(unittest.TestCase):
   """queue: (provider, phase) -> page URLs. later: (provider, phase) -> (claims sent before it is due, URL).
   busy: provider -> claims sent before it is free (an active claim or a wait: empty, not exhausted).
   says: the Worker tells whether an empty claim was exhausted (False: a Worker from before C07).
-  unavailable: (URL, Retry-After or None) the source answers with 503, in the order asked.
+  unavailable: (URL, Retry-After or None[, HTTP status, 503 when left out]) the source answers with an
+  error, in the order asked.
   Returns the claims sent ((provider, phase, lane, url or None)), the saved URLs and the printed lines;
   the saved results themselves are in self.sent."""
   queue={group:list(urls) for group,urls in queue.items()};claims=[];saved=[];sent=self.sent=[];errors=list(unavailable)
@@ -53,9 +54,9 @@ class CollectorRun(unittest.TestCase):
    def __init__(self,*args):self.redirects=[]
    def open(self,url,*args,**kwargs):
     if errors and errors[0][0] in str(url):
-     _,wait=errors.pop(0);headers=Message()
+     _,wait,*code=errors.pop(0);headers=Message()
      if wait:headers['Retry-After']=wait
-     raise urllib.error.HTTPError(str(url),503,'Service Unavailable',headers,None)
+     raise urllib.error.HTTPError(str(url),code[0] if code else 503,'Source error',headers,None)
     return Response('<html></html>')
   output=io.StringIO()
   with patch('sys.argv',['update-site.py',*argv]),patch('sys.stdin',io.StringIO(json.dumps({'url':'https://yukemuri.example-account.workers.dev','token':SECRET})+'\n')),\
@@ -154,6 +155,21 @@ class UnavailableProviderChecks(CollectorRun):
   jd,td=pages('jalan',6),pages('trip',1)
   _,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],unavailable=[(jd[0],None),(jd[1],None),(jd[3],None),(jd[4],None)])
   self.assertEqual(sorted(saved),sorted(jd+td),'503, 503, done, 503, 503 is never three in a row')
+  self.assertFalse([line for line in lines if 'providerPaused' in line])
+
+ def test_another_error_starts_the_count_again(self):
+  jd,td=pages('jalan',6),pages('trip',1)
+  _,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],unavailable=[(jd[0],None),(jd[1],None),(jd[2],None,404),(jd[3],None),(jd[4],None)])
+  self.assertEqual([r['error'] for r in self.sent if r['url'] in jd[:5]],['http_503','http_503','http_404','http_503','http_503'])
+  self.assertEqual(sorted(saved),sorted(jd+td),'503, 503, 404, 503, 503 is never three 503s in a row')
+  self.assertFalse([line for line in lines if 'providerPaused' in line])
+
+ def test_other_errors_in_a_row_do_not_pause(self):
+  # Normal runs get 404s and redirects for review now and then (C09 measurement); only 503s count.
+  jd,td=pages('jalan',6),pages('trip',1)
+  _,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],unavailable=[(u,None,404) for u in jd[:4]])
+  self.assertEqual([r['error'] for r in self.sent if r['url'] in jd[:4]],['http_404']*4)
+  self.assertEqual(sorted(saved),sorted(jd+td))
   self.assertFalse([line for line in lines if 'providerPaused' in line])
 
  def test_retry_after_still_waits_as_before(self):
