@@ -101,12 +101,13 @@ export function runFailures(run){
   else if(left.writes>0&&left.reads>0)out.push(`0쪽 실행인데 그날 예산이 남아 있었다(writes allow ${left.writes}, reads ${left.reads})`);
  }
  // C09: retry and failed on more than half the pages the run reported; exactly half passes. The
- // 503s that paused a provider are left out, so a pause alone never fails a run, and the pages
- // after it were not asked. The pages come from the page lines: a run stopped at its time limit
- // prints no processed= line.
- const reported=Object.values(run.counts).reduce((a,n)=>a+n,0);
- const skipped=run.paused.reduce((a,p)=>a+p.consecutive,0),bad=(run.counts.retry??0)+(run.counts.failed??0)-skipped;
- if(run.pages>0&&2*bad>reported)out.push(`처리한 ${reported}쪽 가운데 retry·failed가 ${bad}쪽으로 절반을 넘는다`+(skipped?`(공급자를 쉬게 한 503 ${skipped}쪽은 세지 않음)`:''));
+ // 503s that paused a provider are left out of both, so a pause alone never fails a run, and the
+ // pages after it were not asked. The pages come from the page lines: a run stopped at its time
+ // limit prints no processed= line.
+ if(run.paused.some(p=>!Number.isInteger(p.consecutive))){out.push('쉰 공급자 줄(`providerPaused`)에서 잇단 503 수를 읽지 못함');return out}
+ const skipped=run.paused.reduce((a,p)=>a+p.consecutive,0);
+ const reported=Object.values(run.counts).reduce((a,n)=>a+n,0)-skipped,bad=(run.counts.retry??0)+(run.counts.failed??0)-skipped;
+ if(run.pages>0&&2*bad>reported)out.push(`처리한 ${reported}쪽 가운데 retry·failed가 ${bad}쪽으로 절반을 넘는다`+(skipped?`(공급자를 쉬게 한 503 ${skipped}쪽은 빼고 셈)`:''));
  return out;
 }
 
@@ -159,7 +160,7 @@ export function runTable(runs){
   lines.push(`| ${r.id} | ${clock(r.createdAt)} | ${r.status==='completed'?r.conclusion:r.status} | ${r.pages??'-'} | ${(r.reason??'-').replace(/\|/g,'/')} | ${span(r.stepSeconds)} | ${span(r.jobSeconds)} `
    +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':r.pages===0?(OVERLAP.test(r.reason??'')?'통과(겹쳐서 건너뜀)':'통과(예산 소진)'):'통과'} |`);
  }
- lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날, 쪽 상태의 합(처리한 쪽) 가운데 retry·failed가 절반을 넘는 실행(정확히 절반은 통과, C09). 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 같은 공급자의 503이 잇달아 와서 그 실행 동안 쉰 공급자는 쪽 상태 칸에 ‘쉼:’으로 적는다. 쉬게 한 503 쪽은 retry·failed로 세지 않으므로 쉰 것만으로는 실패가 아니다(C09). 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
+ lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날, 쪽 상태의 합(처리한 쪽) 가운데 retry·failed가 절반을 넘는 실행(정확히 절반은 통과, C09). 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 같은 공급자의 503이 잇달아 와서 그 실행 동안 쉰 공급자는 쪽 상태 칸에 ‘쉼:’으로 적는다. 쉬게 한 503 쪽은 retry·failed와 처리한 쪽 양쪽에서 빼므로 쉰 것만으로는 실패가 아니다(C09). 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
  return lines;
 }
 
