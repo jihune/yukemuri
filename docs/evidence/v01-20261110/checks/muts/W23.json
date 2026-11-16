@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a detail job may be marked done without any observation",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "||job.kind==='detail'&&update.status==='done'&&!update.observations.length)return Response.json({error:'Observation does not match crawl job'},{status:400});",
+   "new": ")return Response.json({error:'Observation does not match crawl job'},{status:400});"
+  }
+ ]
+}

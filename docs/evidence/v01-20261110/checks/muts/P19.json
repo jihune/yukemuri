@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "collector: Site redirects are followed (key forwarded)",
+ "edits": [
+  {
+   "file": "scripts/crawler/update-site.py",
+   "old": "site_opener=urllib.request.build_opener(NoSiteRedirect())",
+   "new": "site_opener=urllib.request.build_opener()"
+  }
+ ]
+}

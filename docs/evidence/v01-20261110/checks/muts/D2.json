@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "rollback.yml: the workflow token also gets actions: write",
+ "edits": [
+  {
+   "file": ".github/workflows/rollback.yml",
+   "old": "  contents: read\n# bash runs",
+   "new": "  contents: read\n  actions: write\n# bash runs"
+  }
+ ]
+}

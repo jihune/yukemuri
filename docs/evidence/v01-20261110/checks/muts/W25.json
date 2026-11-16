@@ -1,0 +1,17 @@
+{
+ "build": true,
+ "note": "Worker: a 404/410 on a detail page marks the property closed",
+ "edits": [
+  {
+   "file": "lib/hotel-lifecycle.ts",
+   "old": "ON CONFLICT(hotel_id) DO UPDATE SET missing_count=hotel_lifecycle.missing_count+1,missing_at=excluded.missing_at`).bind(at,at,at,id,eventId),",
+   "new": "ON CONFLICT(hotel_id) DO UPDATE SET missing_count=hotel_lifecycle.missing_count+1,missing_at=excluded.missing_at,state='closed'`).bind(at,at,at,id,eventId),"
+  }
+ ],
+ "extra": [
+  [
+   "node",
+   "scripts/check-lifecycle-worker.mjs"
+  ]
+ ]
+}

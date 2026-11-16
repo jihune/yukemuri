@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker: writeHotels drops the detail-over-list guard (a list observation overwrites a detail observation)",
+ "edits": [{"file": "lib/hotel-repository.ts",
+  "old": " AND (json_extract(hotels.payload,'$.sources[0].label') NOT LIKE '%상세%' OR json_extract(excluded.payload,'$.sources[0].label') LIKE '%상세%') RETURNING id,payload",
+  "new": " RETURNING id,payload"}]}

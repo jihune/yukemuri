@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "web-checks.yml: the workflow token also gets pull-requests: write",
+ "edits": [
+  {
+   "file": ".github/workflows/web-checks.yml",
+   "old": "  contents: read\n# bash runs",
+   "new": "  contents: read\n  pull-requests: write\n# bash runs"
+  }
+ ]
+}

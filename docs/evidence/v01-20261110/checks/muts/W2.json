@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker: writeHotels drops the chronology guard (an older observation overwrites a newer one)",
+ "edits": [{"file": "lib/hotel-repository.ts",
+  "old": "WHERE COALESCE(julianday(json_extract(excluded.payload,'$.sources[0].retrievedAt')),0)>=COALESCE(julianday(json_extract(hotels.payload,'$.sources[0].retrievedAt')),0) AND (json_extract(hotels.payload",
+  "new": "WHERE (json_extract(hotels.payload"}]}

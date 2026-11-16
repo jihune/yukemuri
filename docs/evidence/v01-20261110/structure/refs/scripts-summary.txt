@@ -1,0 +1,65 @@
+files under scripts/: 177
+named by package.json: 3
+named by a workflow: 28
+named by cloud-check.py: 53
+named by cloud-setup.sh: 3
+reachable from package.json/workflows/cloud-check.py/cloud-setup.sh through other scripts: 123
+not reachable from them: 54
+  nothing: 1
+    scripts/install-ci.mjs
+  other-script-or-comment-only: 16
+    scripts/check-catalog.mjs
+    scripts/check-public-access.py
+    scripts/check-public-worker.mjs
+    scripts/check-runtime.py
+    scripts/check-u02-browser.mjs
+    scripts/check-u05-map-browser.mjs
+    scripts/check-u06-status-browser.mjs
+    scripts/compare-static-search.mjs
+    scripts/connector-preview/connector-preview-session.mjs
+    scripts/connector-preview/host-binding.mjs
+    scripts/connector-preview/protocol.mjs
+    scripts/install-ci.sh
+    scripts/measure-search-snapshot.mjs
+    scripts/npm-install.mjs
+    scripts/serve-former-worker.mjs
+    scripts/site-search-node.mjs
+  current-doc: 3
+    scripts/audit-catalog.py
+    scripts/check-u01-browser.mjs
+    scripts/check-u01-dom.cjs
+  dated-doc-only: 34
+    scripts/audit-region-labels.mjs
+    scripts/audit-trip-addresses.mjs
+    scripts/check-commons-photo-browser.mjs
+    scripts/check-d08-jta-browser.mjs
+    scripts/check-d08-merged-browser.mjs
+    scripts/check-d08-oita-browser.mjs
+    scripts/check-d08-overture-browser.mjs
+    scripts/check-facility-links.cjs
+    scripts/check-lifecycle-worker.mjs
+    scripts/check-p03-followups-browser.mjs
+    scripts/check-source-groups-worker.mjs
+    scripts/check-u02-map-browser.mjs
+    scripts/check-u03-comparison-browser.mjs
+    scripts/check-u03-desktop-browser.mjs
+    scripts/check-u04-browser.mjs
+    scripts/check-u05-comparison-browser.mjs
+    scripts/check-u05-detail-browser.mjs
+    scripts/check-u05-favorites-browser.mjs
+    scripts/check-u05-filter-browser.mjs
+    scripts/check-u05-foundation-browser.mjs
+    scripts/check-u05-list-browser.mjs
+    scripts/check-u07-browser.mjs
+    scripts/check-u07-map-browser.mjs
+    scripts/check-u07-names-browser.mjs
+    scripts/check-u07-region-browser.mjs
+    scripts/compare-snapshot-builds.mjs
+    scripts/crawler/fixtures/jalan-locale-en.html
+    scripts/crawler/fixtures/jalan-locale-kr.html
+    scripts/geo/measure-public.mjs
+    scripts/lifecycle-survey.py
+    scripts/measure-first-view.mjs
+    scripts/measure-route-cpu.mjs
+    scripts/measure-snapshot-client.mjs
+    scripts/run-runtime-check.py

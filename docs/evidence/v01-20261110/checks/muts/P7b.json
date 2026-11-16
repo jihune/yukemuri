@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "policy: Retry-After cap of 7 days removed",
+ "edits": [
+  {
+   "file": "scripts/crawler/retry_policy.py",
+   "old": "return min(604800,max(0,math.ceil(seconds))) if",
+   "new": "return max(0,math.ceil(seconds)) if"
+  }
+ ]
+}

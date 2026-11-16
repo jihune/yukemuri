@@ -1,0 +1,4 @@
+{"build": true, "note": "Worker: PUT no longer requires an observation's source URL to equal the job URL",
+ "edits": [{"file": "app/api/crawl/route.ts",
+  "old": "h.sources.some(s=>s.url!==update.url||s.nameLocaleUrl&&",
+  "new": "h.sources.some(s=>s.nameLocaleUrl&&"}]}

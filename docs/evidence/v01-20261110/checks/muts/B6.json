@@ -1,0 +1,11 @@
+{
+ "build": false,
+ "note": "budget: the fallback when usage is unreadable is the cap (120), not 16",
+ "edits": [
+  {
+   "file": "scripts/collection-budget.mjs",
+   "old": "if(!usage)return {pages:budget.fallbackPages,",
+   "new": "if(!usage)return {pages:budget.maxPages,"
+  }
+ ]
+}

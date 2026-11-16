@@ -1,0 +1,27 @@
+range=2026-10-01..2026-10-12 total_count=105 seen=105 COMPLETE
+yukemuri-site-checks.yml: runs=59 approx_min=176
+yukemuri-catalog.yml: runs=28 approx_min=79
+yukemuri-updates.yml: runs=6 approx_min=12
+yukemuri-backup.yml: runs=6 approx_min=10
+cloudflare-load.yml: runs=5 approx_min=6
+export-history-20261009.yml: runs=1 approx_min=1
+SUM approx_min=284
+
+range=2026-10-13..2026-10-31 total_count=218 seen=218 COMPLETE
+yukemuri-site-checks.yml: runs=57 approx_min=203
+yukemuri-catalog.yml: runs=98 approx_min=104
+yukemuri-backup.yml: runs=39 approx_min=91
+yukemuri-daily-check.yml: runs=19 approx_min=19
+cloudflare-sync.yml: runs=3 approx_min=19
+yukemuri-scheduler.yml: runs=1 approx_min=1
+cloudflare-load.yml: runs=1 approx_min=1
+SUM approx_min=438
+
+range=2026-11-01..2026-11-03 total_count=20 seen=20 COMPLETE
+yukemuri-backup.yml: runs=4 approx_min=10
+yukemuri-catalog.yml: runs=9 approx_min=9
+yukemuri-daily-check.yml: runs=5 approx_min=5
+yukemuri-site-checks.yml: runs=1 approx_min=3
+yukemuri-scheduler.yml: runs=1 approx_min=1
+SUM approx_min=28
+

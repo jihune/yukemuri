@@ -1,0 +1,12 @@
+control-used-file: FAIL files_deleted=1 tsc_exit=2 quick_check_exit=1 restored=clean last_step=[Running: node node_modules/typescript/bin/tsc --noEmit]
+control-used-script: FAIL files_deleted=1 tsc_exit=0 quick_check_exit=1 restored=clean last_step=[Running: node scripts/check-collection-chain.mjs]
+B1-npm-installers: PASS files_deleted=3 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B2-chatgpt-auth: PASS files_deleted=1 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B3-connector-unused: PASS files_deleted=3 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B4-seed-modules: PASS files_deleted=2 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B5-db-index-examples: PASS files_deleted=3 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B6-ui-unreached: PASS files_deleted=58 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B7-scripts-connector-preview: PASS files_deleted=3 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B8-archives-manifest: PASS files_deleted=1 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+B9-sites-wrappers: PASS files_deleted=4 tsc_exit=0 quick_check_exit=0 restored=clean last_step=[Running: node scripts/check-description-ui.cjs]
+done

@@ -1,0 +1,11 @@
+{
+ "build": true,
+ "note": "Worker: a PUT without a token is accepted while a lease is active",
+ "edits": [
+  {
+   "file": "app/api/crawl/route.ts",
+   "old": "OR (lease_until<=? AND ?=1))').bind(",
+   "new": "OR (lease_until>=0*? AND ?=1))').bind("
+  }
+ ]
+}
