@@ -1,0 +1,19 @@
+(a) collect-watch schedule slots=56 arrived=31 ratio=0.55 delay_min median=64.2 max=357.0 min=14.9
+(b) usage 43787708994 2026-11-16T01:41:20Z job=usage 0.3min success
+(b) usage 43664262343 2026-11-15T01:41:21Z job=usage 0.4min success
+(b) usage 43542080100 2026-11-14T01:41:20Z job=usage 0.4min success
+(b) usage 43346781559 2026-11-13T01:41:28Z job=usage 0.6min success
+(b) usage 43136218562 2026-11-12T01:41:21Z job=usage 0.4min success
+(b,c) collect.yml 2026-11-10 runs=7 last_created=2026-11-10T19:58:51Z
+(b,c) collect.yml 2026-11-11 runs=9 last_created=2026-11-11T23:01:15Z
+(b,c) collect.yml 2026-11-12 runs=8 last_created=2026-11-12T21:04:13Z
+(b,c) collect.yml 2026-11-13 runs=9 last_created=2026-11-13T23:50:25Z
+(b,c) collect.yml 2026-11-14 runs=9 last_created=2026-11-14T23:20:41Z
+(b,c) collect.yml 2026-11-15 runs=9 last_created=2026-11-15T23:08:47Z
+(b,c) collect.yml 2026-11-16 runs=8 last_created=2026-11-16T22:28:52Z
+(c) collect-chain 2026-11-11 last_updated=2026-11-11T05:47:36Z
+(c) collect-chain 2026-11-12 last_updated=2026-11-12T05:47:32Z
+(c) collect-chain 2026-11-13 last_updated=2026-11-13T05:47:36Z
+(c) collect-chain 2026-11-14 last_updated=2026-11-14T05:47:37Z
+(c) collect-chain 2026-11-15 last_updated=2026-11-15T05:47:31Z
+(c) collect-chain 2026-11-16 last_updated=2026-11-16T05:47:33Z
