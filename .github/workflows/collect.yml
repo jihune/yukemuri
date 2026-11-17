@@ -1,10 +1,13 @@
 name: Yukemuri collection
-# H01 step 6: collection runs here against the Cloudflare Worker. No cron: a
-# public repository's schedule turns off after 60 days without activity, so the
-# private runner repository keeps the cron (hourly since C05, every 3 hours
-# before) and dispatches this workflow with mode gentle. A gentle run on main
-# that collected and refreshed its snapshot also starts collect-chain.yml,
-# which dispatches the next one about an hour later (C06, the chain job).
+# H01 step 6: collection runs here against the Cloudflare Worker. No cron in
+# this file: a public repository's schedule turns off after 60 days without
+# activity, so collection must not depend on one. Mode gentle is dispatched by
+# collect-spare.yml every hour (O02: the spare that was the private runner
+# repository's cron, hourly since C05) and, for the day's first run, by the
+# runner repository's catalogue workflow, which the outer scheduler (the
+# Cloudflare Worker) calls at 00:47Z. A gentle run on main that collected and
+# refreshed its snapshot also starts collect-chain.yml, which dispatches the
+# next one about an hour later (C06, the chain job).
 # Until cloudflare-deploy.json records publicOrigin
 # (and autoDeploy), a run fails before any request.
 run-name: Yukemuri collection (${{ inputs.mode }})
