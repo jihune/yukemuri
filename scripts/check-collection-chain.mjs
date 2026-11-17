@@ -2,7 +2,8 @@
 // collect.yml, the wait in collect-chain.yml, and the rules of
 // collection-chain.mjs against fixture runs and a stand-in GitHub API. Every
 // rule and every condition of the chain job has a control: a copy with it
-// removed must fail here.
+// removed must fail here. checkSpare (O02) runs a UTC day of the public spare,
+// the chain and the runner's dispatch through the overlap rule.
 import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
@@ -173,6 +174,51 @@ for(const bad of [{AFTER_RUN:''},{AFTER_RUN:'12; rm -rf /'},{GH_TOKEN:''},{GITHU
  await assert.rejects(overlapNow({env:{...env2,GITHUB_RUN_ID:''},fetch:api(self,[])}),/run id/);
 }
 
+// O02 (user 2026-11-03): collect-spare.yml (check-collect-workflow.mjs) dispatches a gentle run at minute
+// 37 of every hour, the call the runner's cron made. A UTC day of runs made by the spare, the chain
+// (nextRun, an hour after the run before) and, until the runner's cron is gone, the runner's own dispatch:
+// at the same minute in every order, and again with the spare and the runner late by different minutes.
+// Each run asks overlapNow, as collect.yml's first gentle step does. Dispatched however they come, no two
+// runs collect at the same time, and at the same minute exactly one run an hour collects (24 a day, as
+// with the runner and the chain); every other run repeats one in flight and takes 0 pages.
+async function checkSpare(mod,label){
+ const MIN=60_000,day=Date.parse('2026-10-21T00:00:00Z'),iso=t=>new Date(t).toISOString().replace(/\.000Z$/,'Z');
+ const sizing=pagesFor({rowsRead:1_500_000,rowsWritten:20_000});
+ const orders=a=>a.length<2?[a]:a.flatMap((x,i)=>orders([...a.slice(0,i),...a.slice(i+1)]).map(p=>[x,...p]));
+ const simulate=async(order,late)=>{
+  const runs=[],events=[];let nextId=1000;
+  const view=t=>runs.filter(r=>r.created<=t).map(r=>({id:r.id,display_title:GENTLE_TITLE,path:'.github/workflows/collect.yml',head_branch:'main',created_at:iso(r.created),status:r.end>t?'in_progress':'completed',conclusion:r.end>t?null:'success',updated_at:iso(r.end>t?t:r.end)}));
+  for(let h=0;h<24;h++)for(const kind of order.filter(k=>k!=='chain'))events.push({t:day+(h*60+37+(late[kind]?.(h)??0))*MIN,kind});
+  const make=async(t,by)=>{
+   const r={id:nextId++,created:t,end:t+25*MIN,by};runs.push(r);
+   const me=view(t).find(q=>q.id===r.id),env3={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,GITHUB_RUN_ID:String(r.id),GITHUB_API_URL:'https://api.example.test'};
+   const fetch=async url=>Response.json(new URL(url).pathname.endsWith('/runs/'+r.id)?me:{total_count:view(t).length,workflow_runs:view(t)});
+   r.collects=(await mod.overlapNow({env:env3,fetch}))==='';
+   if(r.collects)events.push({t:t+60*MIN,kind:'chain',after:r.id}); // collect.yml's chain job, which waits an hour from the run's creation
+  };
+  for(;;){
+   const todo=events.filter(e=>!e.done&&e.t<day+24*60*MIN).sort((a,b)=>a.t-b.t||order.indexOf(a.kind)-order.indexOf(b.kind));
+   if(!todo.length)return runs;
+   const e=todo[0];e.done=true;
+   if(e.kind!=='chain'){await make(e.t,e.kind);continue}
+   const v=view(e.t);
+   if(mod.nextRun({after:v.find(q=>q.id===e.after),runs:v,budget:sizing,now:e.t}).dispatch)await make(e.t,'chain');
+  }
+ };
+ const configs={'the runner and the chain (before O02)':['runner','chain'],'the spare and the chain':['spare','chain'],'the spare, the runner and the chain (both crons)':['spare','runner','chain']};
+ for(const [name,members] of Object.entries(configs))for(const order of orders(members))for(const [when,late] of [['at the same minute',{}],['late by different minutes',{spare:h=>(h*11)%29,runner:h=>(h*7)%17}]]){
+  const runs=await simulate(order,late),on=`${label}: ${name}, ${order.join(' then ')}, ${when}`,collectors=runs.filter(r=>r.collects).sort((a,b)=>a.created-b.created);
+  for(let i=1;i<collectors.length;i++)assert(collectors[i].created>=collectors[i-1].end,`${on}: runs ${collectors[i-1].id} and ${collectors[i].id} collect at the same time`);
+  assert(collectors.length>=24,`${on}: ${collectors.length} runs collect`);
+  if(when==='at the same minute')assert.equal(collectors.length,24,on+': one run an hour collects');
+ }
+}
+await checkSpare({nextRun,overlapNow},'spare');
+// Once the day's free D1 budget is used, a run the spare makes is sized to 0 pages: no collector, and
+// collect.yml skips the snapshot deploy for 0 pages (check-collect-workflow.mjs).
+assert.equal(pagesFor({rowsRead:BUDGET.share*5_000_000,rowsWritten:0}).pages,0,'the day\'s budget used (85% of the free reads): 0 pages');
+assert.equal(pagesFor({rowsRead:BUDGET.share*5_000_000-BUDGET.readsPerPage*20-BUDGET.snapshotReads-BUDGET.runReads,rowsWritten:0}).pages>0,true,'control: a day with room left sizes a run');
+
 // The script as the workflow runs it, against a local API: no Cloudflare token
 // means an unreadable budget, so it reads, decides and dispatches nothing.
 const script=resolve('scripts/collection-chain.mjs');
@@ -243,6 +289,8 @@ try{
   const file=join(controls,name+'.mjs');writeFileSync(file,copySource);
   const copy=await import(pathToFileURL(file).href);
   assert.throws(()=>{check(copy.nextRun,'control '+name);checkCollecting(copy.collecting,'control '+name)},undefined,'control '+name+' still passed');failed++;
+  // O02: without the overlap rule two runs made at the same minute collect together.
+  if(name==='no-overlap-rule'){await assert.rejects(()=>checkSpare(copy,'control '+name),/collect at the same time/,'control '+name+' still passed the spare simulation');failed++}
  }
 }finally{rmSync(controls,{recursive:true,force:true})}
 const shared=wait.replace('yukemuri-collection-chain-${{ inputs.after_run }}','yukemuri-collection-chain');
@@ -259,6 +307,6 @@ for(const [label,copy] of [['continue-on-error',inChain(job=>job.replace('    co
  assert.notEqual(copy,collect,label);
  assert(chainProblems(copy).length>0,'control '+label+' still passed');failed++;
 }
-const total=Object.keys(CASES).length+6+CONDITIONS.length+4;
+const total=Object.keys(CASES).length+6+1+CONDITIONS.length+4;
 assert.equal(failed,total);
-console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer collecting gentle run on main exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages. Controls: ${failed} of ${total} fail.`);
+console.log(`Collection chain passed: collect.yml dispatches collect-chain.yml after a gentle run on main that collected and deployed; the wait runs outside the catalogue lock for an hour from the run before and dispatches unless a newer collecting gentle run on main exists, ${CHAIN.maxRunsPerDay} runs are already on the day, usage is unreadable or the budget is under ${CHAIN.minPages} pages; a day of the public spare (O02), the chain and the runner's dispatch never has two runs collect at once. Controls: ${failed} of ${total} fail.`);
