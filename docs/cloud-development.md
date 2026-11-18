@@ -1,7 +1,7 @@
 # 두 웹 환경에서 이어가기
 
 기록: 2026-10-09. 구독이나 작성 에이전트가 바뀌어도 같은 레포를 사용한다. 앱 레포는 2026-10-11부터 public이다.
-호스팅·DB·기존 Python 수집기는 현 위치에 둔다.
+호스팅과 D1은 2026-10-13 H01 전환으로 Cloudflare(Worker `yukemuri`, D1 `yukemuri`)에 있다. 수집은 이 레포의 `collect.yml`이 하고, 일일 DB 백업과 복원 검사는 private 실행기 레포 `jihune/yukemuri-script-runner`가 한다.
 
 ## 최초 연결
 
@@ -27,7 +27,7 @@ main의 기준 커밋을 확인하고 작업 브랜치를 만든다. 서비스�
 현재 분담은 Claude Code 웹이 구현, Codex 웹이 검토다(사용자 결정, 2026-10-10).
 Codex가 검토할 수 없으면 작성 담당 세션(보통 PR을 연 세션)의 새 문맥 하위 에이전트가 검토한다. 절차는 아래 ‘Codex 클라우드 환경’ 절의 3번이다(사용자 결정, 2026-10-10T16:28Z / 2026-10-11 01:28 KST, 2026-11-10T01:05:04Z). 몇 번 검토받는지는 `AGENTS.md` 병합 조건의 위험 등급이 정한다(사용자 결정, 2026-10-26T13:3xZ / 22:3x KST). 등급 2·3의 1회차에는 Codex 요청과 함께 같은 head에서 그 하위 에이전트가 Claude 검토를 한다(아래 3번).
 검사 실패·충돌을 해결하고 인수인계를 갱신한 뒤 main에 반영한다. 병합 조건은 `AGENTS.md`의 ‘작업 시작과 공동 작업’ 절에 있다. 조건을 충족하면 사용자 확인 없이 작성 담당이 병합한다. 상위 세션이 맡긴 작업은 상위 세션이 병합한다.
-Sites 배포는 `sites-handoff.md`의 별도 절차다.
+운영 배포는 main push의 `deploy.yml`이 하며 절차는 `cloudflare-deploy.md`다. `sites-handoff.md`는 H01 전 Sites 절차이고 Sites로 되돌릴 때만 따른다.
 서비스별 대화는 자동 공유되지 않는다. 결정·검사·중단 지점을 레포에 기록한다.
 
 ## CI와 Actions 사용 시간
@@ -144,6 +144,6 @@ node scripts/check-u01-dom.cjs
 
 작업마다 관련 지침·결정·검사·다음 작업을 `docs/work-handoff-latest.md`에 기록하고 코드와 같은 PR에 반영한다. 검토 결과는 검토 담당이 PR에 남기고 작성 담당이 인수인계에 반영한다. 대화 원본은 비공개 아카이브에 보존하고 계정 전체 내보내기를 Git에 넣지 않는다. 긴 대화의 서비스 간 자동 이식은 완료됐다고 주장하지 않는다.
 
-운영 D1은 기존 Sites에 있다. `docs/db-backups.md`를 읽는다. Python 실행기가 일일 백업과 복원 검사를 담당하므로 구독이나 코딩 서비스가 바뀌어도 사용자에게 매번 ZIP 보관을 요구하지 않는다. 스키마 변경 시 실행기의 복원 스키마도 함께 갱신한다.
+운영 D1은 Cloudflare D1 `yukemuri`에 있다(2026-10-13 H01 전환). `docs/db-backups.md`를 읽는다. Python 실행기가 일일 백업과 복원 검사를 담당하므로 구독이나 코딩 서비스가 바뀌어도 사용자에게 매번 ZIP 보관을 요구하지 않는다. 스키마 변경 시 실행기의 복원 스키마도 함께 갱신한다.
 
 대용량 공개 seed·이미지·검사 fixture·원래 Git bundle은 `source-assets/`에 해시와 gzip/base64 조각으로 보존한다. `bash scripts/cloud-setup.sh`가 원래 경로와 바이트를 복원한다. 이것은 전송 중단 후 재개를 위한 소스 저장 형식이며 개인 대화·DB 백업이 아니다. 복원된 자료를 수정하면 `python3 scripts/materialize-source-assets.py --pack` 후 `source-assets/` 변경도 같은 PR에 포함한다. 원래 Git 이력만 필요하면 의존성 설치 없이 `python3 scripts/materialize-source-assets.py`를 실행한다.
