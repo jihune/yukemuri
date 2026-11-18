@@ -9,11 +9,12 @@ import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 
 const ORIGIN='https://yukemuri.smoke-check.workers.dev',KEY='smoke-check-key-0123456789',ID='0123456789abcdef',OLD='fedcba9876543210';
+const PAGE=`<main data-first-page="${ID}"><h3 class="card-title">A</h3></main>`,OLD_PAGE=PAGE.replace('<main ','<main data-version="old" ');
 let state,requests=[];
 const ROBOTS_TXT='User-agent: GPTBot\nDisallow: /\n\nUser-agent: *\nAllow: /$\nDisallow: /\n';
 // staticRobots / workerRobots: the X-Robots-Tag of static assets and of Worker
 // responses; refuseTools: whether the Worker refuses a client that is not a browser.
-const reset=over=>{state={staleManifest:0,staleCore:0,staleRelease:false,detail:200,robots:ROBOTS_TXT,staticRobots:true,workerRobots:true,refuseTools:true,...over};requests=[];agents=[]};
+const reset=over=>{state={staleManifest:0,staleCore:0,stalePage:0,staleRelease:false,detail:200,robots:ROBOTS_TXT,staticRobots:true,workerRobots:true,refuseTools:true,...over};requests=[];agents=[]};
 let agents=[];
 const server=createServer((req,res)=>{
  const url=new URL(req.url,'http://x'),key=req.headers['x-yukemuri-crawl-key'],worker=url.pathname.startsWith('/api/');requests.push(url.pathname+url.search);agents.push(req.headers['user-agent']);
@@ -24,19 +25,20 @@ const server=createServer((req,res)=>{
  // A file the edge does not have yet: the single-page fallback (200, HTML).
  if(url.pathname==='/snapshot/core.json'){if(state.staleCore>0&&state.staleCore--){res.writeHead(200,{'content-type':'text/html'});return res.end('<html></html>')}return json(200,{ids:['hotel-1','hotel-2']})}
  if(url.pathname==='/snapshot/cards.json')return json(200,[]);
- if(url.pathname==='/'){res.writeHead(200,{'content-type':'text/html',...robots});return res.end(`<main data-first-page="${ID}"><h3 class="card-title">A</h3></main>`)}
+ // The static page: an old version's (the same snapshot published again) until it spreads.
+ if(url.pathname==='/'){res.writeHead(200,{'content-type':'text/html',...robots});return res.end(state.stalePage>0&&state.stalePage--?OLD_PAGE:PAGE)}
  if(url.pathname==='/api/hotels/hotel-1')return json(state.detail,{id:'hotel-1'});
  if(url.pathname==='/api/collector-release')return key===KEY?json(200,{siteOrigin:state.staleRelease?'https://yukemuri.jihun7891.chatgpt.site':ORIGIN}):json(403,{error:'Maintenance access required'});
  if(url.pathname==='/robots.txt'){res.writeHead(200,{'content-type':'text/plain'});return res.end(state.robots)}
  json(404,{});
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
-const folder=mkdtempSync(join(tmpdir(),'smoke-check-')),preload=join(folder,'preload.mjs'),built=join(folder,'manifest.json');
-writeFileSync(built,JSON.stringify({format:1,id:ID,hotels:2}));
+const folder=mkdtempSync(join(tmpdir(),'smoke-check-')),preload=join(folder,'preload.mjs'),built=join(folder,'manifest.json'),page=join(folder,'index.html');
+writeFileSync(built,JSON.stringify({format:1,id:ID,hotels:2}));writeFileSync(page,PAGE);
 // Route the Worker origin to the stand-in and keep the 5-second retry short.
 writeFileSync(preload,`const real=globalThis.fetch;globalThis.fetch=(u,i)=>real(String(u).replace(${JSON.stringify(ORIGIN)},'http://127.0.0.1:${server.address().port}'),i);
 const t=globalThis.setTimeout;globalThis.setTimeout=(f,ms,...a)=>t(f,Math.min(ms,10),...a);`);
-const smoke=env=>new Promise(done=>{const child=spawn(process.execPath,['--import',preload,resolve('scripts/cloudflare-smoke.mjs'),ORIGIN],{env:{PATH:process.env.PATH,YUKEMURI_CRAWL_ACCESS_KEY:KEY,SNAPSHOT_ID:ID,SNAPSHOT_MANIFEST:built,...env}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>done({code,out}))});
+const smoke=env=>new Promise(done=>{const child=spawn(process.execPath,['--import',preload,resolve('scripts/cloudflare-smoke.mjs'),ORIGIN],{env:{PATH:process.env.PATH,YUKEMURI_CRAWL_ACCESS_KEY:KEY,SNAPSHOT_ID:ID,SNAPSHOT_MANIFEST:built,SNAPSHOT_PAGE:page,...env}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>done({code,out}))});
 try{
  reset();let r=await smoke();
  assert.equal(r.code,0,r.out);assert.match(r.out,/collector release without key 403 and with key 200 for this origin/);
@@ -45,6 +47,9 @@ try{
  reset({staleManifest:3});r=await smoke();
  assert.equal(r.code,0,r.out);assert.equal(requests.filter(p=>p==='/snapshot/manifest.json').length,4,'retried until the new snapshot was served');
  reset({staleManifest:20});r=await smoke();assert.notEqual(r.code,0,'an old snapshot after 6 tries fails');
+ reset({stalePage:3});r=await smoke();
+ assert.equal(r.code,0,r.out);assert.equal(requests.filter(p=>p==='/').length,4,'retried until the static page of this run was served');
+ reset({stalePage:20});r=await smoke();assert.notEqual(r.code,0,'another version\'s static page after 6 tries fails (same snapshot id)');
  reset({staleCore:3});r=await smoke();
  assert.equal(r.code,0,r.out);assert.equal(requests.filter(p=>p==='/snapshot/core.json').length,4,'retried while the file was the HTML fallback');
  reset({staleCore:20});r=await smoke();assert.notEqual(r.code,0,'a file still served as HTML after 6 tries fails');
@@ -62,4 +67,4 @@ try{
  writeFileSync(built,JSON.stringify({format:2,id:ID,hotels:2}));reset();r=await smoke();assert.notEqual(r.code,0,'a served format other than the build fails');
  writeFileSync(built,JSON.stringify({format:1,id:ID,hotels:2}));
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
-console.log('Smoke script passed: collector release as the keyed check (no /api/crawl), noindex on static and Worker responses, a tool without the key refused, static retry until the new snapshot and until each snapshot file is JSON, failures for an empty or foreign SNAPSHOT_ID, another format, an old snapshot, a release for another origin, a failing detail, robots.txt and a missing key.');
+console.log('Smoke script passed: collector release as the keyed check (no /api/crawl), noindex on static and Worker responses, a tool without the key refused, static retry until the new snapshot, until the static page is the one this run built and until each snapshot file is JSON, failures for an empty or foreign SNAPSHOT_ID, another format, an old snapshot, a release for another origin, a failing detail, robots.txt and a missing key.');
