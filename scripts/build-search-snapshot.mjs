@@ -206,8 +206,9 @@ export async function buildSnapshot({db,out,now=new Date(),builder,geocode=null,
    sizes[name]={raw:buffer.length,gzip:gzipSync(buffer,{level:9}).length,brotli:brotliCompressSync(buffer,{params:{[constants.BROTLI_PARAM_QUALITY]:11}}).length};
   }
   // inputs: null when map points are missing (geocoder skipped, a geo file
-  // unreadable), so that snapshot is never published again as it is.
-  const manifest=published?.manifest??{format:SNAPSHOT_FORMAT,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,mergedInto:data.mergedInto,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw])),inputs:geo.status==='ok'&&!geo.wikidataError&&!geo.overtureError?inputs??=snapshotInputs().hash:null};
+  // unreadable) or the catalogue was not prepared for this release (the build
+  // before cloudflare-prepare.mjs), so that snapshot is never published again as it is.
+  const manifest=published?.manifest??{format:SNAPSHOT_FORMAT,id,generatedAt:now.toISOString(),hotels:data.core.ids.length,coverage:data.coverage,mergedInto:data.mergedInto,files:paths,bytes:Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k,v.raw])),inputs:geo.status==='ok'&&!geo.wikidataError&&!geo.overtureError&&!data.unprepared.length?inputs??=snapshotInputs().hash:null};
   writeFileSync(join(folder,'manifest.json'),JSON.stringify(manifest));
   // The static page, rendered again with this snapshot's default first page.
   if(existsSync(join(out,'index.html'))){
