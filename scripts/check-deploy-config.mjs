@@ -9,6 +9,7 @@ import {deployGate,deployMode} from './cloudflare-deploy-gate.mjs';
 import {checkedOnMain} from './checked-commit.mjs';
 import {prepareEstimate,metaRows,maintenanceBehind,PRIORITY_VERSION,EVIDENCE} from './preflight-report.mjs';
 import {ensureSubdomain} from './cloudflare-workers-subdomain.mjs';
+import {assertMainOnly} from './workflow-guard.mjs';
 
 const base={workerName:'yukemuri',databaseName:'yukemuri',databaseId:null,publicOrigin:null,autoDeploy:false};
 const id='0123abcd-4567-89ab-cdef-0123456789ab',origin='https://yukemuri.example-account.workers.dev';
@@ -270,5 +271,9 @@ assert.equal(deployMode({...base,databaseId:id},{preflight:true,deferred:true}).
  for(const k of ['settle','none','snapshot','multilingual-index-v1','bath-facts-backfill-v1','korean-names-20261004','verified-source-groups-v1','all'])assert(Number.isInteger(evidence.prepareSteps[k]?.rowsWritten),'evidence lacks '+k);
 }
 const setup=readFileSync('.github/workflows/d1-setup.yml','utf8').replace(/^\s*#.*$/gm,'');
+// V01-5: a manual run can pick any branch, and both jobs hold the Cloudflare token and apply drizzle/ migrations
+// (deploy.yml also the crawl key), so they run only on main. A call from collect.yml or lifecycle.yml carries its
+// caller's ref, a push is on main, and the manual runs we document name main, so no normal run is held back.
+const mainControls=assertMainOnly('deploy.yml',deploy,['deploy'])+assertMainOnly('d1-setup.yml',readFileSync('.github/workflows/d1-setup.yml','utf8'),['d1']);
 assert(/wrangler\.js d1 migrations apply/.test(setup)&&!/(?:wrangler(?:\.js)?|command:)\s+(?:deploy|versions\s+(?:upload|deploy)|secret)\b|wrangler-action/.test(setup),'D1 setup applies migrations and never deploys the Worker');
-console.log(`Deploy config passed: gate skips without database_id/autoDeploy (committed: ${gate.enabled?'enabled':'skipped — '+gate.reason}), generated wrangler.json targets ${d1.database_name} with migrations from drizzle/, ${workflows.length} workflows read-only without pull_request_target, d1 commands name the database and config, writes only in deploy mode, read-only preflight, wrangler from node_modules with the key in a removed 0600 secrets file.`);
+console.log(`Deploy config passed: gate skips without database_id/autoDeploy (committed: ${gate.enabled?'enabled':'skipped — '+gate.reason}), generated wrangler.json targets ${d1.database_name} with migrations from drizzle/, ${workflows.length} workflows read-only without pull_request_target, d1 commands name the database and config, writes only in deploy mode, read-only preflight, wrangler from node_modules with the key in a removed 0600 secrets file, deploy and D1 setup run on main only (controls: ${mainControls} of ${mainControls} fail).`);
