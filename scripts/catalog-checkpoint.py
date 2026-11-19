@@ -12,6 +12,13 @@ from concurrent.futures import ThreadPoolExecutor,as_completed
 import tempfile,threading
 ROOT=Path(__file__).resolve().parents[1]
 TABLES={'hotel_source_groups','hotel_source_observations','hotel_lifecycle','hotel_lifecycle_events','hotels','hotel_names','catalog_meta','crawl_jobs','favorites','visitor_favorites','hotel_name_localizations','hotel_description_translations','hotel_description_requests'}
+# Cloudflare answers the urllib default User-Agent (Python-urllib) with error 1010 before the Worker sees the
+# request (scripts/crawler/source_safety.py), so name this tool as the runner's backup does (YukemuriBackup/1.0).
+USER_AGENT='YukemuriCatalogCheckpoint/1.0'
+def accepted_host(host,public_origin):
+ # The Worker address recorded in cloudflare-deploy.json (publicOrigin), or a Sites address as before H01. The Sites
+ # suffix stays accepted as it was: the way back to Sites is closed in the Sites cleanup, not here.
+ return bool(host) and (host.endswith('.chatgpt.site') or public_origin is not None and host==urllib.parse.urlsplit(public_origin).hostname)
 def encoded(value):return (json.dumps(value,ensure_ascii=False,separators=(',',':'))+'\n').encode()
 def migration_digest():
  digest=hashlib.sha256()
@@ -26,14 +33,15 @@ def read_access():
  finally:termios.tcsetattr(sys.stdin,termios.TCSANOW,previous)
 def export(destination):
  access=read_access();site=urllib.parse.urlsplit(access['url'])
- if site.scheme!='https' or not site.hostname or not site.hostname.endswith('.chatgpt.site') or site.username or site.password:raise ValueError('Expected this Sites HTTPS URL')
+ public_origin=json.loads((ROOT/'cloudflare-deploy.json').read_text(encoding='utf-8')).get('publicOrigin')
+ if site.scheme!='https' or not accepted_host(site.hostname,public_origin) or site.username or site.password:raise ValueError('Expected the Worker HTTPS URL in cloudflare-deploy.json (publicOrigin) or a Sites HTTPS URL')
  base=urllib.parse.urlunsplit((site.scheme,site.netloc,'','',''))
  class NoRedirect(urllib.request.HTTPRedirectHandler):
   def redirect_request(self,*args,**kwargs):raise RuntimeError('Site redirected; private credential was not forwarded')
  clients=threading.local()
  def api(params=None):
   url=base+'/api/catalog-export'+('?' + urllib.parse.urlencode(params) if params else '')
-  request=urllib.request.Request(url,headers={'OAI-Sites-Authorization':'Bearer '+access['token'],'X-Yukemuri-Crawl-Key':access['token'],'Accept':'application/json'})
+  request=urllib.request.Request(url,headers={'OAI-Sites-Authorization':'Bearer '+access['token'],'X-Yukemuri-Crawl-Key':access['token'],'Accept':'application/json','User-Agent':USER_AGENT})
   if not hasattr(clients,'opener'):clients.opener=urllib.request.build_opener(NoRedirect())
   with clients.opener.open(request,timeout=90) as response:return json.loads(response.read())
  if destination.exists():raise FileExistsError(destination)

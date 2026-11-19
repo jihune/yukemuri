@@ -1,0 +1,117 @@
+### V01-5 deploy.yml: no guard
+expected: V01-5 main-only guard: deploy.yml: deploy: no job-level if
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: no job-level if
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 deploy.yml: guard for another branch
+expected: V01-5 main-only guard: deploy.yml: deploy: the if is not
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: the if is not github.ref == 'refs/heads/main' AND the other conditions (github.ref == 'refs/heads/dev')
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 deploy.yml: guard OR-ed with true
+expected: V01-5 main-only guard: deploy.yml: deploy: the if is not
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: the if is not github.ref == 'refs/heads/main' AND the other conditions (github.ref == 'refs/heads/main' || true)
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 d1-setup.yml: no guard
+expected: V01-5 main-only guard: d1-setup.yml: d1: no job-level if
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: d1-setup.yml: d1: no job-level if
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 rollback.yml: no guard
+expected: V01-5 main-only guard: rollback.yml: rollback: no job-level if
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: rollback.yml: rollback: no job-level if
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 collect.yml: no guard on the collect job
+expected: V01-5 main-only guard: collect.yml: collect: no job-level if
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: collect.yml: collect: no job-level if
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-5 collect.yml: no guard on the snapshot job
+expected: V01-5 main-only guard: collect.yml: snapshot: the if is not
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: V01-5 main-only guard: collect.yml: snapshot: the if is not github.ref == 'refs/heads/main' AND the other conditions (inputs.mode == 'gentle' && needs.collect.outputs.pages != '0')
+
+1 !== 0
+
+    at assertMainOnly (file:///tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/workflow-guard.mjs:35:9)
+
+### V01-14 catalog-checkpoint.py: publicOrigin not accepted
+expected: V01-14 export refused the Worker address in cloudflare-deploy.json
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/check-checkpoint.py", line 131, in <module>
+    run_export(origin, temp/'worker.jsonl.gz', opener)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/check-checkpoint.py", line 122, in run_export
+    checkpoint.export(destination)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/catalog-checkpoint.py", line 37, in export
+    if site.scheme!='https' or not accepted_host(site.hostname,public_origin) or site.username or site.password:raise ValueError('Expected the Worker HTTPS URL in cloudflare-deploy.json (publicOrigin) or a Sites HTTPS URL')
+
+### V01-14 catalog-checkpoint.py: no User-Agent
+expected: V01-14 every export request names the tool in its User-Agent
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/check-checkpoint.py", line 137, in <module>
+    assert all(r.get_header('User-agent') == checkpoint.USER_AGENT for r in requests), 'V01-14 every export request names the tool in its User-Agent'
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: V01-14 every export request names the tool in its User-Agent
+
+### V01-14 catalog-checkpoint.py: any workers.dev accepted
+expected: V01-14 export accepted https://yukemuri.other-account.workers.dev
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/check-checkpoint.py", line 151, in <module>
+    raise AssertionError('V01-14 export accepted ' + bad)
+AssertionError: V01-14 export accepted https://yukemuri.other-account.workers.dev
+
+### V01-14 catalog-checkpoint.py: suffix match instead of equality
+expected: V01-14 export accepted https://evil-yukemuri.jihune.workers.dev
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-yukemuri/8442b0a5-e80c-56d0-ac44-a35a071eefdf/scratchpad/controls-final/copy/scripts/check-checkpoint.py", line 151, in <module>
+    raise AssertionError('V01-14 export accepted ' + bad)
+AssertionError: V01-14 export accepted https://evil-yukemuri.jihune.workers.dev
