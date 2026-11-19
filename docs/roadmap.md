@@ -78,6 +78,7 @@ C01·C02·U01은 기존 작업 ID이고 나머지는 2026-10-11 리뷰 뒤 순�
 | 질문 | 권장 기본값 | 결정 전 상태 | 근거 |
 |---|---|---|---|
 | Rakuten 등 공식 API를 붙일까? | 계정을 만들 때까지 보류 | 데이터 계층만 준비됨. 10-17 사용자가 키 제공을 제안함. 약관(공개 저장 금지, 경쟁 서비스 금지, API 부분의 다른 링크 금지, 크레딧 표시)이 공개 스냅숏·Jalan·Trip 링크 구조와 맞지 않아 키를 만들지 않도록 권함. 다른 무료 출처 조사는 나중 일 | R58, `D06-20261013.md` 4.2 |
+| 운영 비밀값 둘(`CLOUDFLARE_API_TOKEN`, `YUKEMURI_CRAWL_ACCESS_KEY`)을 GitHub Environments로 옮겨 main에서만 쓰게 할까? | 11-25 `readsPerPage` 뒤 옮기기(그때까지 #322의 workflow 지킴과 ‘수동 실행은 main’ 규칙) | #322(V01-5)의 지킴은 고른 브랜치 자신의 workflow 파일에 있어, 지킴이 들어가기 전에 딴 원격 브랜치 54개(V01G 검토 하위 에이전트가 셈)에서 수동 실행하면 막지 못하고 `collect-chain.yml`·`usage.yml`에는 지킴이 없다(V01G 11-19T01:37:22Z 보고). Environments는 public 저장소면 무료 요금제에서도 환경 secret과 배포 브랜치 제한을 쓸 수 있고 환경 secret은 그 환경을 지정한 job만 읽는다(docs.github.com ‘Deployments and environments’, 11-19 상위 세션이 WebFetch로 읽음). 옮기려면 사용자가 Settings에서 환경을 만들고 두 값을 다시 넣은 뒤 저장소 secret을 지워야 하고(값은 대화에 넣지 않음), 그 secret을 쓰는 job에 `environment:`를 더하는 코드 PR(등급 3)이 필요하다. 11-19 질문 도구로 물음 | V01G `docs/V01G-20261117.md` 「남은 일」, #322 |
 
 ### 결정 기록
 
