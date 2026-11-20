@@ -55,6 +55,9 @@ try{
  const relinked=structuredClone(h);relinked.links=relinked.links.map(l=>l.provider==='jalan'?{...l,url:'https://www.jalan.net/yad999102/'}:l);
  const elsewhere=structuredClone(h);elsewhere.sources[0].url='https://www.jalan.net/yad999101/';
  await refused({...payload,observations:[relinked]},'Invalid catalogue observation');
+ // The same rule holds for a Trip.com record: its own property link names another property.
+ const tripRelinked=fixture('trip','999210');tripRelinked.links=tripRelinked.links.map(l=>l.provider==='trip'?{...l,url:'https://www.trip.com/hotels/tokyo-hotel-detail-999211/queue-test/'}:l);
+ await refused({url:tripRelinked.sources[0].url,status:'done',observations:[tripRelinked],links:[]},'Invalid catalogue observation');
  await refused({...payload,observations:[elsewhere]},'Observation does not match crawl job');
  await refused({...payload,observations:[]},'Observation does not match crawl job');
  const result=await api('/api/crawl','PUT',payload);assert.equal(result.accepted,1);
@@ -143,6 +146,13 @@ try{
   await api('/api/crawl','PUT',{url:ordinary,status:'retry',error:'URLError'});
   assert.equal(await providerReady(),paused,'A later save must not shorten the provider wait');
  }
+ // The updater reports a page's third failure as status failed (retry_policy.py), and the wait
+ // it reports for the provider can differ from the page's own: both still count.
+ for(const [i,[status,error,page,provider,wait]] of [['failed','http_403',3600,3600,86400],['failed','http_429',3600,3600,21600],['retry','http_403',3600,200000,200000]].entries()){
+  await setReady(0);const blocked=await queued(999200+i),from=Date.now()/1000;
+  await api('/api/crawl','PUT',{url:blocked,status,error,retryAfterSeconds:page,providerCooldownSeconds:provider});
+  about(await providerReady(),from,wait,`A ${status} page's ${error} reporting ${page} s for the page and ${provider} s for the provider pauses the provider ${wait} s`);
+ }
  // A page waits a minute when no wait is reported. Its third failure makes it failed, not
  // retried, for at least seven days.
  await setReady(0);const failing=await queued(999180);
@@ -150,7 +160,7 @@ try{
   const from=Date.now()/1000;await api('/api/crawl','PUT',{url:failing,status:'retry',error:'URLError',...(n===1?{retryAfterSeconds:1800}:{})});
   const row=await jobRow(failing);assert.deepEqual([row.status,row.attempts],[status,n+1],'Status and attempts after failure '+(n+1));about(row.next_at,from,seconds,`Failure ${n+1} waits ${seconds} s`);
  }
- await db.prepare("DELETE FROM crawl_jobs WHERE url GLOB 'https://www.jalan.net/yad9991[28][0-9]/'").run();await setReady(0);
+ await db.prepare("DELETE FROM crawl_jobs WHERE url GLOB 'https://www.jalan.net/yad9991[28][0-9]/' OR url GLOB 'https://www.jalan.net/yad99920[0-9]/'").run();await setReady(0);
  // A lexically later local timestamp can still be an older observation.
  const stale=structuredClone(h);stale.names.ko='Rejected stale alias';stale.aliases=['Rejected stale alias'];stale.sources[0].retrievedAt='2026-10-05T11:00:00+09:00';
  assert.equal((await api('/api/crawl','PUT',{...legacy,observations:[stale]})).accepted,0);
