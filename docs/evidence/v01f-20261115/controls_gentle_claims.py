@@ -25,10 +25,12 @@ THIRD = "the third page ends the run"
 TWO = "two, a good page, two is never three in a row"
 NOWAIT = "the collector's own failure puts no wait on the provider"
 FALLBACK = "payload=dict(url=url,observations=[],links=[],claimToken=job['lease_token'],**contract_failure(name,job['attempts']))"
-STOP = ("   unexpected[provider]=unexpected.get(provider,0)+1 if bug else 0\n"
-        "   if unexpected[provider]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[provider]} {provider} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')\n")
-STOP_GLOBAL = ("   unexpected['all']=unexpected.get('all',0)+1 if bug else 0\n"
-               "   if unexpected['all']>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f\"{unexpected['all']} {provider} pages in a row failed on collector or Site contract errors; the run stops so the cause shows\")\n")
+STOP = ("   streak=(provider,kind);unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0\n"
+        "   if unexpected[streak]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[streak]} {provider} {kind} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')\n")
+STOP_GLOBAL = ("   streak='all';unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0\n"
+               "   if unexpected[streak]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[streak]} {provider} {kind} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')\n")
+STOP_PROVIDER = ("   streak=provider;unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0\n"
+                 "   if unexpected[streak]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[streak]} {provider} {kind} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')\n")
 CONTROLS = [
     # id, rule taken out, old text, new text, expect
     ('A1', 'the page-level except takes any exception', "   except Exception as error:", "   except (urllib.error.URLError,TimeoutError,ValueError,OSError) as error:", ENDS),
@@ -40,8 +42,9 @@ CONTROLS = [
     ('B4', 'a refused failure report still ends the run', " or payload['status'] not in ['done','skipped']:raise", ":raise", "the failure is reported once, not again"),
     ('C1', 'three pages in a row end the run', "UNEXPECTED_IN_A_ROW=3", "UNEXPECTED_IN_A_ROW=10**9", THIRD),
     ('C2', 'two pages in a row do not end the run', "UNEXPECTED_IN_A_ROW=3", "UNEXPECTED_IN_A_ROW=2", TWO),
-    ('C3', 'a page read normally starts the count again', "unexpected[provider]=unexpected.get(provider,0)+1 if bug else 0", "unexpected[provider]=unexpected.get(provider,0)+(1 if bug else 0)", TWO),
+    ('C3', 'a page read normally starts the count again', "unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0", "unexpected[streak]=unexpected.get(streak,0)+(1 if bug else 0)", TWO),
     ('C4', 'the count is per provider', STOP, STOP_GLOBAL, "two pages from each provider are not three in a row from one"),
+    ('C5', 'the count is per provider and kind', STOP, STOP_PROVIDER, "list pages read between them do not start the count again"),
     ('D1', 'the failure name is no HTTP status name', "return dict(status=policy['status'],error=name,", "return dict(status=policy['status'],error='http_'+name,", NEXT),
     ('D2', 'the Site-contract failure puts no wait on the provider', "retryAfterSeconds=policy['retryAfterSeconds'])", "retryAfterSeconds=policy['retryAfterSeconds'],providerCooldownSeconds=120)", NOWAIT),
     ('D3', 'the Site-contract failure follows the attempts (third is failed)', "policy=source_failure(RuntimeError(name),attempts)", "policy=source_failure(RuntimeError(name),0)", NEXT),

@@ -129,9 +129,11 @@ empty_groups=set();rounds=0;claims=0
 UNAVAILABLE_IN_A_ROW=3
 unavailable={};paused=[]
 # V01-1: a failure of the collector or of the Site contract (not the source's answer) is
-# that one page's failure, not the run's. Three such pages in a row from one provider are
-# a bug rather than a page: the run reports the third and then fails, so the bug shows.
-# Counted apart from the 503s above; any other result of the provider starts it again.
+# that one page's failure, not the run's. Three such pages in a row from one provider and
+# kind are a bug rather than a page: the run reports the third and then fails, so the bug
+# shows. Counted apart from the 503s above; any other result of that provider and kind
+# starts it again (a gentle run mixes a provider's detail and list pages, so a bug in one
+# kind's parser must not hide behind the other kind's pages).
 UNEXPECTED_IN_A_ROW=3
 unexpected={}
 class QueueUrlUnsupported(Exception):pass
@@ -227,8 +229,8 @@ while completed<args.max_pages:
    if unavailable[provider]>=UNAVAILABLE_IN_A_ROW and provider not in blocked_hosts:
     blocked_hosts.add(provider);paused.append(provider)
     print(json.dumps(dict(providerPaused=provider,reason='http_503',consecutive=unavailable[provider],at=now())),flush=True)
-   unexpected[provider]=unexpected.get(provider,0)+1 if bug else 0
-   if unexpected[provider]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[provider]} {provider} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')
+   streak=(provider,kind);unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0
+   if unexpected[streak]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[streak]} {provider} {kind} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')
    next_request[host]=time.time()+max(3,args.interval);next_claim[provider]=time.time()+max(3,args.interval);completed+=1
   if completed>=args.max_pages:break
  if not progress:break

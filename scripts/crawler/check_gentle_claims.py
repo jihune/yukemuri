@@ -209,7 +209,7 @@ class UnavailableProviderChecks(CollectorRun):
 
 class PageFailureChecks(CollectorRun):
  """V01-1: what is not the source's answer fails that one page, not the run. Three such pages in a row
- from one provider end the run, after their failures are reported."""
+ from one provider and kind end the run, after their failures are reported."""
  def failure(self,url):
   return next(r for r in self.sent if r['url']==url)
 
@@ -256,7 +256,7 @@ class PageFailureChecks(CollectorRun):
    with self.subTest(cause=cause):
     _,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],catch=True,**more)
     self.assertIsInstance(self.stopped,RuntimeError,'the third page ends the run')
-    self.assertIn('3 jalan pages in a row',str(self.stopped))
+    self.assertIn('3 jalan detail pages in a row',str(self.stopped))
     self.assertEqual(saved,[jd[0],td[0],jd[1],td[1],jd[2]],'the three pages are reported, the Trip.com pages between them are saved, and nothing is asked after')
     self.assertEqual([r['error'] for r in self.sent if r['url'] in jd],[name]*3,'the three pages are reported before the run ends')
     self.assertFalse([line for line in lines if 'rounds' in line],'a stopped run prints no summary')
@@ -272,6 +272,13 @@ class PageFailureChecks(CollectorRun):
   self.assertFalse([u for u in self.opened if 'WWW' in u],'the source is not asked for an address the collector does not support')
   self.run_collector({('jalan','detail'):[*bad,*jd]},['--gentle','--max-pages','20'],catch=True)
   self.assertIsInstance(self.stopped,RuntimeError,'three unsupported addresses in a row end the run')
+
+ def test_pages_of_another_kind_do_not_start_the_count_again(self):
+  # A gentle run mixes a provider's detail and list pages: a detail parser that fails while the list pages read is still a bug.
+  jd=pages('jalan',8);jl=[f'https://www.jalan.net/010000/LRG_010200/page{i}.html' for i in range(1,9)]
+  self.run_collector({('jalan','detail'):jd,('jalan','list'):jl},['--gentle','--max-pages','40'],parse_fails={u:AttributeError('x') for u in jd},catch=True)
+  self.assertIsInstance(self.stopped,RuntimeError,'list pages read between them do not start the count again')
+  self.assertEqual([r['url'] for r in self.sent if r['url'] in jd],jd[:3],'the third detail page ends the run')
 
  def test_a_page_read_normally_starts_the_count_again(self):
   jd,td=pages('jalan',6),pages('trip',2)
