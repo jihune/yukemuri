@@ -48,6 +48,15 @@ try{
  const legacy={...payload};delete legacy.claimToken;await api('/api/crawl','PUT',legacy,409);
  const other=fixture('jalan','999102');other.sources[0].url=url;
  await api('/api/crawl','PUT',{...payload,observations:[other]},400);
+ // Each of these refuses a save on its own, the record otherwise as the page gave it: its
+ // own link names another property, its source is a page other than the job's, and a
+ // detail page is reported done with no record.
+ const refused=async(data,error)=>assert.equal((await api('/api/crawl','PUT',data,400)).error,error);
+ const relinked=structuredClone(h);relinked.links=relinked.links.map(l=>l.provider==='jalan'?{...l,url:'https://www.jalan.net/yad999102/'}:l);
+ const elsewhere=structuredClone(h);elsewhere.sources[0].url='https://www.jalan.net/yad999101/';
+ await refused({...payload,observations:[relinked]},'Invalid catalogue observation');
+ await refused({...payload,observations:[elsewhere]},'Observation does not match crawl job');
+ await refused({...payload,observations:[]},'Observation does not match crawl job');
  const result=await api('/api/crawl','PUT',payload);assert.equal(result.accepted,1);
  // P01: the PUT reports the exact record count (the collector prints it).
  const storedCoverage=row=>JSON.parse(row.value).coverage;
@@ -118,6 +127,30 @@ try{
  const released=await db.prepare('SELECT * FROM crawl_jobs WHERE url=?').bind(redirectUrl).first();
  assert.equal(released.next_at,0);assert.equal(released.attempts,1);assert.equal(released.error,'source_redirect_page_review');
  const beforeReplay=await snapshot();await api('/api/crawl','POST',release,409);assert.equal(await snapshot(),beforeReplay);
+ // An access response pauses the whole provider: at least a day for a 403 or a bot
+ // challenge and six hours for a 429, and longer when the updater reports a longer wait.
+ // The page itself waits the reported seconds. A later save of another page keeps the
+ // stored provider wait; the three-second pacing never shortens it.
+ const providerReady=async()=>Number((await db.prepare("SELECT value FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").first()).value);
+ const about=(at,from,seconds,message)=>assert(at>=from+seconds-2&&at<=Date.now()/1000+seconds+2,`${message}: ${Math.round(at-from)} s`);
+ const queued=async digits=>{const page=`https://www.jalan.net/yad${digits}/`;await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,status,attempts,next_at) VALUES (?,'jalan','detail','pending',0,0)").bind(page).run();return page};
+ const jobRow=page=>db.prepare('SELECT status,attempts,next_at FROM crawl_jobs WHERE url=?').bind(page).first();
+ for(const [i,[error,reported,wait]] of [['http_403',3600,86400],['http_429',3600,21600],['source_access_bot_challenge',3600,86400],['http_429',100000,100000],['http_403',200000,200000]].entries()){
+  await setReady(0);const blocked=await queued(999120+i),ordinary=await queued(999125+i),from=Date.now()/1000;
+  await api('/api/crawl','PUT',{url:blocked,status:'retry',error,retryAfterSeconds:reported,providerCooldownSeconds:reported});
+  const paused=await providerReady();about(paused,from,wait,`${error} reporting ${reported} s pauses the provider ${wait} s`);
+  about((await jobRow(blocked)).next_at,from,reported,'A retried page waits the reported seconds');
+  await api('/api/crawl','PUT',{url:ordinary,status:'retry',error:'URLError'});
+  assert.equal(await providerReady(),paused,'A later save must not shorten the provider wait');
+ }
+ // A page waits a minute when no wait is reported. Its third failure makes it failed, not
+ // retried, for at least seven days.
+ await setReady(0);const failing=await queued(999180);
+ for(const [n,[status,seconds]] of [['retry',60],['retry',1800],['failed',7*86400]].entries()){
+  const from=Date.now()/1000;await api('/api/crawl','PUT',{url:failing,status:'retry',error:'URLError',...(n===1?{retryAfterSeconds:1800}:{})});
+  const row=await jobRow(failing);assert.deepEqual([row.status,row.attempts],[status,n+1],'Status and attempts after failure '+(n+1));about(row.next_at,from,seconds,`Failure ${n+1} waits ${seconds} s`);
+ }
+ await db.prepare("DELETE FROM crawl_jobs WHERE url GLOB 'https://www.jalan.net/yad9991[28][0-9]/'").run();await setReady(0);
  // A lexically later local timestamp can still be an older observation.
  const stale=structuredClone(h);stale.names.ko='Rejected stale alias';stale.aliases=['Rejected stale alias'];stale.sources[0].retrievedAt='2026-10-05T11:00:00+09:00';
  assert.equal((await api('/api/crawl','PUT',{...legacy,observations:[stale]})).accepted,0);
@@ -126,6 +159,25 @@ try{
  const list=structuredClone(stale);list.names.ko='Rejected list alias';list.aliases=['Rejected list alias'];list.sources[0].retrievedAt='2026-10-06T08:00:00Z';list.sources[0].label='Jalan 숙소 목록';
  await api('/api/crawl','PUT',{...legacy,observations:[list]});
  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM hotel_names WHERE name='Rejected list alias'").first()).n,0);
+ // A curated property's provider page is kept beside its hand-checked record, in
+ // hotel_source_observations, under the same two rules: neither an older page nor a list
+ // page replaces a detail page. It is saved only while a verified group names that
+ // provider record, and it never becomes a hotel of its own.
+ const groupColumns='hotel_id,trip_hotel_id,jalan_hotel_id,google_place_id,payload,checked_at';
+ const group=await db.prepare(`SELECT ${groupColumns} FROM hotel_source_groups WHERE jalan_hotel_id IS NOT NULL AND hotel_id NOT IN (jalan_hotel_id,COALESCE(trip_hotel_id,'')) ORDER BY hotel_id LIMIT 1`).first();
+ const curated=fixture('jalan',group.jalan_hotel_id.slice(6)),curatedUrl=curated.sources[0].url,hotelsBefore=await hotelCount();
+ await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','detail','pref-hokkaido','pending',0,0)").bind(curatedUrl).run();
+ const linkedPut=async(name,source={})=>{const page=structuredClone(curated);page.names.ko=name;Object.assign(page.sources[0],source);return (await api('/api/crawl','PUT',{url:curatedUrl,status:'done',observations:[page],links:[]})).linkedAccepted};
+ const linkedName=async()=>{const row=await db.prepare('SELECT payload FROM hotel_source_observations WHERE id=?').bind(curated.id).first();return row?JSON.parse(row.payload).names.ko:null};
+ await db.prepare('DELETE FROM hotel_source_groups WHERE hotel_id=?').bind(group.hotel_id).run();
+ assert.deepEqual([await linkedPut('Linked without a group'),await linkedName()],[0,null],'Without a verified group the page is saved nowhere');
+ await db.prepare(`INSERT INTO hotel_source_groups(${groupColumns}) VALUES (?,?,?,?,?,?)`).bind(...groupColumns.split(',').map(column=>group[column])).run();
+ assert.deepEqual([await linkedPut('Linked detail'),await linkedName()],[1,'Linked detail']);
+ assert.deepEqual([await linkedPut('Linked older detail',{retrievedAt:'2026-10-05T11:00:00+09:00'}),await linkedName()],[0,'Linked detail'],'An older page must not replace a curated group\'s page');
+ assert.deepEqual([await linkedPut('Linked list',{retrievedAt:'2026-10-06T08:00:00Z',label:'Jalan 숙소 목록'}),await linkedName()],[0,'Linked detail'],'A list page must not replace a curated group\'s detail page');
+ assert.deepEqual([await linkedPut('Linked newer detail',{retrievedAt:'2026-10-07T08:00:00Z'}),await linkedName()],[1,'Linked newer detail']);
+ assert.equal(await hotelCount(),hotelsBefore,'A curated property\'s provider page adds no hotel');
+ await db.batch([db.prepare('DELETE FROM crawl_jobs WHERE url=?').bind(curatedUrl),db.prepare('DELETE FROM hotel_source_observations WHERE id=?').bind(curated.id)]);
  // Enrichment uses an indexed hotel identity lookup, including completed jobs.
  await db.prepare("DELETE FROM catalog_meta WHERE key='crawl-provider-ready:jalan'").run();
  const baths=await api('/api/crawl','POST',{provider:'jalan',phase:'baths',token:randomUUID()});assert.equal(baths.jobs[0].url,url);
@@ -170,6 +222,10 @@ try{
  // A list page can repeat a property; it is inserted and counted once.
  const listUrl='https://www.jalan.net/010000/LRG_010200/',repeated=fixture('jalan','999190');repeated.sources[0]={...repeated.sources[0],url:listUrl,label:'Jalan 숙소 목록'};
  await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,prefecture,status,attempts,next_at) VALUES (?,'jalan','list','pref-hokkaido','pending',0,0)").bind(listUrl).run();
+ // A list page gives records of its own provider only, each with the list as its source.
+ const foreign=fixture('trip','999191');foreign.sources[0]={...foreign.sources[0],url:listUrl,label:'Jalan 숙소 목록'};
+ await refused({url:listUrl,status:'done',observations:[foreign],links:[]},'Observation does not match crawl job');
+ await refused({url:listUrl,status:'done',observations:[fixture('jalan','999192')],links:[]},'Observation does not match crawl job');
  const listPut=await api('/api/crawl','PUT',{url:listUrl,status:'done',observations:[repeated,repeated],links:[]});
  assert.equal(listPut.coverage.records,tripPut.coverage.records+1);assert.equal(listPut.coverage.records,await hotelCount());
  // A wrong counter (for example after a restore) is reset by the queue GET's
@@ -351,5 +407,5 @@ try{
  }
  await rerunPriorities();
  for(const [provider,digits,,label,address,priority] of towns)assert.equal((await db.prepare('SELECT priority FROM crawl_jobs WHERE url=?').bind(fixture(provider,digits).sources[0].url).first()).priority,priority,`${label} / ${address}`);
- console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, guarded redirect repair, identity, chronology, enrichment, protected health and priority writes only where the plan changes them.');
+ console.log('Queue checks passed: due retry fairness, future/access/lease preservation, replay, crash recovery, provider pacing, access waits, three-strike failure, guarded redirect repair, identity, chronology, curated observation preservation, enrichment, protected health and priority writes only where the plan changes them.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}

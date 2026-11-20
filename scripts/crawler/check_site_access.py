@@ -4,6 +4,8 @@ import io
 import json
 import runpy
 import unittest
+import urllib.request
+import urllib.response
 from email.message import Message
 from pathlib import Path
 from unittest.mock import patch
@@ -13,6 +15,9 @@ ROOT=Path(__file__).parent
 SECRET='site-access-test-secret'
 SITES=['https://yukemuri.jihun7891.chatgpt.site','https://yukemuri-hokkaido.jihun7891.chatgpt.site/']
 WORKER='https://yukemuri.example-account.workers.dev'
+# Each script with the arguments and stdin fields that make it send a Site request at once.
+SCRIPTS=[('update-site.py',['--health-only'],{}),('update-names.py',[],{}),('update-descriptions.py',[],{}),
+         ('update-lifecycle.py',[],{'seeds':[{}]}),('update-source-groups.py',[],{'patches':[{'hotelId':'qa'}]})]
 
 class Response:
  def __init__(self,value):self.body=json.dumps(value).encode();self.headers=Message()
@@ -38,20 +43,42 @@ class SiteAccessChecks(unittest.TestCase):
               'https://yukemuri.-bad.workers.dev','https://example.com']:
    with self.subTest(url=url),self.assertRaises(ValueError):site_api(url,SECRET)
 
- def run_script(self,script,url,argv,extra):
+ def run_script(self,script,url,argv,extra,opener=None):
   sent=[]
   class Site:
    def open(self,request,timeout):
     sent.append((request.full_url,dict(request.header_items())));return Response({'coverage':{'records':1}})
-  with patch('sys.argv',[script,*argv]),patch('sys.stdin',io.StringIO(json.dumps(dict(url=url,token=SECRET,**extra))+'\n')),patch('urllib.request.build_opener',return_value=Site()),contextlib.redirect_stdout(io.StringIO()):
+  with patch('sys.argv',[script,*argv]),patch('sys.stdin',io.StringIO(json.dumps(dict(url=url,token=SECRET,**extra))+'\n')),patch('urllib.request.build_opener',**({'side_effect':opener(sent)} if opener else {'return_value':Site()})),contextlib.redirect_stdout(io.StringIO()):
    # Only the first request matters here; later steps may reject the stub reply.
-   with contextlib.suppress(KeyError,TypeError,ValueError,SystemExit):runpy.run_path(str(ROOT/script),run_name='__main__')
+   # RuntimeError is how the scripts refuse a redirect.
+   with contextlib.suppress(KeyError,TypeError,ValueError,SystemExit,*([RuntimeError] if opener else [])):runpy.run_path(str(ROOT/script),run_name='__main__')
   return sent
+
+ def test_scripts_do_not_follow_a_site_redirect(self):
+  # urllib follows a redirected GET with the request's own headers, so the key would go
+  # to whatever address the answer names. Each script's own handlers run here in a real
+  # opener; only the transport is replaced: it answers the first request with a 302,
+  # any later one with an empty object, and records every request it is asked to send.
+  # With no stdin fields beyond the access, every script starts with a GET.
+  build=urllib.request.build_opener
+  def redirecting(sent):
+   class Transport(urllib.request.BaseHandler):
+    handler_order=100
+    def https_open(self,request):
+     sent.append((request.full_url,dict(request.header_items())))
+     headers=Message()
+     if len(sent)==1:headers['Location']='https://elsewhere.example/api/crawl'
+     answer=urllib.response.addinfourl(io.BytesIO(b'{}'),headers,request.full_url,302 if len(sent)==1 else 200);answer.msg='';return answer
+   return lambda *handlers:build(Transport(),*handlers)
+  for script,argv,_ in SCRIPTS:
+   with self.subTest(script=script):
+    sent=self.run_script(script,WORKER,argv,{},redirecting)
+    self.assertEqual(sent[0][1].get('X-yukemuri-crawl-key'),SECRET)
+    self.assertEqual([full_url for full_url,_ in sent[1:]],[],script+' followed a Site redirect')
 
  def test_scripts_send_headers_by_destination(self):
   # urllib stores header names capitalized: 'X-yukemuri-crawl-key'.
-  for script,argv,extra in [('update-site.py',['--health-only'],{}),('update-names.py',[],{}),('update-descriptions.py',[],{}),
-                            ('update-lifecycle.py',[],{'seeds':[{}]}),('update-source-groups.py',[],{'patches':[{'hotelId':'qa'}]})]:
+  for script,argv,extra in SCRIPTS:
    with self.subTest(script=script):
     for url,sites in [(SITES[0],True),(WORKER,False)]:
      sent=self.run_script(script,url,argv,extra)
