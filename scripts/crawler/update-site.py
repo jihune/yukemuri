@@ -128,6 +128,20 @@ empty_groups=set();rounds=0;claims=0
 # got none (C09-20261026.md), so three keep a lone 503 from pausing a provider.
 UNAVAILABLE_IN_A_ROW=3
 unavailable={};paused=[]
+# V01-1: a failure of the collector or of the Site contract (not the source's answer) is
+# that one page's failure, not the run's. Three such pages in a row from one provider and
+# kind are a bug rather than a page: the run reports the third and then fails, so the bug
+# shows. Counted apart from the 503s above; any other result of that provider and kind
+# starts it again (a gentle run mixes a provider's detail and list pages, so a bug in one
+# kind's parser must not hide behind the other kind's pages).
+UNEXPECTED_IN_A_ROW=3
+unexpected={}
+class QueueUrlUnsupported(Exception):pass
+def contract_failure(name,attempts):
+ # An ordinary retry (failed on the third attempt) with no provider wait. The name is no
+ # HTTP status: the Worker and the status page read an http_ name as the source's answer.
+ policy=source_failure(RuntimeError(name),attempts)
+ return dict(status=policy['status'],error=name,retryAfterSeconds=policy['retryAfterSeconds'])
 guard=SourceGuard(args.interval,args.jitter)
 # Each round gives both providers list discovery and detail enrichment.
 # Jalan's Korean and English list pages (names only, D07) come last in each round.
@@ -154,12 +168,12 @@ while completed<args.max_pages:
   for job in batch:
    kind=job['kind']
    progress=True
-   url=canonical(job['url'],job['url'])
-   if url!=job['url']:raise ValueError('Queue contained an unsupported URL')
-   host=urllib.parse.urlsplit(url).hostname
+   url=job['url'];unsupported=canonical(url,url)!=url
+   host=None if unsupported else urllib.parse.urlsplit(url).hostname
    time.sleep(max(0,next_request.get(host,0)-time.time()))
-   stage='source_request';diagnostic={}
+   stage='source_request';diagnostic={};bug=False
    try:
+    if unsupported:stage='queue_url';raise QueueUrlUnsupported('Queue contained an unsupported URL')
     # No Site credential, cookies, or API keys are attached to public sources.
     with guard.open(source_request_url(url,kind)) as response:
      body=response.read(8*1024*1024);enc=response.headers.get_content_charset() or 'utf-8'
@@ -181,28 +195,42 @@ while completed<args.max_pages:
     city=re.search(r'/hotels/([a-z0-9-]+)-hotels-list-\d+/',url)
     if foreign and kind=='list' and city and all(str(d.get('url','')).startswith('https://www.trip.com/hotels/'+city[1]+'-hotel-detail-') for d in json_hotels(raw,url)):
      payload['excludedCity']=city[1]
-   except (urllib.error.URLError,TimeoutError,ValueError,OSError) as error:
+   except Exception as error:
+    # Any other exception is the collector's own (V01-1), not the source's: it is still this page's failure.
+    bug=not isinstance(error,(urllib.error.URLError,TimeoutError,ValueError,OSError))
     if isinstance(error,SourcePolicyDenied):
      if error.reason=='source_redirect_page_review':redirect_counts[provider]=redirect_counts.get(provider,0)+1
      policy=policy_failure(error,redirect_counts.get(provider,1))
      if error.diagnostic:print(json.dumps(dict(sourceDiagnostic=True,url=url,reason=policy['error'],redirect=error.diagnostic)),flush=True)
+    elif isinstance(error,QueueUrlUnsupported):policy=contract_failure('queue_url_unsupported',2)
     else:policy=source_failure(error,job['attempts'])
-    if isinstance(error,ValueError) and stage!='source_request':
+    if bug or isinstance(error,ValueError) and stage!='source_request':
      print(json.dumps(dict(sourceDiagnostic=True,url=url,reason=policy['error'],error=type(error).__name__,stage=stage,**diagnostic)),flush=True)
-    cooldown=policy.pop('providerCooldownSeconds')
+    cooldown=policy.pop('providerCooldownSeconds',0)
     payload=dict(url=url,observations=[],links=[],**policy)
     if isinstance(error,SourcePolicyDenied) and error.stop_run:blocked_hosts.add(provider)
     if cooldown:
      payload['providerCooldownSeconds']=cooldown
      blocked_hosts.add(provider)
    payload['claimToken']=job['lease_token']
-   result=api('/api/crawl',payload)
+   try:result=api('/api/crawl',payload)
+   except urllib.error.HTTPError as error:
+    # The Site refuses a page's data with 400 (contract) or 413 (too large) before it saves anything, so the
+    # claim is still held: report this page failed. Access errors, an expired claim (409) and a refused
+    # failure report still end the run.
+    if error.code not in [400,413] or payload['status'] not in ['done','skipped']:raise
+    bug=True;name=f'site_contract_{error.code}'
+    print(json.dumps(dict(sourceDiagnostic=True,url=url,reason=name,httpStatus=error.code,stage='site_put',observations=len(payload['observations']),links=len(payload['links']))),flush=True)
+    payload=dict(url=url,observations=[],links=[],claimToken=job['lease_token'],**contract_failure(name,job['attempts']))
+    result=api('/api/crawl',payload)
    if payload['status']=='done' and result['accepted'] and payload['observations'] and not first_written:first_written=result.get('readbackId') or payload['observations'][0]['id']
    print(json.dumps(dict(url=url,status=payload['status'],reason=payload.get('error'),providerCooldownSeconds=payload.get('providerCooldownSeconds',0),accepted=result['accepted'],records=result['coverage']['records'])),flush=True)
    unavailable[provider]=unavailable.get(provider,0)+1 if payload.get('error')=='http_503' else 0
    if unavailable[provider]>=UNAVAILABLE_IN_A_ROW and provider not in blocked_hosts:
     blocked_hosts.add(provider);paused.append(provider)
     print(json.dumps(dict(providerPaused=provider,reason='http_503',consecutive=unavailable[provider],at=now())),flush=True)
+   streak=(provider,kind);unexpected[streak]=unexpected.get(streak,0)+1 if bug else 0
+   if unexpected[streak]>=UNEXPECTED_IN_A_ROW:raise RuntimeError(f'{unexpected[streak]} {provider} {kind} pages in a row failed on collector or Site contract errors; the run stops so the cause shows')
    next_request[host]=time.time()+max(3,args.interval);next_claim[provider]=time.time()+max(3,args.interval);completed+=1
   if completed>=args.max_pages:break
  if not progress:break

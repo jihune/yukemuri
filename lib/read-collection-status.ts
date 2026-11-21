@@ -16,11 +16,13 @@ export async function collectionStatusSideRows(db=favoritesDb()){
  const [cooldowns,issues]=await Promise.all([
   db.prepare("SELECT key,value FROM catalog_meta WHERE key IN ('crawl-provider-ready:jalan','crawl-provider-ready:trip')").all<{key:string;value:string}>(),
   // The collector stopped writing robots_* reasons in C08 (2026-10-21); stored rows keep their category.
+  // V01-1: a page the collector failed on itself (a parser exception, data the Site refused, a queue address it does not support) is source data to check.
   db.prepare(`SELECT provider,CASE
    WHEN error IN ('http_404','http_410') THEN 'missing_page'
    WHEN error IN ('http_403','http_429','robots_disallowed','robots_http_403','robots_http_429') OR error LIKE 'source_access_%' THEN 'access_limited'
    WHEN error IN ('URLError','TimeoutError','ConnectionError','robots_unavailable') OR error LIKE 'http_5%' OR error LIKE 'robots_http_5%' THEN 'connection'
    WHEN error IN ('ValueError','source_data_requires_review') THEN 'source_format'
+   WHEN error IN ('AttributeError','TypeError','LookupError','KeyError','IndexError','IncompleteRead','queue_url_unsupported') OR error GLOB 'site_contract_[0-9]*' THEN 'source_format'
    WHEN error IN ('source_redirect_requires_review','source_redirect_page_review','robots_redirect_requires_review','robots_response_requires_review','robots_response_too_large','robots_crawl_delay_requires_review','invalid_robots_crawl_delay','invalid_robots_request_rate','unsupported_source') THEN 'source_review'
    ELSE 'other' END AS reason,COUNT(*) AS count
    FROM crawl_jobs WHERE provider IN ('jalan','trip') AND status!='skipped' AND kind<>'names' AND error IS NOT NULL

@@ -1,0 +1,6 @@
+2026-11-15T14:00:40Z	unchanged copy	PASS	check rc=0
+2026-11-15T14:02:57Z	W1	HOLDS	check rc=1	"collector-side failure names are source data to check, not other request errors"	the whole classification of the collector-side names
+2026-11-15T14:05:08Z	W2	HOLDS	check rc=1	"collector-side failure names are source data to check, not other request errors"	the site_contract_ names
+2026-11-15T14:07:18Z	W3	HOLDS	check rc=1	"collector-side failure names are source data to check, not other request errors"	the queue_url_unsupported name
+2026-11-15T14:09:31Z	W4	HOLDS	check rc=1	"collector-side failure names are source data to check, not other request errors"	the parser exception names
+SUMMARY controls_held=4 of 4; unchanged copy rc=0
