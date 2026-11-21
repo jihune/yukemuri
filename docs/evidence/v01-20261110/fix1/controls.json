@@ -175,7 +175,7 @@
   "new": "!(provider==='jalan'?property.url.includes('/yad'+id+'/'):true)",
   "expect": "await refused({url:tripRelinked.sources[0].url,status:'done',observations:[tripRelinked],links:[]},'Invalid catalogue observation')"},
  {"id": "L-closed-until", "rule": "check: the closedUntil date is later than today, so a closure does not expire as the calendar moves",
-  "file": "scripts/check-lifecycle-worker.mjs", "build": false, "check": ["node", "scripts/check-lifecycle-worker.mjs"],
+  "file": "scripts/check-lifecycle-worker.mjs", "build": true, "check": ["node", "scripts/check-lifecycle-worker.mjs"],
   "old": "closedUntil:new Date(now.getTime()+180*86400000).toISOString().slice(0,10)}",
   "new": "closedUntil:new Date(now.getTime()-86400000).toISOString().slice(0,10)}",
   "expect": "assert.equal((await api('/api/hotel-lifecycle','PUT',proof)).result,'saved')"}
