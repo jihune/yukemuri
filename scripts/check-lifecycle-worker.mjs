@@ -71,7 +71,7 @@ try{
  let search=await api('/api/hotels?q=Life%20Hakone&fresh=1');assert(search.hotels.some(h=>h.id===hakone.id),'A 404 does not hide the hotel');
  await api('/api/favorites','PUT',{hotelId:hakone.id,saved:true},200,false);
  const now=new Date(),checkedAt=now.toISOString(),today=checkedAt.slice(0,10);
- const proof={id:hakone.id,state:'temporarily_closed',sourceUrl:'https://official.example/news/renovation',sourceKind:'official_property',sourceLabel:'Official property notice',evidence:'Whole property temporarily closed for renovation.',identityEvidence:'Exact hotel name and street address verified against original hotel.',checkedAt,effectiveDate:today,closedUntil:'2027-06-30'};
+ const proof={id:hakone.id,state:'temporarily_closed',sourceUrl:'https://official.example/news/renovation',sourceKind:'official_property',sourceLabel:'Official property notice',evidence:'Whole property temporarily closed for renovation.',identityEvidence:'Exact hotel name and street address verified against original hotel.',checkedAt,effectiveDate:today,closedUntil:new Date(now.getTime()+180*86400000).toISOString().slice(0,10)};
  await api('/api/hotel-lifecycle','PUT',proof,403,false);await api('/api/hotel-lifecycle','PUT',{...proof,sourceKind:'ota'},400);await api('/api/hotel-lifecycle','PUT',{...proof,effectiveDate:'2099-01-01'},400);
  assert.equal((await api('/api/hotel-lifecycle','PUT',proof)).result,'saved');assert.equal((await api('/api/hotel-lifecycle','PUT',proof)).result,'replayed');
  search=await api('/api/hotels?q=Life%20Hakone&fresh=1');assert(!search.hotels.some(h=>h.id===hakone.id));
