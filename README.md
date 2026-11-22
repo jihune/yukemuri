@@ -2,9 +2,9 @@
 
 사이트 주소: https://yukemuri.jihune.workers.dev (Cloudflare Workers 무료 플랜, 2026-10-13 전환. 옛 Sites 주소는 더 이상 갱신하지 않는다.)
 
-새 세션은 [START_HERE.md](START_HERE.md)부터 읽는다. 2026-10-09 사용자 요청에 따라 Codex 웹·Claude Code 웹 공통 개발 레포를 준비했다. 기존 Sites 호스팅·운영 D1·Python 예약은 유지한다.
-개발 기준은 public [jihune/yukemuri](https://github.com/jihune/yukemuri)다(2026-10-11 private에서 전환). 실제 Sites 게시 커밋과 GitHub 커밋을 별도로 기록한다. 원래 Git 그래프는 [이력 보존 안내](docs/legacy-history.md)에 따라 복원할 수 있다.
-환경 설정은 [클라우드 개발](docs/cloud-development.md), 배포 전달은 [Sites 인수인계](docs/sites-handoff.md), 최신 보존 범위는 [대화 인계](docs/conversation-handoff.md)를 따른다. [2026-10-09 이관 기록](docs/migration-20261009.md)은 이전 준비 시점의 기록이다.
+새 세션은 [START_HERE.md](START_HERE.md)부터 읽는다. 2026-10-09 사용자 요청에 따라 Codex 웹·Claude Code 웹 공통 개발 레포를 준비했다. 2026-10-13부터 호스팅은 Cloudflare Worker, 운영 DB는 Cloudflare D1이고 수집은 앱 레포의 `collect.yml`이 한다.
+개발 기준은 public [jihune/yukemuri](https://github.com/jihune/yukemuri)다(2026-10-11 private에서 전환). 실제 배포된 Worker 버전과 GitHub 커밋을 별도로 기록한다. 원래 Git 그래프는 [이력 보존 안내](docs/legacy-history.md)에 따라 복원할 수 있다.
+환경 설정은 [클라우드 개발](docs/cloud-development.md), 배포는 [Cloudflare 배포](docs/cloudflare-deploy.md)(H01 전 Sites 절차는 [Sites 인수인계](docs/sites-handoff.md)), 최신 보존 범위는 [대화 인계](docs/conversation-handoff.md)를 따른다. [2026-10-09 이관 기록](docs/migration-20261009.md)은 이전 준비 시점의 기록이다.
 현재 순서는 [작업 우선순위](docs/roadmap.md), 최근 결과는 [인수인계](docs/work-handoff-latest.md)에 있다.
 
 최신 운영 점검: [2026-10-08 운영 체크포인트](docs/operations-checkpoint-20261008.md).
@@ -41,7 +41,7 @@ pnpm exec tsc --noEmit
 pnpm build
 ```
 
-React·TypeScript와 vinext/Vite로 Cloudflare Worker를 만든다. 운영 DB는 D1이다. 로컬 실행은 별도 DB를 사용한다. 관리형 Sites 환경에서는 제공되는 빌드·게시 절차를 따른다.
+React·TypeScript와 vinext/Vite로 Cloudflare Worker를 만든다. 운영 DB는 D1이다. 로컬 실행은 별도 DB를 사용한다. 배포는 main push의 `deploy.yml`이 하며 절차는 [Cloudflare 배포](docs/cloudflare-deploy.md)에 있다.
 
 웹 클라우드에서는 Node 24를 선택한다. 초기 설정은 해시를 확인하며 공개 seed·이미지·fixture·Git 이력 보존본을 복원하고 잠금 파일대로 의존성을 설치한다. 공통 전체 검사는 `python3 scripts/cloud-check.py --full`이다. 원래 코드와 데이터 바이트를 바꾸지 않는다.
 
@@ -62,5 +62,5 @@ node scripts/check-comparison-worker.mjs
 
 Git이 실시간 D1 백업을 대신하지 않는다. 최신 관측, 큐, 번역과 즐겨찾기는 운영 DB에 있다. [내보내기·복원 절차](docs/catalog-operations.md)는 별도 관리 작업이다. 비밀, 개인 즐겨찾기와 운영 DB 파일은 Git에 넣지 않는다.
 
-정기 수집은 GitHub의 Python 예약이 시작한다. 3시간 간격의 소량 처리이며 LLM을 호출하지 않는다. 번역·한국어 이름 조사·숙소 연결·폐업 판단은 이 예약에 포함하지 않는다.
-Sites의 수집기를 예약 때 받아 실행하는 [전환 방식](docs/collector-runner-migration.md)을 준비했다. GitHub의 기존 예약 전환은 적용됐다. [자동 DB 백업](docs/db-backups.md)도 기존 실행기에서 운영한다.
+정기 수집은 앱 레포 Actions의 ‘Yukemuri collection’(`collect.yml`)이 한다. 매일 00:47Z에 바깥 예약기가 실행기 레포를 거쳐 첫 실행을 열고, 끝난 실행이 한 시간쯤 뒤 다음 실행을 이어 부르며, 매시간 37분의 ‘Yukemuri collection spare’가 끊긴 고리를 다시 잇는다. 한 실행은 그날 D1 사용량이 허용하는 쪽수(최대 120쪽)만 처리하고 LLM을 호출하지 않는다. 번역·한국어 이름 조사·숙소 연결·폐업 판단은 이 수집에 포함하지 않는다.
+H01 전환 전에는 Sites의 수집기를 예약 때 받아 실행했다([전환 방식](docs/collector-runner-migration.md), H01 전 기록). 지금은 `collect.yml`이 체크아웃의 수집기를 직접 실행한다. [자동 DB 백업](docs/db-backups.md)은 기존 private 실행기 레포에서 운영한다.

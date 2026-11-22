@@ -1,5 +1,7 @@
 # 기존 Sites로 결과 전달
 
+이 문서는 H01 전환(2026-10-13) 전 Sites 시절의 기록이다. 지금 운영은 Cloudflare이고 배포는 main push의 `deploy.yml`이 한다(`cloudflare-deploy.md`).
+
 기록: 2026-10-09. 호스팅 이전은 보류한다.
 갱신: 2026-10-11. 호스팅은 Cloudflare 무료 플랜으로 옮긴다(H01, 사용자 결정 2026-10-11T08:25Z). 새 배포 절차는 `cloudflare-deploy.md`다. 6단계 전환이 끝날 때까지 운영은 아래 Sites이고, Sites 게시는 하지 않기로 했다(S01).
 현재 Site ID: `appgprj_6abf95be6ea0819181cc3e93535413ac`.

@@ -1,14 +1,15 @@
 // H01 step 6 collection workflows without an account: collect.yml (dispatch
-// only, catalogue lock, snapshot deploy at the end) and collect-watch.yml
-// (12-hour freshness), plus the freshness rule against fixture runs and a
-// local stand-in for the GitHub API.
+// only, catalogue lock, snapshot deploy at the end), collect-watch.yml
+// (12-hour freshness) and collect-spare.yml (O02: the hourly dispatch of
+// collect.yml, with controls), plus the freshness rule against fixture runs and
+// a local stand-in for the GitHub API.
 import {readFileSync,readdirSync,mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
-import {freshness,GENTLE_TITLE,LIMIT_HOURS,WORKFLOW} from './check-collection-freshness.mjs';
+import {CHECK_LIMIT_HOURS,CHECK_TITLE,CHECK_WORKFLOW,checkFreshness,freshness,GENTLE_TITLE,LIMIT_HOURS,WORKFLOW} from './check-collection-freshness.mjs';
 
 const read=file=>readFileSync('.github/workflows/'+file,'utf8');
 const block=(text,key)=>text.match(new RegExp(`^${key}:\\n((?:[ #].*\\n)+)`,'m'))?.[1]??'';
@@ -71,9 +72,74 @@ assert.equal(block(watch,'on'),"  schedule:\n    - cron: '41 */6 * * *'\n  workf
 assert.match(watch,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'watch token reads Actions runs only');
 assert(!/secrets\./.test(watch),'watch uses the workflow token only');
 assert.match(watch,/GH_TOKEN: \$\{\{ github\.token \}\}\n {8}run: node scripts\/check-collection-freshness\.mjs\n/);
-// No other cron in this public repository: collection starts only from the runner's dispatch.
+// O02 (user 2026-11-03): the hourly spare that restarts a broken chain is this public repository's
+// schedule, not the private runner's. It starts nothing but collect.yml in mode gentle, with the
+// workflow token, so the run it makes goes through collect.yml's overlap and budget steps (C06, C03;
+// check-collection-chain.mjs): it adds no second collector. Every part is checked, and a copy without
+// it must fail for that part (controls below, in the form of check-collection-chain.mjs).
+const spare=read('collect-spare.yml');
+const SPARE_STEP=['      - env:','          GH_TOKEN: ${{ github.token }}','        run: gh workflow run collect.yml --repo "$GITHUB_REPOSITORY" --ref main -f mode=gentle',''].join('\n');
+const SPARE_JOB=['jobs:','  dispatch:','    runs-on: ubuntu-24.04','    timeout-minutes: 3','    permissions:','      contents: read','      actions: write','    steps:',''].join('\n')+SPARE_STEP;
+function spareProblems(text){
+ const out=[],body=text.replace(/^[ \t]*#.*\n/gm,''),job=body.slice(body.indexOf('\njobs:\n')+1);
+ if(block(body,'on')!=="  schedule:\n    - cron: '37 * * * *'\n  workflow_dispatch:\n")out.push('on: is not the hourly cron \'37 * * * *\' plus workflow_dispatch without inputs');
+ if(!/^permissions:\n  contents: read\n(?! )/m.test(body))out.push('the top-level token is not read-only (contents: read)');
+ if(!/^jobs:\n  dispatch:\n/m.test(body)||/\n  \w[\w-]*:\n/.test(job.slice(job.indexOf('  dispatch:\n')+12)))out.push('the one job is not named dispatch');
+ if(!/^    runs-on: ubuntu-24\.04\n    timeout-minutes: 3\n/m.test(job))out.push('the job is not a 3-minute ubuntu-24.04 job');
+ if(!/^    permissions:\n      contents: read\n      actions: write\n    steps:\n/m.test(job))out.push('the job needs actions: write, and only that, to dispatch');
+ if((body.match(/actions: write/g)??[]).length!==1)out.push('actions: write outside the job');
+ if(!job.endsWith('    steps:\n'+SPARE_STEP))out.push('the step is not the one dispatch of collect.yml on main with mode gentle and the workflow token');
+ if(/\buses:|secrets\.|vars\./.test(body))out.push('a checkout, an action, a secret or a variable: the spare needs none');
+ // PR #291 review P2-1: the lines above look for a line anywhere, so a job-level if:, strategy: or needs: slipped
+ // through. The job as a whole is the text below and nothing else.
+ if(job!==SPARE_JOB)out.push('the job is not exactly the dispatch job (runs-on, timeout-minutes, permissions and the one step, nothing else): an if:, strategy:, needs: or container: would change whether or how often it dispatches');
+ return out;
+}
+assert.equal(spareProblems(spare).length,0,'collect-spare.yml: '+spareProblems(spare).join('; '));
+// collect.yml, the workflow the spare dispatches, has no schedule of its own (the 60-day rule above).
+const hasSchedule=text=>/^\s+schedule:/m.test(text);
+assert(!hasSchedule(collect),'collect.yml has no schedule of its own');
+// Only the watch and the spare have a cron in this public repository (they turn off after 60 days without repository
+// activity, comments in both; the outer scheduler's daily first run starts the chain again).
 for(const file of readdirSync('.github/workflows').filter(f=>/\.ya?ml$/.test(f)))
- assert.equal(/^\s+schedule:/m.test(read(file)),file==='collect-watch.yml',file+': only the watch has a schedule');
+ assert.equal(hasSchedule(read(file)),['collect-watch.yml','collect-spare.yml'].includes(file),file+': only the watch and the spare have a schedule');
+let spareControls=0;
+for(const [label,edit,problem] of [
+ ['no cron',t=>t.replace("    - cron: '37 * * * *'\n",''),'hourly cron'],
+ ['no schedule',t=>t.replace("  schedule:\n    - cron: '37 * * * *'\n",''),'hourly cron'],
+ ['another minute',t=>t.replace("'37 * * * *'","'0 * * * *'"),'hourly cron'],
+ ['every 15 minutes',t=>t.replace("'37 * * * *'","'*/15 * * * *'"),'hourly cron'],
+ ['a second cron',t=>t.replace("    - cron: '37 * * * *'\n","    - cron: '37 * * * *'\n    - cron: '7 */6 * * *'\n"),'hourly cron'],
+ ['no manual start',t=>t.replace('  workflow_dispatch:\n',''),'hourly cron'],
+ ['an input',t=>t.replace('  workflow_dispatch:\n','  workflow_dispatch:\n    inputs:\n      mode:\n        type: string\n'),'hourly cron'],
+ ['no actions: write',t=>t.replace('      actions: write\n',''),'actions: write'],
+ ['actions: write at the top',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: read\n  actions: write\n# bash'),'outside the job'],
+ ['write-all',t=>t.replace('      contents: read\n      actions: write\n','      contents: write\n      actions: write\n'),'actions: write, and only that'],
+ ['calls the chain',t=>t.replace('gh workflow run collect.yml','gh workflow run collect-chain.yml'),'one dispatch'],
+ ['calls the deploy',t=>t.replace('gh workflow run collect.yml','gh workflow run deploy.yml'),'one dispatch'],
+ ['mode check-access',t=>t.replace('mode=gentle','mode=check-access'),'one dispatch'],
+ ['no mode',t=>t.replace(' -f mode=gentle',''),'one dispatch'],
+ ['another ref',t=>t.replace('--ref main','--ref feature'),'one dispatch'],
+ ['no ref',t=>t.replace(' --ref main',''),'one dispatch'],
+ ['another token',t=>t.replace('${{ github.token }}','${{ secrets.YUKEMURI_SPARE_TOKEN }}'),'one dispatch'],
+ ['a checkout',t=>t.replace('    steps:\n','    steps:\n      - uses: actions/checkout@v7\n'),'checkout'],
+ ['a variable',t=>t.replace('ubuntu-24.04\n','ubuntu-24.04\n    if: vars.YUKEMURI_SPARE != \'off\'\n'),'variable'],
+ ['a second job',t=>t+'  later:\n    runs-on: ubuntu-24.04\n','one job'],
+ ['a 30-minute job',t=>t.replace('timeout-minutes: 3','timeout-minutes: 30'),'3-minute'],
+ ['write at the top for the whole run',t=>t.replace('permissions:\n  contents: read\n# bash','permissions:\n  contents: write\n# bash'),'read-only'],
+ // PR #291 review P2-1: the four copies that passed the first version of this check.
+ ['job if: false (never dispatches)',t=>t.replace('    runs-on: ubuntu-24.04\n','    if: false\n    runs-on: ubuntu-24.04\n'),'exactly the dispatch job'],
+ ['job if: manual start only',t=>t.replace('    runs-on: ubuntu-24.04\n',"    if: github.event_name == 'workflow_dispatch'\n    runs-on: ubuntu-24.04\n"),'exactly the dispatch job'],
+ ['job strategy matrix (dispatches twice)',t=>t.replace('    runs-on: ubuntu-24.04\n','    strategy:\n      matrix:\n        n: [1, 2]\n    runs-on: ubuntu-24.04\n'),'exactly the dispatch job'],
+ ['job if: false after timeout-minutes',t=>t.replace('    timeout-minutes: 3\n','    timeout-minutes: 3\n    if: false\n'),'exactly the dispatch job']
+]){
+ const copy=edit(spare);
+ assert.notEqual(copy,spare,'control '+label+' changed nothing');
+ assert(spareProblems(copy).some(p=>p.includes(problem)),`control "${label}" is not reported as ${problem}: ${JSON.stringify(spareProblems(copy))}`);spareControls++;
+}
+// A schedule added to collect.yml, or a cron in any other workflow, is what the two checks above report.
+assert(hasSchedule(collect.replace('on:\n','on:\n  schedule:\n    - cron: \'37 * * * *\'\n')),'control: a schedule in collect.yml is seen');spareControls++;
+assert(hasSchedule(read('deploy.yml').replace('on:\n','on:\n  schedule:\n    - cron: \'37 * * * *\'\n')),'control: a schedule in deploy.yml is seen');spareControls++;
 
 // Freshness rule: successful gentle runs only; none passes; over 12 hours fails.
 const now=Date.parse('2026-10-12T12:00:00Z'),at=h=>new Date(now-h*3600000).toISOString();
@@ -90,12 +156,25 @@ assert.deepEqual(freshness([run(1,{conclusion:'cancelled'})],now),{state:'none',
 // The runner cron fires hourly (C05) and GitHub delays or drops scheduled runs: any gap up to 12 hours passes, a longer one fails.
 assert.equal(freshness([run(12)],now).ok,true);assert.equal(freshness([run(15)],now).ok,false);
 
+// Daily check rule (V02-10): any daily check run counts by when it was made; none passes; over 30 hours fails.
+const usage=read('usage.yml');
+assert.match(usage,/^run-name: Cloudflare usage\$\{\{ inputs\.check && format\(' \(daily check\{0\}\)'/m,'the daily check title the watch filters on');
+const checkRun=(h,extra={})=>({status:'completed',conclusion:'success',display_title:CHECK_TITLE,created_at:at(h),...extra});
+assert.equal(CHECK_LIMIT_HOURS,30);assert.equal(CHECK_WORKFLOW,'usage.yml');
+assert.deepEqual(checkFreshness([],now),{state:'none',ok:true});
+assert.deepEqual(checkFreshness([checkRun(29),checkRun(5)],now),{state:'fresh',ok:true,lastRun:at(5),ageHours:5});
+assert.equal(checkFreshness([checkRun(30)],now).ok,true,'exactly 30 hours is still within the limit');
+assert.deepEqual(checkFreshness([checkRun(35)],now),{state:'stale',ok:false,lastRun:at(35),ageHours:35});
+// A failed or unfinished check still ran; a usage run that is not the daily check, or a control run, does not count.
+for(const other of [{conclusion:'failure'},{status:'in_progress',conclusion:null}])assert.equal(checkFreshness([checkRun(2,other),checkRun(35)],now).ok,true,JSON.stringify(other));
+for(const title of ['Cloudflare usage','Cloudflare usage (daily check, control many-failed)'])assert.equal(checkFreshness([checkRun(2,{display_title:title}),checkRun(35)],now).ok,false,title);
+
 // The script itself: skip before the switch, then the GitHub API through a local stand-in.
 const script=resolve('scripts/check-collection-freshness.mjs');
 const exec=(cwd,env)=>new Promise(done=>{const child=spawn(process.execPath,[script],{cwd,env:{PATH:process.env.PATH,...env}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>done({code,out}))});
 const folder=mkdtempSync(join(tmpdir(),'collect-watch-'));
-let requests=[],runs=[];
-const server=createServer((req,res)=>{requests.push({url:req.url,auth:req.headers.authorization});res.setHeader('content-type','application/json');res.end(JSON.stringify({workflow_runs:runs}))});
+let requests=[],runs=[],checks=[],checksDown=false;
+const server=createServer((req,res)=>{requests.push({url:req.url,auth:req.headers.authorization});if(checksDown&&req.url.includes('/usage.yml/')){res.statusCode=500;return res.end('{}')}res.setHeader('content-type','application/json');res.end(JSON.stringify({workflow_runs:req.url.includes('/usage.yml/')?checks:runs}))});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const TOKEN='watch-test-token';
 const env={GITHUB_REPOSITORY:'jihune/yukemuri',GH_TOKEN:TOKEN,GITHUB_API_URL:`http://127.0.0.1:${server.address().port}`};
@@ -107,15 +186,25 @@ try{
  writeFileSync(join(folder,'cloudflare-deploy.json'),JSON.stringify({...config,publicOrigin:'https://yukemuri.example-sub.workers.dev',autoDeploy:true}));
  result=await exec(folder,env);
  assert.equal(result.code,0,result.out);assert.match(result.out,/No successful gentle collection yet/);
- assert.deepEqual(requests.at(-1),{url:'/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?status=success&per_page=100',auth:'Bearer '+TOKEN});
+ assert.deepEqual(requests.slice(-2),[{url:'/repos/jihune/yukemuri/actions/workflows/collect.yml/runs?status=success&per_page=100',auth:'Bearer '+TOKEN},{url:'/repos/jihune/yukemuri/actions/workflows/usage.yml/runs?per_page=100',auth:'Bearer '+TOKEN}]);
+ assert.match(result.out,/No daily check run yet/);
  runs=[{...run(0),updated_at:new Date(Date.now()-3600000).toISOString()}];
  assert.equal((await exec(folder,env)).code,0);
  runs=[{...run(0),updated_at:new Date(Date.now()-13*3600000).toISOString()}];
  result=await exec(folder,env);
  assert.equal(result.code,1);assert.match(result.out,/::error::Last successful collection is 13 hours old/);
+ checksDown=true;const down=await exec(folder,env);checksDown=false;
+ assert.equal(down.code,1);assert.match(down.out,/::error::Last successful collection is 13 hours old/,'the collection verdict is printed before the daily check read fails');
+ runs=[{...run(0),updated_at:new Date(Date.now()-3600000).toISOString()}];
+ const stale=new Date(Date.now()-31*3600000).toISOString();
+ checks=[{...checkRun(0),created_at:stale}];
+ const checkResult=await exec(folder,env);
+ assert.equal(checkResult.code,1,checkResult.out);assert(checkResult.out.includes(`::error::Last daily check run (usage.yml) was made at ${stale}, 31 hours ago (limit 30)`),checkResult.out);
+ checks=[{...checkRun(0),created_at:new Date(Date.now()-2*3600000).toISOString()}];
+ assert.equal((await exec(folder,env)).code,0,'fresh collection and daily check pass');
  assert.equal((await exec(folder,{...env,GH_TOKEN:''})).code,1,'missing token fails instead of passing');
- for(const r of [result])assert(!r.out.includes(TOKEN),'token never printed');
+ for(const r of [result,checkResult])assert(!r.out.includes(TOKEN),'token never printed');
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
 
 const committed=JSON.parse(readFileSync('cloudflare-deploy.json','utf8'));
-console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);
+console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs and a ${CHECK_LIMIT_HOURS}-hour limit on daily check runs, spare at minute 37 of every hour dispatching only collect.yml on main in mode gentle (controls: ${spareControls} of ${spareControls} fail) (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);
