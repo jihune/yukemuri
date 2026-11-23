@@ -1,7 +1,9 @@
 # C07R: what one page of a gentle collection read from the account's D1, from the
 # GitHub Actions logs of 2026-11-16 .. 2026-11-22. The rules are in docs/C07R-20261123.md
 # ("판정 규칙"), committed (1a45b05) before this script ran on the logs.
-# Usage: python3 -I docs/evidence/c07r-20261123/measure-reads.py <logs dir> > measure-reads.json
+# Usage: python3 -I docs/evidence/c07r-20261123/measure-reads.py <logs dir> [<first day> <last day> [<readsPerPage now>]] > measure-reads.json
+# The days default to 2026-11-16 .. 2026-11-22 and the value now to 4600 (this PR's measure). A later measure on
+# other days passes them (and fetch-logs.py the same days); with fewer than 10 intervals V1 is ERROR but A is printed.
 # <logs dir> is what fetch-logs.py wrote (manifest.json and logs/<run>/<job>.log).
 # The last line printed to stderr is "VERDICT V1=<..> V2=<..> ..." .
 import json
@@ -9,13 +11,14 @@ import math
 import re
 import statistics
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
-OLD_READS_PER_PAGE = 4600
+OLD_READS_PER_PAGE = int(sys.argv[4]) if len(sys.argv) > 4 else 4600
 OLD_SNAPSHOT_READS = 168000
-LAST_DAYS = ['2026-11-20', '2026-11-21', '2026-11-22']
-ALL_DAYS = [f'2026-11-{d}' for d in range(16, 23)]
+FIRST_DAY, LAST_DAY = (sys.argv[2], sys.argv[3]) if len(sys.argv) > 3 else ('2026-11-16', '2026-11-22')
+ALL_DAYS = [(date.fromisoformat(FIRST_DAY) + timedelta(days=n)).isoformat() for n in range((date.fromisoformat(LAST_DAY) - date.fromisoformat(FIRST_DAY)).days + 1)]
+LAST_DAYS = ALL_DAYS[-3:]
 MIN_PAGES = 20
 MAX_GAP = timedelta(minutes=30)
 STAMP = re.compile(r'^﻿?(\d{4}-\d\d-\d\dT[\d:.]+)Z (.*)$')
@@ -96,10 +99,10 @@ def decide_v2(nmax, old=OLD_SNAPSHOT_READS):
 
 
 def self_test():
-    assert decide_v1([4601, 3000, 3500, 4000]) == ('RAISE', 4700), decide_v1([4601, 3000, 3500, 4000])
-    assert decide_v1([4600, 3000, 3500, 4000]) == ('KEEP', 4600)
-    assert decide_v1([3000, 3100, 3200, 9000]) == ('OUTLIER', None)
-    assert decide_v1([]) == ('ERROR', None)
+    assert decide_v1([4601, 3000, 3500, 4000], 4600) == ('RAISE', 4700), decide_v1([4601, 3000, 3500, 4000], 4600)
+    assert decide_v1([4600, 3000, 3500, 4000], 4600) == ('KEEP', 4600)
+    assert decide_v1([3000, 3100, 3200, 9000], 4600) == ('OUTLIER', None)
+    assert decide_v1([], 4600) == ('ERROR', None)
     assert decide_v2(160000) == ('KEEP', 168000) and decide_v2(160001) == ('RAISE', 169000)
     size, counts = parse_collect_log(['2026-11-16T00:47:40.1Z reason=today 5 rows written, 224105 read; writes allow 1 pages',
                                       '2026-11-16T00:48:00.0Z {"url": "a", "status": "done"}',
@@ -178,7 +181,7 @@ def main(root):
     # V1 and V2 on the last days, widened to 5 and 7 days when fewer than 10 intervals.
     def v1_for(pool):
         days = LAST_DAYS
-        for n in (3, 5, 7):
+        for n in (3, 5, len(ALL_DAYS)):
             days = ALL_DAYS[-n:]
             used = [x for x in pool if x['day'] in days]
             if len(used) >= 10:

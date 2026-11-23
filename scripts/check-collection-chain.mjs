@@ -59,7 +59,7 @@ const now=Date.parse('2026-10-21T12:40:00Z'),at=m=>new Date(now-m*60_000).toISOS
 const run=(id,minutesAgo,extra={})=>({id,display_title:GENTLE_TITLE,path:'.github/workflows/collect.yml',head_branch:'main',status:'completed',conclusion:'success',created_at:at(minutesAgo),...extra});
 // Budgets as collection-budget.mjs words them: a reading, and both fallbacks.
 const after=run(100,62),budget=pagesFor({rowsRead:1_500_000,rowsWritten:20_000});
-assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 read; writes allow 351 pages, reads 561, cap 120'});
+assert.deepEqual(budget,{pages:120,reason:'today 20000 rows written, 1500000 read; writes allow 351 pages, reads 423, cap 120'});
 const base={after,runs:[run(90,120),after],budget,now};
 const CASES={
  'not-gentle-main':[{after:{...after,head_branch:'feature'}},{after:{...after,display_title:'Yukemuri collection (check-access)'}},{after:{...after,path:'.github/workflows/deploy.yml'}}],

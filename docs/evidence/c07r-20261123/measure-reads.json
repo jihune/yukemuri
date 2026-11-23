@@ -1,0 +1,1003 @@
+{
+ "rule": "docs/C07R-20261123.md",
+ "days_used": [
+  "2026-11-20",
+  "2026-11-21",
+  "2026-11-22"
+ ],
+ "intervals": [
+  {
+   "run_id": 43782443576,
+   "day": "2026-11-16",
+   "size_at": "2026-11-16T00:47:40.0138823",
+   "pages": 120,
+   "next_size_at": "2026-11-16T01:47:44.1320280",
+   "delta_read": 838850,
+   "snapshots": [
+    {
+     "id": "1213347bd1923da3",
+     "rows": 155113,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155113,
+   "reads_per_page": 5697.808333333333,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1649076517150396
+  },
+  {
+   "run_id": 43794265967,
+   "day": "2026-11-16",
+   "size_at": "2026-11-16T02:47:34.9638654",
+   "pages": 120,
+   "next_size_at": "2026-11-16T03:47:47.8069893",
+   "delta_read": 795487,
+   "snapshots": [
+    {
+     "id": "174349cc7d486b0e",
+     "rows": 155211,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155211,
+   "reads_per_page": 5335.633333333333,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1046896264407722
+  },
+  {
+   "run_id": 43800242113,
+   "day": "2026-11-16",
+   "size_at": "2026-11-16T03:47:47.8069893",
+   "pages": 120,
+   "next_size_at": "2026-11-16T04:47:39.5072420",
+   "delta_read": 858703,
+   "snapshots": [
+    {
+     "id": "0cd4645d7a57b3cf",
+     "rows": 155353,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155353,
+   "reads_per_page": 5861.25,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1924774336897652
+  },
+  {
+   "run_id": 43990453081,
+   "day": "2026-11-17",
+   "size_at": "2026-11-17T00:47:44.6490730",
+   "pages": 120,
+   "next_size_at": "2026-11-17T01:47:34.9527851",
+   "delta_read": 785145,
+   "snapshots": [
+    {
+     "id": "646874afb9cedafa",
+     "rows": 155511,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155511,
+   "reads_per_page": 5246.95,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.0903277322594085
+  },
+  {
+   "run_id": 43998216514,
+   "day": "2026-11-17",
+   "size_at": "2026-11-17T01:47:34.9527851",
+   "pages": 120,
+   "next_size_at": "2026-11-17T02:47:47.4031813",
+   "delta_read": 852557,
+   "snapshots": [
+    {
+     "id": "d123efe5113496cf",
+     "rows": 155614,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155614,
+   "reads_per_page": 5807.858333333334,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1839425079850021
+  },
+  {
+   "run_id": 44012649727,
+   "day": "2026-11-17",
+   "size_at": "2026-11-17T03:47:40.3813482",
+   "pages": 120,
+   "next_size_at": "2026-11-17T04:47:39.9762476",
+   "delta_read": 854980,
+   "snapshots": [
+    {
+     "id": "d43dd63b55ea2855",
+     "rows": 155706,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155706,
+   "reads_per_page": 5827.283333333334,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.187307318427996
+  },
+  {
+   "run_id": 44210680747,
+   "day": "2026-11-18",
+   "size_at": "2026-11-18T00:50:32.4254780",
+   "pages": 120,
+   "next_size_at": "2026-11-18T01:47:43.7138753",
+   "delta_read": 853583,
+   "snapshots": [
+    {
+     "id": "6ca8d630e19e5dd8",
+     "rows": 155743,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 155743,
+   "reads_per_page": 5815.333333333333,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.18536731009582
+  },
+  {
+   "run_id": 44225795371,
+   "day": "2026-11-18",
+   "size_at": "2026-11-18T02:47:40.8567029",
+   "pages": 120,
+   "next_size_at": "2026-11-18T03:47:36.5922910",
+   "delta_read": 785001,
+   "snapshots": [
+    {
+     "id": "2a82ed02e5f65231",
+     "rows": 156116,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 156116,
+   "reads_per_page": 5240.708333333333,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.0901277600333288
+  },
+  {
+   "run_id": 44232854072,
+   "day": "2026-11-18",
+   "size_at": "2026-11-18T03:47:36.5922910",
+   "pages": 120,
+   "next_size_at": "2026-11-18T04:47:45.2207133",
+   "delta_read": 736179,
+   "snapshots": [
+    {
+     "id": "536527d32e6edf3c",
+     "rows": 156376,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 156376,
+   "reads_per_page": 4831.691666666667,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.0223288432162199
+  },
+  {
+   "run_id": 44446297341,
+   "day": "2026-11-19",
+   "size_at": "2026-11-19T02:42:57.9039968",
+   "pages": 120,
+   "next_size_at": "2026-11-19T03:43:01.3693958",
+   "delta_read": 843482,
+   "snapshots": [
+    {
+     "id": "375502149a549669",
+     "rows": 156860,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 156860,
+   "reads_per_page": 5721.85,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.171340091653937
+  },
+  {
+   "run_id": 44453343842,
+   "day": "2026-11-19",
+   "size_at": "2026-11-19T03:43:01.3693958",
+   "pages": 120,
+   "next_size_at": "2026-11-19T04:43:12.3276713",
+   "delta_read": 843172,
+   "snapshots": [
+    {
+     "id": "6e812073dd43b3bc",
+     "rows": 156896,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 156896,
+   "reads_per_page": 5718.966666666666,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1709095958894598
+  },
+  {
+   "run_id": 44648626987,
+   "day": "2026-11-20",
+   "size_at": "2026-11-20T00:47:40.2062327",
+   "pages": 120,
+   "next_size_at": "2026-11-20T01:25:44.1406496",
+   "delta_read": 845194,
+   "snapshots": [
+    {
+     "id": "8a2383b2a155247d",
+     "rows": 156998,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 156998,
+   "reads_per_page": 5734.966666666666,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1737175392306625
+  },
+  {
+   "run_id": 44653527652,
+   "day": "2026-11-20",
+   "size_at": "2026-11-20T01:25:44.1406496",
+   "pages": 120,
+   "next_size_at": "2026-11-20T02:25:47.9347182",
+   "delta_read": 858978,
+   "snapshots": [
+    {
+     "id": "c146f8b5cf61ab24",
+     "rows": 157027,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157027,
+   "reads_per_page": 5849.591666666666,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.192859325093737
+  },
+  {
+   "run_id": 44660707370,
+   "day": "2026-11-20",
+   "size_at": "2026-11-20T02:25:47.9347182",
+   "pages": 120,
+   "next_size_at": "2026-11-20T03:25:47.3458191",
+   "delta_read": 849517,
+   "snapshots": [
+    {
+     "id": "69e3c74d5e82acf3",
+     "rows": 157041,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157041,
+   "reads_per_page": 5770.633333333333,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.179720872101097
+  },
+  {
+   "run_id": 44667637597,
+   "day": "2026-11-20",
+   "size_at": "2026-11-20T03:25:47.3458191",
+   "pages": 120,
+   "next_size_at": "2026-11-20T04:26:01.4605299",
+   "delta_read": 858486,
+   "snapshots": [
+    {
+     "id": "b43b85ccb8ad9c05",
+     "rows": 157077,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157077,
+   "reads_per_page": 5845.075,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1921760866546314
+  },
+  {
+   "run_id": 44841926436,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T00:09:58.4981455",
+   "pages": 120,
+   "next_size_at": "2026-11-21T00:53:47.5826858",
+   "delta_read": 1352554,
+   "snapshots": [
+    {
+     "id": "b4eeeac012eb9751",
+     "rows": 157122,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    },
+    {
+     "id": "a93809534678ec38",
+     "rows": 157119,
+     "rewrite": false,
+     "workflow": "deploy.yml"
+    }
+   ],
+   "snapshot_rows": 314241,
+   "reads_per_page": 8652.608333333334,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.878286349118178
+  },
+  {
+   "run_id": 44846126076,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T00:53:47.5826858",
+   "pages": 120,
+   "next_size_at": "2026-11-21T01:47:41.6589344",
+   "delta_read": 885044,
+   "snapshots": [
+    {
+     "id": "c469e502322e0b38",
+     "rows": 157136,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157136,
+   "reads_per_page": 6065.9,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.2290570754061936
+  },
+  {
+   "run_id": 44852217970,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T01:47:41.6589344",
+   "pages": 120,
+   "next_size_at": "2026-11-21T02:47:35.5504792",
+   "delta_read": 879842,
+   "snapshots": [
+    {
+     "id": "7d1dc45fc5c935a1",
+     "rows": 157181,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157181,
+   "reads_per_page": 6022.175,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.221833078739064
+  },
+  {
+   "run_id": 44857769046,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T02:47:35.5504792",
+   "pages": 120,
+   "next_size_at": "2026-11-21T03:47:44.7930134",
+   "delta_read": 867468,
+   "snapshots": [
+    {
+     "id": "f33079d7b3ff754a",
+     "rows": 157206,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157206,
+   "reads_per_page": 5918.85,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.2046493542563532
+  },
+  {
+   "run_id": 44968331834,
+   "day": "2026-11-22",
+   "size_at": "2026-11-22T00:47:44.2810965",
+   "pages": 120,
+   "next_size_at": "2026-11-22T01:47:46.2051731",
+   "delta_read": 862581,
+   "snapshots": [
+    {
+     "id": "7e70cb9d4e4d1a93",
+     "rows": 157233,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157233,
+   "reads_per_page": 5877.9,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.1978627968337732
+  },
+  {
+   "run_id": 44973089769,
+   "day": "2026-11-22",
+   "size_at": "2026-11-22T01:47:46.2051731",
+   "pages": 120,
+   "next_size_at": "2026-11-22T02:37:33.2142551",
+   "delta_read": 869246,
+   "snapshots": [
+    {
+     "id": "006308699812a04b",
+     "rows": 157251,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157251,
+   "reads_per_page": 5933.291666666667,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.2071184557700319
+  },
+  {
+   "run_id": 44981467887,
+   "day": "2026-11-22",
+   "size_at": "2026-11-22T03:37:32.9244822",
+   "pages": 120,
+   "next_size_at": "2026-11-22T04:37:34.8686964",
+   "delta_read": 869673,
+   "snapshots": [
+    {
+     "id": "d977681d8ed213ec",
+     "rows": 157287,
+     "rewrite": false,
+     "workflow": "collect.yml"
+    }
+   ],
+   "snapshot_rows": 157287,
+   "reads_per_page": 5936.55,
+   "old_estimate": 720100,
+   "actual_over_old_estimate": 1.207711428968199
+  }
+ ],
+ "excluded": [
+  {
+   "run_id": 43788301611,
+   "day": "2026-11-16",
+   "size_at": "2026-11-16T01:47:44.1320280",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 43806186325,
+   "day": "2026-11-16",
+   "size_at": "2026-11-16T04:47:39.5072420",
+   "pages": 110,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44005534852,
+   "day": "2026-11-17",
+   "size_at": "2026-11-17T02:47:47.4031813",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44019599203,
+   "day": "2026-11-17",
+   "size_at": "2026-11-17T04:47:39.9762476",
+   "pages": 92,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44218461053,
+   "day": "2026-11-18",
+   "size_at": "2026-11-18T01:47:43.7138753",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44239748219,
+   "day": "2026-11-18",
+   "size_at": "2026-11-18T04:47:45.2207133",
+   "pages": 76,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44431192025,
+   "day": "2026-11-19",
+   "size_at": "2026-11-19T00:43:01.2548950",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44438955213,
+   "day": "2026-11-19",
+   "size_at": "2026-11-19T01:43:07.2019538",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44460197219,
+   "day": "2026-11-19",
+   "size_at": "2026-11-19T04:43:12.3276713",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44674325097,
+   "day": "2026-11-20",
+   "size_at": "2026-11-20T04:26:01.4605299",
+   "pages": 69,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44862899375,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T03:47:44.7930134",
+   "pages": 21,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44976936302,
+   "day": "2026-11-22",
+   "size_at": "2026-11-22T02:37:33.2142551",
+   "pages": 120,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  },
+  {
+   "run_id": 44985860266,
+   "day": "2026-11-22",
+   "size_at": "2026-11-22T04:37:34.8686964",
+   "pages": 57,
+   "reason": "next Size line more than 30 minutes after the run ended"
+  }
+ ],
+ "per_day": {
+  "2026-11-16": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 590,
+   "intervals": 3,
+   "median_a": 5697.808333333333,
+   "max_a": 5861.25,
+   "builds": 5,
+   "build_rows": 776303,
+   "rewrites": 1,
+   "account_reads_from_next_day_check": 4733168
+  },
+  "2026-11-17": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 572,
+   "intervals": 3,
+   "median_a": 5807.858333333334,
+   "max_a": 5827.283333333334,
+   "builds": 5,
+   "build_rows": 778224,
+   "rewrites": 1,
+   "account_reads_from_next_day_check": 4357258
+  },
+  "2026-11-18": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 556,
+   "intervals": 3,
+   "median_a": 5240.708333333333,
+   "max_a": 5815.333333333333,
+   "builds": 6,
+   "build_rows": 936210,
+   "rewrites": 0,
+   "account_reads_from_next_day_check": 4260262
+  },
+  "2026-11-19": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 600,
+   "intervals": 2,
+   "median_a": 5720.408333333333,
+   "max_a": 5721.85,
+   "builds": 5,
+   "build_rows": 784225,
+   "rewrites": 1,
+   "account_reads_from_next_day_check": 4326173
+  },
+  "2026-11-20": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 549,
+   "intervals": 4,
+   "median_a": 5807.854166666666,
+   "max_a": 5849.591666666666,
+   "builds": 5,
+   "build_rows": 785223,
+   "rewrites": 1,
+   "account_reads_from_next_day_check": 4328291
+  },
+  "2026-11-21": {
+   "size_lines": 8,
+   "runs_with_pages": 5,
+   "pages": 501,
+   "intervals": 4,
+   "median_a": 6044.0375,
+   "max_a": 8652.608333333334,
+   "builds": 6,
+   "build_rows": 942980,
+   "rewrites": 0,
+   "account_reads_from_next_day_check": 4264717
+  },
+  "2026-11-22": {
+   "size_lines": 7,
+   "runs_with_pages": 5,
+   "pages": 537,
+   "intervals": 3,
+   "median_a": 5933.291666666667,
+   "max_a": 5936.55,
+   "builds": 5,
+   "build_rows": 786330,
+   "rewrites": 1,
+   "account_reads_from_next_day_check": null
+  }
+ },
+ "V1_stage1": {
+  "verdict": "RAISE",
+  "readsPerPage": 8700,
+  "A": 8652.608333333334,
+  "median": 5918.85,
+  "n": 11,
+  "days": [
+   "2026-11-20",
+   "2026-11-22"
+  ],
+  "qualifying_all_days": 22
+ },
+ "V1": {
+  "verdict": "RAISE",
+  "readsPerPage": 6100,
+  "A": 6065.9,
+  "median": 5898.375,
+  "n": 10,
+  "days": [
+   "2026-11-20",
+   "2026-11-22"
+  ],
+  "qualifying_all_days": 21
+ },
+ "stage2_excluded_backup": [
+  {
+   "run_id": 44841926436,
+   "day": "2026-11-21",
+   "size_at": "2026-11-21T00:09:58.4981455",
+   "next_size_at": "2026-11-21T00:53:47.5826858",
+   "pages": 120,
+   "delta_read": 1352554,
+   "snapshot_rows": 314241,
+   "reads_per_page": 8652.608333333334
+  }
+ ],
+ "V2": {
+  "verdict": "KEEP",
+  "snapshotReads": 168000,
+  "Nmax": 157293,
+  "builds_in_days": 16,
+  "rewrites_flagged": []
+ },
+ "V4": {
+  "coverage_of_all_intervals_at_value": 1.0,
+  "value": 6100
+ },
+ "V5": {
+  "2026-11-16": {
+   "run_id": 43806186325,
+   "size_at": "2026-11-16T04:47:39.5072420",
+   "R_last": 3572741,
+   "pages": 110,
+   "snapshot_rows_after": 155453,
+   "account_reads": 4733168,
+   "per_page": 9136.127272727274
+  },
+  "2026-11-17": {
+   "run_id": 44019599203,
+   "size_at": "2026-11-17T04:47:39.9762476",
+   "R_last": 3654960,
+   "pages": 92,
+   "snapshot_rows_after": 155719,
+   "account_reads": 4357258,
+   "per_page": 5941.076086956522
+  },
+  "2026-11-18": {
+   "run_id": 44239748219,
+   "size_at": "2026-11-18T04:47:45.2207133",
+   "R_last": 3730057,
+   "pages": 76,
+   "snapshot_rows_after": 156493,
+   "account_reads": 4260262,
+   "per_page": 4917.263157894737
+  },
+  "2026-11-19": {
+   "run_id": 44460197219,
+   "size_at": "2026-11-19T04:43:12.3276713",
+   "R_last": 3478707,
+   "pages": 120,
+   "snapshot_rows_after": 156978,
+   "account_reads": 4326173,
+   "per_page": 5754.066666666667
+  },
+  "2026-11-20": {
+   "run_id": 44674325097,
+   "size_at": "2026-11-20T04:26:01.4605299",
+   "R_last": 3760318,
+   "pages": 69,
+   "snapshot_rows_after": 157080,
+   "account_reads": 4328291,
+   "per_page": 5954.971014492754
+  },
+  "2026-11-21": {
+   "run_id": 44862899375,
+   "size_at": "2026-11-21T03:47:44.7930134",
+   "R_last": 3984908,
+   "pages": 21,
+   "snapshot_rows_after": 157216,
+   "account_reads": 4264717,
+   "per_page": 5837.761904761905
+  },
+  "2026-11-22": {
+   "run_id": 44985860266,
+   "size_at": "2026-11-22T04:37:34.8686964",
+   "R_last": 3818833,
+   "pages": 57,
+   "snapshot_rows_after": 157293,
+   "account_reads": null,
+   "per_page": null
+  }
+ },
+ "rewrites": [
+  {
+   "run_id": 43779304521,
+   "workflow": "deploy.yml",
+   "rows": 10,
+   "started": "2026-11-16T00:24:37.905346"
+  },
+  {
+   "run_id": 43986344716,
+   "workflow": "deploy.yml",
+   "rows": 10,
+   "started": "2026-11-17T00:22:31.663320"
+  },
+  {
+   "run_id": 44427838778,
+   "workflow": "deploy.yml",
+   "rows": 10,
+   "started": "2026-11-19T00:23:22.946249"
+  },
+  {
+   "run_id": 44644635869,
+   "workflow": "deploy.yml",
+   "rows": 10,
+   "started": "2026-11-20T00:27:07.354186"
+  },
+  {
+   "run_id": 44965977467,
+   "workflow": "deploy.yml",
+   "rows": 10,
+   "started": "2026-11-22T00:26:11.534560"
+  }
+ ],
+ "builds": [
+  {
+   "run_id": 43806186325,
+   "workflow": "collect.yml",
+   "rows": 155453,
+   "started": "2026-11-16T05:12:02.412548"
+  },
+  {
+   "run_id": 43800242113,
+   "workflow": "collect.yml",
+   "rows": 155353,
+   "started": "2026-11-16T04:15:06.688389"
+  },
+  {
+   "run_id": 43794265967,
+   "workflow": "collect.yml",
+   "rows": 155211,
+   "started": "2026-11-16T03:15:32.504131"
+  },
+  {
+   "run_id": 43788301611,
+   "workflow": "collect.yml",
+   "rows": 155173,
+   "started": "2026-11-16T02:11:54.914464"
+  },
+  {
+   "run_id": 43782443576,
+   "workflow": "collect.yml",
+   "rows": 155113,
+   "started": "2026-11-16T01:18:01.627932"
+  },
+  {
+   "run_id": 44019599203,
+   "workflow": "collect.yml",
+   "rows": 155719,
+   "started": "2026-11-17T05:09:41.026123"
+  },
+  {
+   "run_id": 44012649727,
+   "workflow": "collect.yml",
+   "rows": 155706,
+   "started": "2026-11-17T04:15:20.529109"
+  },
+  {
+   "run_id": 44005534852,
+   "workflow": "collect.yml",
+   "rows": 155674,
+   "started": "2026-11-17T03:12:38.314807"
+  },
+  {
+   "run_id": 43998216514,
+   "workflow": "collect.yml",
+   "rows": 155614,
+   "started": "2026-11-17T02:15:06.318244"
+  },
+  {
+   "run_id": 43990453081,
+   "workflow": "collect.yml",
+   "rows": 155511,
+   "started": "2026-11-17T01:15:42.378531"
+  },
+  {
+   "run_id": 44239748219,
+   "workflow": "collect.yml",
+   "rows": 156493,
+   "started": "2026-11-18T05:05:55.592265"
+  },
+  {
+   "run_id": 44232854072,
+   "workflow": "collect.yml",
+   "rows": 156376,
+   "started": "2026-11-18T04:15:09.573339"
+  },
+  {
+   "run_id": 44225795371,
+   "workflow": "collect.yml",
+   "rows": 156116,
+   "started": "2026-11-18T03:16:05.166820"
+  },
+  {
+   "run_id": 44218461053,
+   "workflow": "collect.yml",
+   "rows": 155768,
+   "started": "2026-11-18T02:09:34.290666"
+  },
+  {
+   "run_id": 44210680747,
+   "workflow": "collect.yml",
+   "rows": 155743,
+   "started": "2026-11-18T01:14:14.514500"
+  },
+  {
+   "run_id": 44209235030,
+   "workflow": "deploy.yml",
+   "rows": 155714,
+   "started": "2026-11-18T00:45:48.126647"
+  },
+  {
+   "run_id": 44460197219,
+   "workflow": "collect.yml",
+   "rows": 156978,
+   "started": "2026-11-19T05:12:25.536887"
+  },
+  {
+   "run_id": 44453343842,
+   "workflow": "collect.yml",
+   "rows": 156896,
+   "started": "2026-11-19T04:11:48.953146"
+  },
+  {
+   "run_id": 44446297341,
+   "workflow": "collect.yml",
+   "rows": 156860,
+   "started": "2026-11-19T03:12:38.243404"
+  },
+  {
+   "run_id": 44438955213,
+   "workflow": "collect.yml",
+   "rows": 156834,
+   "started": "2026-11-19T02:08:45.530597"
+  },
+  {
+   "run_id": 44431192025,
+   "workflow": "collect.yml",
+   "rows": 156657,
+   "started": "2026-11-19T01:07:08.388294"
+  },
+  {
+   "run_id": 44674325097,
+   "workflow": "collect.yml",
+   "rows": 157080,
+   "started": "2026-11-20T04:45:08.661498"
+  },
+  {
+   "run_id": 44667637597,
+   "workflow": "collect.yml",
+   "rows": 157077,
+   "started": "2026-11-20T03:54:08.218626"
+  },
+  {
+   "run_id": 44660707370,
+   "workflow": "collect.yml",
+   "rows": 157041,
+   "started": "2026-11-20T02:54:08.602910"
+  },
+  {
+   "run_id": 44653527652,
+   "workflow": "collect.yml",
+   "rows": 157027,
+   "started": "2026-11-20T01:53:20.747989"
+  },
+  {
+   "run_id": 44648626987,
+   "workflow": "collect.yml",
+   "rows": 156998,
+   "started": "2026-11-20T01:17:38.164575"
+  },
+  {
+   "run_id": 44862899375,
+   "workflow": "collect.yml",
+   "rows": 157216,
+   "started": "2026-11-21T03:59:18.122597"
+  },
+  {
+   "run_id": 44857769046,
+   "workflow": "collect.yml",
+   "rows": 157206,
+   "started": "2026-11-21T03:16:56.014268"
+  },
+  {
+   "run_id": 44852217970,
+   "workflow": "collect.yml",
+   "rows": 157181,
+   "started": "2026-11-21T02:16:52.508162"
+  },
+  {
+   "run_id": 44846126076,
+   "workflow": "collect.yml",
+   "rows": 157136,
+   "started": "2026-11-21T01:16:46.884170"
+  },
+  {
+   "run_id": 44841926436,
+   "workflow": "collect.yml",
+   "rows": 157122,
+   "started": "2026-11-21T00:38:43.391569"
+  },
+  {
+   "run_id": 44842829087,
+   "workflow": "deploy.yml",
+   "rows": 157119,
+   "started": "2026-11-21T00:49:19.260421"
+  },
+  {
+   "run_id": 44985860266,
+   "workflow": "collect.yml",
+   "rows": 157293,
+   "started": "2026-11-22T04:55:38.897617"
+  },
+  {
+   "run_id": 44981467887,
+   "workflow": "collect.yml",
+   "rows": 157287,
+   "started": "2026-11-22T04:07:33.634976"
+  },
+  {
+   "run_id": 44976936302,
+   "workflow": "collect.yml",
+   "rows": 157266,
+   "started": "2026-11-22T03:03:14.750462"
+  },
+  {
+   "run_id": 44973089769,
+   "workflow": "collect.yml",
+   "rows": 157251,
+   "started": "2026-11-22T02:15:38.520070"
+  },
+  {
+   "run_id": 44968331834,
+   "workflow": "collect.yml",
+   "rows": 157233,
+   "started": "2026-11-22T01:17:27.947800"
+  }
+ ]
+}
