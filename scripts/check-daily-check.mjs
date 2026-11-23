@@ -97,6 +97,9 @@ const spent=(w,r)=>`today 85500 rows written, 3000 read; writes allow ${w} pages
 assert.deepEqual(budgetLeft(spent(-3,400)),{writes:-3,reads:400});assert.equal(budgetLeft('usage unavailable: fallback to 16 pages'),null);assert.equal(budgetLeft(undefined),null);
 for(const [w,r] of [[0,400],[-3,400],[30,0],[30,-12]])assert.deepEqual(runFailures({...done,pages:0,reason:spent(w,r)}),[],`writes ${w}, reads ${r}: the share is used`);
 assert.deepEqual(runFailures({...done,pages:0,reason:spent(30,400)}),['0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)']);
+// C04 follow-up: a run that would get under 16 pages takes 0 (collection-budget.mjs minPages); 16 on both sides fails.
+for(const [w,r] of [[15,400],[400,15],[1,1]])assert.deepEqual(runFailures({...done,pages:0,reason:spent(w,r)+'; under 16 pages: skipped'}),[],`writes ${w}, reads ${r}: under 16 pages`);
+assert.deepEqual(runFailures({...done,pages:0,reason:spent(16,16)}),['0쪽 실행인데 그날 예산이 남아 있었다(writes allow 16, reads 16)']);
 for(const reason of [undefined,null,'usage unavailable: fallback to 16 pages'])assert.deepEqual(runFailures({...done,pages:0,reason}),['0쪽 실행인데 reason=에서 남은 예산을 읽지 못함'],String(reason));
 // C06: a run made while another gentle run was in flight took 0 pages by design (collection-budget.mjs OVERLAP);
 // only a reason= that starts with overlap: passes.
@@ -166,12 +169,13 @@ const env={CLOUDFLARE_API_TOKEN:CF_TOKEN,CLOUDFLARE_ACCOUNT_ID:ACCOUNT,GH_TOKEN,
 const now=new Date('2026-10-18T01:30:00Z');
 const check=(extra={})=>dailyCheck({env:{...env,...extra},fetch,now,config});
 let id=0;
-function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,stored=false,snapshot='success',paused}={}){
+function addRun(pages,{created='2026-10-17T05:05:17Z',title=GENTLE_TITLE,conclusion='success',status='completed',jobMinutes=18,stepMinutes=16,states,log=true,allow=pages,stored=false,snapshot='success',paused,jobLate=0}={}){
  const run=++id,job=1000+run;
  runs.push({id:run,display_title:title,created_at:created,run_started_at:created,status,conclusion});
  const at=m=>new Date(Date.parse(created)+m*60000).toISOString().replace('.000','');
- jobs[run]=[{id:job,name:COLLECT_JOB,status,conclusion,started_at:at(0),completed_at:status==='completed'?at(jobMinutes):null,
-  steps:[{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)}]},{id:job+500,name:SNAPSHOT_JOB,status,conclusion:snapshot}];
+ jobs[run]=[{id:job,name:COLLECT_JOB,status,conclusion,started_at:at(0),completed_at:status==='completed'?at(jobMinutes+jobLate):null,
+  steps:[{name:'Set up job',started_at:at(0),completed_at:at(0)},{name:'Size the run within the free D1 limits',started_at:at(0),completed_at:at(0)},{name:COLLECTOR_STEP,started_at:at(0),completed_at:at(stepMinutes)},
+   {name:'Complete job',started_at:status==='completed'?at(jobMinutes):null,completed_at:status==='completed'?at(jobMinutes):null}]},{id:job+500,name:SNAPSHOT_JOB,status,conclusion:snapshot}];
  if(log)logs[job]=logText(pages,{states,allow,stored,paused});
  if(log&&stored&&snapshot!=='skipped')logs[job+500]=snapshotLog(20900,3010+run);
  return run;
@@ -239,12 +243,15 @@ try{
  const running=addRun(120,{created:'2026-10-17T23:58:00Z',status:'in_progress',conclusion:null,log:false});
  const flaky=addRun(10,{created:'2026-10-17T10:00:00Z',states:{done:4,retry:3,failed:3}}); // C09: more than half retry or failed
  const rested=addRun(5,{created:'2026-10-17T11:00:00Z',states:{done:2,retry:3},paused:[['jalan',3]]}); // C09: a pause alone passes
+ // 2026-11-01: GitHub gave the job an end an hour late; its steps took 18 minutes, so it passes.
+ const skewed=addRun(120,{created:'2026-10-17T08:47:00Z',jobLate:60});
  result=await check();
  assert.deepEqual(result.failures,[`gentle run ${flaky}: 처리한 10쪽 가운데 retry·failed가 6쪽으로 절반을 넘는다`,`gentle run ${slow}: 결과 cancelled`,`gentle run ${slow}: collect job 26분(26분 이상)`,`gentle run ${failed}: 결과 failure`,`gentle run ${failed}: 로그에서 pages= 줄을 읽지 못함`,`gentle run ${roomy}: 0쪽 실행인데 그날 예산이 남아 있었다(writes allow 30, reads 400)`,`gentle run ${running}: 끝나지 않음(in_progress): 다음 점검은 이 실행을 다시 보지 않는다`]);
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${running} \\| 23:58Z \\| in_progress \\|.*\\| \\*\\*실패\\*\\* \\|$`,'m'));
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${zero} \\| 19:35Z \\| success \\| 0 \\|.*\\| 통과\\(예산 소진\\) \\|$`,'m'),'a 0-page run after the share is used passes');
  assert.match(result.lines.join('\n'),new RegExp(`\\| ${rested} \\| 11:00Z \\| success \\| 5 \\|.*\\| 5 \\| done 2, retry 3; 쉼: jalan\\(503 3번 잇달아\\) \\|.*\\| 통과 \\|$`,'m'),'the paused provider in the table');
- runs=runs.filter(r=>![roomy,slow,failed,running,flaky,rested].includes(r.id));
+ assert.match(result.lines.join('\n'),new RegExp(`\\| ${skewed} \\| 08:47Z \\| success \\| 120 \\|.*\\| 16분 0초 \\| 18분 0초 \\|.*\\| 통과 \\|$`,'m'),'job time from its steps');
+ runs=runs.filter(r=>![roomy,slow,failed,running,flaky,rested,skewed].includes(r.id));
  result=await check();assert.deepEqual(result.failures,[]);
  assert.ok(result.lines.includes('**통과**: 90% 이상인 한도와 exceededResources가 없다. gentle 실행은 실패 조건(예산이 남았는데 0쪽, 그날 모두 0쪽, 26분 이상, 성공하지 않음, 끝나지 않음, 절반 넘게 retry·failed)에 들지 않는다.'),'the pass line does not deny a budget-spent 0-page run');
  runs=runs.filter(r=>r.id!==zero);
