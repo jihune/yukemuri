@@ -1,0 +1,2511 @@
+{
+ "rule_ambiguities": [
+  {
+   "sentence": "(S_i, S_next) 사이에 시작한 다른 실행 가운데 쪽을 받은 것이 없다",
+   "reading": "'시작'을 그 실행의 Size 줄 시각(Size 줄이 없으면 collect job 시작)으로 읽고, S_i를 낸 실행과 S_next를 낸 실행은 '다른 실행'에서 뺐다. collect job 시작 시각이나 run created_at으로 읽어도(S_next를 낸 실행은 같게 뺌) 값으로 쓰이는 구간 집합과 결과가 같은지 sensitivity에 적었다."
+  },
+  {
+   "sentence": "S_next는 그 실행의 snapshot job이 끝난 시각(없으면 collect job이 끝난 시각)보다 뒤에 처음 나오는 Size 줄이다",
+   "reading": "p>=1 실행의 snapshot job을 이름이 'snapshot / deploy'인 job으로 읽었다(chain job은 제외). '끝난 시각'은 manifest의 completed_at(초 단위)이고, '뒤에'는 엄밀히 큰 것, '30분 이내'는 간격 <= 1800초(30분 포함)로 읽었다. chain job 끝이나 collect job 끝을 기준으로 해도 같은지 sensitivity에 적었다."
+  },
+  {
+   "sentence": "날마다 Size 줄이 있는 gentle 수집 실행 수 등 일별 값",
+   "reading": "날은 실행의 created_at UTC 날로 셌다(Size 줄 날, 스냅숏 시작 날과 모두 같음을 sanity에서 확인했다). Size 줄이 없는 overlap 실행(reason=overlap)은 Size 줄 있는 실행 수에서 뺐다. lifecycle.yml 실행은 로그 폴더에 없다."
+  },
+  {
+   "sentence": "2단계: 구간이 00:13:00Z–00:14:00Z와 겹치면",
+   "reading": "구간 [S_i, S_next)와 [00:13:00, 00:14:00]가 겹치는 것(S_i < 00:14:00 이고 S_next > 00:13:00)으로 읽었다. 1단계에서 이미 제외된 구간은 다시 세지 않았다."
+  },
+  {
+   "sentence": "V1 Q3이 10개 미만이면 마지막 닷새, 그래도 미만이면 이레로 넓힌다 / V2 같은 Q3 날들",
+   "reading": "넓힌 뒤의 집합도 Q3이라 부르고 보고했다. V2의 날은 1단계 V1이 정한 날(넓혔다면 넓힌 날)을 쓴다."
+  },
+  {
+   "sentence": "a(소수 한 자리까지)",
+   "reading": "판정(A, median)은 약분한 분수로 정확히 계산하고, 파일의 a는 소수 둘째 자리에서 반올림(5는 올림)한 값이다. 정확한 값이 x.x5인 구간이 있어(a_dec4 참고) 짝수 반올림으로 읽으면 한 자리가 0.1 달라질 수 있으나 판정과 두 단계 V1 값에는 영향이 없다."
+  },
+  {
+   "sentence": "V4 새 readsPerPage",
+   "reading": "판정이 KEEP이면 바꾸지 않은 값 4,600을 새 값으로 읽었다. OUTLIER·ERROR이면 V4는 null."
+  },
+  {
+   "sentence": "V5 그 사이 스냅숏 읽기",
+   "reading": "마지막으로 쪽을 받은 실행의 Size 줄 시각 S_last부터 그 UTC 날 끝(다음 날 00:00:00Z) 전까지 시작한 스냅숏 줄의 N 합으로 읽었다."
+  }
+ ],
+ "daily": {
+  "2026-11-16": {
+   "collect_runs_in_manifest": 8,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 590,
+   "pages_done": 582,
+   "pages_retry": 3,
+   "pages_failed": 5,
+   "new_snapshot_lines": 5,
+   "new_snapshot_rows_read_sum": 776303,
+   "republished_snapshot_lines": 1,
+   "republished_snapshot_rows_read_sum": 10,
+   "next_day_usage_account_d1_reads": 4733168,
+   "next_day_usage_run_id": 43997469199,
+   "paged_run_ids": [
+    43782443576,
+    43788301611,
+    43794265967,
+    43800242113,
+    43806186325
+   ]
+  },
+  "2026-11-17": {
+   "collect_runs_in_manifest": 7,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 572,
+   "pages_done": 569,
+   "pages_retry": 2,
+   "pages_failed": 1,
+   "new_snapshot_lines": 5,
+   "new_snapshot_rows_read_sum": 778224,
+   "republished_snapshot_lines": 1,
+   "republished_snapshot_rows_read_sum": 10,
+   "next_day_usage_account_d1_reads": 4357258,
+   "next_day_usage_run_id": 44217726219,
+   "paged_run_ids": [
+    43990453081,
+    43998216514,
+    44005534852,
+    44012649727,
+    44019599203
+   ]
+  },
+  "2026-11-18": {
+   "collect_runs_in_manifest": 8,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 556,
+   "pages_done": 536,
+   "pages_retry": 14,
+   "pages_failed": 6,
+   "new_snapshot_lines": 6,
+   "new_snapshot_rows_read_sum": 936210,
+   "republished_snapshot_lines": 0,
+   "republished_snapshot_rows_read_sum": 0,
+   "next_day_usage_account_d1_reads": 4260262,
+   "next_day_usage_run_id": 44438778752,
+   "paged_run_ids": [
+    44210680747,
+    44218461053,
+    44225795371,
+    44232854072,
+    44239748219
+   ]
+  },
+  "2026-11-19": {
+   "collect_runs_in_manifest": 8,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 600,
+   "pages_done": 590,
+   "pages_retry": 7,
+   "pages_failed": 3,
+   "new_snapshot_lines": 5,
+   "new_snapshot_rows_read_sum": 784225,
+   "republished_snapshot_lines": 1,
+   "republished_snapshot_rows_read_sum": 10,
+   "next_day_usage_account_d1_reads": 4326173,
+   "next_day_usage_run_id": 44655435181,
+   "paged_run_ids": [
+    44431192025,
+    44438955213,
+    44446297341,
+    44453343842,
+    44460197219
+   ]
+  },
+  "2026-11-20": {
+   "collect_runs_in_manifest": 7,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 549,
+   "pages_done": 524,
+   "pages_retry": 22,
+   "pages_failed": 3,
+   "new_snapshot_lines": 5,
+   "new_snapshot_rows_read_sum": 785223,
+   "republished_snapshot_lines": 1,
+   "republished_snapshot_rows_read_sum": 10,
+   "next_day_usage_account_d1_reads": 4328291,
+   "next_day_usage_run_id": 44851642500,
+   "paged_run_ids": [
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44674325097
+   ]
+  },
+  "2026-11-21": {
+   "collect_runs_in_manifest": 8,
+   "size_line_runs": 8,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 501,
+   "pages_done": 495,
+   "pages_retry": 4,
+   "pages_failed": 2,
+   "new_snapshot_lines": 6,
+   "new_snapshot_rows_read_sum": 942980,
+   "republished_snapshot_lines": 0,
+   "republished_snapshot_rows_read_sum": 0,
+   "next_day_usage_account_d1_reads": 4264717,
+   "next_day_usage_run_id": 44972625560,
+   "paged_run_ids": [
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44862899375
+   ]
+  },
+  "2026-11-22": {
+   "collect_runs_in_manifest": 7,
+   "size_line_runs": 7,
+   "paged_runs_p_ge_1": 5,
+   "pages_total": 537,
+   "pages_done": 519,
+   "pages_retry": 12,
+   "pages_failed": 6,
+   "new_snapshot_lines": 5,
+   "new_snapshot_rows_read_sum": 786330,
+   "republished_snapshot_lines": 1,
+   "republished_snapshot_rows_read_sum": 10,
+   "next_day_usage_account_d1_reads": null,
+   "next_day_usage_run_id": null,
+   "paged_run_ids": [
+    44968331834,
+    44973089769,
+    44976936302,
+    44981467887,
+    44985860266
+   ]
+  }
+ },
+ "intervals": [
+  {
+   "day": "2026-11-16",
+   "run_id": 43782443576,
+   "S_i": "2026-11-16T00:47:40.0138823Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 120,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 224105,
+   "S_next": "2026-11-16T01:47:44.1320280Z",
+   "next_run_id": 43788301611,
+   "end_ref_time": "2026-11-16T01:21:50.0000000Z",
+   "gap_min": 25.902,
+   "R_next": 1062955,
+   "dR": 838850,
+   "sum_snap": 155113,
+   "snapshots_in_interval": [
+    [
+     "1213347bd1923da3",
+     "collect.yml",
+     43782443576,
+     155113,
+     false
+    ]
+   ],
+   "a": 5697.8,
+   "a_exact": "683737/120",
+   "a_dec4": "5697.8083",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-16",
+   "run_id": 43788301611,
+   "S_i": "2026-11-16T01:47:44.1320280Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 116,
+    "retry": 0,
+    "failed": 4
+   },
+   "R_i": 1062955,
+   "S_next": "2026-11-16T02:47:34.9638654Z",
+   "next_run_id": 43794265967,
+   "end_ref_time": "2026-11-16T02:15:20.0000000Z",
+   "gap_min": 32.249,
+   "R_next": 1918551,
+   "dR": 855596,
+   "sum_snap": 155173,
+   "snapshots_in_interval": [
+    [
+     "a56b68a02813f8b7",
+     "collect.yml",
+     43788301611,
+     155173,
+     false
+    ]
+   ],
+   "a": 5836.9,
+   "a_exact": "700423/120",
+   "a_dec4": "5836.8583",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-16",
+   "run_id": 43794265967,
+   "S_i": "2026-11-16T02:47:34.9638654Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 118,
+    "retry": 2,
+    "failed": 0
+   },
+   "R_i": 1918551,
+   "S_next": "2026-11-16T03:47:47.8069893Z",
+   "next_run_id": 43800242113,
+   "end_ref_time": "2026-11-16T03:19:49.0000000Z",
+   "gap_min": 27.98,
+   "R_next": 2714038,
+   "dR": 795487,
+   "sum_snap": 155211,
+   "snapshots_in_interval": [
+    [
+     "174349cc7d486b0e",
+     "collect.yml",
+     43794265967,
+     155211,
+     false
+    ]
+   ],
+   "a": 5335.6,
+   "a_exact": "160069/30",
+   "a_dec4": "5335.6333",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-16",
+   "run_id": 43800242113,
+   "S_i": "2026-11-16T03:47:47.8069893Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 2714038,
+   "S_next": "2026-11-16T04:47:39.5072420Z",
+   "next_run_id": 43806186325,
+   "end_ref_time": "2026-11-16T04:19:28.0000000Z",
+   "gap_min": 28.192,
+   "R_next": 3572741,
+   "dR": 858703,
+   "sum_snap": 155353,
+   "snapshots_in_interval": [
+    [
+     "0cd4645d7a57b3cf",
+     "collect.yml",
+     43800242113,
+     155353,
+     false
+    ]
+   ],
+   "a": 5861.3,
+   "a_exact": "23445/4",
+   "a_dec4": "5861.2500",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-16",
+   "run_id": 43806186325,
+   "S_i": "2026-11-16T04:47:39.5072420Z",
+   "pages": 110,
+   "page_counts": {
+    "done": 109,
+    "retry": 0,
+    "failed": 1
+   },
+   "R_i": 3572741,
+   "S_next": "2026-11-16T12:28:45.1184732Z",
+   "next_run_id": 43862534398,
+   "end_ref_time": "2026-11-16T05:15:32.0000000Z",
+   "gap_min": 433.219,
+   "R_next": 4733168,
+   "dR": 1160427,
+   "sum_snap": 155453,
+   "snapshots_in_interval": [
+    [
+     "58a3e451590b0991",
+     "collect.yml",
+     43806186325,
+     155453,
+     false
+    ]
+   ],
+   "a": 9136.1,
+   "a_exact": "502487/55",
+   "a_dec4": "9136.1273",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-17",
+   "run_id": 43990453081,
+   "S_i": "2026-11-17T00:47:44.6490730Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 120,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 344824,
+   "S_next": "2026-11-17T01:47:34.9527851Z",
+   "next_run_id": 43998216514,
+   "end_ref_time": "2026-11-17T01:19:12.0000000Z",
+   "gap_min": 28.383,
+   "R_next": 1129969,
+   "dR": 785145,
+   "sum_snap": 155511,
+   "snapshots_in_interval": [
+    [
+     "646874afb9cedafa",
+     "collect.yml",
+     43990453081,
+     155511,
+     false
+    ]
+   ],
+   "a": 5247.0,
+   "a_exact": "104939/20",
+   "a_dec4": "5246.9500",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-17",
+   "run_id": 43998216514,
+   "S_i": "2026-11-17T01:47:34.9527851Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 1129969,
+   "S_next": "2026-11-17T02:47:47.4031813Z",
+   "next_run_id": 44005534852,
+   "end_ref_time": "2026-11-17T02:19:12.0000000Z",
+   "gap_min": 28.59,
+   "R_next": 1982526,
+   "dR": 852557,
+   "sum_snap": 155614,
+   "snapshots_in_interval": [
+    [
+     "d123efe5113496cf",
+     "collect.yml",
+     43998216514,
+     155614,
+     false
+    ]
+   ],
+   "a": 5807.9,
+   "a_exact": "696943/120",
+   "a_dec4": "5807.8583",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-17",
+   "run_id": 44005534852,
+   "S_i": "2026-11-17T02:47:47.4031813Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 1982526,
+   "S_next": "2026-11-17T03:47:40.3813482Z",
+   "next_run_id": 44012649727,
+   "end_ref_time": "2026-11-17T03:16:25.0000000Z",
+   "gap_min": 31.256,
+   "R_next": 2799980,
+   "dR": 817454,
+   "sum_snap": 155674,
+   "snapshots_in_interval": [
+    [
+     "e4930d972497f01f",
+     "collect.yml",
+     44005534852,
+     155674,
+     false
+    ]
+   ],
+   "a": 5514.8,
+   "a_exact": "33089/6",
+   "a_dec4": "5514.8333",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-17",
+   "run_id": 44012649727,
+   "S_i": "2026-11-17T03:47:40.3813482Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 0,
+    "failed": 1
+   },
+   "R_i": 2799980,
+   "S_next": "2026-11-17T04:47:39.9762476Z",
+   "next_run_id": 44019599203,
+   "end_ref_time": "2026-11-17T04:19:14.0000000Z",
+   "gap_min": 28.433,
+   "R_next": 3654960,
+   "dR": 854980,
+   "sum_snap": 155706,
+   "snapshots_in_interval": [
+    [
+     "d43dd63b55ea2855",
+     "collect.yml",
+     44012649727,
+     155706,
+     false
+    ]
+   ],
+   "a": 5827.3,
+   "a_exact": "349637/60",
+   "a_dec4": "5827.2833",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-17",
+   "run_id": 44019599203,
+   "S_i": "2026-11-17T04:47:39.9762476Z",
+   "pages": 92,
+   "page_counts": {
+    "done": 92,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 3654960,
+   "S_next": "2026-11-17T08:26:19.3110594Z",
+   "next_run_id": 44046687165,
+   "end_ref_time": "2026-11-17T05:13:40.0000000Z",
+   "gap_min": 192.655,
+   "R_next": 4357258,
+   "dR": 702298,
+   "sum_snap": 155719,
+   "snapshots_in_interval": [
+    [
+     "9bebf05c94446669",
+     "collect.yml",
+     44019599203,
+     155719,
+     false
+    ]
+   ],
+   "a": 5941.1,
+   "a_exact": "546579/92",
+   "a_dec4": "5941.0761",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-18",
+   "run_id": 44210680747,
+   "S_i": "2026-11-18T00:50:32.4254780Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 115,
+    "retry": 5,
+    "failed": 0
+   },
+   "R_i": 500804,
+   "S_next": "2026-11-18T01:47:43.7138753Z",
+   "next_run_id": 44218461053,
+   "end_ref_time": "2026-11-18T01:18:11.0000000Z",
+   "gap_min": 29.545,
+   "R_next": 1354387,
+   "dR": 853583,
+   "sum_snap": 155743,
+   "snapshots_in_interval": [
+    [
+     "6ca8d630e19e5dd8",
+     "collect.yml",
+     44210680747,
+     155743,
+     false
+    ]
+   ],
+   "a": 5815.3,
+   "a_exact": "17446/3",
+   "a_dec4": "5815.3333",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-18",
+   "run_id": 44218461053,
+   "S_i": "2026-11-18T01:47:43.7138753Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 120,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 1354387,
+   "S_next": "2026-11-18T02:47:40.8567029Z",
+   "next_run_id": 44225795371,
+   "end_ref_time": "2026-11-18T02:13:07.0000000Z",
+   "gap_min": 34.564,
+   "R_next": 2208877,
+   "dR": 854490,
+   "sum_snap": 155768,
+   "snapshots_in_interval": [
+    [
+     "30496e4d90d4e4b8",
+     "collect.yml",
+     44218461053,
+     155768,
+     false
+    ]
+   ],
+   "a": 5822.7,
+   "a_exact": "349361/60",
+   "a_dec4": "5822.6833",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-18",
+   "run_id": 44225795371,
+   "S_i": "2026-11-18T02:47:40.8567029Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 110,
+    "retry": 9,
+    "failed": 1
+   },
+   "R_i": 2208877,
+   "S_next": "2026-11-18T03:47:36.5922910Z",
+   "next_run_id": 44232854072,
+   "end_ref_time": "2026-11-18T03:20:47.0000000Z",
+   "gap_min": 26.827,
+   "R_next": 2993878,
+   "dR": 785001,
+   "sum_snap": 156116,
+   "snapshots_in_interval": [
+    [
+     "2a82ed02e5f65231",
+     "collect.yml",
+     44225795371,
+     156116,
+     false
+    ]
+   ],
+   "a": 5240.7,
+   "a_exact": "125777/24",
+   "a_dec4": "5240.7083",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-18",
+   "run_id": 44232854072,
+   "S_i": "2026-11-18T03:47:36.5922910Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 117,
+    "retry": 0,
+    "failed": 3
+   },
+   "R_i": 2993878,
+   "S_next": "2026-11-18T04:47:45.2207133Z",
+   "next_run_id": 44239748219,
+   "end_ref_time": "2026-11-18T04:19:29.0000000Z",
+   "gap_min": 28.27,
+   "R_next": 3730057,
+   "dR": 736179,
+   "sum_snap": 156376,
+   "snapshots_in_interval": [
+    [
+     "536527d32e6edf3c",
+     "collect.yml",
+     44232854072,
+     156376,
+     false
+    ]
+   ],
+   "a": 4831.7,
+   "a_exact": "579803/120",
+   "a_dec4": "4831.6917",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-18",
+   "run_id": 44239748219,
+   "S_i": "2026-11-18T04:47:45.2207133Z",
+   "pages": 76,
+   "page_counts": {
+    "done": 74,
+    "retry": 0,
+    "failed": 2
+   },
+   "R_i": 3730057,
+   "S_next": "2026-11-18T09:03:39.5872281Z",
+   "next_run_id": 44272332644,
+   "end_ref_time": "2026-11-18T05:09:58.0000000Z",
+   "gap_min": 233.693,
+   "R_next": 4260262,
+   "dR": 530205,
+   "sum_snap": 156493,
+   "snapshots_in_interval": [
+    [
+     "4f89f68b9b6f3349",
+     "collect.yml",
+     44239748219,
+     156493,
+     false
+    ]
+   ],
+   "a": 4917.3,
+   "a_exact": "93428/19",
+   "a_dec4": "4917.2632",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-19",
+   "run_id": 44431192025,
+   "S_i": "2026-11-19T00:43:01.2548950Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 118,
+    "retry": 1,
+    "failed": 1
+   },
+   "R_i": 347078,
+   "S_next": "2026-11-19T01:43:07.2019538Z",
+   "next_run_id": 44438955213,
+   "end_ref_time": "2026-11-19T01:11:06.0000000Z",
+   "gap_min": 32.02,
+   "R_next": 1079053,
+   "dR": 731975,
+   "sum_snap": 156657,
+   "snapshots_in_interval": [
+    [
+     "1a1ac52b428d1e2d",
+     "collect.yml",
+     44431192025,
+     156657,
+     false
+    ]
+   ],
+   "a": 4794.3,
+   "a_exact": "287659/60",
+   "a_dec4": "4794.3167",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-19",
+   "run_id": 44438955213,
+   "S_i": "2026-11-19T01:43:07.2019538Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 1079053,
+   "S_next": "2026-11-19T02:42:57.9039968Z",
+   "next_run_id": 44446297341,
+   "end_ref_time": "2026-11-19T02:12:35.0000000Z",
+   "gap_min": 30.382,
+   "R_next": 1792053,
+   "dR": 713000,
+   "sum_snap": 156834,
+   "snapshots_in_interval": [
+    [
+     "9421988fd0b961ab",
+     "collect.yml",
+     44438955213,
+     156834,
+     false
+    ]
+   ],
+   "a": 4634.7,
+   "a_exact": "278083/60",
+   "a_dec4": "4634.7167",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-19",
+   "run_id": 44446297341,
+   "S_i": "2026-11-19T02:42:57.9039968Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 120,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 1792053,
+   "S_next": "2026-11-19T03:43:01.3693958Z",
+   "next_run_id": 44453343842,
+   "end_ref_time": "2026-11-19T03:16:43.0000000Z",
+   "gap_min": 26.306,
+   "R_next": 2635535,
+   "dR": 843482,
+   "sum_snap": 156860,
+   "snapshots_in_interval": [
+    [
+     "375502149a549669",
+     "collect.yml",
+     44446297341,
+     156860,
+     false
+    ]
+   ],
+   "a": 5721.9,
+   "a_exact": "114437/20",
+   "a_dec4": "5721.8500",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-19",
+   "run_id": 44453343842,
+   "S_i": "2026-11-19T03:43:01.3693958Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 115,
+    "retry": 5,
+    "failed": 0
+   },
+   "R_i": 2635535,
+   "S_next": "2026-11-19T04:43:12.3276713Z",
+   "next_run_id": 44460197219,
+   "end_ref_time": "2026-11-19T04:16:02.0000000Z",
+   "gap_min": 27.172,
+   "R_next": 3478707,
+   "dR": 843172,
+   "sum_snap": 156896,
+   "snapshots_in_interval": [
+    [
+     "6e812073dd43b3bc",
+     "collect.yml",
+     44453343842,
+     156896,
+     false
+    ]
+   ],
+   "a": 5719.0,
+   "a_exact": "171569/30",
+   "a_dec4": "5718.9667",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-19",
+   "run_id": 44460197219,
+   "S_i": "2026-11-19T04:43:12.3276713Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 118,
+    "retry": 0,
+    "failed": 2
+   },
+   "R_i": 3478707,
+   "S_next": "2026-11-19T09:26:52.7571848Z",
+   "next_run_id": 44496465628,
+   "end_ref_time": "2026-11-19T05:16:37.0000000Z",
+   "gap_min": 250.263,
+   "R_next": 4326173,
+   "dR": 847466,
+   "sum_snap": 156978,
+   "snapshots_in_interval": [
+    [
+     "82fede6631e5d3e5",
+     "collect.yml",
+     44460197219,
+     156978,
+     false
+    ]
+   ],
+   "a": 5754.1,
+   "a_exact": "86311/15",
+   "a_dec4": "5754.0667",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-20",
+   "run_id": 44648626987,
+   "S_i": "2026-11-20T00:47:40.2062327Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 112,
+    "retry": 7,
+    "failed": 1
+   },
+   "R_i": 348143,
+   "S_next": "2026-11-20T01:25:44.1406496Z",
+   "next_run_id": 44653527652,
+   "end_ref_time": "2026-11-20T01:21:22.0000000Z",
+   "gap_min": 4.369,
+   "R_next": 1193337,
+   "dR": 845194,
+   "sum_snap": 156998,
+   "snapshots_in_interval": [
+    [
+     "8a2383b2a155247d",
+     "collect.yml",
+     44648626987,
+     156998,
+     false
+    ]
+   ],
+   "a": 5735.0,
+   "a_exact": "172049/30",
+   "a_dec4": "5734.9667",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-20",
+   "run_id": 44653527652,
+   "S_i": "2026-11-20T01:25:44.1406496Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 112,
+    "retry": 7,
+    "failed": 1
+   },
+   "R_i": 1193337,
+   "S_next": "2026-11-20T02:25:47.9347182Z",
+   "next_run_id": 44660707370,
+   "end_ref_time": "2026-11-20T01:57:28.0000000Z",
+   "gap_min": 28.332,
+   "R_next": 2052315,
+   "dR": 858978,
+   "sum_snap": 157027,
+   "snapshots_in_interval": [
+    [
+     "c146f8b5cf61ab24",
+     "collect.yml",
+     44653527652,
+     157027,
+     false
+    ]
+   ],
+   "a": 5849.6,
+   "a_exact": "701951/120",
+   "a_dec4": "5849.5917",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-20",
+   "run_id": 44660707370,
+   "S_i": "2026-11-20T02:25:47.9347182Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 116,
+    "retry": 4,
+    "failed": 0
+   },
+   "R_i": 2052315,
+   "S_next": "2026-11-20T03:25:47.3458191Z",
+   "next_run_id": 44667637597,
+   "end_ref_time": "2026-11-20T02:58:20.0000000Z",
+   "gap_min": 27.456,
+   "R_next": 2901832,
+   "dR": 849517,
+   "sum_snap": 157041,
+   "snapshots_in_interval": [
+    [
+     "69e3c74d5e82acf3",
+     "collect.yml",
+     44660707370,
+     157041,
+     false
+    ]
+   ],
+   "a": 5770.6,
+   "a_exact": "173119/30",
+   "a_dec4": "5770.6333",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-20",
+   "run_id": 44667637597,
+   "S_i": "2026-11-20T03:25:47.3458191Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 118,
+    "retry": 1,
+    "failed": 1
+   },
+   "R_i": 2901832,
+   "S_next": "2026-11-20T04:26:01.4605299Z",
+   "next_run_id": 44674325097,
+   "end_ref_time": "2026-11-20T03:57:48.0000000Z",
+   "gap_min": 28.224,
+   "R_next": 3760318,
+   "dR": 858486,
+   "sum_snap": 157077,
+   "snapshots_in_interval": [
+    [
+     "b43b85ccb8ad9c05",
+     "collect.yml",
+     44667637597,
+     157077,
+     false
+    ]
+   ],
+   "a": 5845.1,
+   "a_exact": "233803/40",
+   "a_dec4": "5845.0750",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-20",
+   "run_id": 44674325097,
+   "S_i": "2026-11-20T04:26:01.4605299Z",
+   "pages": 69,
+   "page_counts": {
+    "done": 66,
+    "retry": 3,
+    "failed": 0
+   },
+   "R_i": 3760318,
+   "S_next": "2026-11-20T09:07:30.5819565Z",
+   "next_run_id": 44707982831,
+   "end_ref_time": "2026-11-20T04:48:49.0000000Z",
+   "gap_min": 258.693,
+   "R_next": 4328291,
+   "dR": 567973,
+   "sum_snap": 157080,
+   "snapshots_in_interval": [
+    [
+     "180b7a3c38b7b1c2",
+     "collect.yml",
+     44674325097,
+     157080,
+     false
+    ]
+   ],
+   "a": 5955.0,
+   "a_exact": "410893/69",
+   "a_dec4": "5954.9710",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-21",
+   "run_id": 44841926436,
+   "S_i": "2026-11-21T00:09:58.4981455Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 0,
+   "S_next": "2026-11-21T00:53:47.5826858Z",
+   "next_run_id": 44846126076,
+   "end_ref_time": "2026-11-21T00:43:09.0000000Z",
+   "gap_min": 10.643,
+   "R_next": 1352554,
+   "dR": 1352554,
+   "sum_snap": 314241,
+   "snapshots_in_interval": [
+    [
+     "b4eeeac012eb9751",
+     "collect.yml",
+     44841926436,
+     157122,
+     false
+    ],
+    [
+     "a93809534678ec38",
+     "deploy.yml",
+     44842829087,
+     157119,
+     false
+    ]
+   ],
+   "a": 8652.6,
+   "a_exact": "1038313/120",
+   "a_dec4": "8652.6083",
+   "backup_overlap": true,
+   "used_stage1": true,
+   "used_stage2": false,
+   "reasons": [],
+   "reasons_stage2": [
+    "제외(백업)"
+   ]
+  },
+  {
+   "day": "2026-11-21",
+   "run_id": 44846126076,
+   "S_i": "2026-11-21T00:53:47.5826858Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 120,
+    "retry": 0,
+    "failed": 0
+   },
+   "R_i": 1352554,
+   "S_next": "2026-11-21T01:47:41.6589344Z",
+   "next_run_id": 44852217970,
+   "end_ref_time": "2026-11-21T01:20:36.0000000Z",
+   "gap_min": 27.094,
+   "R_next": 2237598,
+   "dR": 885044,
+   "sum_snap": 157136,
+   "snapshots_in_interval": [
+    [
+     "c469e502322e0b38",
+     "collect.yml",
+     44846126076,
+     157136,
+     false
+    ]
+   ],
+   "a": 6065.9,
+   "a_exact": "60659/10",
+   "a_dec4": "6065.9000",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-21",
+   "run_id": 44852217970,
+   "S_i": "2026-11-21T01:47:41.6589344Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 2237598,
+   "S_next": "2026-11-21T02:47:35.5504792Z",
+   "next_run_id": 44857769046,
+   "end_ref_time": "2026-11-21T02:20:31.0000000Z",
+   "gap_min": 27.076,
+   "R_next": 3117440,
+   "dR": 879842,
+   "sum_snap": 157181,
+   "snapshots_in_interval": [
+    [
+     "7d1dc45fc5c935a1",
+     "collect.yml",
+     44852217970,
+     157181,
+     false
+    ]
+   ],
+   "a": 6022.2,
+   "a_exact": "240887/40",
+   "a_dec4": "6022.1750",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-21",
+   "run_id": 44857769046,
+   "S_i": "2026-11-21T02:47:35.5504792Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 119,
+    "retry": 1,
+    "failed": 0
+   },
+   "R_i": 3117440,
+   "S_next": "2026-11-21T03:47:44.7930134Z",
+   "next_run_id": 44862899375,
+   "end_ref_time": "2026-11-21T03:20:28.0000000Z",
+   "gap_min": 27.28,
+   "R_next": 3984908,
+   "dR": 867468,
+   "sum_snap": 157206,
+   "snapshots_in_interval": [
+    [
+     "f33079d7b3ff754a",
+     "collect.yml",
+     44857769046,
+     157206,
+     false
+    ]
+   ],
+   "a": 5918.9,
+   "a_exact": "118377/20",
+   "a_dec4": "5918.8500",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-21",
+   "run_id": 44862899375,
+   "S_i": "2026-11-21T03:47:44.7930134Z",
+   "pages": 21,
+   "page_counts": {
+    "done": 18,
+    "retry": 1,
+    "failed": 2
+   },
+   "R_i": 3984908,
+   "S_next": "2026-11-21T07:39:09.4417886Z",
+   "next_run_id": 44881211122,
+   "end_ref_time": "2026-11-21T04:03:03.0000000Z",
+   "gap_min": 216.107,
+   "R_next": 4264717,
+   "dR": 279809,
+   "sum_snap": 157216,
+   "snapshots_in_interval": [
+    [
+     "4ce1ae3ca541f4a5",
+     "collect.yml",
+     44862899375,
+     157216,
+     false
+    ]
+   ],
+   "a": 5837.8,
+   "a_exact": "122593/21",
+   "a_dec4": "5837.7619",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-22",
+   "run_id": 44968331834,
+   "S_i": "2026-11-22T00:47:44.2810965Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 116,
+    "retry": 1,
+    "failed": 3
+   },
+   "R_i": 348566,
+   "S_next": "2026-11-22T01:47:46.2051731Z",
+   "next_run_id": 44973089769,
+   "end_ref_time": "2026-11-22T01:21:21.0000000Z",
+   "gap_min": 26.42,
+   "R_next": 1211147,
+   "dR": 862581,
+   "sum_snap": 157233,
+   "snapshots_in_interval": [
+    [
+     "7e70cb9d4e4d1a93",
+     "collect.yml",
+     44968331834,
+     157233,
+     false
+    ]
+   ],
+   "a": 5877.9,
+   "a_exact": "58779/10",
+   "a_dec4": "5877.9000",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-22",
+   "run_id": 44973089769,
+   "S_i": "2026-11-22T01:47:46.2051731Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 116,
+    "retry": 3,
+    "failed": 1
+   },
+   "R_i": 1211147,
+   "S_next": "2026-11-22T02:37:33.2142551Z",
+   "next_run_id": 44976936302,
+   "end_ref_time": "2026-11-22T02:18:59.0000000Z",
+   "gap_min": 18.57,
+   "R_next": 2080393,
+   "dR": 869246,
+   "sum_snap": 157251,
+   "snapshots_in_interval": [
+    [
+     "006308699812a04b",
+     "collect.yml",
+     44973089769,
+     157251,
+     false
+    ]
+   ],
+   "a": 5933.3,
+   "a_exact": "142399/24",
+   "a_dec4": "5933.2917",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-22",
+   "run_id": 44976936302,
+   "S_i": "2026-11-22T02:37:33.2142551Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 115,
+    "retry": 5,
+    "failed": 0
+   },
+   "R_i": 2080393,
+   "S_next": "2026-11-22T03:37:32.9244822Z",
+   "next_run_id": 44981467887,
+   "end_ref_time": "2026-11-22T03:06:37.0000000Z",
+   "gap_min": 30.932,
+   "R_next": 2949160,
+   "dR": 868767,
+   "sum_snap": 157266,
+   "snapshots_in_interval": [
+    [
+     "8d8019cffe871394",
+     "collect.yml",
+     44976936302,
+     157266,
+     false
+    ]
+   ],
+   "a": 5929.2,
+   "a_exact": "237167/40",
+   "a_dec4": "5929.1750",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  },
+  {
+   "day": "2026-11-22",
+   "run_id": 44981467887,
+   "S_i": "2026-11-22T03:37:32.9244822Z",
+   "pages": 120,
+   "page_counts": {
+    "done": 117,
+    "retry": 1,
+    "failed": 2
+   },
+   "R_i": 2949160,
+   "S_next": "2026-11-22T04:37:34.8686964Z",
+   "next_run_id": 44985860266,
+   "end_ref_time": "2026-11-22T04:12:08.0000000Z",
+   "gap_min": 25.448,
+   "R_next": 3818833,
+   "dR": 869673,
+   "sum_snap": 157287,
+   "snapshots_in_interval": [
+    [
+     "d977681d8ed213ec",
+     "collect.yml",
+     44981467887,
+     157287,
+     false
+    ]
+   ],
+   "a": 5936.6,
+   "a_exact": "118731/20",
+   "a_dec4": "5936.5500",
+   "backup_overlap": false,
+   "used_stage1": true,
+   "used_stage2": true,
+   "reasons": []
+  },
+  {
+   "day": "2026-11-22",
+   "run_id": 44985860266,
+   "S_i": "2026-11-22T04:37:34.8686964Z",
+   "pages": 57,
+   "page_counts": {
+    "done": 55,
+    "retry": 2,
+    "failed": 0
+   },
+   "R_i": 3818833,
+   "S_next": "2026-11-22T11:56:00.4742492Z",
+   "next_run_id": 45019699813,
+   "end_ref_time": "2026-11-22T04:59:16.0000000Z",
+   "gap_min": 416.741,
+   "R_next": 4329685,
+   "dR": 510852,
+   "sum_snap": 157293,
+   "snapshots_in_interval": [
+    [
+     "4a21bc5243f70b6f",
+     "collect.yml",
+     44985860266,
+     157293,
+     false
+    ]
+   ],
+   "a": 6202.8,
+   "a_exact": "117853/19",
+   "a_dec4": "6202.7895",
+   "backup_overlap": false,
+   "used_stage1": false,
+   "used_stage2": false,
+   "reasons": [
+    "S_next가 끝난 시각보다 30분 초과"
+   ]
+  }
+ ],
+ "V1_stage1": {
+  "width_days": 3,
+  "days": [
+   "2026-11-20",
+   "2026-11-21",
+   "2026-11-22"
+  ],
+  "widened": false,
+  "counts_by_width": {
+   "3": 11,
+   "5": 16,
+   "7": 22
+  },
+  "Q3_count": 11,
+  "A": 8652.6,
+  "A_exact": "1038313/120",
+  "A_dec4": "8652.6083",
+  "median_Q3": 5918.9,
+  "median_exact": "118377/20",
+  "median_dec4": "5918.8500",
+  "two_x_median": 11837.7,
+  "verdict": "RAISE",
+  "value": 8700,
+  "argmax": [
+   {
+    "day": "2026-11-21",
+    "run_id": 44841926436,
+    "S_i": "2026-11-21T00:09:58.4981455Z"
+   }
+  ]
+ },
+ "V1_stage2_excluding_backup": {
+  "width_days": 3,
+  "days": [
+   "2026-11-20",
+   "2026-11-21",
+   "2026-11-22"
+  ],
+  "widened": false,
+  "counts_by_width": {
+   "3": 10,
+   "5": 15,
+   "7": 21
+  },
+  "Q3_count": 10,
+  "A": 6065.9,
+  "A_exact": "60659/10",
+  "A_dec4": "6065.9000",
+  "median_Q3": 5898.4,
+  "median_exact": "47187/8",
+  "median_dec4": "5898.3750",
+  "two_x_median": 11796.8,
+  "verdict": "RAISE",
+  "value": 6100,
+  "argmax": [
+   {
+    "day": "2026-11-21",
+    "run_id": 44846126076,
+    "S_i": "2026-11-21T00:53:47.5826858Z"
+   }
+  ]
+ },
+ "V2": {
+  "days": [
+   "2026-11-20",
+   "2026-11-21",
+   "2026-11-22"
+  ],
+  "Nmax": 157293,
+  "argmax": [
+   {
+    "id": "4a21bc5243f70b6f",
+    "run_id": 44985860266,
+    "workflow": "collect.yml",
+    "N": 157293
+   }
+  ],
+  "Nmax_x1.05": 165157.65,
+  "new_lines_considered": 16,
+  "verdict": "KEEP",
+  "value": "snapshotReads 변경 없음",
+  "FLAG_again_N_over_1000": []
+ },
+ "V2_Nmax_new_by_day": {
+  "2026-11-16": 155453,
+  "2026-11-17": 155719,
+  "2026-11-18": 156493,
+  "2026-11-19": 156978,
+  "2026-11-20": 157080,
+  "2026-11-21": 157216,
+  "2026-11-22": 157293
+ },
+ "V3": "unchanged (rule says do not change)",
+ "V4_stage1": {
+  "new_readsPerPage_used": 8700,
+  "covered": 22,
+  "total_used": 22,
+  "ratio": 1.0,
+  "per_day": {
+   "2026-11-16": {
+    "n": 3,
+    "median_a": 5697.8,
+    "max_a": 5861.3
+   },
+   "2026-11-17": {
+    "n": 3,
+    "median_a": 5807.9,
+    "max_a": 5827.3
+   },
+   "2026-11-18": {
+    "n": 3,
+    "median_a": 5240.7,
+    "max_a": 5815.3
+   },
+   "2026-11-19": {
+    "n": 2,
+    "median_a": 5720.4,
+    "max_a": 5721.9
+   },
+   "2026-11-20": {
+    "n": 4,
+    "median_a": 5807.9,
+    "max_a": 5849.6
+   },
+   "2026-11-21": {
+    "n": 4,
+    "median_a": 6044.0,
+    "max_a": 8652.6
+   },
+   "2026-11-22": {
+    "n": 3,
+    "median_a": 5933.3,
+    "max_a": 5936.6
+   }
+  }
+ },
+ "V4_stage2": {
+  "new_readsPerPage_used": 6100,
+  "covered": 21,
+  "total_used": 21,
+  "ratio": 1.0,
+  "per_day": {
+   "2026-11-16": {
+    "n": 3,
+    "median_a": 5697.8,
+    "max_a": 5861.3
+   },
+   "2026-11-17": {
+    "n": 3,
+    "median_a": 5807.9,
+    "max_a": 5827.3
+   },
+   "2026-11-18": {
+    "n": 3,
+    "median_a": 5240.7,
+    "max_a": 5815.3
+   },
+   "2026-11-19": {
+    "n": 2,
+    "median_a": 5720.4,
+    "max_a": 5721.9
+   },
+   "2026-11-20": {
+    "n": 4,
+    "median_a": 5807.9,
+    "max_a": 5849.6
+   },
+   "2026-11-21": {
+    "n": 3,
+    "median_a": 6022.2,
+    "max_a": 6065.9
+   },
+   "2026-11-22": {
+    "n": 3,
+    "median_a": 5933.3,
+    "max_a": 5936.6
+   }
+  }
+ },
+ "V5": {
+  "2026-11-16": {
+   "last_run_id": 43806186325,
+   "S_last": "2026-11-16T04:47:39.5072420Z",
+   "R_last": 3572741,
+   "T_account_reads": 4733168,
+   "sum_snap_to_day_end": 155453,
+   "snap_lines": 1,
+   "p_last": 110,
+   "value": 9136.1,
+   "numerator": 1004974
+  },
+  "2026-11-17": {
+   "last_run_id": 44019599203,
+   "S_last": "2026-11-17T04:47:39.9762476Z",
+   "R_last": 3654960,
+   "T_account_reads": 4357258,
+   "sum_snap_to_day_end": 155719,
+   "snap_lines": 1,
+   "p_last": 92,
+   "value": 5941.1,
+   "numerator": 546579
+  },
+  "2026-11-18": {
+   "last_run_id": 44239748219,
+   "S_last": "2026-11-18T04:47:45.2207133Z",
+   "R_last": 3730057,
+   "T_account_reads": 4260262,
+   "sum_snap_to_day_end": 156493,
+   "snap_lines": 1,
+   "p_last": 76,
+   "value": 4917.3,
+   "numerator": 373712
+  },
+  "2026-11-19": {
+   "last_run_id": 44460197219,
+   "S_last": "2026-11-19T04:43:12.3276713Z",
+   "R_last": 3478707,
+   "T_account_reads": 4326173,
+   "sum_snap_to_day_end": 156978,
+   "snap_lines": 1,
+   "p_last": 120,
+   "value": 5754.1,
+   "numerator": 690488
+  },
+  "2026-11-20": {
+   "last_run_id": 44674325097,
+   "S_last": "2026-11-20T04:26:01.4605299Z",
+   "R_last": 3760318,
+   "T_account_reads": 4328291,
+   "sum_snap_to_day_end": 157080,
+   "snap_lines": 1,
+   "p_last": 69,
+   "value": 5955.0,
+   "numerator": 410893
+  },
+  "2026-11-21": {
+   "last_run_id": 44862899375,
+   "S_last": "2026-11-21T03:47:44.7930134Z",
+   "R_last": 3984908,
+   "T_account_reads": 4264717,
+   "sum_snap_to_day_end": 157216,
+   "snap_lines": 1,
+   "p_last": 21,
+   "value": 5837.8,
+   "numerator": 122593
+  },
+  "2026-11-22": {
+   "last_run_id": 44985860266,
+   "S_last": "2026-11-22T04:37:34.8686964Z",
+   "R_last": 3818833,
+   "T_account_reads": null,
+   "sum_snap_to_day_end": 157293,
+   "snap_lines": 1,
+   "p_last": 57,
+   "value": null
+  }
+ },
+ "snapshots": [
+  {
+   "id": "55314e8cee8f0199",
+   "workflow": "deploy.yml",
+   "run_id": 43779304521,
+   "job": "deploy",
+   "line_ts": "2026-11-16T00:25:47.8733469Z",
+   "start": "2026-11-16T00:24:37.9053469Z",
+   "N": 10,
+   "again": true
+  },
+  {
+   "id": "1213347bd1923da3",
+   "workflow": "collect.yml",
+   "run_id": 43782443576,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-16T01:21:28.0529329Z",
+   "start": "2026-11-16T01:18:01.6279329Z",
+   "N": 155113,
+   "again": false
+  },
+  {
+   "id": "a56b68a02813f8b7",
+   "workflow": "collect.yml",
+   "run_id": 43788301611,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-16T02:14:56.4074647Z",
+   "start": "2026-11-16T02:11:54.9144647Z",
+   "N": 155173,
+   "again": false
+  },
+  {
+   "id": "174349cc7d486b0e",
+   "workflow": "collect.yml",
+   "run_id": 43794265967,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-16T03:19:22.4781318Z",
+   "start": "2026-11-16T03:15:32.5041318Z",
+   "N": 155211,
+   "again": false
+  },
+  {
+   "id": "0cd4645d7a57b3cf",
+   "workflow": "collect.yml",
+   "run_id": 43800242113,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-16T04:19:06.1723894Z",
+   "start": "2026-11-16T04:15:06.6883894Z",
+   "N": 155353,
+   "again": false
+  },
+  {
+   "id": "58a3e451590b0991",
+   "workflow": "collect.yml",
+   "run_id": 43806186325,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-16T05:15:10.2855482Z",
+   "start": "2026-11-16T05:12:02.4125482Z",
+   "N": 155453,
+   "again": false
+  },
+  {
+   "id": "58a3e451590b0991",
+   "workflow": "deploy.yml",
+   "run_id": 43986344716,
+   "job": "deploy",
+   "line_ts": "2026-11-17T00:23:16.3163201Z",
+   "start": "2026-11-17T00:22:31.6633201Z",
+   "N": 10,
+   "again": true
+  },
+  {
+   "id": "646874afb9cedafa",
+   "workflow": "collect.yml",
+   "run_id": 43990453081,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-17T01:18:49.6105314Z",
+   "start": "2026-11-17T01:15:42.3785314Z",
+   "N": 155511,
+   "again": false
+  },
+  {
+   "id": "d123efe5113496cf",
+   "workflow": "collect.yml",
+   "run_id": 43998216514,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-17T02:18:38.5622446Z",
+   "start": "2026-11-17T02:15:06.3182446Z",
+   "N": 155614,
+   "again": false
+  },
+  {
+   "id": "e4930d972497f01f",
+   "workflow": "collect.yml",
+   "run_id": 44005534852,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-17T03:15:58.8408070Z",
+   "start": "2026-11-17T03:12:38.3148070Z",
+   "N": 155674,
+   "again": false
+  },
+  {
+   "id": "d43dd63b55ea2855",
+   "workflow": "collect.yml",
+   "run_id": 44012649727,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-17T04:18:51.7501095Z",
+   "start": "2026-11-17T04:15:20.5291095Z",
+   "N": 155706,
+   "again": false
+  },
+  {
+   "id": "9bebf05c94446669",
+   "workflow": "collect.yml",
+   "run_id": 44019599203,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-17T05:13:17.1781238Z",
+   "start": "2026-11-17T05:09:41.0261238Z",
+   "N": 155719,
+   "again": false
+  },
+  {
+   "id": "8c9dbc4e924e2a12",
+   "workflow": "deploy.yml",
+   "run_id": 44209235030,
+   "job": "deploy",
+   "line_ts": "2026-11-18T00:49:50.5786476Z",
+   "start": "2026-11-18T00:45:48.1266476Z",
+   "N": 155714,
+   "again": false
+  },
+  {
+   "id": "6ca8d630e19e5dd8",
+   "workflow": "collect.yml",
+   "run_id": 44210680747,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-18T01:17:47.5965006Z",
+   "start": "2026-11-18T01:14:14.5145006Z",
+   "N": 155743,
+   "again": false
+  },
+  {
+   "id": "30496e4d90d4e4b8",
+   "workflow": "collect.yml",
+   "run_id": 44218461053,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-18T02:12:44.5706667Z",
+   "start": "2026-11-18T02:09:34.2906667Z",
+   "N": 155768,
+   "again": false
+  },
+  {
+   "id": "2a82ed02e5f65231",
+   "workflow": "collect.yml",
+   "run_id": 44225795371,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-18T03:20:19.2458206Z",
+   "start": "2026-11-18T03:16:05.1668206Z",
+   "N": 156116,
+   "again": false
+  },
+  {
+   "id": "536527d32e6edf3c",
+   "workflow": "collect.yml",
+   "run_id": 44232854072,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-18T04:19:01.0013396Z",
+   "start": "2026-11-18T04:15:09.5733396Z",
+   "N": 156376,
+   "again": false
+  },
+  {
+   "id": "4f89f68b9b6f3349",
+   "workflow": "collect.yml",
+   "run_id": 44239748219,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-18T05:09:28.6642654Z",
+   "start": "2026-11-18T05:05:55.5922654Z",
+   "N": 156493,
+   "again": false
+  },
+  {
+   "id": "4f89f68b9b6f3349",
+   "workflow": "deploy.yml",
+   "run_id": 44427838778,
+   "job": "deploy",
+   "line_ts": "2026-11-19T00:24:09.7812499Z",
+   "start": "2026-11-19T00:23:22.9462499Z",
+   "N": 10,
+   "again": true
+  },
+  {
+   "id": "1a1ac52b428d1e2d",
+   "workflow": "collect.yml",
+   "run_id": 44431192025,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-19T01:10:40.4102948Z",
+   "start": "2026-11-19T01:07:08.3882948Z",
+   "N": 156657,
+   "again": false
+  },
+  {
+   "id": "9421988fd0b961ab",
+   "workflow": "collect.yml",
+   "run_id": 44438955213,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-19T02:12:11.7165976Z",
+   "start": "2026-11-19T02:08:45.5305976Z",
+   "N": 156834,
+   "again": false
+  },
+  {
+   "id": "375502149a549669",
+   "workflow": "collect.yml",
+   "run_id": 44446297341,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-19T03:16:16.4534044Z",
+   "start": "2026-11-19T03:12:38.2434044Z",
+   "N": 156860,
+   "again": false
+  },
+  {
+   "id": "6e812073dd43b3bc",
+   "workflow": "collect.yml",
+   "run_id": 44453343842,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-19T04:15:40.4101463Z",
+   "start": "2026-11-19T04:11:48.9531463Z",
+   "N": 156896,
+   "again": false
+  },
+  {
+   "id": "82fede6631e5d3e5",
+   "workflow": "collect.yml",
+   "run_id": 44460197219,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-19T05:16:11.6528871Z",
+   "start": "2026-11-19T05:12:25.5368871Z",
+   "N": 156978,
+   "again": false
+  },
+  {
+   "id": "82fede6631e5d3e5",
+   "workflow": "deploy.yml",
+   "run_id": 44644635869,
+   "job": "deploy",
+   "line_ts": "2026-11-20T00:28:18.5021862Z",
+   "start": "2026-11-20T00:27:07.3541862Z",
+   "N": 10,
+   "again": true
+  },
+  {
+   "id": "8a2383b2a155247d",
+   "workflow": "collect.yml",
+   "run_id": 44648626987,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-20T01:20:52.4705752Z",
+   "start": "2026-11-20T01:17:38.1645752Z",
+   "N": 156998,
+   "again": false
+  },
+  {
+   "id": "c146f8b5cf61ab24",
+   "workflow": "collect.yml",
+   "run_id": 44653527652,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-20T01:57:00.6229895Z",
+   "start": "2026-11-20T01:53:20.7479895Z",
+   "N": 157027,
+   "again": false
+  },
+  {
+   "id": "69e3c74d5e82acf3",
+   "workflow": "collect.yml",
+   "run_id": 44660707370,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-20T02:57:46.6459104Z",
+   "start": "2026-11-20T02:54:08.6029104Z",
+   "N": 157041,
+   "again": false
+  },
+  {
+   "id": "b43b85ccb8ad9c05",
+   "workflow": "collect.yml",
+   "run_id": 44667637597,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-20T03:57:26.5016268Z",
+   "start": "2026-11-20T03:54:08.2186268Z",
+   "N": 157077,
+   "again": false
+  },
+  {
+   "id": "180b7a3c38b7b1c2",
+   "workflow": "collect.yml",
+   "run_id": 44674325097,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-20T04:48:24.9854984Z",
+   "start": "2026-11-20T04:45:08.6614984Z",
+   "N": 157080,
+   "again": false
+  },
+  {
+   "id": "b4eeeac012eb9751",
+   "workflow": "collect.yml",
+   "run_id": 44841926436,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-21T00:42:43.4465697Z",
+   "start": "2026-11-21T00:38:43.3915697Z",
+   "N": 157122,
+   "again": false
+  },
+  {
+   "id": "a93809534678ec38",
+   "workflow": "deploy.yml",
+   "run_id": 44842829087,
+   "job": "deploy",
+   "line_ts": "2026-11-21T00:53:05.4524218Z",
+   "start": "2026-11-21T00:49:19.2604218Z",
+   "N": 157119,
+   "again": false
+  },
+  {
+   "id": "c469e502322e0b38",
+   "workflow": "collect.yml",
+   "run_id": 44846126076,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-21T01:20:17.3061700Z",
+   "start": "2026-11-21T01:16:46.8841700Z",
+   "N": 157136,
+   "again": false
+  },
+  {
+   "id": "7d1dc45fc5c935a1",
+   "workflow": "collect.yml",
+   "run_id": 44852217970,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-21T02:20:07.3311624Z",
+   "start": "2026-11-21T02:16:52.5081624Z",
+   "N": 157181,
+   "again": false
+  },
+  {
+   "id": "f33079d7b3ff754a",
+   "workflow": "collect.yml",
+   "run_id": 44857769046,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-21T03:20:04.6862689Z",
+   "start": "2026-11-21T03:16:56.0142689Z",
+   "N": 157206,
+   "again": false
+  },
+  {
+   "id": "4ce1ae3ca541f4a5",
+   "workflow": "collect.yml",
+   "run_id": 44862899375,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-21T04:02:42.6335979Z",
+   "start": "2026-11-21T03:59:18.1225979Z",
+   "N": 157216,
+   "again": false
+  },
+  {
+   "id": "4ce1ae3ca541f4a5",
+   "workflow": "deploy.yml",
+   "run_id": 44965977467,
+   "job": "deploy",
+   "line_ts": "2026-11-22T00:27:06.7485609Z",
+   "start": "2026-11-22T00:26:11.5345609Z",
+   "N": 10,
+   "again": true
+  },
+  {
+   "id": "7e70cb9d4e4d1a93",
+   "workflow": "collect.yml",
+   "run_id": 44968331834,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-22T01:20:56.8008008Z",
+   "start": "2026-11-22T01:17:27.9478008Z",
+   "N": 157233,
+   "again": false
+  },
+  {
+   "id": "006308699812a04b",
+   "workflow": "collect.yml",
+   "run_id": 44973089769,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-22T02:18:39.0160700Z",
+   "start": "2026-11-22T02:15:38.5200700Z",
+   "N": 157251,
+   "again": false
+  },
+  {
+   "id": "8d8019cffe871394",
+   "workflow": "collect.yml",
+   "run_id": 44976936302,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-22T03:06:17.9174623Z",
+   "start": "2026-11-22T03:03:14.7504623Z",
+   "N": 157266,
+   "again": false
+  },
+  {
+   "id": "d977681d8ed213ec",
+   "workflow": "collect.yml",
+   "run_id": 44981467887,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-22T04:11:46.7759766Z",
+   "start": "2026-11-22T04:07:33.6349766Z",
+   "N": 157287,
+   "again": false
+  },
+  {
+   "id": "4a21bc5243f70b6f",
+   "workflow": "collect.yml",
+   "run_id": 44985860266,
+   "job": "snapshot / deploy",
+   "line_ts": "2026-11-22T04:58:56.5656177Z",
+   "start": "2026-11-22T04:55:38.8976177Z",
+   "N": 157293,
+   "again": false
+  }
+ ],
+ "sensitivity": [
+  {
+   "other_start": "size_line",
+   "end_ref": "snapshot_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "size_line",
+   "end_ref": "chain_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "size_line",
+   "end_ref": "collect_job",
+   "used_set": [
+    44648626987,
+    44841926436,
+    44973089769
+   ],
+   "same_used_set_as_primary": false,
+   "a_values_equal_primary": false,
+   "v1_stage1": {
+    "verdict": "ERROR",
+    "Q3_count": 3
+   },
+   "v1_stage2": {
+    "verdict": "ERROR",
+    "Q3_count": 2
+   }
+  },
+  {
+   "other_start": "collect_start",
+   "end_ref": "snapshot_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "collect_start",
+   "end_ref": "chain_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "collect_start",
+   "end_ref": "collect_job",
+   "used_set": [
+    44648626987,
+    44841926436,
+    44973089769
+   ],
+   "same_used_set_as_primary": false,
+   "a_values_equal_primary": false,
+   "v1_stage1": {
+    "verdict": "ERROR",
+    "Q3_count": 3
+   },
+   "v1_stage2": {
+    "verdict": "ERROR",
+    "Q3_count": 2
+   }
+  },
+  {
+   "other_start": "created_at",
+   "end_ref": "snapshot_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "created_at",
+   "end_ref": "chain_job",
+   "used_set": [
+    43782443576,
+    43794265967,
+    43800242113,
+    43990453081,
+    43998216514,
+    44012649727,
+    44210680747,
+    44225795371,
+    44232854072,
+    44446297341,
+    44453343842,
+    44648626987,
+    44653527652,
+    44660707370,
+    44667637597,
+    44841926436,
+    44846126076,
+    44852217970,
+    44857769046,
+    44968331834,
+    44973089769,
+    44981467887
+   ],
+   "same_used_set_as_primary": true,
+   "a_values_equal_primary": true,
+   "v1_stage1": {
+    "Q3_count": 11,
+    "A": 8652.6,
+    "median_Q3": 5918.9,
+    "verdict": "RAISE",
+    "value": 8700
+   },
+   "v1_stage2": {
+    "Q3_count": 10,
+    "A": 6065.9,
+    "median_Q3": 5898.4,
+    "verdict": "RAISE",
+    "value": 6100
+   }
+  },
+  {
+   "other_start": "created_at",
+   "end_ref": "collect_job",
+   "used_set": [
+    44648626987,
+    44841926436,
+    44973089769
+   ],
+   "same_used_set_as_primary": false,
+   "a_values_equal_primary": false,
+   "v1_stage1": {
+    "verdict": "ERROR",
+    "Q3_count": 3
+   },
+   "v1_stage2": {
+    "verdict": "ERROR",
+    "Q3_count": 2
+   }
+  }
+ ],
+ "sanity": {
+  "total_runs": 66,
+  "collect_runs": 53,
+  "collect_runs_with_size_line": 50,
+  "collect_runs_p_ge_1": 35,
+  "collect_runs_p_ge_1_without_size_line": 0,
+  "size_run_day_equals_size_line_day": true,
+  "snapshot_lines_total": 42,
+  "snapshot_lines_new": 37,
+  "snapshot_lines_again": 5,
+  "snapshot_start_day_equals_run_day": true,
+  "snapshot_lines_in_other_workflows": 0,
+  "snapshot_workflows": [
+   "collect.yml",
+   "deploy.yml"
+  ],
+  "usage_rows": {
+   "2026-11-16": 4733168,
+   "2026-11-17": 4357258,
+   "2026-11-18": 4260262,
+   "2026-11-19": 4326173,
+   "2026-11-20": 4328291,
+   "2026-11-21": 4264717
+  },
+  "intervals_total": 35,
+  "used_stage1": 22,
+  "used_stage2": 21,
+  "excluded_stage1": 13,
+  "backup_overlap_among_used": [
+   44841926436
+  ],
+  "min_gap_margin_to_30min_minutes_sorted_tail": [
+   [
+    250.263,
+    44460197219,
+    "2026-11-19"
+   ],
+   [
+    258.693,
+    44674325097,
+    "2026-11-20"
+   ],
+   [
+    416.741,
+    44985860266,
+    "2026-11-22"
+   ],
+   [
+    433.219,
+    43806186325,
+    "2026-11-16"
+   ]
+  ]
+ }
+}
