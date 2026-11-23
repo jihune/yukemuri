@@ -3,8 +3,9 @@
 // daily limit (Worker requests, D1 rows read, D1 rows written), when this Worker
 // answered with exceededResources (errors 1102/1027), or when a gentle collection
 // of that day ran its collect job 26 minutes or more, did not succeed or has not
-// finished, or took 0 pages while its budget line shows room left (C05: with an
-// hourly runner a run after the day's D1 share is used takes 0 pages by design;
+// finished, or took 0 pages while its budget line shows room for 16 pages or more (C05: with an
+// hourly runner a run after the day's D1 share is used takes 0 pages by design, and since the C04
+// follow-up so does a run that would get fewer than 16;
 // a day whose runs all took 0 pages fails too), or reported retry or failed for more than half
 // of its pages (C09; the 503s in a row that paused a provider for the rest of the run do not
 // count). Usage or runs that cannot be read fail; they never read as zero. Each request stops after 30 s, so one half never blocks the other. The
@@ -16,6 +17,7 @@ import {appendFileSync,readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {LIMITS,queryDay,report,UsageError,utcDays} from './cloudflare-usage.mjs';
 import {GENTLE_TITLE,WORKFLOW} from './check-collection-freshness.mjs';
+import {BUDGET} from './collection-budget.mjs';
 
 export const FAIL=0.9; // user, 10-19: the collection budget stays at 85%, leaving room for deploys
 export const JOB_MINUTES=26; // timeout-minutes of the collect job in collect.yml
@@ -98,7 +100,8 @@ export function runFailures(run){
  else if(run.pages===0&&!OVERLAP.test(run.reason??'')){
   const left=budgetLeft(run.reason);
   if(!left)out.push('0쪽 실행인데 reason=에서 남은 예산을 읽지 못함');
-  else if(left.writes>0&&left.reads>0)out.push(`0쪽 실행인데 그날 예산이 남아 있었다(writes allow ${left.writes}, reads ${left.reads})`);
+  // C04 follow-up: collection-budget.mjs gives a run that would get under minPages (16) 0 pages.
+  else if(Math.min(left.writes,left.reads)>=BUDGET.minPages)out.push(`0쪽 실행인데 그날 예산이 남아 있었다(writes allow ${left.writes}, reads ${left.reads})`);
  }
  // C09: retry and failed on more than half the pages the run reported; exactly half passes. The
  // 503s that paused a provider are left out of both, so a pause alone never fails a run, and the
@@ -142,8 +145,10 @@ export async function gentleRuns({fetch=globalThis.fetch,token,api='https://api.
    const stored=parseLog(await gh(ctx,`/repos/${repo}/actions/jobs/${snapshot.id}/logs`,true));
    log.pending=stored.pending;log.completed=stored.completed;
   }
+  // The job's time runs from its first step to its last: on 2026-11-01 GitHub gave the job times of
+  // 08:00-09:00Z an hour late (a 78-minute job whose steps took 18), while its step times were right.
   out.push({id:r.id,createdAt:r.created_at,status:r.status,conclusion:r.conclusion,
-   jobSeconds:seconds(job?.started_at,job?.completed_at),stepSeconds:seconds(step?.started_at,step?.completed_at),...log});
+   jobSeconds:seconds(job?.steps?.[0]?.started_at,job?.steps?.at(-1)?.completed_at),stepSeconds:seconds(step?.started_at,step?.completed_at),...log});
  }
  return out;
 }
@@ -160,7 +165,7 @@ export function runTable(runs){
   lines.push(`| ${r.id} | ${clock(r.createdAt)} | ${r.status==='completed'?r.conclusion:r.status} | ${r.pages??'-'} | ${(r.reason??'-').replace(/\|/g,'/')} | ${span(r.stepSeconds)} | ${span(r.jobSeconds)} `
    +`| ${r.processed??'-'} | ${states} | ${r.pending===null?'-':num(r.pending)}·${r.completed===null?'-':num(r.completed)} | ${failures.length?'**실패**':r.pages===0?(OVERLAP.test(r.reason??'')?'통과(겹쳐서 건너뜀)':'통과(예산 소진)'):'통과'} |`);
  }
- lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 1 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날, 쪽 상태의 합(처리한 쪽) 가운데 retry·failed가 절반을 넘는 실행(정확히 절반은 통과, C09). 그날 D1 몫을 다 써서 0쪽인 실행은 정상이다. 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 같은 공급자의 503이 잇달아 와서 그 실행 동안 쉰 공급자는 쪽 상태 칸에 ‘쉼:’으로 적는다. 쉬게 한 503 쪽은 retry·failed와 처리한 쪽 양쪽에서 빼므로 쉰 것만으로는 실패가 아니다(C09). 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
+ lines.push('',`- 그날(UTC) 만든 gentle 실행 ${runs.length}회. 실패 조건: collect job ${JOB_MINUTES}분 이상, 성공하지 않은 실행, 끝나지 않은 실행(다음 점검은 다른 날을 본다), 끝난 실행에서 \`pages=\` 줄 없음, 예산이 남았는데(\`writes allow\`·\`reads\`가 모두 ${BUDGET.minPages} 이상) 또는 남은 예산을 읽지 못했는데 0쪽인 실행, 실행이 모두 0쪽인 날, 쪽 상태의 합(처리한 쪽) 가운데 retry·failed가 절반을 넘는 실행(정확히 절반은 통과, C09). 그날 D1 몫을 다 썼거나 남은 몫이 ${BUDGET.minPages}쪽 미만이라 0쪽인 실행은 정상이다(C04 후속). 다른 gentle 실행이 대기·진행 중일 때 만들어져 0쪽으로 건너뛴 실행(\`reason=overlap:\`, C06)도 정상이다. 같은 공급자의 503이 잇달아 와서 그 실행 동안 쉰 공급자는 쪽 상태 칸에 ‘쉼:’으로 적는다. 쉬게 한 503 쪽은 retry·failed와 처리한 쪽 양쪽에서 빼므로 쉰 것만으로는 실패가 아니다(C09). 실행이 없는 날은 \`collect-watch.yml\`의 12시간 감시가 알린다.`);
  return lines;
 }
 

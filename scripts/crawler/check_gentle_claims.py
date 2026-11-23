@@ -193,6 +193,14 @@ class UnavailableProviderChecks(CollectorRun):
   self.assertEqual(sorted(saved),sorted(jd+td))
   self.assertFalse([line for line in lines if 'providerPaused' in line])
 
+ def test_other_retry_errors_in_a_row_do_not_pause(self):
+  # #285 Claude review P3: a 500 stays a retry like a 503, so only counting 503s tells them apart.
+  jd,td=pages('jalan',6),pages('trip',1)
+  _,saved,lines,_=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],unavailable=[(u,None,500) for u in jd[:4]])
+  self.assertEqual([(r['status'],r['error']) for r in self.sent if r['url'] in jd[:4]],[('retry','http_500')]*4)
+  self.assertEqual(sorted(saved),sorted(jd+td))
+  self.assertFalse([line for line in lines if 'providerPaused' in line])
+
  def test_retry_after_still_waits_as_before(self):
   jd,td=pages('jalan',3),pages('trip',2)
   claims,saved,lines,queue=self.run_collector({('jalan','detail'):jd,('trip','detail'):td},['--gentle','--max-pages','20'],unavailable=[(jd[0],'900')])
