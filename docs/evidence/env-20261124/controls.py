@@ -83,6 +83,31 @@ folder = fresh('new-workflow')
 code, text = run(folder)
 rows.append(('extra.yml go: new job reads the token', code, 'HOLDS' if code != 0 and 'extra.yml' in text else 'BROKEN', text))
 
+# A new workflow named .yaml (GitHub runs both suffixes) that reads the token without the block.
+folder = fresh('new-workflow-yaml')
+(folder / 'extra.yaml').write_text(
+    'name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo\n'
+    '        env:\n          V: ${{ secrets.CLOUDFLARE_API_TOKEN }}\n',
+    encoding='utf-8',
+)
+code, text = run(folder)
+rows.append(('extra.yaml go: new .yaml job reads the token', code, 'HOLDS' if code != 0 and 'extra.yaml' in text else 'BROKEN', text))
+
+# The token read at workflow level (env: above jobs:) and with a quoted job key, each in a new .yml.
+READ = '${{ secrets.CLOUDFLARE_API_TOKEN }}'
+HEAD = 'name: x\non:\n  workflow_dispatch:\n'
+JOB = '    runs-on: ubuntu-latest\n    steps:\n      - run: echo\n        env:\n          V: ' + READ + '\n'
+workflow_env = HEAD + 'env:\n  V: ' + READ + '\njobs:\n  go:\n' + JOB
+quoted_key = HEAD + "jobs:\n  'go':\n" + JOB
+for label, body, word in (
+    ('workflow-level env reads the token', workflow_env, 'outside a job'),
+    ('quoted job key reads the token', quoted_key, 'does not read'),
+):
+    folder = fresh(f'new-workflow-{label.split()[0]}')
+    (folder / 'extra.yml').write_text(body, encoding='utf-8')
+    code, text = run(folder)
+    rows.append((f'extra.yml {label}', code, 'HOLDS' if code != 0 and word in text else 'BROKEN', text))
+
 # A new workflow that reads the token and carries the block, but is not in the list of jobs the check expects.
 folder = fresh('new-workflow-with-block')
 (folder / 'extra.yml').write_text(

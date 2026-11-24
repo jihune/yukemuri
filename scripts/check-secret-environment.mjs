@@ -35,6 +35,21 @@ export function jobs(text){
  }
  return out;
 }
+// The job list must be in the two-space form jobs() reads; another form (quoted or anchored job key, other
+// indentation, CRLF) is reported instead of being skipped, since a job read wrongly would escape the rule.
+export function shape(text){
+ const out=[];
+ if(text.includes('\r'))out.push('has CRLF line ends, which this check does not read');
+ let inJobs=false,first=true;
+ for(const line of text.split('\n')){
+  if(/^\S/.test(line)&&!line.startsWith('#'))inJobs=line.startsWith('jobs:');
+  if(!inJobs||/^\s*(#.*)?$/.test(line)||line.startsWith('jobs:'))continue;
+  const indent=line.length-line.trimStart().length;
+  if(/^ {2}[\w-]+:[ \t]*(#.*)?$/.test(line))first=false;
+  else if(first||indent<=2){out.push(`has a jobs line in a form this check does not read: "${line.trim()}"`);first=false}
+ }
+ return out;
+}
 const reads=body=>GATED.some(name=>new RegExp(`secrets\\.${name}\\b`).test(body));
 export const readers=text=>jobs(text).filter(([,body])=>reads(body)).map(([name])=>name);
 
@@ -45,7 +60,10 @@ export function problems(file,text){
  for(const name of new Set(bare.match(/secrets\.\w+/g)??[])){
   if(!ALLOWED.includes(name.slice('secrets.'.length)))out.push(`${file}: reads ${name}, which is not a known secret`);
  }
- if(/secrets\[|toJSON\(secrets/.test(bare))out.push(`${file}: reads secrets by a computed name`);
+ if(/secrets\s*\[|toJson\s*\(\s*secrets/i.test(bare))out.push(`${file}: reads secrets by a computed name`);
+ out.push(...shape(text).map(m=>`${file}: ${m}`));
+ // Outside every job (workflow-level env:) a read has no job to carry the environment.
+ if(reads(bare.split('\njobs:')[0]))out.push(`${file}: reads a production secret outside a job (workflow-level env)`);
  for(const [name,body] of jobs(text)){
   const count=(body.match(/^ {4}environment:/gm)??[]).length;
   if(reads(body)){
@@ -58,7 +76,7 @@ export function problems(file,text){
 
 // dir: a folder of workflow files; the default is the repository's, a copy lets a control run on changed files.
 export function readAll(dir='.github/workflows'){
- return Object.fromEntries(readdirSync(dir).filter(f=>f.endsWith('.yml')).sort().map(f=>[f,readFileSync(`${dir}/${f}`,'utf8')]));
+ return Object.fromEntries(readdirSync(dir).filter(f=>/\.ya?ml$/.test(f)).sort().map(f=>[f,readFileSync(`${dir}/${f}`,'utf8')]));
 }
 
 // Where the environment block of a job sits in the file text.
@@ -101,7 +119,17 @@ export function assertEnvironment(files){
  expect('new job reads the crawl key without the block','new.yml',fresh('${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}'),'go:');
  expect('new job reads another secret','new.yml',fresh('${{ secrets.OTHER_SECRET }}'),'OTHER_SECRET');
  expect('new job reads all secrets','new.yml',fresh('${{ toJSON(secrets) }}'),'computed name');
- expect('secrets passed to another workflow','new.yml','name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    uses: ./.github/workflows/other.yml\n    secrets: inherit\n','"secrets: inherit"');
+// Forms a line reader could skip: workflow-level env, a quoted or anchored job key, other indentation, CRLF, any-case function names.
+ const TOKEN='${{ secrets.CLOUDFLARE_API_TOKEN }}';
+ const wf=(top,key,use)=>`name: x\non:\n  workflow_dispatch:\n${top}jobs:\n${key}\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo\n        env:\n          V: ${use}\n`;
+ expect('workflow-level env reads the token','new.yml',wf(`env:\n  V: ${TOKEN}\n`,'  go:','x'),'outside a job');
+ expect('quoted job key','new.yml',wf('',"  'go':",TOKEN),'does not read');
+ expect('anchored job key','new.yml',wf('','  go: &x',TOKEN),'does not read');
+ expect('four-space jobs','new.yml',`name: x\non:\n  workflow_dispatch:\njobs:\n    go:\n        runs-on: ubuntu-latest\n        steps:\n          - run: echo\n            env:\n              V: ${TOKEN}\n`,'does not read');
+ expect('CRLF line ends','new.yml',wf('','  go:',TOKEN).replace(/\n/g,'\r\n'),'CRLF');
+ expect('toJson in another case','new.yml',fresh('${{ toJson(secrets) }}'),'computed name');
+ expect('spaces inside toJSON','new.yml',fresh('${{ toJSON( secrets ) }}'),'computed name');
+  expect('secrets passed to another workflow','new.yml','name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    uses: ./.github/workflows/other.yml\n    secrets: inherit\n','"secrets: inherit"');
  // A comment that names a secret is not a read.
  assert.equal(problems('c.yml',fresh('${{ secrets.CLOUDFLARE_ACCOUNT_ID }}').replace('    steps:','    # secrets.CLOUDFLARE_API_TOKEN\n    steps:')).length,0,'a comment is not a read');
  return controls;
