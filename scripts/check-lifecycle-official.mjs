@@ -71,7 +71,8 @@ try{
  assert.match(life,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read only for the called deploy (checked-commit.mjs)');
  assert.match(life,/^concurrency:\n  group: yukemuri-catalog-updates\n  cancel-in-progress: false\n  queue: max\n/m,'the catalogue lock for the whole run, as collect.yml');
  assert.equal((life.match(/^\s*concurrency:/gm)??[]).length,1,'no job-level lock: the account lock is taken only inside the called deploy');
- assert.deepEqual(life.match(/secrets\.\w+/g),['secrets.YUKEMURI_CRAWL_ACCESS_KEY'],'the crawl key is the only secret named, once');
+ // E01: the apply step names the crawl key once; the snapshot call passes the three secrets deploy.yml reads by name (no secrets: inherit).
+ assert.deepEqual(life.match(/secrets\.\w+/g),['secrets.YUKEMURI_CRAWL_ACCESS_KEY','secrets.CLOUDFLARE_ACCOUNT_ID','secrets.CLOUDFLARE_API_TOKEN','secrets.YUKEMURI_CRAWL_ACCESS_KEY'],'the crawl key in the apply step, then the three secrets passed by name to the snapshot deploy');
  const jobs=life.slice(life.indexOf('\njobs:\n')),apply=jobs.slice(jobs.indexOf('  apply:\n'),jobs.indexOf('  snapshot:\n'));
  const steps=apply.split(/\n(?=      - )/),keyed=steps.filter(s=>/YUKEMURI_CRAWL_ACCESS_KEY/.test(s));
  assert.equal(keyed.length,1,'the key reaches one step');
@@ -81,7 +82,7 @@ try{
  assert(order.every((at,i)=>at>0&&(i===0||at>order[i-1])),'offline checks, then the whole file against the Worker contract, then the key');
  assert.match(apply,/    outputs:\n      failed: \$\{\{ steps\.apply\.outputs\.failed \}\}\n    steps:\n/);
  assert.equal(jobs.slice(jobs.indexOf('  snapshot:\n'),jobs.indexOf('  # Refused')),[
-  '  snapshot:','    needs: apply',"    if: ${{ !cancelled() && (github.event_name == 'push' || needs.apply.result == 'success') }}",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets: inherit',''].join('\n'),
+  '  snapshot:','    needs: apply',"    if: ${{ !cancelled() && (github.event_name == 'push' || needs.apply.result == 'success') }}",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','    secrets:','      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}','      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}','      YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}',''].join('\n'),
   'the deploy of every push of the evidence file (deploy.yml left it here), and of a manual run after a successful apply, after the evidence is stored');
  // deploy.yml leaves a main push that changes the evidence file to lifecycle.yml:
  // alone through paths-ignore, with other files through scripts/lifecycle-push.mjs

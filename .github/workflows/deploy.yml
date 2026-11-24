@@ -35,6 +35,16 @@ on:
         description: From the collection workflow only, the UTC day (YYYY-MM-DD) the collection finished; empty, no count is stored
         type: string
         default: ''
+    # E01: the callers pass these by name (not secrets: inherit), so the deploy job gets the
+    # environment's values even when no repository secret of the name is left; required: true
+    # makes a caller that forgets one fail instead of running with an empty value.
+    secrets:
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      YUKEMURI_CRAWL_ACCESS_KEY:
+        required: true
 # Two locks, always taken in the same order: the catalogue group (outer), then
 # the Cloudflare account (inner, shared with d1-setup.yml). The snapshot reads D1
 # over many requests, so a push or manual run waits for any collection run. The
@@ -80,7 +90,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     # E01: the Cloudflare token and the crawl key are environment secrets, and the
     # environment takes main only (docs/ENV-20261124.md). A call from collect.yml or
-    # lifecycle.yml (secrets: inherit) reaches this job too.
+    # lifecycle.yml (the secrets passed by name) reaches this job too.
     environment:
       name: production
       deployment: false

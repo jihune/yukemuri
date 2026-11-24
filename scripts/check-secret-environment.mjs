@@ -17,8 +17,12 @@ export const GATED=['CLOUDFLARE_API_TOKEN','YUKEMURI_CRAWL_ACCESS_KEY'];
 const ALLOWED=['CLOUDFLARE_ACCOUNT_ID',...GATED];
 // deployment: false keeps each run from writing a deployment record (a collection runs about hourly).
 export const BLOCK=`    environment:\n      name: ${ENVIRONMENT}\n      deployment: false\n`;
-// The only caller that passes secrets on: it hands them to the deploy job, which holds the environment.
+// The only callee that gets secrets: the deploy job holds the environment. Its callers pass the three secrets by
+// name, the form the docs show for a secret that lives only in the environment (not secrets: inherit), and deploy.yml
+// declares them required, so a caller that leaves one out fails instead of running with an empty value.
 const CALLEE='uses: ./.github/workflows/deploy.yml';
+const PASS='    secrets:\n'+ALLOWED.map(n=>`      ${n}: \${{ secrets.${n} }}\n`).join('');
+const DECLARE='    secrets:\n'+ALLOWED.map(n=>`      ${n}:\n        required: true\n`).join('');
 // The jobs that read a production secret today. A new one must carry the block and be added here.
 const EXPECTED=['collect-chain.yml:wait','collect.yml:collect','d1-setup.yml:d1','deploy.yml:deploy','lifecycle.yml:apply','rollback.yml:rollback','usage.yml:usage'];
 
@@ -50,7 +54,9 @@ export function shape(text){
  }
  return out;
 }
-const reads=body=>GATED.some(name=>new RegExp(`secrets\\.${name}\\b`).test(body));
+const isCall=body=>/^ {4}uses:/m.test(body);
+const mentions=body=>GATED.some(name=>new RegExp(`secrets\\.${name}\\b`).test(body));
+const reads=body=>!isCall(body)&&mentions(body);
 export const readers=text=>jobs(text).filter(([,body])=>reads(body)).map(([name])=>name);
 
 // What is wrong with one workflow file; an empty list when it follows the rule.
@@ -63,13 +69,17 @@ export function problems(file,text){
  if(/secrets\s*\[|toJson\s*\(\s*secrets/i.test(bare))out.push(`${file}: reads secrets by a computed name`);
  out.push(...shape(text).map(m=>`${file}: ${m}`));
  // Outside every job (workflow-level env:) a read has no job to carry the environment.
- if(reads(bare.split('\njobs:')[0]))out.push(`${file}: reads a production secret outside a job (workflow-level env)`);
+ if(mentions(bare.split('\njobs:')[0]))out.push(`${file}: reads a production secret outside a job (workflow-level env)`);
+ const head=bare.split('\njobs:')[0];
+ if(readers(text).length&&/^ {2}workflow_call:/m.test(head)&&!head.includes(DECLARE))out.push(`${file}: reads production secrets under workflow_call but does not declare the three secrets as required`);
  for(const [name,body] of jobs(text)){
   const count=(body.match(/^ {4}environment:/gm)??[]).length;
   if(reads(body)){
    if(count!==1||!body.includes(BLOCK))out.push(`${file}: ${name}: reads a production secret and does not carry exactly the "${ENVIRONMENT}" environment block (deployment: false)`);
   }else if(count)out.push(`${file}: ${name}: references an environment but reads no production secret`);
-  if(/^ {4}secrets:/m.test(body)&&!(body.includes(CALLEE)&&/^ {4}secrets: inherit$/m.test(body)))out.push(`${file}: ${name}: passes secrets on other than "secrets: inherit" to deploy.yml`);
+  const passed=body.match(/^ {4}secrets:.*\n(?: {6}.*\n)*/m)?.[0];
+  if(body.includes(CALLEE)){if(passed!==PASS)out.push(`${file}: ${name}: calls deploy.yml without passing exactly the three secrets by name (no "secrets: inherit")`)}
+  else if(passed!==undefined)out.push(`${file}: ${name}: passes secrets on to something other than deploy.yml`);
  }
  return out;
 }
@@ -111,6 +121,20 @@ export function assertEnvironment(files){
    expect(`${job}: environment twice`,file,mutate(BLOCK+BLOCK),`${job}:`);
   }
  }
+ // The call to deploy.yml passes the three secrets by name, and deploy.yml declares them required.
+ for(const [file,text] of Object.entries(files)){
+  if(text.includes(CALLEE)){
+   expect(`${file}: caller passes secrets: inherit`,file,text.replace(PASS,'    secrets: inherit\n'),'calls deploy.yml');
+   expect(`${file}: caller leaves the crawl key out`,file,text.replace(PASS,PASS.split('\n').slice(0,-2).join('\n')+'\n'),'calls deploy.yml');
+  }
+  if(/^ {2}workflow_call:/m.test(text)&&readers(text).length){
+   for(const name of ALLOWED){
+    const entry=`      ${name}:\n        required: true\n`;
+    expect(`${file}: ${name} not declared`,file,text.replace(entry,''),'declare');
+    expect(`${file}: ${name} not required`,file,text.replace(entry,entry.replace('true','false')),'declare');
+   }
+  }
+ }
  // A job that reads no production secret must not take the environment.
  const collect=files['collect.yml'],chain=collect.indexOf('\n  chain:\n');
  expect('chain job takes the environment','collect.yml',collect.slice(0,chain)+collect.slice(chain).replace('    steps:\n',BLOCK+'    steps:\n'),'chain:');
@@ -129,7 +153,7 @@ export function assertEnvironment(files){
  expect('CRLF line ends','new.yml',wf('','  go:',TOKEN).replace(/\n/g,'\r\n'),'CRLF');
  expect('toJson in another case','new.yml',fresh('${{ toJson(secrets) }}'),'computed name');
  expect('spaces inside toJSON','new.yml',fresh('${{ toJSON( secrets ) }}'),'computed name');
-  expect('secrets passed to another workflow','new.yml','name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    uses: ./.github/workflows/other.yml\n    secrets: inherit\n','"secrets: inherit"');
+  expect('secrets passed to another workflow','new.yml','name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    uses: ./.github/workflows/other.yml\n    secrets: inherit\n','passes secrets on');
  // A comment that names a secret is not a read.
  assert.equal(problems('c.yml',fresh('${{ secrets.CLOUDFLARE_ACCOUNT_ID }}').replace('    steps:','    # secrets.CLOUDFLARE_API_TOKEN\n    steps:')).length,0,'a comment is not a read');
  return controls;

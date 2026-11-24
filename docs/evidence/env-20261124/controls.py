@@ -73,6 +73,25 @@ changed = collect[:cut] + collect[cut:].replace('    steps:\n', BLOCK + '    ste
 code, text = run(folder)
 rows.append(('collect.yml chain: environment added', code, 'HOLDS' if code != 0 and 'collect.yml: chain:' in text else 'BROKEN', text))
 
+# The call to deploy.yml passes the three secrets by name; deploy.yml declares them required.
+NAMES = ('CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_API_TOKEN', 'YUKEMURI_CRAWL_ACCESS_KEY')
+PASS = '    secrets:\n' + ''.join(f'      {n}: ${{{{ secrets.{n} }}}}\n' for n in NAMES)
+for label, name, job, old, new, want in (
+    ('secrets: inherit', 'collect.yml', 'snapshot', PASS, '    secrets: inherit\n', 'collect.yml: snapshot:'),
+    ('crawl key left out', 'lifecycle.yml', 'snapshot', PASS, PASS.replace(
+        '      YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}\n', ''), 'lifecycle.yml: snapshot:'),
+    ('token not required', 'deploy.yml', 'workflow_call',
+     '      CLOUDFLARE_API_TOKEN:\n        required: true\n', '      CLOUDFLARE_API_TOKEN:\n        required: false\n', 'deploy.yml: reads'),
+    ('crawl key not declared', 'deploy.yml', 'workflow_call',
+     '      YUKEMURI_CRAWL_ACCESS_KEY:\n        required: true\n', '', 'deploy.yml: reads'),
+):
+    folder = fresh(f'{name}-{label.replace(" ", "-").replace(":", "")}')
+    original = (folder / name).read_text(encoding='utf-8')
+    assert old in original
+    (folder / name).write_text(original.replace(old, new, 1), encoding='utf-8')
+    code, text = run(folder)
+    rows.append((f'{name} {job}: {label}', code, 'HOLDS' if code != 0 and want in text else 'BROKEN', text))
+
 # A new workflow that reads the token without the environment.
 folder = fresh('new-workflow')
 (folder / 'extra.yml').write_text(
