@@ -10,11 +10,16 @@ import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {CHECK_LIMIT_HOURS,CHECK_TITLE,CHECK_WORKFLOW,checkFreshness,freshness,GENTLE_TITLE,LIMIT_HOURS,WORKFLOW} from './check-collection-freshness.mjs';
+import {assertMainOnly} from './workflow-guard.mjs';
 
 const read=file=>readFileSync('.github/workflows/'+file,'utf8');
 const block=(text,key)=>text.match(new RegExp(`^${key}:\\n((?:[ #].*\\n)+)`,'m'))?.[1]??'';
 const collect=read('collect.yml');
 assert.equal(WORKFLOW,'collect.yml');
+// V01-5: a manual run can pick any branch. The collector, the budget (Cloudflare token) and the snapshot deploy
+// run only on main, as the chain job already did. No dispatch we make is held back: collect-spare.yml (below) and
+// the chain job and script (check-collection-chain.mjs) name --ref main, as does the runner's dispatcher.
+const mainControls=assertMainOnly('collect.yml',collect,['collect','snapshot','chain']);
 
 // Dispatch only: the runner repository keeps the cron (hosting review, 2차 검토).
 assert.equal(block(collect,'on'),[
@@ -62,7 +67,7 @@ assert.deepEqual([...new Set(collect.match(/secrets\.\w+/g)??[])].sort(),['secre
 assert(collect.indexOf('check_collection.py')<collect.indexOf('collection-budget.mjs')&&collect.indexOf('collection-budget.mjs')<collect.indexOf('run-collection.py --mode'),'offline checks, then the budget, then the key is used');
 // The snapshot job, then the C06 chain job (check-collection-chain.mjs) as the last one.
 assert.equal(collect.slice(collect.indexOf('  snapshot:\n'),collect.indexOf('  # C06: ')),[
- '  snapshot:','    needs: collect',"    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets: inherit',''].join('\n'),
+ '  snapshot:','    needs: collect',"    if: github.ref == 'refs/heads/main' && inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets: inherit',''].join('\n'),
  'a successful gentle run that collected refreshes the snapshot through deploy.yml at the same commit');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
 
@@ -207,4 +212,4 @@ try{
 }finally{server.close();rmSync(folder,{recursive:true,force:true})}
 
 const committed=JSON.parse(readFileSync('cloudflare-deploy.json','utf8'));
-console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs and a ${CHECK_LIMIT_HOURS}-hour limit on daily check runs, spare at minute 37 of every hour dispatching only collect.yml on main in mode gentle (controls: ${spareControls} of ${spareControls} fail) (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);
+console.log(`Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemuri-catalog-updates with the snapshot deploy at the end, watch every 6 h with a ${LIMIT_HOURS}-hour limit on successful gentle runs and a ${CHECK_LIMIT_HOURS}-hour limit on daily check runs, spare at minute 37 of every hour dispatching only collect.yml on main in mode gentle (controls: ${spareControls} of ${spareControls} fail), collector, snapshot and chain jobs run on main only (controls: ${mainControls} of ${mainControls} fail) (committed publicOrigin: ${committed.publicOrigin??'null, watch skips'}).`);

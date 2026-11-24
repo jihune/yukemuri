@@ -7,6 +7,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {rollback,RollbackError,BOOKMARK,CAUTION} from './cloudflare-rollback.mjs';
+import {assertMainOnly} from './workflow-guard.mjs';
 
 const text=readFileSync('.github/workflows/rollback.yml','utf8');
 const on=text.match(/^on:\n((?:[ #].*\n)+)/m)[1];
@@ -23,6 +24,8 @@ assert.match(text,/^permissions:\n  contents: read\n/m);
 assert.equal([...new Set(text.match(/secrets\.\w+/g))].sort().join(),'secrets.CLOUDFLARE_ACCOUNT_ID,secrets.CLOUDFLARE_API_TOKEN','only the Cloudflare secrets');
 assert.match(text,/CONFIRM: \$\{\{ inputs\.confirm \}\}\n {8}run: node scripts\/cloudflare-rollback\.mjs\n/,'inputs reach the script through env');
 assert(!/wrangler-action|command: deploy/.test(text),'never deploys');
+// V01-5: a manual run can pick any branch; only main (the reviewed code) restores a Worker version or a D1 bookmark.
+const mainControls=assertMainOnly('rollback.yml',text,['rollback']);
 
 // The script with a recorded fake wrangler.
 const deploy={workerName:'yukemuri',databaseName:'yukemuri',databaseId:'128a3c5b-8e5f-470a-a901-d899d396cae1'};
@@ -93,4 +96,4 @@ if(a[2]==='info')console.log(JSON.stringify({bookmark:${JSON.stringify(NOW)}}));
  result=run({ACTION:'d1-restore',BOOKMARK:OLD,CONFIRM:'no'});
  assert.equal(result.status,1);assert.match(readFileSync(out,'utf8'),/\*\*실패\*\*: confirm must be/);
 }finally{rmSync(dir,{recursive:true,force:true})}
-console.log('Rollback workflow passed: manual only, catalogue then account lock, bookmark recorded before worker rollback and D1 restore, refusals change nothing, caution lines in the summary, end-to-end env run.');
+console.log('Rollback workflow passed: manual only, catalogue then account lock, bookmark recorded before worker rollback and D1 restore, refusals change nothing, caution lines in the summary, end-to-end env run, the job runs on main only (controls: '+mainControls+' of '+mainControls+' fail).');

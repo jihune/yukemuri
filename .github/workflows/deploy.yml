@@ -73,6 +73,11 @@ jobs:
     env:
       WRANGLER: node_modules/wrangler/bin/wrangler.js
       WRANGLER_SEND_METRICS: 'false'
+    # V01-5: a manual run can pick any branch, and this job holds the Cloudflare
+    # token, the D1 migrations and the crawl key, so only main (the reviewed code)
+    # runs it. A call from collect.yml or lifecycle.yml carries its caller's ref,
+    # which is main for every dispatch we make.
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v7
         with:

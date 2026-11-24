@@ -10,6 +10,8 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
+from unittest import mock
+import urllib.parse
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('checkpoint', ROOT/'scripts/catalog-checkpoint.py')
@@ -94,4 +96,63 @@ with tempfile.TemporaryDirectory(prefix='yukemuri-checkpoint-test-') as temp:
         except ValueError:
             assert not target.exists(), 'Failed recovery left a partial DB'
     db.close()
-print(f'Checkpoint checks passed: API table parity, {len(declared)} schema tables exported or excluded with a reason, complete observation payload, favorites, queue claim reset, overwrite and corruption refusal.')
+# V01-14: the export asks for the Worker address recorded in cloudflare-deploy.json (it used to take only a
+# Sites address, so the export docs/catalog-operations.md asks for stopped before any request) and names itself
+# in the User-Agent (Cloudflare answers the urllib default with error 1010). Nothing here reaches the network:
+# the opener is replaced and every request is kept.
+class FakeOpener:
+    def __init__(self):
+        self.requests = []
+
+    def open(self, request, timeout=None):
+        self.requests.append(request)
+        if 'table' in urllib.parse.parse_qs(urllib.parse.urlsplit(request.full_url).query):
+            body = {'rows': [], 'next': None}
+        else:
+            body = {'format': 'yukemuri-checkpoint', 'version': 1,
+                    'tables': [{'name': name, 'columns': [], 'count': 0} for name in sorted(checkpoint.TABLES)]}
+        return io.BytesIO(json.dumps(body).encode())
+
+
+def run_export(url, destination, opener):
+    access = json.dumps({'url': url, 'token': 'placeholder-not-a-key-000000'}) + '\n'
+    with mock.patch.object(checkpoint.urllib.request, 'build_opener', lambda *handlers: opener), \
+         mock.patch.object(checkpoint.sys, 'stdin', io.StringIO(access)), \
+         contextlib.redirect_stdout(io.StringIO()):
+        checkpoint.export(destination)
+
+
+origin = json.loads((ROOT/'cloudflare-deploy.json').read_text(encoding='utf-8'))['publicOrigin']
+host = urllib.parse.urlsplit(origin).hostname
+with tempfile.TemporaryDirectory(prefix='yukemuri-export-address-') as temp:
+    temp = Path(temp)
+    try:
+        opener = FakeOpener()
+        run_export(origin, temp/'worker.jsonl.gz', opener)
+        requests = opener.requests
+    except ValueError as error:
+        raise AssertionError('V01-14 export refused the Worker address in cloudflare-deploy.json: ' + str(error))
+    assert (temp/'worker.jsonl.gz').exists(), 'V01-14 export wrote no archive for the Worker address'
+    assert requests and all(r.full_url.startswith(origin + '/api/catalog-export') for r in requests), 'V01-14 export requests go to the Worker address'
+    assert all(r.get_header('User-agent') == checkpoint.USER_AGENT for r in requests), 'V01-14 every export request names the tool in its User-Agent'
+    assert 'urllib' not in checkpoint.USER_AGENT.lower(), 'V01-14 the User-Agent is not the urllib default'
+    assert all(r.get_header('X-yukemuri-crawl-key') == 'placeholder-not-a-key-000000' for r in requests), 'V01-14 export sends the crawl key'
+    # A Sites address is accepted as it was; the way back to Sites is closed in the Sites cleanup.
+    run_export('https://yukemuri.jihun7891.chatgpt.site', temp/'sites.jsonl.gz', FakeOpener())
+    assert (temp/'sites.jsonl.gz').exists(), 'V01-14 export still accepts a Sites address'
+    # Anything else stops before a request and leaves no file, so the key goes nowhere else.
+    refused = ['http://' + host, 'https://yukemuri.other-account.workers.dev', 'https://other.' + host.split('.', 1)[1],
+               'https://' + host + '.example.test', 'https://evil-' + host, 'https://user:secret@' + host, 'https://example.test', 'https://notchatgpt.site']
+    for bad in refused:
+        opener = FakeOpener()
+        target = temp/'refused.jsonl.gz'
+        try:
+            run_export(bad, target, opener)
+            raise AssertionError('V01-14 export accepted ' + bad)
+        except ValueError:
+            assert not opener.requests and not target.exists(), 'V01-14 a refused address sent a request or left a file: ' + bad
+assert checkpoint.accepted_host(host, origin) and checkpoint.accepted_host('a.chatgpt.site', None), 'V01-14 accepted hosts'
+assert not checkpoint.accepted_host(host, None) and not checkpoint.accepted_host(None, origin) and not checkpoint.accepted_host('', origin), 'V01-14 no committed address, no host'
+
+print(f'Checkpoint checks passed: API table parity, {len(declared)} schema tables exported or excluded with a reason, complete observation payload, favorites, queue claim reset, overwrite and corruption refusal, '
+      f'export address (the Worker address in cloudflare-deploy.json, Sites as before, {len(refused)} others refused before any request) and User-Agent.')

@@ -53,6 +53,11 @@ jobs:
     outputs:
       pages: ${{ steps.budget.outputs.pages }}
       collected_on: ${{ steps.collected.outputs.day }}
+    # V01-5: a manual run can pick any branch; this job uses the crawl key and the
+    # Cloudflare token with the branch's collector, so only main (the reviewed
+    # code) runs it. Every dispatch we make (the runner's, collect-spare.yml and
+    # collect-chain.yml) names main.
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v7
         with:
@@ -101,7 +106,7 @@ jobs:
   # No snapshot when the run collected nothing (budget 0): it would only read.
   snapshot:
     needs: collect
-    if: inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'
+    if: github.ref == 'refs/heads/main' && inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'
     uses: ./.github/workflows/deploy.yml
     with:
       after_collection: true
