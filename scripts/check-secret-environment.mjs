@@ -39,6 +39,14 @@ export function jobs(text){
  }
  return out;
 }
+// The workflow's own keys (on:, env:, defaults: ...) wherever they sit relative to jobs:, whole-line comments dropped.
+function outsideJobs(text){
+ let inJobs=false;
+ return text.split('\n').filter(line=>{
+  if(/^\S/.test(line)&&!line.startsWith('#'))inJobs=line.startsWith('jobs:');
+  return !inJobs&&!/^\s*#/.test(line);
+ }).join('\n');
+}
 // The job list must be in the two-space form jobs() reads; another form (quoted or anchored job key, other
 // indentation, CRLF) is reported instead of being skipped, since a job read wrongly would escape the rule.
 export function shape(text){
@@ -69,8 +77,8 @@ export function problems(file,text){
  if(/secrets\s*\[|toJson\s*\(\s*secrets/i.test(bare))out.push(`${file}: reads secrets by a computed name`);
  out.push(...shape(text).map(m=>`${file}: ${m}`));
  // Outside every job (workflow-level env:) a read has no job to carry the environment.
- if(mentions(bare.split('\njobs:')[0]))out.push(`${file}: reads a production secret outside a job (workflow-level env)`);
- const head=bare.split('\njobs:')[0];
+ if(mentions(outsideJobs(text)))out.push(`${file}: reads a production secret outside a job (workflow-level env)`);
+ const head=outsideJobs(text);
  if(readers(text).length&&/^ {2}workflow_call:/m.test(head)&&!head.includes(DECLARE))out.push(`${file}: reads production secrets under workflow_call but does not declare the three secrets as required`);
  for(const [name,body] of jobs(text)){
   const count=(body.match(/^ {4}environment:/gm)??[]).length;
@@ -147,6 +155,7 @@ export function assertEnvironment(files){
  const TOKEN='${{ secrets.CLOUDFLARE_API_TOKEN }}';
  const wf=(top,key,use)=>`name: x\non:\n  workflow_dispatch:\n${top}jobs:\n${key}\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo\n        env:\n          V: ${use}\n`;
  expect('workflow-level env reads the token','new.yml',wf(`env:\n  V: ${TOKEN}\n`,'  go:','x'),'outside a job');
+ expect('workflow-level env after jobs reads the token','new.yml',`name: x\non:\n  workflow_dispatch:\njobs:\n  go:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo\nenv:\n  V: ${TOKEN}\n`,'outside a job');
  expect('quoted job key','new.yml',wf('',"  'go':",TOKEN),'does not read');
  expect('anchored job key','new.yml',wf('','  go: &x',TOKEN),'does not read');
  expect('four-space jobs','new.yml',`name: x\non:\n  workflow_dispatch:\njobs:\n    go:\n        runs-on: ubuntu-latest\n        steps:\n          - run: echo\n            env:\n              V: ${TOKEN}\n`,'does not read');

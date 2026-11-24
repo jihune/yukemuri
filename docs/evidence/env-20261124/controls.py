@@ -118,8 +118,10 @@ HEAD = 'name: x\non:\n  workflow_dispatch:\n'
 JOB = '    runs-on: ubuntu-latest\n    steps:\n      - run: echo\n        env:\n          V: ' + READ + '\n'
 workflow_env = HEAD + 'env:\n  V: ' + READ + '\njobs:\n  go:\n' + JOB
 quoted_key = HEAD + "jobs:\n  'go':\n" + JOB
+workflow_env_after = HEAD + 'jobs:\n  go:\n' + JOB + 'env:\n  V: ' + READ + '\n'
 for label, body, word in (
     ('workflow-level env reads the token', workflow_env, 'outside a job'),
+    ('workflow-level env after jobs reads the token', workflow_env_after, 'outside a job'),
     ('quoted job key reads the token', quoted_key, 'does not read'),
 ):
     folder = fresh(f'new-workflow-{label.split()[0]}')
