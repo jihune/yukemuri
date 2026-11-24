@@ -78,6 +78,12 @@ jobs:
     # runs it. A call from collect.yml or lifecycle.yml carries its caller's ref,
     # which is main for every dispatch we make.
     if: github.ref == 'refs/heads/main'
+    # E01: the Cloudflare token and the crawl key are environment secrets, and the
+    # environment takes main only (docs/ENV-20261124.md). A call from collect.yml or
+    # lifecycle.yml (secrets: inherit) reaches this job too.
+    environment:
+      name: production
+      deployment: false
     steps:
       - uses: actions/checkout@v7
         with:

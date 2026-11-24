@@ -52,6 +52,11 @@ jobs:
   usage:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # E01: the Cloudflare token is an environment secret, and the environment takes
+    # main only (docs/ENV-20261124.md).
+    environment:
+      name: production
+      deployment: false
     steps:
       - uses: actions/checkout@v7
         with:

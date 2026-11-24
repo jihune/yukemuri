@@ -39,6 +39,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # E01: the crawl key is an environment secret, and the environment takes main
+    # only (docs/ENV-20261124.md).
+    environment:
+      name: production
+      deployment: false
     outputs:
       failed: ${{ steps.apply.outputs.failed }}
     steps:
