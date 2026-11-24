@@ -1,13 +1,15 @@
 """Count how many hourly slots of the app's collect-spare.yml (cron 37 * * * *) got a schedule run,
 from its merge (#291, 11-17T00:16Z) for 24 slots, using the public GitHub API only.
-Usage: python3 spare-schedule-check.py > spare-schedule-check.out"""
+Usage: python3 spare-schedule-check.py [slots] > spare-schedule-check.out (24 slots by default;
+72 for spare-schedule-check-3d.out)"""
 import json
+import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
 URL = "https://api.github.com/repos/jihune/yukemuri/actions/workflows/collect-spare.yml/runs?per_page=100"
 START = datetime(2026, 11, 17, 0, 37, tzinfo=timezone.utc)  # first slot after the merge
-SLOTS = [START + timedelta(hours=i) for i in range(24)]
+SLOTS = [START + timedelta(hours=i) for i in range(int(sys.argv[1]) if len(sys.argv) > 1 else 24)]
 END = SLOTS[-1] + timedelta(hours=1)
 
 

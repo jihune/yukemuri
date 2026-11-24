@@ -13,6 +13,9 @@ import {LIMITS,queryDay} from './cloudflare-usage.mjs';
 export const BUDGET=Object.freeze({
  maxPages:120,         // one run; the runner dispatches hourly (C05), so later runs of a day often get 0
  fallbackPages:16,     // usage unreadable: the run size before C03
+ minPages:16,          // C04 follow-up (user 2026-10-28): a run of fewer pages takes 0. Whatever its size a run
+                       // reads its snapshot (157,863 rows on 10-27, 3.2% of the daily reads), so 1-15 pages
+                       // would cost a whole snapshot; collect-chain.yml stops on the same size (small-budget).
  share:0.85,           // of each daily limit; the rest stays for backups, deploys and visitors
  writesPerPage:185,    // 2026-10-18, after C04: runs wrote at most 56.0 a page, but a round of
                        // update-site.py --gentle can hold only a Jalan detail page (11 rows) and a Jalan
@@ -42,8 +45,8 @@ export function pagesFor(usage,budget=BUDGET){
   return {pages:budget.fallbackPages,reason:'usage unreadable: fallback to '+budget.fallbackPages+' pages'};
  const byWrites=Math.floor((budget.share*LIMITS.rowsWritten-written)/budget.writesPerPage);
  const byReads=Math.floor((budget.share*LIMITS.rowsRead-read-budget.snapshotReads-budget.runReads)/budget.readsPerPage);
- const pages=Math.max(0,Math.min(budget.maxPages,byWrites,byReads));
- return {pages,reason:`today ${written} rows written, ${read} read; writes allow ${byWrites} pages, reads ${byReads}, cap ${budget.maxPages}`};
+ const fit=Math.max(0,Math.min(budget.maxPages,byWrites,byReads)),pages=fit<budget.minPages?0:fit;
+ return {pages,reason:`today ${written} rows written, ${read} read; writes allow ${byWrites} pages, reads ${byReads}, cap ${budget.maxPages}`+(fit&&!pages?`; under ${budget.minPages} pages: skipped`:'')};
 }
 
 export async function budgetToday({fetch=globalThis.fetch,env=process.env,config='cloudflare-deploy.json',now=new Date()}={}){

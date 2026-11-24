@@ -1,0 +1,9 @@
+run 44046661571 2026-11-17T08:25:52Z success slot 07:37 late 48.9 min
+run 44141427921 2026-11-17T17:50:47Z success slot 17:37 late 13.8 min
+run 44214479683 2026-11-18T01:16:07Z success slot 00:37 late 39.1 min
+run 44272307534 2026-11-18T09:03:11Z success slot 08:37 late 26.2 min
+run 44368812599 2026-11-18T18:21:27Z success slot 17:37 late 44.5 min
+run 44431179390 2026-11-19T00:42:38Z success slot 00:37 late 5.6 min
+run 44496436668 2026-11-19T09:26:29Z success slot 08:37 late 49.5 min
+run 44589717383 2026-11-19T18:37:08Z success slot 18:37 late 0.1 min
+window 11-17T00:37Z..11-20T00:37Z slots 72 arrived 8 ratio 0.111

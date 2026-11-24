@@ -75,7 +75,12 @@ try{
  const bounded=await(await runtime.dispatchFetch('http://localhost/api/crawl?report=1',{headers:{'X-Yukemuri-Crawl-Key':'private-maintenance-only'}})).json();
  assert.equal(bounded.failureExamples.length,20,'Maintenance samples stay bounded');
  assert.equal(JSON.stringify((await db.prepare('SELECT * FROM crawl_jobs ORDER BY url').all()).results),expandedBefore,'Diagnostics never modify the queue');
+ // V01-1: the names the collector gives a page it failed on itself read as source data to check, not as 'other'.
+ const collectorNames=['AttributeError','TypeError','LookupError','KeyError','IndexError','IncompleteRead','site_contract_400','site_contract_413','queue_url_unsupported'];
+ for(const name of collectorNames)await db.prepare("INSERT INTO crawl_jobs(url,provider,kind,status,attempts,next_at,error) VALUES (?,'trip','detail','retry',0,0,?)").bind('qa-collector-'+name,name).run();
+ const collector=(await(await keyed('/api/collection-status')).json()).providers.find(provider=>provider.provider==='trip');
+ assert.deepEqual(collector.issues,[{reason:'source_format',count:collectorNames.length},{reason:'missing_page',count:1}],'collector-side failure names are source data to check, not other request errors');
  // The page is the same static shell for everyone (P03); the summary arrives with the snapshot.
  const page=await runtime.dispatchFetch('http://localhost/');assert.equal(page.status,200);const html=await page.text();assert(html.includes('일본 온천, 나에게 맞는 곳')&&html.includes('숙소 정보를 불러오는 중'));
- console.log('Collection status passed: quality counts, source reason categories (with rows from before C08), bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and existing page.');
+ console.log('Collection status passed: quality counts, source reason categories (with rows from before C08 and the failure names the collector gives itself), bounded protected failure samples, chronology, leases, cooldowns, privacy, unchanged queue and existing page.');
 }finally{await runtime.dispose();rmSync(temp,{recursive:true,force:true})}
