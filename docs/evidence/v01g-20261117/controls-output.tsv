@@ -1,0 +1,15 @@
+unchanged	deploy	rc=0	PASS	Deploy config passed: gate skips without database_id/autoDeploy (committed: enabled), gene
+unchanged	rollback	rc=0	PASS	Rollback workflow passed: manual only, catalogue then account lock, bookmark recorded befo
+unchanged	collect	rc=0	PASS	Collection workflows passed: collect.yml dispatch-only (check-access|gentle) under yukemur
+unchanged	checkpoint	rc=0	PASS	Checkpoint checks passed: API table parity, 16 schema tables exported or excluded with a r
+V01-5 deploy.yml: no guard	deploy	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: no job-level if
+V01-5 deploy.yml: guard for another branch	deploy	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: the if is not github.ref == 'refs/heads/main' AND the other conditions (git
+V01-5 deploy.yml: guard OR-ed with true	deploy	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: deploy.yml: deploy: the if is not github.ref == 'refs/heads/main' AND the other conditions (git
+V01-5 d1-setup.yml: no guard	deploy	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: d1-setup.yml: d1: no job-level if
+V01-5 rollback.yml: no guard	rollback	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: rollback.yml: rollback: no job-level if
+V01-5 collect.yml: no guard on the collect job	collect	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: collect.yml: collect: no job-level if
+V01-5 collect.yml: no guard on the snapshot job	collect	rc=1	HOLDS	AssertionError [ERR_ASSERTION]: V01-5 main-only guard: collect.yml: snapshot: the if is not github.ref == 'refs/heads/main' AND the other conditions (
+V01-14 catalog-checkpoint.py: publicOrigin not accepted	checkpoint	rc=1	HOLDS	AssertionError: V01-14 export refused the Worker address in cloudflare-deploy.json: Expected the Worker HTTPS URL in cloudflare-deploy.json (publicOri
+V01-14 catalog-checkpoint.py: no User-Agent	checkpoint	rc=1	HOLDS	AssertionError: V01-14 every export request names the tool in its User-Agent
+V01-14 catalog-checkpoint.py: any workers.dev accepted	checkpoint	rc=1	HOLDS	AssertionError: V01-14 export accepted https://yukemuri.other-account.workers.dev
+V01-14 catalog-checkpoint.py: suffix match instead of equality	checkpoint	rc=1	HOLDS	AssertionError: V01-14 export accepted https://evil-yukemuri.jihune.workers.dev
