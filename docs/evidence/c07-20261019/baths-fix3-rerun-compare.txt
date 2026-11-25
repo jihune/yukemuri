@@ -1,0 +1,11 @@
+A {"claimReadPerPage": [2931, 1750], "bathsClaims": [23, 23], "bathsRead": [138292, 513], "jalanPendingSaved": [46, 46], "writtenPerPage": [16.3, 16.3], "candidatesAfter": [21, 21], "pages": [120, 120]}
+B {"claimReadPerPage": [4717, 2061], "bathsClaims": [23, 23], "bathsRead": [315418, 513], "jalanPendingSaved": [46, 46], "writtenPerPage": [16, 16], "candidatesAfter": [21, 21], "pages": [120, 120]}
+C {"claimReadPerPage": [5860, 2111], "bathsClaims": [23, 23], "bathsRead": [446482, 513], "jalanPendingSaved": [46, 46], "writtenPerPage": [16, 16], "candidatesAfter": [21, 21], "pages": [120, 120]}
+B2 {"claimReadPerPage": [2129, 2061], "bathsClaims": [23, 23], "bathsRead": [4957, 513], "jalanPendingSaved": [46, 46], "writtenPerPage": [16, 16], "candidatesAfter": [46, 46], "pages": [120, 120]}
+C10 {"claimReadPerPage": [6594, 2089], "bathsClaims": [23, 23], "bathsRead": [537211, 513], "jalanPendingSaved": [46, 46], "writtenPerPage": [16, 16], "candidatesAfter": [21, 21], "pages": [120, 120]}
+C20 {"claimReadPerPage": [6592, 3059], "bathsClaims": [23, 23], "bathsRead": [537217, 117227], "jalanPendingSaved": [41, 41], "writtenPerPage": [16, 16], "candidatesAfter": [16, 16], "pages": [120, 120]}
+control B2 candidatesAfter 46
+C claim reads per page after/before 0.36
+writes per page after/before {'A': 1.0, 'B': 1.0, 'C': 1.0, 'B2': 1.0, 'C10': 1.0, 'C20': 1.0}
+C10 claim reads per page after/before 0.317
+VERDICT CUT SAME_ORDER OK KEEPS CONTROL_PASSES CUT10 C20=0.464

@@ -1,0 +1,16 @@
+# V6 controls for baths attempt 3 (762ea47, rebuilt on main af427c9), 2026-11-25T00:35:15Z-00:40:15Z
+# Each control edits the same-priority range of the priority lane in lib/crawl-queue.ts in place:
+#   `AND j.priority=(SELECT priority FROM best) AND (SELECT missing FROM best)=1 AND ${fetched}<=(SELECT fetched FROM best)`
+# builds (node scripts/run-framework.mjs build), runs the unchanged node scripts/check-claim-order-worker.mjs, then restores
+# the source (sha256 checked) and dist/server.
+# k1: that range replaced by `AND 0` (done rows of the same priority never read)
+# k2: ${fetched}<=(SELECT ...) narrowed to ${fetched}<(SELECT ...)
+# Before the controls the unchanged check passed against the attempt 3 build (00:34:35Z): 1441 claims over 60 random queue states.
+k1 build rc=0
+k1 check rc=1
+AssertionError [ERR_ASSERTION]: state 10 {"provider":"jalan","phase":"baths","lane":"priority","token":"a2a7e42d-b085-4afb-98b6-8c2ed326f326"}
+k2 build rc=0
+k2 check rc=1
+AssertionError [ERR_ASSERTION]: state 31 {"provider":"jalan","phase":"baths","lane":"priority","token":"b6dc6425-0b51-4974-882d-9e6294249a5c"}
+restored check rc=0 ; source sha256 8d97d9770b157bd0 equal=yes
+Claim order checks passed: 1441 claims over 60 random queue states picked the former selection (1107 jobs, 102 by a missing linked detail, 42 Trip URL with two 
