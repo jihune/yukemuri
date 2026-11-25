@@ -24,9 +24,14 @@ export const BUDGET=Object.freeze({
                        // (compare-progress.mjs; the run's last queue read wrote them until C07 plan 2).
                        // Each run re-reads today's usage, so a high value only shortens the run the
                        // write share stops; a low one lets that run pass 85%.
- readsPerPage:4600,    // 2026-10-18, a production-size D1 (compare-write-builds.mjs): a round's claims read
-                       // up to 3,481 rows, plus 525 for the done D07 names jobs (PR #154 review), and a
-                       // page's save up to 582; a round may hold a single page
+ readsPerPage:6100,    // 2026-11-23 (C07R, docs/C07R-20261123.md): the account's reads between two "Size the
+                       // run" lines of the collect.yml runs of 11-20..11-22, less the snapshot builds in
+                       // between, were at most 6,065.9 rows a page (run 44846126076, 120 pages: 885,044 -
+                       // 157,136 = 727,908 rows; median of the 10 intervals 5,898.4). With 4,600 a day's last
+                       // run passed 85% (11-17: 4,357,258 read, 87.1%). 4,600 was measured on a
+                       // production-size D1 on 2026-10-18 (3,481 + 525 + 582); since then the Jalan bath
+                       // claim (docs/C07-20261019.md) reads more as details are completed. Measure again
+                       // after that query is fixed and lower the value by the rules written then.
  snapshotReads:168000, // 2026-10-18: the last snapshot build read 122,302 rows (23,784 hotels, after
                        // P04), plus 10,000 for D07's names (D07-20261019.md) and two days of hotel
                        // growth (5.73 rows a hotel, 3,051 hotels on 10-17)

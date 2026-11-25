@@ -6,8 +6,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {BUDGET,budgetToday,pagesFor} from './collection-budget.mjs';
 
-// The measured costs (2026-10-18, after C04 and P04) and the share of each free limit.
-assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,minPages:16,share:0.85,writesPerPage:185,readsPerPage:4600,snapshotReads:168000,runReads:100});
+// The measured costs (2026-10-18, after C04 and P04; the reads of a page 2026-11-23, C07R) and the share of each free limit.
+assert.deepEqual({...BUDGET},{maxPages:120,fallbackPages:16,minPages:16,share:0.85,writesPerPage:185,readsPerPage:6100,snapshotReads:168000,runReads:100});
 
 // A fresh day: the cap. Nothing recorded yet counts as zero (an authorised query with no rows).
 assert.equal(pagesFor({rowsRead:0,rowsWritten:0}).pages,120);
@@ -17,35 +17,37 @@ assert.equal(pagesFor({rowsRead:0,rowsWritten:80_000}).pages,27);
 // 2026-10-17 23:31Z: 90 a page allowed 79 pages, which wrote 10,224 rows and ended the day at 88.1%.
 // 7,172 rows left -> 38 pages.
 assert.equal(pagesFor({rowsRead:3_170_016,rowsWritten:77_828}).pages,38);
-// Whatever today's usage, a run's pages stay within 85% at the costliest costs measured (2026-10-18):
-// 179.5 rows written a page (a round of a Jalan detail and a new Jalan list page; runs wrote at most
-// 56.0 a page) and 4 a run (the stored count); 3,481 + 525 read a round and 582 a page, a round holding at
-// least one page; the run's own 9 + 14 reads and its stored count's 4 + 10 (C07 plan 2); and a snapshot after
+// Whatever today's usage, a run's pages stay within 85% at the costliest costs measured:
+// 179.5 rows written a page (2026-10-18; a round of a Jalan detail and a new Jalan list page; runs wrote
+// at most 56.0 a page) and 4 a run (the stored count); 6,066 rows read a page (2026-11-23, C07R: the
+// costliest of the 10 intervals of 120 pages on 11-20..11-22, 6,065.9, docs/C07R-20261123.md; 4,588 on
+// 2026-10-18); the run's own 9 + 14 reads and its stored count's 4 + 10 (C07 plan 2); and a snapshot after
 // the run of 122,302 rows plus 10,000 for D07's names and two days of growth (2 x 3,051 x 5.73).
 // A run of 0 pages skips the collector and the snapshot.
 for(let written=0;written<=85_000;written++){
  const {pages}=pagesFor({rowsRead:0,rowsWritten:written});
  assert.ok(pages===0||written+pages*179.5+4<=85_000,'writes '+written);
 }
+const READS_A_PAGE=6_066;
 for(let read=0;read<=4_250_000;read++){
  const {pages}=pagesFor({rowsRead:read,rowsWritten:0});
- assert.ok(pages===0||read+pages*(3_481+525+582)+9+14+4+10+122_302+10_000+2*3_051*5.73<=4_250_000,'reads '+read);
+ assert.ok(pages===0||read+pages*READS_A_PAGE+9+14+4+10+122_302+10_000+2*3_051*5.73<=4_250_000,'reads '+read);
 }
-// Reads decide: 4,250,000 - 3,800,000 - 168,000 - 100 = 281,900 rows -> 61 pages.
-assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,61);
+// Reads decide: 4,250,000 - 3,800,000 - 168,000 - 100 = 281,900 rows -> 46 pages.
+assert.equal(pagesFor({rowsRead:3_800_000,rowsWritten:0}).pages,46);
 // 2026-10-13 05:36Z (87,579 written): over 85% of the writes, so the run skips.
 assert.equal(pagesFor({rowsRead:1_647_393,rowsWritten:87_579}).pages,0);
 assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).pages,0);
 // C04 follow-up: a run of 1-15 pages takes 0 and says why; 16 pages still run.
-// Reads: 4,250,000 - 4,008,300 - 168,100 = 73,600 rows -> 16 pages; 1 row more -> 15 -> 0.
-assert.equal(pagesFor({rowsRead:4_008_300,rowsWritten:0}).pages,16);
-assert.deepEqual(pagesFor({rowsRead:4_008_301,rowsWritten:0}),{pages:0,reason:'today 0 rows written, 4008301 read; writes allow 459 pages, reads 15, cap 120; under 16 pages: skipped'});
+// Reads: 4,250,000 - 3,984,300 - 168,100 = 97,600 rows -> 16 pages; 1 row more -> 15 -> 0.
+assert.equal(pagesFor({rowsRead:3_984_300,rowsWritten:0}).pages,16);
+assert.deepEqual(pagesFor({rowsRead:3_984_301,rowsWritten:0}),{pages:0,reason:'today 0 rows written, 3984301 read; writes allow 459 pages, reads 15, cap 120; under 16 pages: skipped'});
 // Writes: 85,000 - 82,040 = 2,960 rows -> 16 pages; 82,041 -> 15 -> 0.
 assert.equal(pagesFor({rowsRead:0,rowsWritten:82_040}).pages,16);
 assert.equal(pagesFor({rowsRead:0,rowsWritten:82_041}).pages,0);
-assert.match(pagesFor({rowsRead:0,rowsWritten:82_041}).reason,/writes allow 15 pages, reads 887, cap 120; under 16 pages: skipped$/);
+assert.match(pagesFor({rowsRead:0,rowsWritten:82_041}).reason,/writes allow 15 pages, reads 669, cap 120; under 16 pages: skipped$/);
 // A day already used up says nothing more.
-assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).reason,'today 0 rows written, 4200000 read; writes allow 459 pages, reads -26, cap 120');
+assert.equal(pagesFor({rowsRead:4_200_000,rowsWritten:0}).reason,'today 0 rows written, 4200000 read; writes allow 459 pages, reads -20, cap 120');
 // Unreadable usage: the pre-C03 run size, never the cap.
 for(const bad of [null,undefined,{rowsRead:'x',rowsWritten:0},{rowsRead:0,rowsWritten:-1},{rowsRead:NaN,rowsWritten:0}])
  assert.equal(pagesFor(bad).pages,16,JSON.stringify(bad));
