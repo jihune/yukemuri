@@ -5,12 +5,13 @@
 # the source (sha256 checked) and dist/server.
 # k1: that range replaced by `AND 0` (done rows of the same priority never read)
 # k2: ${fetched}<=(SELECT ...) narrowed to ${fetched}<(SELECT ...)
-# Before the controls the unchanged check passed against the attempt 3 build (00:34:35Z): 1441 claims over 60 random queue states.
+# The claim's "token" is a random lease token the check makes up (randomUUID) and prints in its failure line; it is
+# not a secret and is left out here. Before the controls the unchanged check passed against the attempt 3 build (00:34:35Z): 1441 claims over 60 random queue states.
 k1 build rc=0
 k1 check rc=1
-AssertionError [ERR_ASSERTION]: state 10 {"provider":"jalan","phase":"baths","lane":"priority","token":"a2a7e42d-b085-4afb-98b6-8c2ed326f326"}
+AssertionError [ERR_ASSERTION]: state 10 {"provider":"jalan","phase":"baths","lane":"priority","token":"(random lease token, omitted)"}
 k2 build rc=0
 k2 check rc=1
-AssertionError [ERR_ASSERTION]: state 31 {"provider":"jalan","phase":"baths","lane":"priority","token":"b6dc6425-0b51-4974-882d-9e6294249a5c"}
+AssertionError [ERR_ASSERTION]: state 31 {"provider":"jalan","phase":"baths","lane":"priority","token":"(random lease token, omitted)"}
 restored check rc=0 ; source sha256 8d97d9770b157bd0 equal=yes
 Claim order checks passed: 1441 claims over 60 random queue states picked the former selection (1107 jobs, 102 by a missing linked detail, 42 Trip URL with two 
