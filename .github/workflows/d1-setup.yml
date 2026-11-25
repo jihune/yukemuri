@@ -25,6 +25,10 @@ jobs:
   d1:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # V01-5: a manual run can pick any branch; this job creates the database and
+    # applies the branch's drizzle/ migrations, so only main (the reviewed code)
+    # runs it.
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v7
         with:
