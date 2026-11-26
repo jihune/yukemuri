@@ -50,11 +50,16 @@ const SHAPES={
  B:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1},
  C:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0},
  B2:{'jalan detail done':5516,'jalan detail pending':18286,'trip detail done':2232,'trip detail pending':1,candidates:25},
+ // Done Jalan pages at priority 10, as a collector that takes pending pages in priority
+ // order leaves them; C20 also has no pending Jalan page at priority 10 left.
+ C10:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0,doneAt10:true},
+ C20:{'jalan detail done':7802,'jalan detail pending':16194,'trip detail done':2278,'trip detail pending':0,doneAt10:true,noPendingAt10:true},
 };
 const DUE={jalan:3,trip:5};
 const PRODUCTION_SPAN=4284.5;
 const temp=mkdtempSync(join(tmpdir(),'yukemuri-c07-groups-'));
-const server=join(temp,'server');cpSync('dist/server',server,{recursive:true});
+// --server: the Worker build to run (dist/server by default; the baths fix compares two).
+const server=join(temp,'server');cpSync(arg('--server','dist/server'),server,{recursive:true});
 // Test-only entry: the clock the request names (X-Compare-Now) and the rows each request read and wrote.
 writeFileSync(join(server,'__c07.js'),`import app from './index.js';
 import {env} from 'cloudflare:workers';
@@ -123,6 +128,8 @@ try{
   await db.prepare(`${numbers(n)} INSERT OR IGNORE INTO crawl_jobs (url,provider,kind,prefecture,priority,status,attempts,next_at,fetched_at) SELECT 'https://www.jalan.net/ui/uip1400/uiw1402.do?langCd='||l||'&kenCd='||printf('%02d',1+i%47)||'0000&stayCount=1&roomCount=1&distCd=01&crcyCd='||c||'&activeSort=1&screenId=UIW1402&idx='||(${offset}+1+i/94)||'&pageNum='||(${offset}+1+i/94),'jalan','names',NULL,95,?,?,0,? FROM n,(SELECT 'en_US' AS l,'USD' AS c UNION ALL SELECT 'ko_KR','KRW') WHERE (i/47)%2=(CASE l WHEN 'en_US' THEN 0 ELSE 1 END)`).bind(status,status==='done'?1:0,status==='done'?recent:null).run();
  }
  await db.prepare("INSERT INTO hotel_lifecycle(hotel_id,first_seen_at,last_seen_at,missing_count,missing_at) SELECT id,'2026-10-01T00:00:00Z','2026-10-01T00:00:00Z',0,NULL FROM hotels WHERE 1 ON CONFLICT DO NOTHING").run();
+   if(shape.doneAt10)await db.prepare("UPDATE crawl_jobs SET priority=10 WHERE provider='jalan' AND kind='detail' AND status='done'").run();
+   if(shape.noPendingAt10)await db.prepare("UPDATE crawl_jobs SET priority=20 WHERE provider='jalan' AND kind='detail' AND status IN ('pending','retry') AND priority<=10").run();
    const run=report.runs[name]={candidatesBefore:await candidatesInDone(db)};
    if(shape.candidates){
     // Spread evenly over the order the priority lane reads done jobs in.
@@ -133,6 +140,7 @@ try{
    run.candidates=await candidatesInDone(db);
    run.shaped=await counts(db);
    run.hotels=(await db.prepare('SELECT COUNT(*) AS n FROM hotels').first()).n;
+   const pendingJalan=new Set((await db.prepare("SELECT url FROM crawl_jobs WHERE provider='jalan' AND kind='detail' AND status IN ('pending','retry')").all()).results.map(r=>r.url));
    const origin=(await mf.ready).origin,logFile=join(temp,name+'.json');
    await (await fetch(origin+'/__meter')).json();
    execFileSync('python3',[join(here,'drive-collector.py'),crawler,origin,PAGES,String(START),logFile],{stdio:['ignore','inherit','inherit']});
@@ -148,6 +156,11 @@ try{
    Object.assign(run,{pages:log.saves.length,claims:claims.length,rounds:log.lines.find(l=>'rounds' in l)?.rounds??null,claimRead:claims.reduce((n,c)=>n+c.read,0),groups,requests,
     bathsStatements:claims.find(c=>c.provider==='jalan'&&c.phase==='baths')?.statements??null});
    run.claimReadPerPage=Math.round(run.claimRead/run.pages);
+   // The pages in save order, the pending Jalan detail pages among them, what all requests wrote,
+   // and the done candidates the run left.
+   run.saved=log.saves.map(s=>s.url);run.savedJalanPending=run.saved.filter(u=>pendingJalan.has(u));
+   run.written=meter.reduce((n,m)=>n+m.written,0);run.writtenPerPage=Math.round(run.written/run.pages*10)/10;
+   run.candidatesAfter=await candidatesInDone(db);
    console.log(`${name}: ${run.pages} pages, ${run.claims} claims, claims read ${run.claimRead} rows (${run.claimReadPerPage} a page); done Jalan candidates ${run.candidates}; hotels ${run.hotels}`);
    for(const [g,e] of Object.entries(groups))console.log(`  ${g}: ${e.claims} claims (${e.pages} pages, ${e.emptyClaims} empty), ${e.read} rows, ${e.perClaim} a claim`);
   }finally{await mf.dispose()}

@@ -1,0 +1,1071 @@
+{
+  "per_shape": {
+    "A": {
+      "before": {
+        "claimRead": 351765,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2931.375,
+        "claimReadPerPage_reported": 2931,
+        "written": 1954,
+        "written_over_pages_raw": 16.283333,
+        "writtenPerPage_reported": 16.3,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 351765,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 210043,
+        "pages": 120,
+        "claimRead_over_pages_raw": 1750.358333,
+        "claimReadPerPage_reported": 1750,
+        "written": 1954,
+        "written_over_pages_raw": 16.283333,
+        "writtenPerPage_reported": 16.3,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 210043,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 213869,
+        "pages": 120,
+        "claimRead_over_pages_raw": 1782.241667,
+        "claimReadPerPage_reported": 1782,
+        "written": 1954,
+        "written_over_pages_raw": 16.283333,
+        "writtenPerPage_reported": 16.3,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 213869,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    },
+    "B": {
+      "before": {
+        "claimRead": 565983,
+        "pages": 120,
+        "claimRead_over_pages_raw": 4716.525,
+        "claimReadPerPage_reported": 4717,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 565983,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 247281,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2060.675,
+        "claimReadPerPage_reported": 2061,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 247281,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 250961,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2091.341667,
+        "claimReadPerPage_reported": 2091,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 250961,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    },
+    "C": {
+      "before": {
+        "claimRead": 703140,
+        "pages": 120,
+        "claimRead_over_pages_raw": 5859.5,
+        "claimReadPerPage_reported": 5860,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 703140,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 253294,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2110.783333,
+        "claimReadPerPage_reported": 2111,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 253294,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 257054,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2142.116667,
+        "claimReadPerPage_reported": 2142,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 257054,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    },
+    "B2": {
+      "before": {
+        "claimRead": 255522,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2129.35,
+        "claimReadPerPage_reported": 2129,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 46,
+        "groups_read_sum": 255522,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 247281,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2060.675,
+        "claimReadPerPage_reported": 2061,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 46,
+        "groups_read_sum": 247281,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 250961,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2091.341667,
+        "claimReadPerPage_reported": 2091,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 46,
+        "groups_read_sum": 250961,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    },
+    "C10": {
+      "before": {
+        "claimRead": 791268,
+        "pages": 120,
+        "claimRead_over_pages_raw": 6593.9,
+        "claimReadPerPage_reported": 6594,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 791268,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 250693,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2089.108333,
+        "claimReadPerPage_reported": 2089,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 250693,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 254453,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2120.441667,
+        "claimReadPerPage_reported": 2120,
+        "written": 1916,
+        "written_over_pages_raw": 15.966667,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 254453,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    },
+    "C20": {
+      "before": {
+        "claimRead": 790983,
+        "pages": 120,
+        "claimRead_over_pages_raw": 6591.525,
+        "claimReadPerPage_reported": 6592,
+        "written": 1914,
+        "written_over_pages_raw": 15.95,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 41,
+        "saved_len": 120,
+        "candidatesAfter": 16,
+        "groups_read_sum": 790983,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "after": {
+        "claimRead": 367116,
+        "pages": 120,
+        "claimRead_over_pages_raw": 3059.3,
+        "claimReadPerPage_reported": 3059,
+        "written": 1914,
+        "written_over_pages_raw": 15.95,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 41,
+        "saved_len": 120,
+        "candidatesAfter": 16,
+        "groups_read_sum": 367116,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      },
+      "control": {
+        "claimRead": 254166,
+        "pages": 120,
+        "claimRead_over_pages_raw": 2118.05,
+        "claimReadPerPage_reported": 2118,
+        "written": 1914,
+        "written_over_pages_raw": 15.95,
+        "writtenPerPage_reported": 16,
+        "savedJalanPending_len": 46,
+        "saved_len": 120,
+        "candidatesAfter": 21,
+        "groups_read_sum": 254166,
+        "claimRead_minus_groups_read_sum": 0,
+        "claimRead_equals_groups_read_sum": true,
+        "saved_kind_counts": {
+          "jalan_detail": 49,
+          "jalan_list": 22,
+          "trip_detail": 49,
+          "other": 0
+        },
+        "groups_pages": {
+          "jalan/detail": 23,
+          "jalan/baths": 23,
+          "trip/detail": 22,
+          "jalan/refresh": 3,
+          "trip/refresh": 5,
+          "jalan/list": 0,
+          "trip/list": 0,
+          "trip/names": 22,
+          "jalan/localnames": 22
+        }
+      }
+    }
+  },
+  "verdicts": {
+    "V1": {
+      "shape": "C",
+      "verdict": "CUT",
+      "ratio_raw": 0.360233,
+      "ratio_raw_3dp": "0.360",
+      "ratio_rounded_fields": 0.360239,
+      "verdict_rounded_fields": "CUT",
+      "methods_agree": true,
+      "before": {
+        "claimRead": 703140,
+        "pages": 120,
+        "claimReadPerPage": 5860
+      },
+      "after": {
+        "claimRead": 253294,
+        "pages": 120,
+        "claimReadPerPage": 2111
+      }
+    },
+    "V7": {
+      "shape": "C10",
+      "verdict": "CUT10",
+      "ratio_raw": 0.316824,
+      "ratio_raw_3dp": "0.317",
+      "ratio_rounded_fields": 0.316803,
+      "verdict_rounded_fields": "CUT10",
+      "methods_agree": true,
+      "before": {
+        "claimRead": 791268,
+        "pages": 120,
+        "claimReadPerPage": 6594
+      },
+      "after": {
+        "claimRead": 250693,
+        "pages": 120,
+        "claimReadPerPage": 2089
+      }
+    },
+    "V2": {
+      "verdict": "SAME_ORDER",
+      "different_shapes": [],
+      "per_shape": {
+        "A": {
+          "before_len": 46,
+          "after_len": 46,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        },
+        "B": {
+          "before_len": 46,
+          "after_len": 46,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        },
+        "C": {
+          "before_len": 46,
+          "after_len": 46,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        },
+        "B2": {
+          "before_len": 46,
+          "after_len": 46,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        },
+        "C10": {
+          "before_len": 46,
+          "after_len": 46,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        },
+        "C20": {
+          "before_len": 41,
+          "after_len": 41,
+          "after_is_prefix_of_before": true,
+          "first_difference_index_0based": null,
+          "first_difference_detail": null,
+          "before_has_duplicates": false,
+          "after_has_duplicates": false,
+          "after_set_subset_of_before_set": true,
+          "vacuous_both_empty": false,
+          "saved_kind_counts_before": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "saved_kind_counts_after": {
+            "jalan_detail": 49,
+            "jalan_list": 22,
+            "trip_detail": 49,
+            "other": 0
+          },
+          "groups_pages_before": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          },
+          "groups_pages_after": {
+            "jalan/detail": 23,
+            "jalan/baths": 23,
+            "trip/detail": 22,
+            "jalan/refresh": 3,
+            "trip/refresh": 5,
+            "jalan/list": 0,
+            "trip/list": 0,
+            "trip/names": 22,
+            "jalan/localnames": 22
+          }
+        }
+      }
+    },
+    "V3": {
+      "verdict": "OK",
+      "max_ratio_raw": 1.0,
+      "max_ratio_raw_shape": "A",
+      "verdict_rounded_fields": "OK",
+      "max_ratio_rounded_fields": 1.0,
+      "max_ratio_rounded_shape": "A",
+      "methods_agree": true,
+      "per_shape": {
+        "A": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1954,
+          "written_after": 1954,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16.3,
+          "writtenPerPage_after": 16.3,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        },
+        "B": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1916,
+          "written_after": 1916,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16,
+          "writtenPerPage_after": 16,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        },
+        "C": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1916,
+          "written_after": 1916,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16,
+          "writtenPerPage_after": 16,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        },
+        "B2": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1916,
+          "written_after": 1916,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16,
+          "writtenPerPage_after": 16,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        },
+        "C10": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1916,
+          "written_after": 1916,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16,
+          "writtenPerPage_after": 16,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        },
+        "C20": {
+          "ratio_raw": 1.0,
+          "ratio_rounded_fields": 1.0,
+          "written_before": 1914,
+          "written_after": 1914,
+          "pages_before": 120,
+          "pages_after": 120,
+          "writtenPerPage_before": 16,
+          "writtenPerPage_after": 16,
+          "raw_le_1.1": true,
+          "rounded_le_1.1": true
+        }
+      }
+    },
+    "V4": {
+      "verdict": "KEEPS",
+      "candidatesAfter_before": 46,
+      "candidatesAfter_after": 46,
+      "candidatesBefore_before": 21,
+      "candidatesBefore_after": 21
+    },
+    "V5": {
+      "verdict": "CONTROL_PASSES",
+      "control_B2_candidatesAfter": 46,
+      "after_B2_candidatesAfter": 46,
+      "control_B2_candidatesBefore": 21
+    },
+    "V8": {
+      "shape": "C20",
+      "ratio_raw": 0.464126,
+      "ratio_raw_3dp": "0.464",
+      "ratio_rounded_fields": 0.464047,
+      "ratio_rounded_fields_3dp": "0.464",
+      "methods_agree_at_3dp": true,
+      "before": {
+        "claimRead": 790983,
+        "pages": 120,
+        "claimReadPerPage": 6592
+      },
+      "after": {
+        "claimRead": 367116,
+        "pages": 120,
+        "claimReadPerPage": 3059
+      }
+    }
+  },
+  "VERDICT": "VERDICT CUT SAME_ORDER OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+  "VERDICT_rounded_fields": "VERDICT CUT SAME_ORDER OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+  "inputs": {
+    "before": "before.json",
+    "after": "after.json",
+    "control": "control.json"
+  },
+  "rule_ambiguities": [
+    "Per-page value: rules say rows per page saved; computed as claimRead/pages (raw) as primary. The reported rounded fields (claimReadPerPage, writtenPerPage) are computed in parallel as a second method; VERDICT uses raw.",
+    "V2: 'the first ones of those saved before' read as: after list must equal before[:len(after)] (prefix). An after list longer than before counts as DIFFERENT (first difference at len(before)). Equal length with equal content is SAME_ORDER. 'Page kind' is not defined; counted by saved URL (jalan detail /yadN/, jalan list /ui/, trip detail hotel-detail) and by groups.<name>.pages.",
+    "V4: 'No more left' read as after <= before (equal counts as KEEPS); candidatesAfter used as given (B2 includes 21 baseline candidates plus 25 B2 ones, total 46).",
+    "V5: 'leaves more done candidates than the fix does' read as strictly greater; equal gives CONTROL_PASSES.",
+    "V1/V7 '0.5 or less' and V3 '1.1 or less' read as inclusive (<=). Comparisons use exact Fractions, not floats.",
+    "V3 'in every shape': verdict OK only if the maximum ratio over the six shapes is <= 1.1.",
+    "V8 ratio: raw claimRead/pages ratio rounded half-up to 3 decimals."
+  ],
+  "control_set": {
+    "after_a_claimRead_x2.5.json": {
+      "VERDICT": "VERDICT NOT_CUT SAME_ORDER OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+      "VERDICT_rounded_fields": "VERDICT CUT SAME_ORDER OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+      "verdict_dict_changed_vs_baseline": [
+        "V1"
+      ],
+      "verdict_label_changed_vs_baseline": [
+        "V1"
+      ]
+    },
+    "after_b_swap_first_two.json": {
+      "VERDICT": "VERDICT CUT DIFFERENT OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+      "VERDICT_rounded_fields": "VERDICT CUT DIFFERENT OK KEEPS CONTROL_PASSES CUT10 C20=0.464",
+      "verdict_dict_changed_vs_baseline": [
+        "V2"
+      ],
+      "verdict_label_changed_vs_baseline": [
+        "V2"
+      ]
+    },
+    "after_c_B2_candidatesAfter_plus1.json": {
+      "VERDICT": "VERDICT CUT SAME_ORDER OK LOSES CONTROL_PASSES CUT10 C20=0.464",
+      "VERDICT_rounded_fields": "VERDICT CUT SAME_ORDER OK LOSES CONTROL_PASSES CUT10 C20=0.464",
+      "verdict_dict_changed_vs_baseline": [
+        "V4",
+        "V5"
+      ],
+      "verdict_label_changed_vs_baseline": [
+        "V4"
+      ]
+    }
+  }
+}
