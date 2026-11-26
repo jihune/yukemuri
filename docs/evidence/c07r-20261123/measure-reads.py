@@ -192,9 +192,10 @@ def main(root):
                 'n': len(values), 'days': [days[0], days[-1]], 'qualifying_all_days': len(pool)}, days
 
     def has_backup(x):
-        # Stage 2 (docs/C07R-20261123.md): the daily backup starts at 00:13Z.
+        # Stage 2 (docs/C07R-20261123.md): the daily backup run is created at 00:13:42Z and reads in the minutes after
+        # (11-25: window widened from 00:13:00-00:14:00 to 00:13:00-00:20:00; the 11-16..11-22 output is unchanged).
         a, b = when(x['size_at']), when(x['next_size_at'])
-        return a < when(x['day'] + 'T00:14:00') and b > when(x['day'] + 'T00:13:00')
+        return a < when(x['day'] + 'T00:20:00') and b > when(x['day'] + 'T00:13:00')
 
     backup_excluded = [x for x in intervals if has_backup(x)]
     stage2_pool = [x for x in intervals if not has_backup(x)]
