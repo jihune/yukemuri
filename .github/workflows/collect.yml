@@ -58,6 +58,11 @@ jobs:
     # code) runs it. Every dispatch we make (the runner's, collect-spare.yml and
     # collect-chain.yml) names main.
     if: github.ref == 'refs/heads/main'
+    # E01: the crawl key and the Cloudflare token are environment secrets, and the
+    # environment takes main only (docs/ENV-20261124.md).
+    environment:
+      name: production
+      deployment: false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -111,7 +116,10 @@ jobs:
     with:
       after_collection: true
       collected_on: ${{ needs.collect.outputs.collected_on }}
-    secrets: inherit
+    secrets:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
   # C06: GitHub drops most of the runner's hourly dispatches, so a run that
   # collected and deployed starts the wait for the next one (collect-chain.yml,
   # outside this run's lock). Only this job may dispatch; a failed dispatch

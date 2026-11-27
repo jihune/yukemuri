@@ -39,6 +39,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # E01: the crawl key is an environment secret, and the environment takes main
+    # only (docs/ENV-20261124.md).
+    environment:
+      name: production
+      deployment: false
     outputs:
       failed: ${{ steps.apply.outputs.failed }}
     steps:
@@ -68,7 +73,10 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       after_collection: true
-    secrets: inherit
+    secrets:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}
   # Refused or unconfirmed evidence fails the run, after the saved part reached
   # the snapshot.
   verdict:

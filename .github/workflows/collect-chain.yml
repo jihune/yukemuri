@@ -32,6 +32,11 @@ jobs:
     runs-on: ubuntu-24.04
     # Up to an hour of waiting, then a few requests.
     timeout-minutes: 70
+    # E01: the Cloudflare token is an environment secret, and the environment takes
+    # main only (docs/ENV-20261124.md). The run is dispatched with --ref main.
+    environment:
+      name: production
+      deployment: false
     permissions:
       contents: read
       actions: write

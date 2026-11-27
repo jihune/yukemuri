@@ -3,7 +3,7 @@
 
 The binary is cached under .sites-runtime/actionlint/. shellcheck and pyflakes
 are turned off so the result does not depend on what the machine has installed.
-Only the unknown concurrency.queue key is ignored (see IGNORE).
+Only the unknown concurrency.queue and environment.deployment keys are ignored (see IGNORE).
 """
 import hashlib
 from pathlib import Path
@@ -55,7 +55,14 @@ workflows = sorted(str(p.relative_to(ROOT)) for p in (ROOT / '.github/workflows'
 # 1.7.7–1.7.12 does not know the key yet. check-deploy-config.mjs and
 # check-collect-workflow.mjs assert its value instead.
 IGNORE = 'unexpected key "queue" for "concurrency" section'
-result = subprocess.run([str(binary()), '-shellcheck=', '-pyflakes=', '-ignore', IGNORE, *workflows], cwd=ROOT, check=False)
+# environment.deployment: false (GitHub Docs, jobs.<job_id>.environment) is also newer than
+# actionlint 1.7.7; check-secret-environment.mjs asserts the exact environment block.
+IGNORE_DEPLOYMENT = 'unexpected key "deployment" for "environment" section'
+result = subprocess.run(
+    [str(binary()), '-shellcheck=', '-pyflakes=', '-ignore', IGNORE, '-ignore', IGNORE_DEPLOYMENT, *workflows],
+    cwd=ROOT,
+    check=False,
+)
 if result.returncode:
     sys.exit(result.returncode)
 print(f'actionlint {VERSION} passed: {len(workflows)} workflows.')

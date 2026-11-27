@@ -67,7 +67,7 @@ assert.deepEqual([...new Set(collect.match(/secrets\.\w+/g)??[])].sort(),['secre
 assert(collect.indexOf('check_collection.py')<collect.indexOf('collection-budget.mjs')&&collect.indexOf('collection-budget.mjs')<collect.indexOf('run-collection.py --mode'),'offline checks, then the budget, then the key is used');
 // The snapshot job, then the C06 chain job (check-collection-chain.mjs) as the last one.
 assert.equal(collect.slice(collect.indexOf('  snapshot:\n'),collect.indexOf('  # C06: ')),[
- '  snapshot:','    needs: collect',"    if: github.ref == 'refs/heads/main' && inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets: inherit',''].join('\n'),
+ '  snapshot:','    needs: collect',"    if: github.ref == 'refs/heads/main' && inputs.mode == 'gentle' && needs.collect.outputs.pages != '0'",'    uses: ./.github/workflows/deploy.yml','    with:','      after_collection: true','      collected_on: ${{ needs.collect.outputs.collected_on }}','    secrets:','      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}','      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}','      YUKEMURI_CRAWL_ACCESS_KEY: ${{ secrets.YUKEMURI_CRAWL_ACCESS_KEY }}',''].join('\n'),
  'a successful gentle run that collected refreshes the snapshot through deploy.yml at the same commit');
 assert.match(collect,/^permissions:\n  contents: read\n  actions: read\n(?! )/m,'read-only token; actions: read for the called deploy');
 
